@@ -8,6 +8,30 @@ jest.mock("lucide-react-native", () => ({
   ArrowDown: () => "ArrowDown",
 }));
 
+// Mock react-native-reanimated
+jest.mock("react-native-reanimated", () => {
+  const React = require("react");
+  const View = require("react-native").View;
+  return {
+    __esModule: true,
+    default: {
+      View: View,
+      createAnimatedComponent: (c: unknown) => c,
+    },
+    useSharedValue: (v: number) => ({ value: v }),
+    useAnimatedStyle: (fn: () => Record<string, unknown>) => fn(),
+    withTiming: (v: number) => v,
+    withRepeat: (v: number) => v,
+    withDelay: (_d: number, v: number) => v,
+    Easing: { out: () => ({}), inOut: () => ({}), ease: {} },
+  };
+});
+
+// Mock useReducedMotion
+jest.mock("@/hooks/useReducedMotion", () => ({
+  useReducedMotion: () => false,
+}));
+
 describe("KpiCard", () => {
   it("renders title and value", () => {
     const { getByText } = render(

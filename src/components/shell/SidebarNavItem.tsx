@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Pressable, Text, View, StyleSheet } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 import type { LucideIcon } from "lucide-react-native";
+import { motion } from "@/theme/motion";
 
 interface SidebarNavItemProps {
   icon: LucideIcon;
@@ -20,6 +27,25 @@ export function SidebarNavItem({
   expanded,
   onPress,
 }: SidebarNavItemProps) {
+  const labelOpacity = useSharedValue(expanded ? 1 : 0);
+  const labelTranslateX = useSharedValue(expanded ? 0 : -8);
+
+  useEffect(() => {
+    labelOpacity.value = withTiming(expanded ? 1 : 0, {
+      duration: motion.base,
+      easing: Easing.out(Easing.ease),
+    });
+    labelTranslateX.value = withTiming(expanded ? 0 : -8, {
+      duration: motion.base,
+      easing: Easing.out(Easing.ease),
+    });
+  }, [expanded, labelOpacity, labelTranslateX]);
+
+  const labelStyle = useAnimatedStyle(() => ({
+    opacity: labelOpacity.value,
+    transform: [{ translateX: labelTranslateX.value }],
+  }));
+
   return (
     <Pressable
       onPress={onPress}
@@ -31,12 +57,14 @@ export function SidebarNavItem({
       {active && <View style={styles.activeBorder} />}
       <Icon size={20} color={active ? "#30a8dc" : "#a3a3a3"} />
       {expanded && (
-        <Text
-          style={[styles.label, active && styles.activeLabel]}
-          numberOfLines={1}
-        >
-          {label}
-        </Text>
+        <Animated.View style={labelStyle}>
+          <Text
+            style={[styles.label, active && styles.activeLabel]}
+            numberOfLines={1}
+          >
+            {label}
+          </Text>
+        </Animated.View>
       )}
       {badge != null && badge > 0 && (
         <View style={styles.badge}>

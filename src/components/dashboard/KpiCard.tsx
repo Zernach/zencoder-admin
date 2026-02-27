@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 import { DeltaIndicator } from "./DeltaIndicator";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { motion } from "@/theme/motion";
 
 interface KpiCardProps {
   title: string;
@@ -23,6 +31,33 @@ export function KpiCard({
   icon,
   onPress,
 }: KpiCardProps) {
+  const reducedMotion = useReducedMotion();
+  const prevValue = useRef(value);
+  const opacity = useSharedValue(1);
+  const translateY = useSharedValue(0);
+
+  useEffect(() => {
+    if (prevValue.current !== value && !reducedMotion) {
+      // Animate cross-fade
+      opacity.value = 0;
+      translateY.value = 8;
+      opacity.value = withTiming(1, {
+        duration: motion.base,
+        easing: Easing.out(Easing.ease),
+      });
+      translateY.value = withTiming(0, {
+        duration: motion.base,
+        easing: Easing.out(Easing.ease),
+      });
+    }
+    prevValue.current = value;
+  }, [value, reducedMotion, opacity, translateY]);
+
+  const valueAnimStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }],
+  }));
+
   const content = (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -32,7 +67,9 @@ export function KpiCard({
         </Text>
       </View>
       <View style={styles.valueRow}>
-        <Text style={styles.value}>{value}</Text>
+        <Animated.View style={valueAnimStyle}>
+          <Text style={styles.value}>{value}</Text>
+        </Animated.View>
         {delta != null && (
           <DeltaIndicator value={delta} polarity={deltaPolarity} />
         )}
