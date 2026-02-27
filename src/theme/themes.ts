@@ -59,7 +59,7 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
     text: {
       primary: "#e5e5e5",
       secondary: "#a3a3a3",
-      tertiary: "#7a7a7a",
+      tertiary: "#8a8a8a",
       brand: "#67c4ea",
       onBrand: "#00131c"
     },

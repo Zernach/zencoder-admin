@@ -38,7 +38,7 @@ export function BottomTabs() {
             accessibilityLabel={tab.label}
             accessibilityState={{ selected: active }}
           >
-            <Icon size={20} color={active ? "#30a8dc" : "#7a7a7a"} />
+            <Icon size={20} color={active ? "#30a8dc" : "#8a8a8a"} />
             <Text style={[styles.label, active && styles.activeLabel]}>
               {tab.label}
             </Text>
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 10,
-    color: "#7a7a7a",
+    color: "#8a8a8a",
   },
   activeLabel: {
     color: "#30a8dc",

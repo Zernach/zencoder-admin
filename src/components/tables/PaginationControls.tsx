@@ -38,7 +38,7 @@ export function PaginationControls({
           accessibilityRole="button"
           accessibilityLabel="Previous page"
         >
-          <ChevronLeft size={16} color={hasPrev ? "#e5e5e5" : "#7a7a7a"} />
+          <ChevronLeft size={16} color={hasPrev ? "#e5e5e5" : "#8a8a8a"} />
         </Pressable>
         <Text style={styles.pageNum}>
           {page} / {totalPages}
@@ -50,7 +50,7 @@ export function PaginationControls({
           accessibilityRole="button"
           accessibilityLabel="Next page"
         >
-          <ChevronRight size={16} color={hasNext ? "#e5e5e5" : "#7a7a7a"} />
+          <ChevronRight size={16} color={hasNext ? "#e5e5e5" : "#8a8a8a"} />
         </Pressable>
       </View>
     </View>

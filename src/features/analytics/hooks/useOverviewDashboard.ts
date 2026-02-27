@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAppDependencies } from "@/core/di";
 import { useDashboardFilters } from "./useDashboardFilters";
@@ -14,8 +15,13 @@ export function useOverviewDashboard() {
     queryFn: () => analyticsService.getOverview(filters),
   });
 
+  const data = useMemo(
+    () => (query.data ? mapOverviewToViewModel(query.data) : undefined),
+    [query.data]
+  );
+
   return {
-    data: query.data ? mapOverviewToViewModel(query.data) : undefined,
+    data,
     loading: query.isLoading,
     error: query.error instanceof Error ? query.error.message : undefined,
     refetch: query.refetch,

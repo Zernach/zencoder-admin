@@ -98,7 +98,7 @@ export function TrendChart({
             x={MARGIN.left - 6}
             y={MARGIN.top + yScale(t) + 4}
             fontSize={10}
-            fill="#7a7a7a"
+            fill="#8a8a8a"
             textAnchor="end"
           >
             {formatCompactNumber(t)}
@@ -110,7 +110,7 @@ export function TrendChart({
             x={MARGIN.left + xScale(t)}
             y={height - 4}
             fontSize={10}
-            fill="#7a7a7a"
+            fill="#8a8a8a"
             textAnchor="middle"
           >
             {t.toLocaleDateString("en-US", { month: "short", day: "numeric" })}

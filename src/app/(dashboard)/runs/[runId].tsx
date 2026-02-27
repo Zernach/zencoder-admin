@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   timelineContent: { flex: 1 },
   stepLabel: { fontSize: 13, fontWeight: "600", color: "#e5e5e5", textTransform: "capitalize" },
   stepDetail: { fontSize: 12, color: "#a3a3a3", marginTop: 2 },
-  stepTime: { fontSize: 11, color: "#7a7a7a", marginTop: 2 },
+  stepTime: { fontSize: 11, color: "#8a8a8a", marginTop: 2 },
   policyCard: { backgroundColor: "#1a1a1a", borderRadius: 10, padding: 16, gap: 8, borderWidth: 1, borderColor: "#242424" },
   policyLabel: { fontSize: 12, color: "#a3a3a3" },
 });

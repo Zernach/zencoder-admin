@@ -15,7 +15,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <View style={styles.container}>
-      <Inbox size={32} color="#7a7a7a" />
+      <Inbox size={32} color="#8a8a8a" />
       <Text style={styles.message}>{message}</Text>
       {activeFilters && activeFilters.length > 0 && (
         <View style={styles.filterList}>

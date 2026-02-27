@@ -26,7 +26,7 @@ const STATUS_CONFIG: Record<
   failed: { color: "#ef4444", Icon: XCircle, label: "Failed" },
   running: { color: "#38bdf8", Icon: Play, label: "Running" },
   queued: { color: "#a3a3a3", Icon: Clock, label: "Queued" },
-  canceled: { color: "#7a7a7a", Icon: Slash, label: "Canceled" },
+  canceled: { color: "#8a8a8a", Icon: Slash, label: "Canceled" },
 };
 
 const SEVERITY_CONFIG: Record<
@@ -53,7 +53,8 @@ export function StatusBadge({ variant, status, severity }: StatusBadgeProps) {
   return (
     <View
       style={[styles.badge, { borderColor: color }]}
-      accessibilityLabel={label}
+      accessibilityRole="text"
+      accessibilityLabel={`Status: ${label}`}
     >
       <Icon size={12} color={color} />
       <Text style={[styles.text, { color }]}>{label}</Text>

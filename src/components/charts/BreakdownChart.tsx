@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   barLabel: {
     fontSize: 10,
-    color: "#7a7a7a",
+    color: "#8a8a8a",
     marginTop: 4,
     textAlign: "center",
   },

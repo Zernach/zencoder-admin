@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   caption: {
     fontSize: 11,
-    color: "#7a7a7a",
+    color: "#8a8a8a",
   },
   pressed: {
     opacity: 0.85,

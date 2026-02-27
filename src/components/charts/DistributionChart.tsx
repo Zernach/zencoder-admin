@@ -84,17 +84,17 @@ const styles = StyleSheet.create({
   },
   countLabel: {
     fontSize: 9,
-    color: "#7a7a7a",
+    color: "#8a8a8a",
     marginBottom: 2,
   },
   binLabel: {
     fontSize: 8,
-    color: "#7a7a7a",
+    color: "#8a8a8a",
     marginTop: 2,
   },
   xLabel: {
     fontSize: 10,
-    color: "#7a7a7a",
+    color: "#8a8a8a",
     textAlign: "center",
     marginTop: 4,
   },

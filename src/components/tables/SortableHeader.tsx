@@ -22,6 +22,7 @@ export function SortableHeader({
       onPress={onPress}
       style={styles.container}
       accessibilityRole="button"
+      accessibilityLabel={`Sort by ${label}${active ? `, ${direction === "asc" ? "ascending" : "descending"}` : ""}`}
       accessibilityState={{ selected: active }}
     >
       <Text style={styles.label}>{label}</Text>

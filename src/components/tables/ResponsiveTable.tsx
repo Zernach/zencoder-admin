@@ -68,7 +68,7 @@ const listStyles = StyleSheet.create({
   },
   label: {
     fontSize: 11,
-    color: "#7a7a7a",
+    color: "#8a8a8a",
   },
   value: {
     fontSize: 12,

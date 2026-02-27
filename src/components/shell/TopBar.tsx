@@ -33,11 +33,11 @@ export function TopBar({ onToggleSidebar, showMenuButton }: TopBarProps) {
           </Pressable>
         )}
         <View style={styles.searchContainer}>
-          <Search size={14} color="#7a7a7a" />
+          <Search size={14} color="#8a8a8a" />
           <TextInput
             style={styles.searchInput}
             placeholder="Search agents, projects, runs..."
-            placeholderTextColor="#7a7a7a"
+            placeholderTextColor="#8a8a8a"
           />
         </View>
       </View>

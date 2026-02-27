@@ -44,6 +44,9 @@ export default function SettingsScreen() {
               onValueChange={() => toggle(t.key)}
               trackColor={{ false: "#2d2d2d", true: "#30a8dc" }}
               thumbColor="#e5e5e5"
+              accessibilityRole="switch"
+              accessibilityLabel={t.label}
+              accessibilityState={{ checked: settings[t.key] ?? false }}
             />
           </View>
         ))}
@@ -96,13 +99,13 @@ const styles = StyleSheet.create({
   },
   rowText: { flex: 1, marginRight: 16 },
   label: { fontSize: 14, fontWeight: "500", color: "#e5e5e5" },
-  desc: { fontSize: 12, color: "#7a7a7a", marginTop: 2 },
+  desc: { fontSize: 12, color: "#8a8a8a", marginTop: 2 },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 4,
   },
-  infoLabel: { fontSize: 13, color: "#7a7a7a" },
+  infoLabel: { fontSize: 13, color: "#8a8a8a" },
   infoValue: { fontSize: 13, color: "#e5e5e5" },
   dangerBtn: {
     backgroundColor: "rgba(239, 68, 68, 0.1)",

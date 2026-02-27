@@ -82,7 +82,7 @@ export function DonutChart({
                 <SvgText
                   x={size / 2}
                   y={size / 2 + 14}
-                  fill="#7a7a7a"
+                  fill="#8a8a8a"
                   fontSize={10}
                   textAnchor="middle"
                   alignmentBaseline="middle"
@@ -143,6 +143,6 @@ const styles = StyleSheet.create({
   },
   legendPct: {
     fontSize: 11,
-    color: "#7a7a7a",
+    color: "#8a8a8a",
   },
 });
