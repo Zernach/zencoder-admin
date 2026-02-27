@@ -10,7 +10,8 @@
     "ios": "expo start --ios",
     "test": "jest --passWithNoTests",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src/ --ext .ts,.tsx"
+    "lint": "eslint src/ --ext .ts,.tsx",
+    "test:e2e": "npx playwright test --config e2e/playwright.config.ts"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
