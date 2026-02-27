@@ -1,0 +1,332 @@
+# UI Spec: DesignZencoder
+
+- File key: 8xHt2xu01fBIGp0huXJkG7
+- Fetched at: 2026-02-27T16:13:28.284Z
+- Last modified: 2026-02-27T16:13:27Z
+## Summary
+
+- Total nodes: 2305
+- Screens: 7
+- Components: 0
+- Text nodes: 615
+## Screens
+
+### MakeZencoder
+- id: 3:1281
+- size: 1632x3576
+- layout: NONE
+- item spacing: n/a
+- padding: top n/a, right n/a, bottom n/a, left n/a
+- child count: 2
+### MakeZencoder
+- id: 3:2557
+- size: 1632x3576
+- layout: NONE
+- item spacing: n/a
+- padding: top n/a, right n/a, bottom n/a, left n/a
+- child count: 2
+### MakeZencoder
+- id: 3:2790
+- size: 1632x3576
+- layout: NONE
+- item spacing: n/a
+- padding: top n/a, right n/a, bottom n/a, left n/a
+- child count: 2
+### MakeZencoder
+- id: 3:3007
+- size: 1632x3576
+- layout: NONE
+- item spacing: n/a
+- padding: top n/a, right n/a, bottom n/a, left n/a
+- child count: 2
+### MakeZencoder
+- id: 3:3401
+- size: 1632x3576
+- layout: NONE
+- item spacing: n/a
+- padding: top n/a, right n/a, bottom n/a, left n/a
+- child count: 2
+### MakeZencoder
+- id: 3:3707
+- size: 1632x3576
+- layout: NONE
+- item spacing: n/a
+- padding: top n/a, right n/a, bottom n/a, left n/a
+- child count: 2
+### MakeZencoder
+- id: 3:4041
+- size: 1632x3576
+- layout: NONE
+- item spacing: n/a
+- padding: top n/a, right n/a, bottom n/a, left n/a
+- child count: 2
+## Components
+
+## Tokens
+
+### Colors
+- color01: #008236
+- color02: #00A63E
+- color03: #0A0A0A
+- color04: #0D542B
+- color05: #101828
+- color06: #1447E6
+- color07: #155DFC
+- color08: #16A34A
+- color09: #193CB8
+- color10: #1C398E
+- color11: #1F2937
+- color12: #364153
+- color13: #36415380
+- color14: #374151
+- color15: #4A5565
+- color16: #4B5563
+- color17: #65A30D
+- color18: #6A7282
+- color19: #6B7280
+- color20: #7E2A0C
+- color21: #82181A
+- color22: #99A1AF
+- color23: #9CA3AF
+- color24: #9F2D00
+- color25: #C10007
+- color26: #CA3500
+- color27: #CA8A04
+- color28: #D1D5DC
+- color29: #DC2626
+- color30: #E5E7EB
+- color31: #E7000B
+- color32: #EA580C
+- color33: #EFF6FF
+- color34: #F0FDF4
+- color35: #F3F4F6
+- color36: #F54900
+- color37: #F9FAFB
+- color38: #FEF2F2
+- color39: #FFF7ED
+- color40: #FFFFFF
+
+### Spacing
+- 2, 4, 8, 12, 14, 16, 18, 24, 26, 32, 405.25, 425, 438.4375, 453.65625, 459, 469.21875, 778.25, 951.625, 1016.25, 1071.3125, 1154.59375, 1158.4375, 1166.75, 1582
+
+### Radius
+- none
+
+### Typography
+- type01: Inter, 700, 20px
+- type02: Inter, 400, 12px
+- type03: Inter, 500, 14px
+- type04: Inter, 700, 30px
+- type05: Inter, 400, 14px
+- type06: Inter, 700, 18px
+- type07: Menlo, 700, 30px
+- type08: Inter, 400, 11px
+- type09: Cousine, 400, 16px
+- type10: Inter, 400, 10px
+- type11: Inter, 500, 12px
+- type12: Menlo, 400, 14px
+- type13: Menlo, 500, 12px
+- type14: Inter, 700, 14px
+- type15: Menlo, 700, 20px
+## Key Text
+
+- AGENT ANALYTICS: AGENT ANALYTICS
+- Org Dashboard: Org Dashboard
+- Dashboard: Dashboard
+- Projects: Projects
+- Agents: Agents
+- Runs: Runs
+- Costs: Costs
+- Governance: Governance
+- Settings: Settings
+- Overview Dashboard: Overview Dashboard
+- Organization-level analytics for cloud agent opera: Organization-level analytics for cloud agent operations
+- Last updated: Feb 27, 14:32: Last updated: Feb 27, 14:32
+- Search agents, projects, runs...: Search agents, projects, runs...
+- Filters: Filters
+- Adoption & Throughput: Adoption & Throughput
+- Active Users: Active Users
+- 1,247: 1,247
+- 12.3%: 12.3%
+- Daily active: Daily active
+- Active Agents: Active Agents
+- 342: 342
+- 8.5%: 8.5%
+- In production: In production
+- Runs / Day: Runs / Day
+- 15,623: 15,623
+- 3.2%: 3.2%
+- Total executions: Total executions
+- Peak Concurrency: Peak Concurrency
+- 89: 89
+- 5.7%: 5.7%
+- Max simultaneous: Max simultaneous
+- Runs Over Time (24h): Runs Over Time (24h)
+- 00:00: 00:00
+- 04:00: 04:00
+- 08:00: 08:00
+- 12:00: 12:00
+- 16:00: 16:00
+- 20:00: 20:00
+- 0: 0
+- 500: 500
+- 1000: 1000
+- 1500: 1500
+- 2000: 2000
+- 20:00: 20:00
+- Success Rate Trend: Success Rate Trend
+- 00:00: 00:00
+- 04:00: 04:00
+- 08:00: 08:00
+- 12:00: 12:00
+- 16:00: 16:00
+- 20:00: 20:00
+- 85: 85
+- 89: 89
+- 93: 93
+- 100: 100
+- 12:00: 12:00
+- Reliability & Quality: Reliability & Quality
+- Success Rate: Success Rate
+- 94.2%: 94.2%
+- 2.1%: 2.1%
+- Failure Rate: Failure Rate
+- 5.8%: 5.8%
+- 2.1%: 2.1%
+- P50 Duration: P50 Duration
+- 2.3s: 2.3s
+- 8.4%: 8.4%
+- P95 Duration: P95 Duration
+- 12.7s: 12.7s
+- 5.2%: 5.2%
+- Retry Rate: Retry Rate
+- 3.1%: 3.1%
+- 0.5%: 0.5%
+- Cost & Efficiency: Cost & Efficiency
+- Total Cost: Total Cost
+- $47,823: $47,823
+- 15.2%: 15.2%
+- Last 7 days: Last 7 days
+- Cost Per Run: Cost Per Run
+- $3.06: $3.06
+- 2.3%: 2.3%
+- Average: Average
+- Total Tokens: Total Tokens
+- 2.8M: 2.8M
+- 18.5%: 18.5%
+- In + Out: In + Out
+- Cache Hit Rate: Cache Hit Rate
+- 67.4%: 67.4%
+- 5.2%: 5.2%
+- Cost by Project: Cost by Project
+- Customer Support: Customer Support
+- Data Pipeline: Data Pipeline
+- Code Review: Code Review
+- Sales Intel: Sales Intel
+- Content Gen: Content Gen
+- 0: 0
+- 5000: 5000
+- 10000: 10000
+- 15000: 15000
+- 20000: 20000
+- Content Gen: Content Gen
+- Failures by Category: Failures by Category
+- Timeout 39%: Timeout 39%
+- Model Error 26%: Model Error 26%
+- Tool Error 17%: Tool Error 17%
+- Policy Block 11%: Policy Block 11%
+- Infrastructure 7%: Infrastructure 7%
+- Safety & Governance: Safety & Governance
+- Policy Blocks: Policy Blocks
+- 147: 147
+- 12.4%: 12.4%
+- Last 7 days: Last 7 days
+- Secrets Scans: Secrets Scans
+- 23: 23
+- 8.7%: 8.7%
+- Detected: Detected
+- Data Egress: Data Egress
+- 847 GB: 847 GB
+- 22.1%: 22.1%
+- Top Projects by Activity: Top Projects by Activity
+- Project Name: Project Name
+- Runs: Runs
+- Success Rate: Success Rate
+- Cost: Cost
+- Agents: Agents
+- Customer Support AI: Customer Support AI
+- 5847: 5847
+- 96.2%: 96.2%
+- $18,234: $18,234
+- 12: 12
+- Data Pipeline Automation: Data Pipeline Automation
+- 4293: 4293
+- 91.5%: 91.5%
+- $12,847: $12,847
+- 8: 8
+- Code Review Assistant: Code Review Assistant
+- 2847: 2847
+- 98.1%: 98.1%
+- $9,234: $9,234
+- 5: 5
+- Sales Intelligence: Sales Intelligence
+- 1923: 1923
+- 89.7%: 89.7%
+- $5,123: $5,123
+- 7: 7
+- Content Generator: Content Generator
+- 1547: 1547
+- 93.4%: 93.4%
+- $3,847: $3,847
+- 4: 4
+- Acme Corp: Acme Corp
+- admin@acme.com: admin@acme.com
+- AGENT ANALYTICS: AGENT ANALYTICS
+- Org Dashboard: Org Dashboard
+- Dashboard: Dashboard
+- Projects: Projects
+- Agents: Agents
+- Runs: Runs
+- Costs: Costs
+- Governance: Governance
+- Settings: Settings
+- Projects: Projects
+- All active projects in your organization: All active projects in your organization
+- Search...: Search...
+- Last 7 days: Last 7 days
+- Filters: Filters
+- Total Projects: Total Projects
+- 5: 5
+- Total Runs: Total Runs
+- 16,457: 16,457
+- Total Agents: Total Agents
+- 36: 36
+- Projects by Run Volume: Projects by Run Volume
+- bar Chart: bar Chart
+- Visualization Placeholder: Visualization Placeholder
+- Success Rate Distribution: Success Rate Distribution
+- line Chart: line Chart
+- Visualization Placeholder: Visualization Placeholder
+- All Projects: All Projects
+- Project Name: Project Name
+- Total Runs: Total Runs
+- Success Rate: Success Rate
+- Total Cost: Total Cost
+- Agents: Agents
+- Actions: Actions
+- Customer Support AI: Customer Support AI
+- 5847: 5847
+- 96.2%: 96.2%
+- $18,234: $18,234
+- 12: 12
+- Data Pipeline Automation: Data Pipeline Automation
+- 4293: 4293
+- 91.5%: 91.5%
+- $12,847: $12,847
+- 8: 8
+- Code Review Assistant: Code Review Assistant
+- 2847: 2847
+- 98.1%: 98.1%
+- $9,234: $9,234
+- 5: 5
+- Sales Intelligence: Sales Intelligence

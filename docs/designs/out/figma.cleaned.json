@@ -1,0 +1,1302 @@
+{
+  "source": {
+    "fileName": "DesignZencoder",
+    "fileKey": "8xHt2xu01fBIGp0huXJkG7",
+    "fetchedAt": "2026-02-27T16:13:28.284Z",
+    "lastModified": "2026-02-27T16:13:27Z"
+  },
+  "summary": {
+    "totalNodes": 2305,
+    "screens": 7,
+    "components": 0,
+    "textNodes": 615
+  },
+  "screens": [
+    {
+      "id": "3:1281",
+      "name": "MakeZencoder",
+      "width": 1632,
+      "height": 3576,
+      "layoutMode": "NONE",
+      "itemSpacing": null,
+      "padding": {
+        "top": null,
+        "right": null,
+        "bottom": null,
+        "left": null
+      },
+      "childCount": 2
+    },
+    {
+      "id": "3:2557",
+      "name": "MakeZencoder",
+      "width": 1632,
+      "height": 3576,
+      "layoutMode": "NONE",
+      "itemSpacing": null,
+      "padding": {
+        "top": null,
+        "right": null,
+        "bottom": null,
+        "left": null
+      },
+      "childCount": 2
+    },
+    {
+      "id": "3:2790",
+      "name": "MakeZencoder",
+      "width": 1632,
+      "height": 3576,
+      "layoutMode": "NONE",
+      "itemSpacing": null,
+      "padding": {
+        "top": null,
+        "right": null,
+        "bottom": null,
+        "left": null
+      },
+      "childCount": 2
+    },
+    {
+      "id": "3:3007",
+      "name": "MakeZencoder",
+      "width": 1632,
+      "height": 3576,
+      "layoutMode": "NONE",
+      "itemSpacing": null,
+      "padding": {
+        "top": null,
+        "right": null,
+        "bottom": null,
+        "left": null
+      },
+      "childCount": 2
+    },
+    {
+      "id": "3:3401",
+      "name": "MakeZencoder",
+      "width": 1632,
+      "height": 3576,
+      "layoutMode": "NONE",
+      "itemSpacing": null,
+      "padding": {
+        "top": null,
+        "right": null,
+        "bottom": null,
+        "left": null
+      },
+      "childCount": 2
+    },
+    {
+      "id": "3:3707",
+      "name": "MakeZencoder",
+      "width": 1632,
+      "height": 3576,
+      "layoutMode": "NONE",
+      "itemSpacing": null,
+      "padding": {
+        "top": null,
+        "right": null,
+        "bottom": null,
+        "left": null
+      },
+      "childCount": 2
+    },
+    {
+      "id": "3:4041",
+      "name": "MakeZencoder",
+      "width": 1632,
+      "height": 3576,
+      "layoutMode": "NONE",
+      "itemSpacing": null,
+      "padding": {
+        "top": null,
+        "right": null,
+        "bottom": null,
+        "left": null
+      },
+      "childCount": 2
+    }
+  ],
+  "components": [],
+  "keyText": [
+    {
+      "id": "3:1287",
+      "name": "AGENT ANALYTICS",
+      "text": "AGENT ANALYTICS"
+    },
+    {
+      "id": "3:1289",
+      "name": "Org Dashboard",
+      "text": "Org Dashboard"
+    },
+    {
+      "id": "3:1298",
+      "name": "Dashboard",
+      "text": "Dashboard"
+    },
+    {
+      "id": "3:1306",
+      "name": "Projects",
+      "text": "Projects"
+    },
+    {
+      "id": "3:1316",
+      "name": "Agents",
+      "text": "Agents"
+    },
+    {
+      "id": "3:1321",
+      "name": "Runs",
+      "text": "Runs"
+    },
+    {
+      "id": "3:1327",
+      "name": "Costs",
+      "text": "Costs"
+    },
+    {
+      "id": "3:1332",
+      "name": "Governance",
+      "text": "Governance"
+    },
+    {
+      "id": "3:1338",
+      "name": "Settings",
+      "text": "Settings"
+    },
+    {
+      "id": "3:1345",
+      "name": "Overview Dashboard",
+      "text": "Overview Dashboard"
+    },
+    {
+      "id": "3:1347",
+      "name": "Organization-level analytics for cloud agent opera",
+      "text": "Organization-level analytics for cloud agent operations"
+    },
+    {
+      "id": "3:1349",
+      "name": "Last updated: Feb 27, 14:32",
+      "text": "Last updated: Feb 27, 14:32"
+    },
+    {
+      "id": "3:1356",
+      "name": "Search agents, projects, runs...",
+      "text": "Search agents, projects, runs..."
+    },
+    {
+      "id": "3:1361",
+      "name": "Filters",
+      "text": "Filters"
+    },
+    {
+      "id": "3:1376",
+      "name": "Adoption & Throughput",
+      "text": "Adoption & Throughput"
+    },
+    {
+      "id": "3:1380",
+      "name": "Active Users",
+      "text": "Active Users"
+    },
+    {
+      "id": "3:1383",
+      "name": "1,247",
+      "text": "1,247"
+    },
+    {
+      "id": "3:1389",
+      "name": "12.3%",
+      "text": "12.3%"
+    },
+    {
+      "id": "3:1391",
+      "name": "Daily active",
+      "text": "Daily active"
+    },
+    {
+      "id": "3:1394",
+      "name": "Active Agents",
+      "text": "Active Agents"
+    },
+    {
+      "id": "3:1397",
+      "name": "342",
+      "text": "342"
+    },
+    {
+      "id": "3:1403",
+      "name": "8.5%",
+      "text": "8.5%"
+    },
+    {
+      "id": "3:1405",
+      "name": "In production",
+      "text": "In production"
+    },
+    {
+      "id": "3:1408",
+      "name": "Runs / Day",
+      "text": "Runs / Day"
+    },
+    {
+      "id": "3:1411",
+      "name": "15,623",
+      "text": "15,623"
+    },
+    {
+      "id": "3:1417",
+      "name": "3.2%",
+      "text": "3.2%"
+    },
+    {
+      "id": "3:1419",
+      "name": "Total executions",
+      "text": "Total executions"
+    },
+    {
+      "id": "3:1422",
+      "name": "Peak Concurrency",
+      "text": "Peak Concurrency"
+    },
+    {
+      "id": "3:1425",
+      "name": "89",
+      "text": "89"
+    },
+    {
+      "id": "3:1431",
+      "name": "5.7%",
+      "text": "5.7%"
+    },
+    {
+      "id": "3:1433",
+      "name": "Max simultaneous",
+      "text": "Max simultaneous"
+    },
+    {
+      "id": "3:1437",
+      "name": "Runs Over Time (24h)",
+      "text": "Runs Over Time (24h)"
+    },
+    {
+      "id": "3:1459",
+      "name": "00:00",
+      "text": "00:00"
+    },
+    {
+      "id": "3:1462",
+      "name": "04:00",
+      "text": "04:00"
+    },
+    {
+      "id": "3:1465",
+      "name": "08:00",
+      "text": "08:00"
+    },
+    {
+      "id": "3:1468",
+      "name": "12:00",
+      "text": "12:00"
+    },
+    {
+      "id": "3:1471",
+      "name": "16:00",
+      "text": "16:00"
+    },
+    {
+      "id": "3:1474",
+      "name": "20:00",
+      "text": "20:00"
+    },
+    {
+      "id": "3:1480",
+      "name": "0",
+      "text": "0"
+    },
+    {
+      "id": "3:1483",
+      "name": "500",
+      "text": "500"
+    },
+    {
+      "id": "3:1486",
+      "name": "1000",
+      "text": "1000"
+    },
+    {
+      "id": "3:1489",
+      "name": "1500",
+      "text": "1500"
+    },
+    {
+      "id": "3:1492",
+      "name": "2000",
+      "text": "2000"
+    },
+    {
+      "id": "3:1500",
+      "name": "20:00",
+      "text": "20:00"
+    },
+    {
+      "id": "3:1503",
+      "name": "Success Rate Trend",
+      "text": "Success Rate Trend"
+    },
+    {
+      "id": "3:1524",
+      "name": "00:00",
+      "text": "00:00"
+    },
+    {
+      "id": "3:1527",
+      "name": "04:00",
+      "text": "04:00"
+    },
+    {
+      "id": "3:1530",
+      "name": "08:00",
+      "text": "08:00"
+    },
+    {
+      "id": "3:1533",
+      "name": "12:00",
+      "text": "12:00"
+    },
+    {
+      "id": "3:1536",
+      "name": "16:00",
+      "text": "16:00"
+    },
+    {
+      "id": "3:1539",
+      "name": "20:00",
+      "text": "20:00"
+    },
+    {
+      "id": "3:1545",
+      "name": "85",
+      "text": "85"
+    },
+    {
+      "id": "3:1548",
+      "name": "89",
+      "text": "89"
+    },
+    {
+      "id": "3:1551",
+      "name": "93",
+      "text": "93"
+    },
+    {
+      "id": "3:1554",
+      "name": "100",
+      "text": "100"
+    },
+    {
+      "id": "3:1567",
+      "name": "12:00",
+      "text": "12:00"
+    },
+    {
+      "id": "3:1570",
+      "name": "Reliability & Quality",
+      "text": "Reliability & Quality"
+    },
+    {
+      "id": "3:1574",
+      "name": "Success Rate",
+      "text": "Success Rate"
+    },
+    {
+      "id": "3:1577",
+      "name": "94.2%",
+      "text": "94.2%"
+    },
+    {
+      "id": "3:1583",
+      "name": "2.1%",
+      "text": "2.1%"
+    },
+    {
+      "id": "3:1586",
+      "name": "Failure Rate",
+      "text": "Failure Rate"
+    },
+    {
+      "id": "3:1589",
+      "name": "5.8%",
+      "text": "5.8%"
+    },
+    {
+      "id": "3:1595",
+      "name": "2.1%",
+      "text": "2.1%"
+    },
+    {
+      "id": "3:1598",
+      "name": "P50 Duration",
+      "text": "P50 Duration"
+    },
+    {
+      "id": "3:1601",
+      "name": "2.3s",
+      "text": "2.3s"
+    },
+    {
+      "id": "3:1607",
+      "name": "8.4%",
+      "text": "8.4%"
+    },
+    {
+      "id": "3:1610",
+      "name": "P95 Duration",
+      "text": "P95 Duration"
+    },
+    {
+      "id": "3:1613",
+      "name": "12.7s",
+      "text": "12.7s"
+    },
+    {
+      "id": "3:1619",
+      "name": "5.2%",
+      "text": "5.2%"
+    },
+    {
+      "id": "3:1622",
+      "name": "Retry Rate",
+      "text": "Retry Rate"
+    },
+    {
+      "id": "3:1625",
+      "name": "3.1%",
+      "text": "3.1%"
+    },
+    {
+      "id": "3:1631",
+      "name": "0.5%",
+      "text": "0.5%"
+    },
+    {
+      "id": "3:1634",
+      "name": "Cost & Efficiency",
+      "text": "Cost & Efficiency"
+    },
+    {
+      "id": "3:1638",
+      "name": "Total Cost",
+      "text": "Total Cost"
+    },
+    {
+      "id": "3:1641",
+      "name": "$47,823",
+      "text": "$47,823"
+    },
+    {
+      "id": "3:1647",
+      "name": "15.2%",
+      "text": "15.2%"
+    },
+    {
+      "id": "3:1649",
+      "name": "Last 7 days",
+      "text": "Last 7 days"
+    },
+    {
+      "id": "3:1652",
+      "name": "Cost Per Run",
+      "text": "Cost Per Run"
+    },
+    {
+      "id": "3:1655",
+      "name": "$3.06",
+      "text": "$3.06"
+    },
+    {
+      "id": "3:1661",
+      "name": "2.3%",
+      "text": "2.3%"
+    },
+    {
+      "id": "3:1663",
+      "name": "Average",
+      "text": "Average"
+    },
+    {
+      "id": "3:1666",
+      "name": "Total Tokens",
+      "text": "Total Tokens"
+    },
+    {
+      "id": "3:1669",
+      "name": "2.8M",
+      "text": "2.8M"
+    },
+    {
+      "id": "3:1675",
+      "name": "18.5%",
+      "text": "18.5%"
+    },
+    {
+      "id": "3:1677",
+      "name": "In + Out",
+      "text": "In + Out"
+    },
+    {
+      "id": "3:1680",
+      "name": "Cache Hit Rate",
+      "text": "Cache Hit Rate"
+    },
+    {
+      "id": "3:1683",
+      "name": "67.4%",
+      "text": "67.4%"
+    },
+    {
+      "id": "3:1689",
+      "name": "5.2%",
+      "text": "5.2%"
+    },
+    {
+      "id": "3:1693",
+      "name": "Cost by Project",
+      "text": "Cost by Project"
+    },
+    {
+      "id": "3:1716",
+      "name": "Customer Support",
+      "text": "Customer Support"
+    },
+    {
+      "id": "3:1719",
+      "name": "Data Pipeline",
+      "text": "Data Pipeline"
+    },
+    {
+      "id": "3:1722",
+      "name": "Code Review",
+      "text": "Code Review"
+    },
+    {
+      "id": "3:1725",
+      "name": "Sales Intel",
+      "text": "Sales Intel"
+    },
+    {
+      "id": "3:1728",
+      "name": "Content Gen",
+      "text": "Content Gen"
+    },
+    {
+      "id": "3:1734",
+      "name": "0",
+      "text": "0"
+    },
+    {
+      "id": "3:1737",
+      "name": "5000",
+      "text": "5000"
+    },
+    {
+      "id": "3:1740",
+      "name": "10000",
+      "text": "10000"
+    },
+    {
+      "id": "3:1743",
+      "name": "15000",
+      "text": "15000"
+    },
+    {
+      "id": "3:1746",
+      "name": "20000",
+      "text": "20000"
+    },
+    {
+      "id": "3:1763",
+      "name": "Content Gen",
+      "text": "Content Gen"
+    },
+    {
+      "id": "3:1766",
+      "name": "Failures by Category",
+      "text": "Failures by Category"
+    },
+    {
+      "id": "3:1783",
+      "name": "Timeout 39%",
+      "text": "Timeout 39%"
+    },
+    {
+      "id": "3:1785",
+      "name": "Model Error 26%",
+      "text": "Model Error 26%"
+    },
+    {
+      "id": "3:1787",
+      "name": "Tool Error 17%",
+      "text": "Tool Error 17%"
+    },
+    {
+      "id": "3:1789",
+      "name": "Policy Block 11%",
+      "text": "Policy Block 11%"
+    },
+    {
+      "id": "3:1791",
+      "name": "Infrastructure 7%",
+      "text": "Infrastructure 7%"
+    },
+    {
+      "id": "3:1797",
+      "name": "Safety & Governance",
+      "text": "Safety & Governance"
+    },
+    {
+      "id": "3:1801",
+      "name": "Policy Blocks",
+      "text": "Policy Blocks"
+    },
+    {
+      "id": "3:1804",
+      "name": "147",
+      "text": "147"
+    },
+    {
+      "id": "3:1810",
+      "name": "12.4%",
+      "text": "12.4%"
+    },
+    {
+      "id": "3:1812",
+      "name": "Last 7 days",
+      "text": "Last 7 days"
+    },
+    {
+      "id": "3:1815",
+      "name": "Secrets Scans",
+      "text": "Secrets Scans"
+    },
+    {
+      "id": "3:1818",
+      "name": "23",
+      "text": "23"
+    },
+    {
+      "id": "3:1824",
+      "name": "8.7%",
+      "text": "8.7%"
+    },
+    {
+      "id": "3:1826",
+      "name": "Detected",
+      "text": "Detected"
+    },
+    {
+      "id": "3:1829",
+      "name": "Data Egress",
+      "text": "Data Egress"
+    },
+    {
+      "id": "3:1832",
+      "name": "847 GB",
+      "text": "847 GB"
+    },
+    {
+      "id": "3:1838",
+      "name": "22.1%",
+      "text": "22.1%"
+    },
+    {
+      "id": "3:1842",
+      "name": "Top Projects by Activity",
+      "text": "Top Projects by Activity"
+    },
+    {
+      "id": "3:1847",
+      "name": "Project Name",
+      "text": "Project Name"
+    },
+    {
+      "id": "3:1849",
+      "name": "Runs",
+      "text": "Runs"
+    },
+    {
+      "id": "3:1851",
+      "name": "Success Rate",
+      "text": "Success Rate"
+    },
+    {
+      "id": "3:1853",
+      "name": "Cost",
+      "text": "Cost"
+    },
+    {
+      "id": "3:1855",
+      "name": "Agents",
+      "text": "Agents"
+    },
+    {
+      "id": "3:1859",
+      "name": "Customer Support AI",
+      "text": "Customer Support AI"
+    },
+    {
+      "id": "3:1861",
+      "name": "5847",
+      "text": "5847"
+    },
+    {
+      "id": "3:1863",
+      "name": "96.2%",
+      "text": "96.2%"
+    },
+    {
+      "id": "3:1865",
+      "name": "$18,234",
+      "text": "$18,234"
+    },
+    {
+      "id": "3:1867",
+      "name": "12",
+      "text": "12"
+    },
+    {
+      "id": "3:1870",
+      "name": "Data Pipeline Automation",
+      "text": "Data Pipeline Automation"
+    },
+    {
+      "id": "3:1872",
+      "name": "4293",
+      "text": "4293"
+    },
+    {
+      "id": "3:1874",
+      "name": "91.5%",
+      "text": "91.5%"
+    },
+    {
+      "id": "3:1876",
+      "name": "$12,847",
+      "text": "$12,847"
+    },
+    {
+      "id": "3:1878",
+      "name": "8",
+      "text": "8"
+    },
+    {
+      "id": "3:1881",
+      "name": "Code Review Assistant",
+      "text": "Code Review Assistant"
+    },
+    {
+      "id": "3:1883",
+      "name": "2847",
+      "text": "2847"
+    },
+    {
+      "id": "3:1885",
+      "name": "98.1%",
+      "text": "98.1%"
+    },
+    {
+      "id": "3:1887",
+      "name": "$9,234",
+      "text": "$9,234"
+    },
+    {
+      "id": "3:1889",
+      "name": "5",
+      "text": "5"
+    },
+    {
+      "id": "3:1892",
+      "name": "Sales Intelligence",
+      "text": "Sales Intelligence"
+    },
+    {
+      "id": "3:1894",
+      "name": "1923",
+      "text": "1923"
+    },
+    {
+      "id": "3:1896",
+      "name": "89.7%",
+      "text": "89.7%"
+    },
+    {
+      "id": "3:1898",
+      "name": "$5,123",
+      "text": "$5,123"
+    },
+    {
+      "id": "3:1900",
+      "name": "7",
+      "text": "7"
+    },
+    {
+      "id": "3:1903",
+      "name": "Content Generator",
+      "text": "Content Generator"
+    },
+    {
+      "id": "3:1905",
+      "name": "1547",
+      "text": "1547"
+    },
+    {
+      "id": "3:1907",
+      "name": "93.4%",
+      "text": "93.4%"
+    },
+    {
+      "id": "3:1909",
+      "name": "$3,847",
+      "text": "$3,847"
+    },
+    {
+      "id": "3:1911",
+      "name": "4",
+      "text": "4"
+    },
+    {
+      "id": "3:1915",
+      "name": "Acme Corp",
+      "text": "Acme Corp"
+    },
+    {
+      "id": "3:1917",
+      "name": "admin@acme.com",
+      "text": "admin@acme.com"
+    },
+    {
+      "id": "3:2563",
+      "name": "AGENT ANALYTICS",
+      "text": "AGENT ANALYTICS"
+    },
+    {
+      "id": "3:2565",
+      "name": "Org Dashboard",
+      "text": "Org Dashboard"
+    },
+    {
+      "id": "3:2574",
+      "name": "Dashboard",
+      "text": "Dashboard"
+    },
+    {
+      "id": "3:2582",
+      "name": "Projects",
+      "text": "Projects"
+    },
+    {
+      "id": "3:2592",
+      "name": "Agents",
+      "text": "Agents"
+    },
+    {
+      "id": "3:2597",
+      "name": "Runs",
+      "text": "Runs"
+    },
+    {
+      "id": "3:2603",
+      "name": "Costs",
+      "text": "Costs"
+    },
+    {
+      "id": "3:2608",
+      "name": "Governance",
+      "text": "Governance"
+    },
+    {
+      "id": "3:2614",
+      "name": "Settings",
+      "text": "Settings"
+    },
+    {
+      "id": "3:2620",
+      "name": "Projects",
+      "text": "Projects"
+    },
+    {
+      "id": "3:2622",
+      "name": "All active projects in your organization",
+      "text": "All active projects in your organization"
+    },
+    {
+      "id": "3:2629",
+      "name": "Search...",
+      "text": "Search..."
+    },
+    {
+      "id": "3:2637",
+      "name": "Last 7 days",
+      "text": "Last 7 days"
+    },
+    {
+      "id": "3:2642",
+      "name": "Filters",
+      "text": "Filters"
+    },
+    {
+      "id": "3:2646",
+      "name": "Total Projects",
+      "text": "Total Projects"
+    },
+    {
+      "id": "3:2648",
+      "name": "5",
+      "text": "5"
+    },
+    {
+      "id": "3:2651",
+      "name": "Total Runs",
+      "text": "Total Runs"
+    },
+    {
+      "id": "3:2653",
+      "name": "16,457",
+      "text": "16,457"
+    },
+    {
+      "id": "3:2656",
+      "name": "Total Agents",
+      "text": "Total Agents"
+    },
+    {
+      "id": "3:2658",
+      "name": "36",
+      "text": "36"
+    },
+    {
+      "id": "3:2662",
+      "name": "Projects by Run Volume",
+      "text": "Projects by Run Volume"
+    },
+    {
+      "id": "3:2666",
+      "name": "bar Chart",
+      "text": "bar Chart"
+    },
+    {
+      "id": "3:2668",
+      "name": "Visualization Placeholder",
+      "text": "Visualization Placeholder"
+    },
+    {
+      "id": "3:2671",
+      "name": "Success Rate Distribution",
+      "text": "Success Rate Distribution"
+    },
+    {
+      "id": "3:2675",
+      "name": "line Chart",
+      "text": "line Chart"
+    },
+    {
+      "id": "3:2677",
+      "name": "Visualization Placeholder",
+      "text": "Visualization Placeholder"
+    },
+    {
+      "id": "3:2681",
+      "name": "All Projects",
+      "text": "All Projects"
+    },
+    {
+      "id": "3:2686",
+      "name": "Project Name",
+      "text": "Project Name"
+    },
+    {
+      "id": "3:2688",
+      "name": "Total Runs",
+      "text": "Total Runs"
+    },
+    {
+      "id": "3:2690",
+      "name": "Success Rate",
+      "text": "Success Rate"
+    },
+    {
+      "id": "3:2692",
+      "name": "Total Cost",
+      "text": "Total Cost"
+    },
+    {
+      "id": "3:2694",
+      "name": "Agents",
+      "text": "Agents"
+    },
+    {
+      "id": "3:2696",
+      "name": "Actions",
+      "text": "Actions"
+    },
+    {
+      "id": "3:2700",
+      "name": "Customer Support AI",
+      "text": "Customer Support AI"
+    },
+    {
+      "id": "3:2702",
+      "name": "5847",
+      "text": "5847"
+    },
+    {
+      "id": "3:2704",
+      "name": "96.2%",
+      "text": "96.2%"
+    },
+    {
+      "id": "3:2706",
+      "name": "$18,234",
+      "text": "$18,234"
+    },
+    {
+      "id": "3:2708",
+      "name": "12",
+      "text": "12"
+    },
+    {
+      "id": "3:2717",
+      "name": "Data Pipeline Automation",
+      "text": "Data Pipeline Automation"
+    },
+    {
+      "id": "3:2719",
+      "name": "4293",
+      "text": "4293"
+    },
+    {
+      "id": "3:2721",
+      "name": "91.5%",
+      "text": "91.5%"
+    },
+    {
+      "id": "3:2723",
+      "name": "$12,847",
+      "text": "$12,847"
+    },
+    {
+      "id": "3:2725",
+      "name": "8",
+      "text": "8"
+    },
+    {
+      "id": "3:2734",
+      "name": "Code Review Assistant",
+      "text": "Code Review Assistant"
+    },
+    {
+      "id": "3:2736",
+      "name": "2847",
+      "text": "2847"
+    },
+    {
+      "id": "3:2738",
+      "name": "98.1%",
+      "text": "98.1%"
+    },
+    {
+      "id": "3:2740",
+      "name": "$9,234",
+      "text": "$9,234"
+    },
+    {
+      "id": "3:2742",
+      "name": "5",
+      "text": "5"
+    },
+    {
+      "id": "3:2751",
+      "name": "Sales Intelligence",
+      "text": "Sales Intelligence"
+    }
+  ],
+  "tokens": {
+    "colors": {
+      "color01": "#008236",
+      "color02": "#00A63E",
+      "color03": "#0A0A0A",
+      "color04": "#0D542B",
+      "color05": "#101828",
+      "color06": "#1447E6",
+      "color07": "#155DFC",
+      "color08": "#16A34A",
+      "color09": "#193CB8",
+      "color10": "#1C398E",
+      "color11": "#1F2937",
+      "color12": "#364153",
+      "color13": "#36415380",
+      "color14": "#374151",
+      "color15": "#4A5565",
+      "color16": "#4B5563",
+      "color17": "#65A30D",
+      "color18": "#6A7282",
+      "color19": "#6B7280",
+      "color20": "#7E2A0C",
+      "color21": "#82181A",
+      "color22": "#99A1AF",
+      "color23": "#9CA3AF",
+      "color24": "#9F2D00",
+      "color25": "#C10007",
+      "color26": "#CA3500",
+      "color27": "#CA8A04",
+      "color28": "#D1D5DC",
+      "color29": "#DC2626",
+      "color30": "#E5E7EB",
+      "color31": "#E7000B",
+      "color32": "#EA580C",
+      "color33": "#EFF6FF",
+      "color34": "#F0FDF4",
+      "color35": "#F3F4F6",
+      "color36": "#F54900",
+      "color37": "#F9FAFB",
+      "color38": "#FEF2F2",
+      "color39": "#FFF7ED",
+      "color40": "#FFFFFF"
+    },
+    "typography": {
+      "type01": {
+        "fontFamily": "Inter",
+        "fontWeight": 700,
+        "fontSize": 20,
+        "lineHeightPx": 28,
+        "letterSpacing": -0.44921875
+      },
+      "type02": {
+        "fontFamily": "Inter",
+        "fontWeight": 400,
+        "fontSize": 12,
+        "lineHeightPx": 16,
+        "letterSpacing": 0
+      },
+      "type03": {
+        "fontFamily": "Inter",
+        "fontWeight": 500,
+        "fontSize": 14,
+        "lineHeightPx": 20,
+        "letterSpacing": -0.150390625
+      },
+      "type04": {
+        "fontFamily": "Inter",
+        "fontWeight": 700,
+        "fontSize": 30,
+        "lineHeightPx": 36,
+        "letterSpacing": -0.3544921875
+      },
+      "type05": {
+        "fontFamily": "Inter",
+        "fontWeight": 400,
+        "fontSize": 14,
+        "lineHeightPx": 20,
+        "letterSpacing": -0.150390625
+      },
+      "type06": {
+        "fontFamily": "Inter",
+        "fontWeight": 700,
+        "fontSize": 18,
+        "lineHeightPx": 28,
+        "letterSpacing": -0.889453113079071
+      },
+      "type07": {
+        "fontFamily": "Menlo",
+        "fontWeight": 700,
+        "fontSize": 30,
+        "lineHeightPx": 36,
+        "letterSpacing": 0
+      },
+      "type08": {
+        "fontFamily": "Inter",
+        "fontWeight": 400,
+        "fontSize": 11,
+        "lineHeightPx": 13.3125,
+        "letterSpacing": 0
+      },
+      "type09": {
+        "fontFamily": "Cousine",
+        "fontWeight": 400,
+        "fontSize": 16,
+        "lineHeightPx": 24,
+        "letterSpacing": 0
+      },
+      "type10": {
+        "fontFamily": "Inter",
+        "fontWeight": 400,
+        "fontSize": 10,
+        "lineHeightPx": 12.102272033691406,
+        "letterSpacing": 0
+      },
+      "type11": {
+        "fontFamily": "Inter",
+        "fontWeight": 500,
+        "fontSize": 12,
+        "lineHeightPx": 16,
+        "letterSpacing": 0
+      },
+      "type12": {
+        "fontFamily": "Menlo",
+        "fontWeight": 400,
+        "fontSize": 14,
+        "lineHeightPx": 20,
+        "letterSpacing": 0
+      },
+      "type13": {
+        "fontFamily": "Menlo",
+        "fontWeight": 500,
+        "fontSize": 12,
+        "lineHeightPx": 16,
+        "letterSpacing": 0.30000001192092896
+      },
+      "type14": {
+        "fontFamily": "Inter",
+        "fontWeight": 700,
+        "fontSize": 14,
+        "lineHeightPx": 20,
+        "letterSpacing": 0.19960936903953552
+      },
+      "type15": {
+        "fontFamily": "Menlo",
+        "fontWeight": 700,
+        "fontSize": 20,
+        "lineHeightPx": 28,
+        "letterSpacing": 0
+      }
+    },
+    "spacing": [
+      2,
+      4,
+      8,
+      12,
+      14,
+      16,
+      18,
+      24,
+      26,
+      32,
+      405.25,
+      425,
+      438.4375,
+      453.65625,
+      459,
+      469.21875,
+      778.25,
+      951.625,
+      1016.25,
+      1071.3125,
+      1154.59375,
+      1158.4375,
+      1166.75,
+      1582
+    ],
+    "radius": []
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "colors": {
+    "color01": "#008236",
+    "color02": "#00A63E",
+    "color03": "#0A0A0A",
+    "color04": "#0D542B",
+    "color05": "#101828",
+    "color06": "#1447E6",
+    "color07": "#155DFC",
+    "color08": "#16A34A",
+    "color09": "#193CB8",
+    "color10": "#1C398E",
+    "color11": "#1F2937",
+    "color12": "#364153",
+    "color13": "#36415380",
+    "color14": "#374151",
+    "color15": "#4A5565",
+    "color16": "#4B5563",
+    "color17": "#65A30D",
+    "color18": "#6A7282",
+    "color19": "#6B7280",
+    "color20": "#7E2A0C",
+    "color21": "#82181A",
+    "color22": "#99A1AF",
+    "color23": "#9CA3AF",
+    "color24": "#9F2D00",
+    "color25": "#C10007",
+    "color26": "#CA3500",
+    "color27": "#CA8A04",
+    "color28": "#D1D5DC",
+    "color29": "#DC2626",
+    "color30": "#E5E7EB",
+    "color31": "#E7000B",
+    "color32": "#EA580C",
+    "color33": "#EFF6FF",
+    "color34": "#F0FDF4",
+    "color35": "#F3F4F6",
+    "color36": "#F54900",
+    "color37": "#F9FAFB",
+    "color38": "#FEF2F2",
+    "color39": "#FFF7ED",
+    "color40": "#FFFFFF"
+  },
+  "typography": {
+    "type01": {
+      "fontFamily": "Inter",
+      "fontWeight": 700,
+      "fontSize": 20,
+      "lineHeightPx": 28,
+      "letterSpacing": -0.44921875
+    },
+    "type02": {
+      "fontFamily": "Inter",
+      "fontWeight": 400,
+      "fontSize": 12,
+      "lineHeightPx": 16,
+      "letterSpacing": 0
+    },
+    "type03": {
+      "fontFamily": "Inter",
+      "fontWeight": 500,
+      "fontSize": 14,
+      "lineHeightPx": 20,
+      "letterSpacing": -0.150390625
+    },
+    "type04": {
+      "fontFamily": "Inter",
+      "fontWeight": 700,
+      "fontSize": 30,
+      "lineHeightPx": 36,
+      "letterSpacing": -0.3544921875
+    },
+    "type05": {
+      "fontFamily": "Inter",
+      "fontWeight": 400,
+      "fontSize": 14,
+      "lineHeightPx": 20,
+      "letterSpacing": -0.150390625
+    },
+    "type06": {
+      "fontFamily": "Inter",
+      "fontWeight": 700,
+      "fontSize": 18,
+      "lineHeightPx": 28,
+      "letterSpacing": -0.889453113079071
+    },
+    "type07": {
+      "fontFamily": "Menlo",
+      "fontWeight": 700,
+      "fontSize": 30,
+      "lineHeightPx": 36,
+      "letterSpacing": 0
+    },
+    "type08": {
+      "fontFamily": "Inter",
+      "fontWeight": 400,
+      "fontSize": 11,
+      "lineHeightPx": 13.3125,
+      "letterSpacing": 0
+    },
+    "type09": {
+      "fontFamily": "Cousine",
+      "fontWeight": 400,
+      "fontSize": 16,
+      "lineHeightPx": 24,
+      "letterSpacing": 0
+    },
+    "type10": {
+      "fontFamily": "Inter",
+      "fontWeight": 400,
+      "fontSize": 10,
+      "lineHeightPx": 12.102272033691406,
+      "letterSpacing": 0
+    },
+    "type11": {
+      "fontFamily": "Inter",
+      "fontWeight": 500,
+      "fontSize": 12,
+      "lineHeightPx": 16,
+      "letterSpacing": 0
+    },
+    "type12": {
+      "fontFamily": "Menlo",
+      "fontWeight": 400,
+      "fontSize": 14,
+      "lineHeightPx": 20,
+      "letterSpacing": 0
+    },
+    "type13": {
+      "fontFamily": "Menlo",
+      "fontWeight": 500,
+      "fontSize": 12,
+      "lineHeightPx": 16,
+      "letterSpacing": 0.30000001192092896
+    },
+    "type14": {
+      "fontFamily": "Inter",
+      "fontWeight": 700,
+      "fontSize": 14,
+      "lineHeightPx": 20,
+      "letterSpacing": 0.19960936903953552
+    },
+    "type15": {
+      "fontFamily": "Menlo",
+      "fontWeight": 700,
+      "fontSize": 20,
+      "lineHeightPx": 28,
+      "letterSpacing": 0
+    }
+  },
+  "spacing": [
+    2,
+    4,
+    8,
+    12,
+    14,
+    16,
+    18,
+    24,
+    26,
+    32,
+    405.25,
+    425,
+    438.4375,
+    453.65625,
+    459,
+    469.21875,
+    778.25,
+    951.625,
+    1016.25,
+    1071.3125,
+    1154.59375,
+    1158.4375,
+    1166.75,
+    1582
+  ],
+  "radius": []
+}
