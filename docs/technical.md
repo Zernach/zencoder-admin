@@ -18,6 +18,42 @@ This specification defines the exact architecture, shared contracts, and impleme
 - Jest + React Native Testing Library for unit/component/integration tests.
 - Playwright for web end-to-end tests.
 
+## Critically Important Libraries (Dashboard Quality)
+Use these libraries to ensure the dashboard is fast, visually polished, and consistent across iOS/Android/Web.
+
+Routing and app shell:
+- `expo-router` for file-based routing and layout composition.
+- `react-native-safe-area-context` for device-safe spacing and notch handling.
+
+Data orchestration:
+- `@tanstack/react-query` for async caching, background refetch, and loading/error state standardization.
+- `@reduxjs/toolkit` + `react-redux` for shared client state (UI preferences, session-level controls, cross-screen app state).
+- `redux-saga` for complex async orchestration and side-effect workflows that are not simple request caching.
+
+State boundary rules:
+- Use React Query for server-like/stub API data fetching and caching.
+- Use Redux for global client/application state.
+- Use Redux Saga for long-running flows (polling, cancellation, multi-step side effects, orchestration between domains).
+
+Data visualization (gorgeous but maintainable):
+- `react-native-svg` as the base rendering layer for all charts.
+- `victory-native` as the primary chart package for trend and breakdown charts.
+- `d3-scale`, `d3-shape`, and `d3-array` for custom chart mappers, tick generation, and interpolation where needed.
+
+Animation and interaction polish:
+- `react-native-reanimated` for 60fps transitions, chart reveal animations, and filter-change motion.
+- `moti` for concise declarative entrance/stagger/micro-interaction animations on top of Reanimated.
+- `react-native-gesture-handler` for touch/drag/press interactions (especially chart and run-list interactions).
+
+Professional visual polish:
+- `tamagui` for tokenized design system primitives and consistent cross-platform styling.
+- `expo-linear-gradient` for premium card/chart accents.
+- `expo-blur` for subtle glass-style overlays where appropriate.
+- `lucide-react-native` for consistent iconography.
+
+High-density list performance:
+- `@shopify/flash-list` for large run explorer datasets on mobile.
+
 ## Suggested Directory Layout
 ```text
 src/
@@ -375,6 +411,8 @@ Required hooks:
 - Breakdown charts for provider/team/failure categories.
 - Sortable and paginated runs table/list.
 - Mobile-first chart sizing with readable labels.
+- Animate chart and KPI transitions on filter changes (`150-350ms` target) to preserve context.
+- Use restrained premium styling (gradient accents, subtle depth, clean typography) without sacrificing readability.
 
 ## UX States and Error Handling
 - Every data block supports loading skeleton, empty state, error state.
