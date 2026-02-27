@@ -1,0 +1,1 @@
+export { generateSeedData } from "./seedData";
