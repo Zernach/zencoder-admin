@@ -1,9 +1,16 @@
 {
   "name": "zencoder-admin",
   "private": true,
-  "type": "module",
   "scripts": {
-    "figma:sync": "node --experimental-strip-types docs/designs/src/index.ts"
+    "figma:sync": "node --experimental-strip-types docs/designs/src/index.ts",
+    "ralph": "sh docs/ralph/ralph.sh",
+    "start": "expo start",
+    "web": "expo start --web",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "test": "jest --passWithNoTests",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/ --ext .ts,.tsx"
   },
   "dependencies": {
     "dotenv": "^17.3.1"
