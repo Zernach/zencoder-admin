@@ -26,7 +26,7 @@
 | ✅ | [0018](./0018-governance-compliance-screen.md) | Governance & Compliance Screen | Screens |
 | ✅ | [0019](./0019-settings-screen.md) | Settings Screen | Screens |
 | ✅ | [0020](./0020-unit-tests-metric-formulas.md) | Unit Tests: Metric Formulas & Formatters | Testing |
-| ❌ | [0021](./0021-contract-and-service-tests.md) | Contract & Service Layer Tests | Testing |
+| ✅ | [0021](./0021-contract-and-service-tests.md) | Contract & Service Layer Tests | Testing |
 | ❌ | [0022](./0022-hook-component-integration-tests.md) | Hook, Component & Integration Tests | Testing |
 | ❌ | [0023](./0023-e2e-test-suite-playwright.md) | E2E Test Suite (Playwright) | Testing |
 | ❌ | [0024](./0024-motion-animation-micro-interactions.md) | Motion, Animation & Micro-interactions | Polish |
@@ -34,4 +34,4 @@
 
 ---
 
-**Progress: 20 / 25**
+**Progress: 21 / 25**
