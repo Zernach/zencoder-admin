@@ -1,0 +1,37 @@
+# Task Manager — Zencoder Analytics Dashboard
+
+> Source of truth for implementation progress. Each row maps to a self-contained PR spec in this directory.
+
+---
+
+| Status | PR | Title | Phase |
+|:------:|------|-------|-------|
+| ❌ | [0001](./0001-project-bootstrap-and-dependencies.md) | Project Bootstrap & Dependencies | Foundation |
+| ❌ | [0002](./0002-design-system-theme-provider.md) | Design System & Theme Provider | Foundation |
+| ❌ | [0003](./0003-shared-typescript-type-contracts.md) | Shared TypeScript Type Contracts | Foundation |
+| ❌ | [0004](./0004-deterministic-seed-data-generator.md) | Deterministic Seed Data Generator | Foundation |
+| ❌ | [0005](./0005-analytics-api-interface-and-stub.md) | Analytics API Interface & Stub Implementation | Data Layer |
+| ❌ | [0006](./0006-analytics-service-layer-and-metrics.md) | Analytics Service Layer & Metric Utilities | Data Layer |
+| ❌ | [0007](./0007-dependency-injection-and-provider-stack.md) | Dependency Injection & Provider Stack | Data Layer |
+| ❌ | [0008](./0008-global-dashboard-filter-state.md) | Global Dashboard Filter State | Data Layer |
+| ❌ | [0009](./0009-core-ui-component-library.md) | Core UI Component Library | Components |
+| ❌ | [0010](./0010-data-visualization-components.md) | Data Visualization Components | Components |
+| ❌ | [0011](./0011-table-and-list-components.md) | Table & List Components | Components |
+| ❌ | [0012](./0012-app-shell-navigation-responsive-layout.md) | App Shell, Navigation & Responsive Layout | Components |
+| ❌ | [0013](./0013-overview-dashboard-screen.md) | Overview Dashboard Screen | Screens |
+| ❌ | [0014](./0014-projects-screen.md) | Projects Screen | Screens |
+| ❌ | [0015](./0015-agents-screen.md) | Agents Screen | Screens |
+| ❌ | [0016](./0016-runs-explorer-and-run-detail-screens.md) | Runs Explorer & Run Detail Screens | Screens |
+| ❌ | [0017](./0017-cost-analytics-screen.md) | Cost Analytics Screen | Screens |
+| ❌ | [0018](./0018-governance-compliance-screen.md) | Governance & Compliance Screen | Screens |
+| ❌ | [0019](./0019-settings-screen.md) | Settings Screen | Screens |
+| ❌ | [0020](./0020-unit-tests-metric-formulas.md) | Unit Tests: Metric Formulas & Formatters | Testing |
+| ❌ | [0021](./0021-contract-and-service-tests.md) | Contract & Service Layer Tests | Testing |
+| ❌ | [0022](./0022-hook-component-integration-tests.md) | Hook, Component & Integration Tests | Testing |
+| ❌ | [0023](./0023-e2e-test-suite-playwright.md) | E2E Test Suite (Playwright) | Testing |
+| ❌ | [0024](./0024-motion-animation-micro-interactions.md) | Motion, Animation & Micro-interactions | Polish |
+| ❌ | [0025](./0025-accessibility-audit-and-performance.md) | Accessibility Audit & Performance Optimization | Polish |
+
+---
+
+**Progress: 0 / 25**
