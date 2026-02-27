@@ -1,10 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
+import { filtersSlice } from "./slices/filtersSlice";
 
 const sagaMiddleware = createSagaMiddleware();
 
 export const store = configureStore({
-  reducer: {},
+  reducer: {
+    filters: filtersSlice.reducer,
+  },
   middleware: (getDefault) =>
     getDefault({ thunk: false }).concat(sagaMiddleware),
 });
