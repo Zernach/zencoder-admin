@@ -5,9 +5,22 @@ import type { AnalyticsFilters, RunsPageRequest } from "@/features/analytics/typ
 const seedData = generateSeedData(42);
 const api = new StubAnalyticsApi(seedData, { latencyMinMs: 0, latencyMaxMs: 0 });
 
+/** Derive time range from seed runs so tests pass regardless of current date */
+function timeRangeFromRuns(runs: { startedAtIso: string }[]): { fromIso: string; toIso: string } {
+  if (runs.length === 0) {
+    const d = new Date();
+    return {
+      fromIso: new Date(d.getTime() - 90 * 86_400_000).toISOString(),
+      toIso: d.toISOString(),
+    };
+  }
+  const sorted = [...runs].sort((a, b) => a.startedAtIso.localeCompare(b.startedAtIso));
+  return { fromIso: sorted[0]!.startedAtIso, toIso: sorted[sorted.length - 1]!.startedAtIso };
+}
+
 const defaultFilters: AnalyticsFilters = {
   orgId: "org_zencoder_001",
-  timeRange: { fromIso: "2024-12-01T00:00:00Z", toIso: "2025-02-27T23:59:59Z" },
+  timeRange: timeRangeFromRuns(seedData.runs),
 };
 
 const defaultPageRequest: RunsPageRequest = {
@@ -259,9 +272,10 @@ describe("filtering", () => {
 
 describe("time-range boundaries", () => {
   it("runs outside time range are excluded", async () => {
+    const dayStr = seedData.runs[0]!.startedAtIso.slice(0, 10);
     const narrowFilters: AnalyticsFilters = {
       ...defaultFilters,
-      timeRange: { fromIso: "2025-01-01T00:00:00Z", toIso: "2025-01-01T23:59:59Z" },
+      timeRange: { fromIso: `${dayStr}T00:00:00.000Z`, toIso: `${dayStr}T23:59:59.999Z` },
     };
     const res = await api.getRunsPage({
       ...defaultPageRequest,
@@ -269,14 +283,13 @@ describe("time-range boundaries", () => {
       pageSize: 1000,
     });
     res.rows.forEach((r) => {
-      expect(r.startedAtIso >= "2025-01-01T00:00:00Z").toBe(true);
-      expect(r.startedAtIso <= "2025-01-01T23:59:59Z").toBe(true);
+      expect(r.startedAtIso >= narrowFilters.timeRange.fromIso).toBe(true);
+      expect(r.startedAtIso <= narrowFilters.timeRange.toIso).toBe(true);
     });
   });
 
   it("boundary dates are inclusive", async () => {
-    // Find a run and create a range exactly matching its timestamp
-    const aRun = seedData.runs.find((r) => r.startedAtIso >= "2025-01-15");
+    const aRun = seedData.runs[Math.floor(seedData.runs.length / 2)];
     expect(aRun).toBeDefined();
     const filters: AnalyticsFilters = {
       ...defaultFilters,
@@ -291,18 +304,21 @@ describe("time-range boundaries", () => {
   });
 
   it("different time ranges produce different counts", async () => {
+    const dayStr = seedData.runs[0]!.startedAtIso.slice(0, 10);
     const oneDay = await api.getRunsPage({
       ...defaultPageRequest,
       filters: {
         ...defaultFilters,
-        timeRange: { fromIso: "2025-01-01T00:00:00Z", toIso: "2025-01-01T23:59:59Z" },
+        timeRange: { fromIso: `${dayStr}T00:00:00.000Z`, toIso: `${dayStr}T23:59:59.999Z` },
       },
     });
+    const dayEnd = new Date(`${dayStr}T23:59:59.999Z`).getTime();
+    const weekEnd = new Date(dayEnd + 7 * 86_400_000).toISOString();
     const oneWeek = await api.getRunsPage({
       ...defaultPageRequest,
       filters: {
         ...defaultFilters,
-        timeRange: { fromIso: "2025-01-01T00:00:00Z", toIso: "2025-01-07T23:59:59Z" },
+        timeRange: { fromIso: `${dayStr}T00:00:00.000Z`, toIso: weekEnd },
       },
     });
     expect(oneWeek.total).toBeGreaterThan(oneDay.total);

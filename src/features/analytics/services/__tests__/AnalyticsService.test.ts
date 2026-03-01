@@ -12,9 +12,22 @@ const seedData = generateSeedData(42);
 const stubApi = new StubAnalyticsApi(seedData, { latencyMinMs: 0, latencyMaxMs: 0 });
 const service = new AnalyticsService(stubApi);
 
+/** Derive time range from seed runs so tests pass regardless of current date */
+function timeRangeFromRuns(runs: { startedAtIso: string }[]): { fromIso: string; toIso: string } {
+  if (runs.length === 0) {
+    const d = new Date();
+    return {
+      fromIso: new Date(d.getTime() - 90 * 86_400_000).toISOString(),
+      toIso: d.toISOString(),
+    };
+  }
+  const sorted = [...runs].sort((a, b) => a.startedAtIso.localeCompare(b.startedAtIso));
+  return { fromIso: sorted[0]!.startedAtIso, toIso: sorted[sorted.length - 1]!.startedAtIso };
+}
+
 const defaultFilters: AnalyticsFilters = {
   orgId: "org_zencoder_001",
-  timeRange: { fromIso: "2024-12-01T00:00:00Z", toIso: "2025-02-27T23:59:59Z" },
+  timeRange: timeRangeFromRuns(seedData.runs),
 };
 
 // ── Pass-through correctness ─────────────────────────────

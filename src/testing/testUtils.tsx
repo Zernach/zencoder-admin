@@ -13,6 +13,18 @@ export function createTestSeedData() {
   return generateSeedData(42);
 }
 
+function timeRangeFromRuns(runs: { startedAtIso: string }[]): { fromIso: string; toIso: string } {
+  if (runs.length === 0) {
+    const d = new Date();
+    return {
+      fromIso: new Date(d.getTime() - 90 * 86_400_000).toISOString(),
+      toIso: d.toISOString(),
+    };
+  }
+  const sorted = [...runs].sort((a, b) => a.startedAtIso.localeCompare(b.startedAtIso));
+  return { fromIso: sorted[0]!.startedAtIso, toIso: sorted[sorted.length - 1]!.startedAtIso };
+}
+
 export function createTestApi(options?: { failureRate?: number }) {
   const seedData = createTestSeedData();
   return new StubAnalyticsApi(seedData, {
@@ -44,22 +56,22 @@ interface TestWrapperProps {
   children: React.ReactNode;
 }
 
-// Seed data covers ~2024-12-01 to ~2025-02-27
-const SEED_TIME_RANGE = {
-  fromIso: "2024-12-01T00:00:00Z",
-  toIso: "2025-02-28T00:00:00Z",
-};
-
 export function createTestWrapper(overrides?: {
   api?: IAnalyticsApi;
+  seedData?: ReturnType<typeof generateSeedData>;
 }) {
-  const api = overrides?.api ?? createTestApi();
+  const seedData = overrides?.seedData ?? createTestSeedData();
+  const api = overrides?.api ?? new StubAnalyticsApi(seedData, {
+    latencyMinMs: 0,
+    latencyMaxMs: 0,
+    debugFailureRate: 0,
+  });
   const service = new AnalyticsService(api);
   const store = createTestStore();
   const queryClient = createTestQueryClient();
 
-  // Set time range to match seed data period (default 30d from "today" won't match)
-  store.dispatch(filtersSlice.actions.setCustomTimeRange(SEED_TIME_RANGE));
+  // Set time range to match seed data (derived from runs so tests pass regardless of current date)
+  store.dispatch(filtersSlice.actions.setCustomTimeRange(timeRangeFromRuns(seedData.runs)));
 
   function TestWrapper({ children }: TestWrapperProps) {
     return (
