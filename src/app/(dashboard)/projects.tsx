@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useProjectsDashboard } from "@/features/analytics/hooks/useProjectsDashboard";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, TrendChart } from "@/components/charts";
@@ -8,6 +8,7 @@ import { formatCurrency, formatPercent, formatCompactNumber } from "@/features/a
 import type { ProjectBreakdownRow } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
+import { spacing } from "@/theme/tokens";
 
 const projectCols: ColumnDef<ProjectBreakdownRow>[] = [
   { key: "projectName", header: "Project", width: 180 },
@@ -38,42 +39,53 @@ export default function ProjectsScreen() {
     >
       <FilterBar />
 
-      <SectionHeader title="Summary" />
-      {loading ? (
-        <CardGrid columns={4}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <LoadingSkeleton key={i} variant="kpi" />
-          ))}
-        </CardGrid>
-      ) : data ? (
-        <>
+      <View style={styles.section}>
+        <SectionHeader title="Summary" />
+        {loading ? (
           <CardGrid columns={4}>
-            <KpiCard title="Active Projects" value={formatCompactNumber(data.activeProjects)} caption={`of ${data.totalProjects} total`} />
-            <KpiCard title="Total Runs" value={formatCompactNumber(data.totalRuns)} />
-            <KpiCard title="Success Rate" value={formatPercent(data.overallSuccessRate * 100)} />
-            <KpiCard title="Total Cost" value={formatCurrency(data.totalCostUsd)} />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <LoadingSkeleton key={i} variant="kpi" />
+            ))}
           </CardGrid>
-          <View style={styles.chartRow}>
-            <ChartCard title="Runs Over Time">
-              <TrendChart data={data.runsTrend} variant="area" height={180} />
-            </ChartCard>
-            <ChartCard title="Success Rate Trend">
-              <TrendChart data={data.successRateTrend} variant="line" color="#22c55e" height={180} />
-            </ChartCard>
-          </View>
+        ) : data ? (
+          <>
+            <CardGrid columns={4}>
+              <KpiCard title="Active Projects" value={formatCompactNumber(data.activeProjects)} caption={`of ${data.totalProjects} total`} />
+              <KpiCard title="Total Runs" value={formatCompactNumber(data.totalRuns)} />
+              <KpiCard title="Success Rate" value={formatPercent(data.overallSuccessRate * 100)} />
+              <KpiCard title="Total Cost" value={formatCurrency(data.totalCostUsd)} />
+            </CardGrid>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chartRow}
+            >
+              <ChartCard title="Runs Over Time">
+                <TrendChart data={data.runsTrend} variant="area" height={180} />
+              </ChartCard>
+              <ChartCard title="Success Rate Trend">
+                <TrendChart data={data.successRateTrend} variant="line" color="#22c55e" height={180} />
+              </ChartCard>
+            </ScrollView>
+          </>
+        ) : null}
+      </View>
 
+      {data && (
+        <View style={styles.section}>
           <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} projects with activity`} />
           <DataTable
             columns={projectCols}
             data={data.projectBreakdown}
             keyExtractor={(row) => row.projectId}
           />
-        </>
-      ) : null}
+        </View>
+      )}
     </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  chartRow: { flexDirection: "row", gap: 16 },
+  section: { gap: spacing[3] },
+  chartRow: { flexDirection: "row", gap: spacing[4] },
 });

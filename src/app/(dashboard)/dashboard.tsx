@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
@@ -7,6 +7,7 @@ import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@
 import { ChartCard, TrendChart } from "@/components/charts";
 import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
+import { spacing } from "@/theme/tokens";
 
 export default function OverviewDashboardScreen() {
   const { data, loading, error, refetch } = useOverviewDashboard();
@@ -33,37 +34,43 @@ export default function OverviewDashboardScreen() {
       <FilterBar />
 
       {/* Section 1 — Key Metrics */}
-      <SectionHeader title="Key Metrics" subtitle="At a glance" />
-      {loading ? (
-        <CardGrid columns={4}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <LoadingSkeleton key={i} variant="kpi" />
-          ))}
-        </CardGrid>
-      ) : data ? (
-        <CardGrid columns={4}>
-          {data.adoptionKpis.map((kpi) => (
-            <KpiCard
-              key={kpi.title}
-              title={kpi.title}
-              value={kpi.value}
-              delta={kpi.delta}
-              deltaPolarity={kpi.deltaPolarity}
-              caption={kpi.caption}
-              onPress={
-                kpi.route
-                  ? () => router.push(kpi.route as never)
-                  : undefined
-              }
-            />
-          ))}
-        </CardGrid>
-      ) : null}
+      <View style={styles.section}>
+        <SectionHeader title="Key Metrics" subtitle="At a glance" />
+        {loading ? (
+          <CardGrid columns={4}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <LoadingSkeleton key={i} variant="kpi" />
+            ))}
+          </CardGrid>
+        ) : data ? (
+          <CardGrid columns={4}>
+            {data.adoptionKpis.map((kpi) => (
+              <KpiCard
+                key={kpi.title}
+                title={kpi.title}
+                value={kpi.value}
+                delta={kpi.delta}
+                deltaPolarity={kpi.deltaPolarity}
+                caption={kpi.caption}
+                onPress={
+                  kpi.route
+                    ? () => router.push(kpi.route as never)
+                    : undefined
+                }
+              />
+            ))}
+          </CardGrid>
+        ) : null}
+      </View>
 
       {/* Section 2 — Trends */}
       <View style={styles.section}>
         <SectionHeader title="Trends" />
-        <View style={styles.chartRow}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chartRow}
+        >
           <ChartCard title="Runs Over Time" loading={loading}>
             {data && (
               <TrendChart
@@ -83,7 +90,7 @@ export default function OverviewDashboardScreen() {
               />
             )}
           </ChartCard>
-        </View>
+        </ScrollView>
       </View>
 
       {/* Section 3 — Usage & Adoption */}
@@ -180,10 +187,10 @@ export default function OverviewDashboardScreen() {
 
 const styles = StyleSheet.create({
   section: {
-    gap: 12,
+    gap: spacing[3],
   },
   chartRow: {
     flexDirection: "row",
-    gap: 16,
+    gap: spacing[4],
   },
 });

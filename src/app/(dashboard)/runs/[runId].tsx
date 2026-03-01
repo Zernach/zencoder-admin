@@ -6,6 +6,7 @@ import { useAppDependencies } from "@/core/di/AppDependencies";
 import { SectionHeader, KpiCard, CardGrid, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { formatCurrency, formatDuration, formatCompactNumber } from "@/features/analytics/utils/formatters";
 import { ScreenWrapper } from "@/components/screen";
+import { spacing } from "@/theme/tokens";
 
 export default function RunDetailScreen() {
   const { runId } = useLocalSearchParams<{ runId: string }>();
@@ -42,63 +43,73 @@ export default function RunDetailScreen() {
         rightComponent: <StatusBadge variant="run-status" status={run.status} />,
       }}
     >
-      <SectionHeader title="Overview" />
-      <CardGrid columns={4}>
-        <KpiCard title="Duration" value={formatDuration(run.durationMs)} />
-        <KpiCard title="Cost" value={formatCurrency(run.costUsd)} />
-        <KpiCard title="Tokens" value={formatCompactNumber(run.totalTokens)} caption={`${formatCompactNumber(run.inputTokens)} in / ${formatCompactNumber(run.outputTokens)} out`} />
-        <KpiCard title="Provider" value={`${run.provider} / ${run.modelId}`} />
-      </CardGrid>
-
-      <SectionHeader title="Context" />
-      <CardGrid columns={4}>
-        <KpiCard title="Project" value={entityNames.projectName} />
-        <KpiCard title="Agent" value={entityNames.agentName} />
-        <KpiCard title="Team" value={entityNames.teamName} />
-        <KpiCard title="User" value={entityNames.userName} />
-      </CardGrid>
-
-      <SectionHeader title="Timeline" />
-      <View style={styles.timeline}>
-        {timeline.map((event, index) => (
-          <View key={event.step} style={styles.timelineItem}>
-            <View style={styles.dotColumn}>
-              <View style={[styles.dot, index === timeline.length - 1 && event.step === "completed" && (run.status === "succeeded" ? styles.dotSuccess : run.status === "failed" ? styles.dotError : undefined)]} />
-              {index < timeline.length - 1 && <View style={styles.connector} />}
-            </View>
-            <View style={styles.timelineContent}>
-              <Text style={styles.stepLabel}>{event.step}</Text>
-              <Text style={styles.stepDetail}>{event.detail}</Text>
-              <Text style={styles.stepTime}>
-                {new Date(event.timestampIso).toLocaleTimeString()}
-              </Text>
-            </View>
-          </View>
-        ))}
+      <View style={styles.section}>
+        <SectionHeader title="Overview" />
+        <CardGrid columns={4}>
+          <KpiCard title="Duration" value={formatDuration(run.durationMs)} />
+          <KpiCard title="Cost" value={formatCurrency(run.costUsd)} />
+          <KpiCard title="Tokens" value={formatCompactNumber(run.totalTokens)} caption={`${formatCompactNumber(run.inputTokens)} in / ${formatCompactNumber(run.outputTokens)} out`} />
+          <KpiCard title="Provider" value={`${run.provider} / ${run.modelId}`} />
+        </CardGrid>
       </View>
 
-      <SectionHeader title="Artifacts" />
-      <CardGrid columns={3}>
-        <KpiCard title="Lines Added" value={`+${artifacts.linesAdded.toLocaleString()}`} />
-        <KpiCard title="Lines Removed" value={`-${artifacts.linesRemoved.toLocaleString()}`} />
-        <KpiCard title="Tests" value={`${artifacts.testsPassed}/${artifacts.testsExecuted}`} caption={artifacts.prMerged ? "PR Merged" : artifacts.prCreated ? "PR Created" : "No PR"} />
-      </CardGrid>
+      <View style={styles.section}>
+        <SectionHeader title="Context" />
+        <CardGrid columns={4}>
+          <KpiCard title="Project" value={entityNames.projectName} />
+          <KpiCard title="Agent" value={entityNames.agentName} />
+          <KpiCard title="Team" value={entityNames.teamName} />
+          <KpiCard title="User" value={entityNames.userName} />
+        </CardGrid>
+      </View>
 
-      <SectionHeader title="Policy Context" />
-      <View style={styles.policyCard}>
-        <View style={styles.policyRow}>
-          <Text style={styles.policyKey}>Network Mode</Text>
-          <View style={[styles.policyBadge, policyContext.networkMode === "full" ? styles.badgeSuccess : policyContext.networkMode === "limited" ? styles.badgeWarning : styles.badgeError]}>
-            <Text style={styles.policyBadgeText}>{policyContext.networkMode}</Text>
+      <View style={styles.section}>
+        <SectionHeader title="Timeline" />
+        <View style={styles.timeline}>
+          {timeline.map((event, index) => (
+            <View key={event.step} style={styles.timelineItem}>
+              <View style={styles.dotColumn}>
+                <View style={[styles.dot, index === timeline.length - 1 && event.step === "completed" && (run.status === "succeeded" ? styles.dotSuccess : run.status === "failed" ? styles.dotError : undefined)]} />
+                {index < timeline.length - 1 && <View style={styles.connector} />}
+              </View>
+              <View style={styles.timelineContent}>
+                <Text style={styles.stepLabel}>{event.step}</Text>
+                <Text style={styles.stepDetail}>{event.detail}</Text>
+                <Text style={styles.stepTime}>
+                  {new Date(event.timestampIso).toLocaleTimeString()}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <SectionHeader title="Artifacts" />
+        <CardGrid columns={3}>
+          <KpiCard title="Lines Added" value={`+${artifacts.linesAdded.toLocaleString()}`} />
+          <KpiCard title="Lines Removed" value={`-${artifacts.linesRemoved.toLocaleString()}`} />
+          <KpiCard title="Tests" value={`${artifacts.testsPassed}/${artifacts.testsExecuted}`} caption={artifacts.prMerged ? "PR Merged" : artifacts.prCreated ? "PR Created" : "No PR"} />
+        </CardGrid>
+      </View>
+
+      <View style={styles.section}>
+        <SectionHeader title="Policy Context" />
+        <View style={styles.policyCard}>
+          <View style={styles.policyRow}>
+            <Text style={styles.policyKey}>Network Mode</Text>
+            <View style={[styles.policyBadge, policyContext.networkMode === "full" ? styles.badgeSuccess : policyContext.networkMode === "limited" ? styles.badgeWarning : styles.badgeError]}>
+              <Text style={styles.policyBadgeText}>{policyContext.networkMode}</Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.policyRow}>
-          <Text style={styles.policyKey}>Allowed Actions</Text>
-          <Text style={styles.policyValue}>{policyContext.allowedActions.join(", ")}</Text>
-        </View>
-        <View style={styles.policyRow}>
-          <Text style={styles.policyKey}>Blocked Actions</Text>
-          <Text style={[styles.policyValue, styles.blockedText]}>{policyContext.blockedActions.join(", ")}</Text>
+          <View style={styles.policyRow}>
+            <Text style={styles.policyKey}>Allowed Actions</Text>
+            <Text style={styles.policyValue}>{policyContext.allowedActions.join(", ")}</Text>
+          </View>
+          <View style={styles.policyRow}>
+            <Text style={styles.policyKey}>Blocked Actions</Text>
+            <Text style={[styles.policyValue, styles.blockedText]}>{policyContext.blockedActions.join(", ")}</Text>
+          </View>
         </View>
       </View>
     </ScreenWrapper>
@@ -106,6 +117,7 @@ export default function RunDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  section: { gap: spacing[3] },
   timeline: { gap: 0 },
   timelineItem: { flexDirection: "row", gap: 12 },
   dotColumn: { alignItems: "center", width: 12 },

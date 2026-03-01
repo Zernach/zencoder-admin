@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useAgentsDashboard } from "@/features/analytics/hooks/useAgentsDashboard";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart } from "@/components/charts";
@@ -8,6 +8,7 @@ import { formatPercent, formatDuration, formatCurrency, formatCompactNumber } fr
 import type { AgentBreakdownRow } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
+import { spacing } from "@/theme/tokens";
 
 const agentCols: ColumnDef<AgentBreakdownRow>[] = [
   { key: "agentName", header: "Agent", width: 160 },
@@ -37,46 +38,57 @@ export default function AgentsScreen() {
     >
       <FilterBar />
 
-      <SectionHeader title="Reliability" />
-      {loading ? (
-        <CardGrid columns={4}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <LoadingSkeleton key={i} variant="kpi" />
-          ))}
-        </CardGrid>
-      ) : data ? (
-        <>
+      <View style={styles.section}>
+        <SectionHeader title="Reliability" />
+        {loading ? (
           <CardGrid columns={4}>
-            <KpiCard title="Success Rate" value={formatPercent(data.runSuccessRate * 100)} />
-            <KpiCard title="Error Rate" value={formatPercent(data.errorRate * 100)} deltaPolarity="negative-good" />
-            <KpiCard title="P50 Duration" value={formatDuration(data.p50RunDurationMs)} />
-            <KpiCard title="P95 Duration" value={formatDuration(data.p95RunDurationMs)} />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <LoadingSkeleton key={i} variant="kpi" />
+            ))}
           </CardGrid>
-          <CardGrid columns={2}>
-            <KpiCard title="P95 Queue Wait" value={formatDuration(data.p95QueueWaitMs)} caption="Queue wait time" />
-            <KpiCard title="Peak Concurrency" value={formatCompactNumber(data.peakConcurrency)} caption="Max concurrent runs/min" />
-          </CardGrid>
-          <View style={styles.chartRow}>
-            <ChartCard title="Reliability Trend">
-              <TrendChart data={data.reliabilityTrend} variant="line" color="#22c55e" />
-            </ChartCard>
-            <ChartCard title="Failure Categories">
-              <BreakdownChart data={data.failureCategoryBreakdown} variant="horizontal-bar" />
-            </ChartCard>
-          </View>
+        ) : data ? (
+          <>
+            <CardGrid columns={4}>
+              <KpiCard title="Success Rate" value={formatPercent(data.runSuccessRate * 100)} />
+              <KpiCard title="Error Rate" value={formatPercent(data.errorRate * 100)} deltaPolarity="negative-good" />
+              <KpiCard title="P50 Duration" value={formatDuration(data.p50RunDurationMs)} />
+              <KpiCard title="P95 Duration" value={formatDuration(data.p95RunDurationMs)} />
+            </CardGrid>
+            <CardGrid columns={2}>
+              <KpiCard title="P95 Queue Wait" value={formatDuration(data.p95QueueWaitMs)} caption="Queue wait time" />
+              <KpiCard title="Peak Concurrency" value={formatCompactNumber(data.peakConcurrency)} caption="Max concurrent runs/min" />
+            </CardGrid>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.chartRow}
+            >
+              <ChartCard title="Reliability Trend">
+                <TrendChart data={data.reliabilityTrend} variant="line" color="#22c55e" />
+              </ChartCard>
+              <ChartCard title="Failure Categories">
+                <BreakdownChart data={data.failureCategoryBreakdown} variant="horizontal-bar" />
+              </ChartCard>
+            </ScrollView>
+          </>
+        ) : null}
+      </View>
 
+      {data && (
+        <View style={styles.section}>
           <SectionHeader title="Agent Performance" subtitle={`${data.agentBreakdown.length} agents with activity`} />
           <DataTable
             columns={agentCols}
             data={data.agentBreakdown}
             keyExtractor={(row) => row.agentId}
           />
-        </>
-      ) : null}
+        </View>
+      )}
     </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  chartRow: { flexDirection: "row", gap: 16 },
+  section: { gap: spacing[3] },
+  chartRow: { flexDirection: "row", gap: spacing[4] },
 });

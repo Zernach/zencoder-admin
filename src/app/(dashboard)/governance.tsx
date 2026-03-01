@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
 import { useAppDependencies } from "@/core/di/AppDependencies";
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
@@ -9,6 +9,7 @@ import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import type { PolicyViolationRow, SecurityEventRow, PolicyChangeEvent, ComplianceItem } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
+import { spacing } from "@/theme/tokens";
 
 const violationCols: ColumnDef<PolicyViolationRow>[] = [
   { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{new Date(row.timestampIso).toLocaleString()}</Text> },
@@ -59,26 +60,32 @@ export default function GovernanceScreen() {
     >
       <FilterBar />
 
-      <SectionHeader title="Overview" />
-      {loading ? (
-        <CardGrid columns={4}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <LoadingSkeleton key={i} variant="kpi" />
-          ))}
-        </CardGrid>
-      ) : data ? (
-        <>
+      <View style={styles.section}>
+        <SectionHeader title="Overview" />
+        {loading ? (
           <CardGrid columns={4}>
-            <KpiCard title="Violations" value={formatCompactNumber(data.policyViolationCount)} />
-            <KpiCard title="Blocked Network" value={formatCompactNumber(data.blockedNetworkAttempts)} />
-            <KpiCard title="Audit Events" value={formatCompactNumber(data.auditEventsCount)} />
-            <KpiCard title="Violation Rate" value={`${(data.policyViolationRate * 100).toFixed(1)}%`} />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <LoadingSkeleton key={i} variant="kpi" />
+            ))}
           </CardGrid>
+        ) : data ? (
+          <>
+            <CardGrid columns={4}>
+              <KpiCard title="Violations" value={formatCompactNumber(data.policyViolationCount)} />
+              <KpiCard title="Blocked Network" value={formatCompactNumber(data.blockedNetworkAttempts)} />
+              <KpiCard title="Audit Events" value={formatCompactNumber(data.auditEventsCount)} />
+              <KpiCard title="Violation Rate" value={`${(data.policyViolationRate * 100).toFixed(1)}%`} />
+            </CardGrid>
 
-          <ChartCard title="Violations by Team">
-            <BreakdownChart data={data.violationsByTeam} variant="horizontal-bar" />
-          </ChartCard>
+            <ChartCard title="Violations by Team">
+              <BreakdownChart data={data.violationsByTeam} variant="horizontal-bar" />
+            </ChartCard>
+          </>
+        ) : null}
+      </View>
 
+      {data && (
+        <View style={styles.section}>
           <SectionHeader title="Compliance Status" />
           <CardGrid columns={3}>
             {data.complianceItems.map((item: ComplianceItem) => (
@@ -90,29 +97,47 @@ export default function GovernanceScreen() {
               />
             ))}
           </CardGrid>
+        </View>
+      )}
 
+      {data && (
+        <View style={styles.section}>
           <SectionHeader title="Recent Violations" />
           <DataTable
             columns={violationCols}
             data={data.recentViolations}
             keyExtractor={(row) => row.id}
           />
+        </View>
+      )}
 
+      {data && (
+        <View style={styles.section}>
           <SectionHeader title="Security Events" />
           <DataTable
             columns={securityCols}
             data={data.securityEvents}
             keyExtractor={(row) => row.id}
           />
+        </View>
+      )}
 
+      {data && (
+        <View style={styles.section}>
           <SectionHeader title="Policy Changes" subtitle="Audit trail of policy modifications" />
           <DataTable
             columns={policyChangeCols}
             data={data.policyChanges}
             keyExtractor={(row) => row.id}
           />
-        </>
-      ) : null}
+        </View>
+      )}
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  section: {
+    gap: spacing[3],
+  },
+});

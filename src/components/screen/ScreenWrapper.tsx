@@ -1,9 +1,10 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ContentViewport, TopBar } from "@/components/shell";
+import { layout } from "@/theme/tokens";
 import ScreenHeader from "./ScreenHeader";
 import type { HeaderProps } from "./ScreenHeader";
 
@@ -28,7 +29,7 @@ function ScreenWrapper({ headerProps, children, style }: ScreenWrapperProps) {
       <TopBar />
       {headerProps && <ScreenHeader {...headerProps} />}
       <ContentViewport>
-        {children}
+        <View style={styles.content}>{children}</View>
       </ContentViewport>
     </SafeAreaView>
   );
@@ -39,6 +40,10 @@ export default ScreenWrapper;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 24,
+    gap: layout.sectionGap,
+  },
+  content: {
+    gap: layout.sectionGap,
+    paddingBottom: layout.sectionGap,
   },
 });

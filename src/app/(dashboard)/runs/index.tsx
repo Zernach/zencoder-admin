@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useRunsExplorer } from "@/features/analytics/hooks/useRunsExplorer";
 import { useAppDependencies } from "@/core/di/AppDependencies";
@@ -9,6 +9,7 @@ import { formatCurrency, formatDuration, formatCompactNumber } from "@/features/
 import type { RunListRow } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
+import { spacing } from "@/theme/tokens";
 
 export default function RunsExplorerScreen() {
   const { data, loading, error, refetch, page, pageSize, sortBy, sortDirection, setPage, handleSort } = useRunsExplorer();
@@ -58,25 +59,33 @@ export default function RunsExplorerScreen() {
       }}
     >
       <FilterBar />
-      <SectionHeader title="All Runs" />
-      <DataTable
-        columns={columns}
-        data={data?.rows ?? []}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-        onSort={handleSort}
-        onRowPress={(row) => router.push(`/(dashboard)/runs/${row.id}` as never)}
-        loading={loading}
-        keyExtractor={(row) => row.id}
-      />
-      {data && (
-        <PaginationControls
-          page={page}
-          pageSize={pageSize}
-          total={data.total}
-          onPageChange={setPage}
+      <View style={styles.section}>
+        <SectionHeader title="All Runs" />
+        <DataTable
+          columns={columns}
+          data={data?.rows ?? []}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          onSort={handleSort}
+          onRowPress={(row) => router.push(`/(dashboard)/runs/${row.id}` as never)}
+          loading={loading}
+          keyExtractor={(row) => row.id}
         />
-      )}
+        {data && (
+          <PaginationControls
+            page={page}
+            pageSize={pageSize}
+            total={data.total}
+            onPageChange={setPage}
+          />
+        )}
+      </View>
     </ScreenWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  section: {
+    gap: spacing[3],
+  },
+});
