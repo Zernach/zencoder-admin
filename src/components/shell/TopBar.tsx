@@ -1,14 +1,14 @@
 import React from "react";
 import { View, Text, Pressable, TextInput, StyleSheet } from "react-native";
 import { Menu, Search, Filter, Clock } from "lucide-react-native";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
+import { useAppDispatch } from "@/store";
+import { toggleSidebar } from "@/store/slices/sidebarSlice";
 
-interface TopBarProps {
-  onToggleSidebar?: () => void;
-  showMenuButton?: boolean;
-}
-
-export function TopBar({ onToggleSidebar, showMenuButton }: TopBarProps) {
+export function TopBar() {
+  const breakpoint = useBreakpoint();
+  const dispatch = useAppDispatch();
   const { preset, activeFilterCount } = useDashboardFilters();
 
   const presetLabels: Record<string, string> = {
@@ -22,9 +22,9 @@ export function TopBar({ onToggleSidebar, showMenuButton }: TopBarProps) {
   return (
     <View style={styles.container}>
       <View style={styles.left}>
-        {showMenuButton && onToggleSidebar && (
+        {breakpoint !== "mobile" && (
           <Pressable
-            onPress={onToggleSidebar}
+            onPress={() => dispatch(toggleSidebar())}
             style={styles.iconBtn}
             accessibilityRole="button"
             accessibilityLabel="Toggle sidebar"

@@ -1,7 +1,9 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ContentViewport, TopBar } from "@/components/shell";
 import ScreenHeader from "./ScreenHeader";
 import type { HeaderProps } from "./ScreenHeader";
 
@@ -15,17 +17,20 @@ interface ScreenWrapperProps {
 
 /**
  * Reusable screen wrapper that provides a consistent layout:
- * ScreenHeader (title, subtitle, loading spinner) + children with standard gap.
+ * TopBar + ScreenHeader (title, subtitle, loading spinner) + children with standard gap.
  *
- * This component lives inside the DashboardShell's ContentViewport,
- * which already provides ScrollView and responsive padding.
+ * This component includes ContentViewport (ScrollView + responsive padding),
+ * then renders TopBar, ScreenHeader, and children.
  */
 function ScreenWrapper({ headerProps, children, style }: ScreenWrapperProps) {
   return (
-    <View style={[styles.container, style]}>
+    <SafeAreaView edges={["top", "bottom"]} style={[styles.container, style]}>
+      <TopBar />
       {headerProps && <ScreenHeader {...headerProps} />}
-      {children}
-    </View>
+      <ContentViewport>
+        {children}
+      </ContentViewport>
+    </SafeAreaView>
   );
 }
 
@@ -33,6 +38,7 @@ export default ScreenWrapper;
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     gap: 24,
   },
 });
