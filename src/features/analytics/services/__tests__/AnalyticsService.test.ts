@@ -179,6 +179,12 @@ describe("delegation via mock", () => {
         providerShareClaude: 0.4321,
         policyViolationCount: 5,
       },
+      deltas: {
+        seatAdoptionRate: 5.0,
+        runSuccessRate: 2.1,
+        totalCostUsd: 12.3,
+        policyViolationCount: -3.0,
+      },
       runsTrend: [{ tsIso: "2025-01-01T00:00:00Z", value: 100 }],
       costTrend: [{ tsIso: "2025-01-01T00:00:00Z", value: 500 }],
       anomalies: [{ runId: "run_1", type: "highest_cost", label: "$100", value: 100 }],

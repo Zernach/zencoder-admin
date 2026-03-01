@@ -1,22 +1,36 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useMemo } from "react";
+import { View, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
+import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, TrendChart } from "@/components/charts";
+import { ScreenWrapper } from "@/components/screen";
+import { FilterBar } from "@/components/filters";
 
 export default function OverviewDashboardScreen() {
   const { data, loading, error, refetch } = useOverviewDashboard();
+  const { preset } = useDashboardFilters();
   const router = useRouter();
+
+  const subtitle = useMemo(() => {
+    if (!data) return "Organization-level analytics for cloud agent operations";
+    const totalRuns = data.runsTrend.reduce((s, p) => s + p.value, 0);
+    const days = data.runsTrend.length;
+    return `${totalRuns.toLocaleString()} runs across ${days} days (${preset})`;
+  }, [data, preset]);
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Overview Dashboard</Text>
-      <Text style={styles.subtitle}>
-        Organization-level analytics for cloud agent operations
-      </Text>
+    <ScreenWrapper
+      headerProps={{
+        title: "Overview Dashboard",
+        subtitle,
+        isLoading: loading,
+      }}
+    >
+      <FilterBar />
 
       {/* Section 1 — Key Metrics */}
       <SectionHeader title="Key Metrics" subtitle="At a glance" />
@@ -116,25 +130,11 @@ export default function OverviewDashboardScreen() {
           </CardGrid>
         </View>
       )}
-    </View>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    gap: 24,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#e5e5e5",
-    letterSpacing: -0.2,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#a3a3a3",
-    marginTop: -16,
-  },
   section: {
     gap: 12,
   },

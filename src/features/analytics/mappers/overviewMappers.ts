@@ -22,25 +22,26 @@ export interface OverviewViewModel {
 
 export function mapOverviewToViewModel(res: OverviewResponse): OverviewViewModel {
   const k = res.kpis;
+  const d = res.deltas;
 
   return {
     adoptionKpis: [
-      { title: "Seat Adoption", value: formatPercent(k.seatAdoptionRate * 100), delta: 12.3, caption: "Active seats" },
-      { title: "Success Rate", value: formatPercent(k.runSuccessRate * 100), delta: 2.1, caption: "All runs" },
-      { title: "Total Cost", value: formatCurrency(k.totalCostUsd), delta: 15.2, caption: "Period total", route: "/(dashboard)/costs" },
-      { title: "Violations", value: formatCompactNumber(k.policyViolationCount), delta: -3.1, deltaPolarity: "negative-good", caption: "Policy blocks", route: "/(dashboard)/governance" },
+      { title: "Seat Adoption", value: formatPercent(k.seatAdoptionRate * 100), delta: d.seatAdoptionRate, caption: "Active seats" },
+      { title: "Success Rate", value: formatPercent(k.runSuccessRate * 100), delta: d.runSuccessRate, caption: "All runs" },
+      { title: "Total Cost", value: formatCurrency(k.totalCostUsd), delta: d.totalCostUsd, caption: "Period total", route: "/(dashboard)/costs" },
+      { title: "Violations", value: formatCompactNumber(k.policyViolationCount), delta: d.policyViolationCount, deltaPolarity: "negative-good", caption: "Policy blocks", route: "/(dashboard)/governance" },
     ],
     reliabilityKpis: [
-      { title: "Success Rate", value: formatPercent(k.runSuccessRate * 100), delta: 2.1 },
-      { title: "Codex Share", value: formatPercent(k.providerShareCodex * 100), delta: 1.5, caption: "Provider mix" },
-      { title: "Claude Share", value: formatPercent(k.providerShareClaude * 100), delta: -0.8, caption: "Provider mix" },
+      { title: "Success Rate", value: formatPercent(k.runSuccessRate * 100), delta: d.runSuccessRate },
+      { title: "Codex Share", value: formatPercent(k.providerShareCodex * 100), caption: "Provider mix" },
+      { title: "Claude Share", value: formatPercent(k.providerShareClaude * 100), caption: "Provider mix" },
     ],
     costKpis: [
-      { title: "Total Cost", value: formatCurrency(k.totalCostUsd), delta: 15.2, route: "/(dashboard)/costs" },
-      { title: "Violations", value: formatCompactNumber(k.policyViolationCount), delta: -3.1, deltaPolarity: "negative-good" },
+      { title: "Total Cost", value: formatCurrency(k.totalCostUsd), delta: d.totalCostUsd, route: "/(dashboard)/costs" },
+      { title: "Violations", value: formatCompactNumber(k.policyViolationCount), delta: d.policyViolationCount, deltaPolarity: "negative-good" },
     ],
     governanceKpis: [
-      { title: "Policy Blocks", value: formatCompactNumber(k.policyViolationCount), delta: 12.4 },
+      { title: "Policy Blocks", value: formatCompactNumber(k.policyViolationCount), delta: d.policyViolationCount },
     ],
     runsTrend: res.runsTrend,
     costTrend: res.costTrend,

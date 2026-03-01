@@ -1,11 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { Text } from "react-native";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef } from "@/components/tables";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import type { PolicyViolationRow, SecurityEventRow, ComplianceItem } from "@/features/analytics/types";
+import { ScreenWrapper } from "@/components/screen";
+import { FilterBar } from "@/components/filters";
 
 const violationCols: ColumnDef<PolicyViolationRow>[] = [
   { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{new Date(row.timestampIso).toLocaleString()}</Text> },
@@ -25,10 +27,19 @@ export default function GovernanceScreen() {
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
+  const subtitle = data
+    ? `${data.policyViolationCount} violations, ${data.securityEvents.length} security events`
+    : "Policy enforcement and security monitoring";
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Governance & Compliance</Text>
-      <Text style={styles.subtitle}>Policy enforcement and security monitoring</Text>
+    <ScreenWrapper
+      headerProps={{
+        title: "Governance & Compliance",
+        subtitle,
+        isLoading: loading,
+      }}
+    >
+      <FilterBar />
 
       <SectionHeader title="Overview" />
       {loading ? (
@@ -77,12 +88,6 @@ export default function GovernanceScreen() {
           />
         </>
       ) : null}
-    </View>
+    </ScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { gap: 24 },
-  title: { fontSize: 22, fontWeight: "700", color: "#e5e5e5", letterSpacing: -0.2 },
-  subtitle: { fontSize: 14, color: "#a3a3a3", marginTop: -16 },
-});

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Switch, Pressable, StyleSheet } from "react-native";
 import { SectionHeader } from "@/components/dashboard";
+import { ScreenWrapper } from "@/components/screen";
 
 interface SettingToggle {
   label: string;
@@ -27,10 +28,12 @@ export default function SettingsScreen() {
     setSettings((s) => ({ ...s, [key]: !s[key] }));
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
-      <Text style={styles.subtitle}>Configure your dashboard preferences</Text>
-
+    <ScreenWrapper
+      headerProps={{
+        title: "Settings",
+        subtitle: "Configure your dashboard preferences",
+      }}
+    >
       <SectionHeader title="Preferences" />
       <View style={styles.card}>
         {TOGGLES.map((t) => (
@@ -76,14 +79,11 @@ export default function SettingsScreen() {
       >
         <Text style={styles.dangerText}>Clear Cache</Text>
       </Pressable>
-    </View>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { gap: 24 },
-  title: { fontSize: 22, fontWeight: "700", color: "#e5e5e5", letterSpacing: -0.2 },
-  subtitle: { fontSize: 14, color: "#a3a3a3", marginTop: -16 },
   card: {
     backgroundColor: "#1a1a1a",
     borderRadius: 10,

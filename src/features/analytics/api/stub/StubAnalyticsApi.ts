@@ -2,6 +2,7 @@ import type { IAnalyticsApi } from "../IAnalyticsApi";
 import type {
   AnalyticsFilters,
   OverviewResponse,
+  OverviewDeltas,
   UsageResponse,
   OutcomesResponse,
   CostResponse,
@@ -97,6 +98,26 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       }));
   }
 
+  /** Compute previous period filters for delta comparisons */
+  private previousPeriodFilters(filters: AnalyticsFilters): AnalyticsFilters {
+    const fromMs = new Date(filters.timeRange.fromIso).getTime();
+    const toMs = new Date(filters.timeRange.toIso).getTime();
+    const duration = toMs - fromMs;
+    return {
+      ...filters,
+      timeRange: {
+        fromIso: new Date(fromMs - duration).toISOString(),
+        toIso: new Date(fromMs).toISOString(),
+      },
+    };
+  }
+
+  /** Percentage change: ((current - prev) / prev) * 100, or 0 if prev=0 */
+  private pctChange(current: number, previous: number): number {
+    if (previous === 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - previous) / previous) * 1000) / 10;
+  }
+
   async getOverview(filters: AnalyticsFilters): Promise<OverviewResponse> {
     await this.simulate();
     const runs = this.filterRuns(filters);
@@ -116,6 +137,29 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         v.timestampIso >= filters.timeRange.fromIso &&
         v.timestampIso <= filters.timeRange.toIso
     );
+
+    // Compute previous-period KPIs for delta calculations
+    const prevFilters = this.previousPeriodFilters(filters);
+    const prevRuns = this.filterRuns(prevFilters);
+    const prevTotal = prevRuns.length || 1;
+    const prevSucceeded = prevRuns.filter((r) => r.status === "succeeded").length;
+    const prevTotalCost = prevRuns.reduce((s, r) => s + r.costUsd, 0);
+    const prevUniqueUsers = new Set(prevRuns.map((r) => r.userId)).size;
+    const prevSeatAdoption = this.seed.users.length
+      ? prevUniqueUsers / this.seed.users.length
+      : 0;
+    const prevViolations = this.seed.policyViolations.filter(
+      (v) =>
+        v.timestampIso >= prevFilters.timeRange.fromIso &&
+        v.timestampIso <= prevFilters.timeRange.toIso
+    );
+
+    const deltas: OverviewDeltas = {
+      seatAdoptionRate: this.pctChange(seatAdoptionRate, prevSeatAdoption),
+      runSuccessRate: this.pctChange(succeeded / total, prevSucceeded / prevTotal),
+      totalCostUsd: this.pctChange(totalCost, prevTotalCost),
+      policyViolationCount: this.pctChange(violations.length, prevViolations.length),
+    };
 
     // Anomalies: top by cost, duration, tokens
     const byCost = [...runs].sort((a, b) => b.costUsd - a.costUsd);
@@ -154,6 +198,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         providerShareClaude: claudeCount / total,
         policyViolationCount: violations.length,
       },
+      deltas,
       runsTrend: this.bucketByDay(runs, (d) => d.length),
       costTrend: this.bucketByDay(runs, (d) =>
         Math.round(d.reduce((s, r) => s + r.costUsd, 0) * 100) / 100
@@ -463,10 +508,16 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       blockedNetworkAttempts,
       auditEventsCount: changes.length + violations.length,
       violationsByTeam,
-      recentViolations: violations.slice(0, 20),
-      securityEvents: secEvents.slice(0, 20),
+      recentViolations: violations
+        .sort((a, b) => b.timestampIso.localeCompare(a.timestampIso))
+        .slice(0, 20),
+      securityEvents: secEvents
+        .sort((a, b) => b.timestampIso.localeCompare(a.timestampIso))
+        .slice(0, 20),
       complianceItems: this.seed.complianceItems,
-      policyChanges: changes.slice(0, 20),
+      policyChanges: changes
+        .sort((a, b) => b.timestampIso.localeCompare(a.timestampIso))
+        .slice(0, 20),
     };
   }
 

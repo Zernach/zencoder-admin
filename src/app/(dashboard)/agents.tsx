@@ -1,19 +1,30 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useAgentsDashboard } from "@/features/analytics/hooks/useAgentsDashboard";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart } from "@/components/charts";
-import { formatPercent, formatDuration, formatCompactNumber } from "@/features/analytics/utils/formatters";
+import { formatPercent, formatDuration } from "@/features/analytics/utils/formatters";
+import { ScreenWrapper } from "@/components/screen";
+import { FilterBar } from "@/components/filters";
 
 export default function AgentsScreen() {
   const { data, loading, error, refetch } = useAgentsDashboard();
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
+  const subtitle = data
+    ? `${formatPercent(data.runSuccessRate * 100)} success rate, P50 ${formatDuration(data.p50RunDurationMs)}`
+    : "Agent reliability and performance";
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Agents</Text>
-      <Text style={styles.subtitle}>Agent reliability and performance</Text>
+    <ScreenWrapper
+      headerProps={{
+        title: "Agents",
+        subtitle,
+        isLoading: loading,
+      }}
+    >
+      <FilterBar />
 
       <SectionHeader title="Reliability" />
       {loading ? (
@@ -40,13 +51,10 @@ export default function AgentsScreen() {
           </View>
         </>
       ) : null}
-    </View>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { gap: 24 },
-  title: { fontSize: 22, fontWeight: "700", color: "#e5e5e5", letterSpacing: -0.2 },
-  subtitle: { fontSize: 14, color: "#a3a3a3", marginTop: -16 },
   chartRow: { flexDirection: "row", gap: 16 },
 });

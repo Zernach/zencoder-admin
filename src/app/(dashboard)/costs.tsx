@@ -1,19 +1,30 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useCostDashboard } from "@/features/analytics/hooks/useCostDashboard";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart, DonutChart } from "@/components/charts";
 import { formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
+import { ScreenWrapper } from "@/components/screen";
+import { FilterBar } from "@/components/filters";
 
 export default function CostAnalyticsScreen() {
   const { data, loading, error, refetch } = useCostDashboard();
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
+  const subtitle = data
+    ? `${formatCurrency(data.totalCostUsd)} spent across ${data.costBreakdown.length} projects`
+    : "Spending trends and budget tracking";
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Cost Analytics</Text>
-      <Text style={styles.subtitle}>Spending trends and budget tracking</Text>
+    <ScreenWrapper
+      headerProps={{
+        title: "Cost Analytics",
+        subtitle,
+        isLoading: loading,
+      }}
+    >
+      <FilterBar />
 
       <SectionHeader title="Cost Summary" />
       {loading ? (
@@ -55,13 +66,10 @@ export default function CostAnalyticsScreen() {
           <BreakdownChart data={data.costBreakdown.slice(0, 10).map(r => ({ key: r.key, value: r.totalCostUsd }))} variant="horizontal-bar" height={300} />
         </>
       ) : null}
-    </View>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { gap: 24 },
-  title: { fontSize: 22, fontWeight: "700", color: "#e5e5e5", letterSpacing: -0.2 },
-  subtitle: { fontSize: 14, color: "#a3a3a3", marginTop: -16 },
   chartRow: { flexDirection: "row", gap: 16 },
 });

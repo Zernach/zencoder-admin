@@ -1,19 +1,30 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useProjectsDashboard } from "@/features/analytics/hooks/useProjectsDashboard";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart } from "@/components/charts";
-import { formatCurrency, formatCompactNumber } from "@/features/analytics/utils/formatters";
+import { formatCurrency } from "@/features/analytics/utils/formatters";
+import { ScreenWrapper } from "@/components/screen";
+import { FilterBar } from "@/components/filters";
 
 export default function ProjectsScreen() {
   const { data, loading, error, refetch } = useProjectsDashboard();
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
+  const subtitle = data
+    ? `${formatCurrency(data.totalCostUsd)} total, ${data.costBreakdown.length} active projects`
+    : "Performance metrics across all projects";
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Projects</Text>
-      <Text style={styles.subtitle}>Performance metrics across all projects</Text>
+    <ScreenWrapper
+      headerProps={{
+        title: "Projects",
+        subtitle,
+        isLoading: loading,
+      }}
+    >
+      <FilterBar />
 
       <SectionHeader title="Cost Overview" />
       {loading ? (
@@ -39,13 +50,10 @@ export default function ProjectsScreen() {
           </View>
         </>
       ) : null}
-    </View>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { gap: 24 },
-  title: { fontSize: 22, fontWeight: "700", color: "#e5e5e5", letterSpacing: -0.2 },
-  subtitle: { fontSize: 14, color: "#a3a3a3", marginTop: -16 },
   chartRow: { flexDirection: "row", gap: 16 },
 });

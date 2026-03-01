@@ -56,7 +56,9 @@ function padId(prefix: string, n: number, width = 3): string {
 }
 
 // ─── Constants ──────────────────────────────────────────
-const REFERENCE_DATE = new Date("2025-02-27T23:59:59Z");
+// Use current date so seed data always covers the most recent 90 days
+const REFERENCE_DATE = new Date();
+REFERENCE_DATE.setUTCHours(23, 59, 59, 0);
 const DAY_MS = 86_400_000;
 const HOUR_MS = 3_600_000;
 
@@ -263,11 +265,14 @@ export function generateSeedData(seed: number = 42): SeedData {
     const dayOfWeek = dayStart.getUTCDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
+    // Growth factor: ~20% more activity at day 0 vs day 89
+    const growthFactor = 1 + 0.2 * ((89 - dayOffset) / 89);
+
     const baseVolume = isWeekend
       ? randInt(rng, 110, 160)
       : randInt(rng, 310, 420);
     const jitter = 1 + (rng() * 0.3 - 0.15);
-    const dailyCount = Math.round(baseVolume * jitter);
+    const dailyCount = Math.round(baseVolume * jitter * growthFactor);
 
     const isSpike = failureSpikeDays.has(dayOffset);
 

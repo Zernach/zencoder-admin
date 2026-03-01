@@ -129,9 +129,18 @@ export interface OverviewKpis {
   providerShareClaude: number; policyViolationCount: number;
 }
 
+/** Percentage change vs. the previous equivalent time period */
+export interface OverviewDeltas {
+  seatAdoptionRate: number;
+  runSuccessRate: number;
+  totalCostUsd: number;
+  policyViolationCount: number;
+}
+
 // ─── API Responses ──────────────────────────────────────
 export interface OverviewResponse {
   kpis: OverviewKpis;
+  deltas: OverviewDeltas;
   runsTrend: TimeSeriesPoint[];
   costTrend: TimeSeriesPoint[];
   anomalies: RunAnomaly[];
