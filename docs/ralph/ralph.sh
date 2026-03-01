@@ -10,6 +10,12 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$PROJECT_ROOT"
 
-RALPH_PROMPT='Read the `docs/pull_requests/0000-task-manager.md` file and the current directory structure of the React Native codebase, then decide which is the first incomplete pull_request, read its associated markdown plan, and begin working on it. After you complete a pull_request in its entirety, you may commit, but do NOT push to the remote repository. I want to review one commit for each pull_request. Only output `DONE` after all pull_requests in the `0000-task-manager.md` file are ✅'
+# 1. 0-to-1 Loop
+# RALPH_PROMPT='Read the `docs/pull_requests/0000-task-manager.md` file and the current directory structure of the React Native codebase, then decide which is the first incomplete pull_request, read its associated markdown plan, and begin working on it. After you complete a pull_request in its entirety, you may commit, but do NOT push to the remote repository. I want to review one commit for each pull_request. Only output `DONE` after all pull_requests in the `0000-task-manager.md` file are ✅'
+
+# 2. Simulated Data
+RALPH_PROMPT='Continue improving the stubbed data implementation. We need the user to feel like they are viewing 90 days of simulated dashboard data for the Zencoder Admin Dashboard. This should include for the data tables, charts, and filters to be fully functional and realistic.'
+
+
 
 claude --dangerously-skip-permissions "/ralph-loop $RALPH_PROMPT"

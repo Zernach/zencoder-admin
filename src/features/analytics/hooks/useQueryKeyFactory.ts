@@ -10,6 +10,7 @@ export function useQueryKeyFactory() {
     cost: ["analytics", "cost", filters] as const,
     reliability: ["analytics", "reliability", filters] as const,
     governance: ["analytics", "governance", filters] as const,
+    projects: ["analytics", "projects", filters] as const,
     runsPage: (
       page: number,
       pageSize: number,

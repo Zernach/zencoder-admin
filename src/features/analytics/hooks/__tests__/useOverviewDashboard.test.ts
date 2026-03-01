@@ -24,8 +24,8 @@ describe("useOverviewDashboard", () => {
     const data = result.current.data!;
     expect(data.adoptionKpis).toBeDefined();
     expect(data.reliabilityKpis).toBeDefined();
-    expect(data.costKpis).toBeDefined();
-    expect(data.governanceKpis).toBeDefined();
+    expect(data.usageKpis).toBeDefined();
+    expect(data.outcomesKpis).toBeDefined();
     expect(data.runsTrend).toBeDefined();
     expect(data.costTrend).toBeDefined();
     expect(data.anomalies).toBeDefined();

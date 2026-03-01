@@ -8,6 +8,7 @@ import type {
   CostResponse,
   ReliabilityResponse,
   GovernanceResponse,
+  ProjectsResponse,
   RunsPageRequest,
   RunsPageResponse,
   RunDetailResponse,
@@ -82,6 +83,18 @@ export class AnalyticsService implements IAnalyticsService {
   async getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse> {
     const res = await this.api.getGovernance(filters);
     res.policyViolationRate = round1(res.policyViolationRate);
+    return res;
+  }
+
+  async getProjects(filters: AnalyticsFilters): Promise<ProjectsResponse> {
+    const res = await this.api.getProjects(filters);
+    res.overallSuccessRate = round1(res.overallSuccessRate);
+    res.totalCostUsd = round2(res.totalCostUsd);
+    for (const row of res.projectBreakdown) {
+      row.totalCostUsd = round2(row.totalCostUsd);
+      row.avgCostPerRunUsd = round2(row.avgCostPerRunUsd);
+      row.successRate = round1(row.successRate);
+    }
     return res;
   }
 

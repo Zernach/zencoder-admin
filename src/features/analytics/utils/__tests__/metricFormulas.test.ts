@@ -280,7 +280,7 @@ describe("cross-cutting: all functions return finite numbers", () => {
     });
 
     it(`${name}: zero denominator returns 0 (not NaN/Infinity)`, () => {
-      const result = fn(args[0], 0);
+      const result = fn(args[0]!, 0);
       expect(result).toBe(0);
       expect(Number.isNaN(result)).toBe(false);
       expect(Number.isFinite(result)).toBe(true);

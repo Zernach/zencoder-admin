@@ -9,8 +9,8 @@ export function useProjectsDashboard() {
   const { filters } = useDashboardFilters();
 
   const query = useQuery({
-    queryKey: queryKeys.cost,
-    queryFn: () => analyticsService.getCost(filters),
+    queryKey: queryKeys.projects,
+    queryFn: () => analyticsService.getProjects(filters),
   });
 
   return {

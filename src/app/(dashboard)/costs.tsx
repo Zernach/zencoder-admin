@@ -55,6 +55,24 @@ export default function CostAnalyticsScreen() {
             </ChartCard>
           </View>
 
+          <SectionHeader title="Cost by Provider" />
+          <View style={styles.chartRow}>
+            <ChartCard title="Provider Breakdown">
+              <DonutChart
+                data={data.providerBreakdown.map(r => ({ key: r.provider, value: r.totalCostUsd }))}
+                centerLabel="By Provider"
+                centerValue={formatCurrency(data.totalCostUsd)}
+              />
+            </ChartCard>
+            <ChartCard title="Runs by Provider">
+              <BreakdownChart
+                data={data.providerBreakdown.map(r => ({ key: r.provider, value: r.runCount }))}
+                variant="bar"
+                height={220}
+              />
+            </ChartCard>
+          </View>
+
           <SectionHeader title="Budget Forecast" />
           <CardGrid columns={3}>
             <KpiCard title="Budget" value={formatCurrency(data.budget.budgetUsd)} />

@@ -1,9 +1,9 @@
 import { AnalyticsService } from "../AnalyticsService";
 import { StubAnalyticsApi } from "../../api/stub/StubAnalyticsApi";
 import { generateSeedData } from "@/features/analytics/fixtures/seedData";
+import type { IAnalyticsApi } from "../../api/IAnalyticsApi";
 import type {
   AnalyticsFilters,
-  IAnalyticsApi,
   OverviewResponse,
   CostResponse,
 } from "@/features/analytics/types";
@@ -197,6 +197,7 @@ describe("delegation via mock", () => {
       getCost: jest.fn(),
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
+      getProjects: jest.fn(),
       getRunsPage: jest.fn(),
       getRunDetail: jest.fn(),
     };
@@ -224,6 +225,7 @@ describe("delegation via mock", () => {
           percentOfTotal: 0.406,
         },
       ],
+      providerBreakdown: [],
       budget: {
         budgetUsd: 60000,
         spentUsd: 1234.5678,
@@ -239,6 +241,7 @@ describe("delegation via mock", () => {
       getCost: jest.fn().mockResolvedValue(mockCost),
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
+      getProjects: jest.fn(),
       getRunsPage: jest.fn(),
       getRunDetail: jest.fn(),
     };

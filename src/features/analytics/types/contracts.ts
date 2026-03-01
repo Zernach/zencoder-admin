@@ -82,6 +82,25 @@ export interface PolicyContext {
   networkMode: "none" | "limited" | "full";
 }
 
+// ─── Agent & Project Breakdown ──────────────────────────
+export interface AgentBreakdownRow {
+  agentId: string; agentName: string; projectName: string;
+  totalRuns: number; successRate: number;
+  avgDurationMs: number; totalCostUsd: number;
+}
+
+export interface ProjectBreakdownRow {
+  projectId: string; projectName: string; teamName: string;
+  totalRuns: number; successRate: number;
+  totalCostUsd: number; avgCostPerRunUsd: number;
+  agentCount: number;
+}
+
+export interface ProviderCostRow {
+  provider: ModelProvider; totalCostUsd: number; runCount: number;
+  percentOfTotal: number;
+}
+
 // ─── Breakdown Rows ─────────────────────────────────────
 export interface UsageBreakdownRow {
   teamId: string; teamName: string;
@@ -167,6 +186,7 @@ export interface CostResponse {
   costPerSuccessfulRunUsd: number;
   costTrend: TimeSeriesPoint[];
   costBreakdown: CostBreakdownRow[];
+  providerBreakdown: ProviderCostRow[];
   budget: BudgetSummary;
 }
 
@@ -176,6 +196,16 @@ export interface ReliabilityResponse {
   p95QueueWaitMs: number; peakConcurrency: number;
   failureCategoryBreakdown: KeyValueMetric[];
   reliabilityTrend: TimeSeriesPoint[];
+  agentBreakdown: AgentBreakdownRow[];
+}
+
+export interface ProjectsResponse {
+  totalProjects: number; activeProjects: number;
+  totalRuns: number; overallSuccessRate: number;
+  totalCostUsd: number;
+  projectBreakdown: ProjectBreakdownRow[];
+  runsTrend: TimeSeriesPoint[];
+  successRateTrend: TimeSeriesPoint[];
 }
 
 export interface GovernanceResponse {

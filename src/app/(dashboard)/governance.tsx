@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Text } from "react-native";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
+import { useAppDependencies } from "@/core/di/AppDependencies";
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef } from "@/components/tables";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
-import type { PolicyViolationRow, SecurityEventRow, ComplianceItem } from "@/features/analytics/types";
+import type { PolicyViolationRow, SecurityEventRow, PolicyChangeEvent, ComplianceItem } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
 
@@ -24,6 +25,23 @@ const securityCols: ColumnDef<SecurityEventRow>[] = [
 
 export default function GovernanceScreen() {
   const { data, loading, error, refetch } = useGovernanceDashboard();
+  const { seedData } = useAppDependencies();
+
+  const userMap = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const u of seedData.users) m.set(u.id, u.name);
+    return m;
+  }, [seedData.users]);
+
+  const policyChangeCols: ColumnDef<PolicyChangeEvent>[] = useMemo(
+    () => [
+      { key: "timestampIso", header: "Time", width: 160, render: (row: PolicyChangeEvent) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{new Date(row.timestampIso).toLocaleString()}</Text> },
+      { key: "actorUserId", header: "Actor", width: 140, render: (row: PolicyChangeEvent) => <Text style={{ color: "#e5e5e5", fontSize: 12 }} numberOfLines={1}>{userMap.get(row.actorUserId) ?? row.actorUserId}</Text> },
+      { key: "action", header: "Action", width: 220 },
+      { key: "target", header: "Target", width: 130 },
+    ],
+    [userMap]
+  );
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
@@ -84,6 +102,13 @@ export default function GovernanceScreen() {
           <DataTable
             columns={securityCols}
             data={data.securityEvents}
+            keyExtractor={(row) => row.id}
+          />
+
+          <SectionHeader title="Policy Changes" subtitle="Audit trail of policy modifications" />
+          <DataTable
+            columns={policyChangeCols}
+            data={data.policyChanges}
             keyExtractor={(row) => row.id}
           />
         </>

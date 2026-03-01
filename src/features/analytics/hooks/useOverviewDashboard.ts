@@ -10,20 +10,37 @@ export function useOverviewDashboard() {
   const queryKeys = useQueryKeyFactory();
   const { filters } = useDashboardFilters();
 
-  const query = useQuery({
+  const overviewQuery = useQuery({
     queryKey: queryKeys.overview,
     queryFn: () => analyticsService.getOverview(filters),
   });
 
+  const usageQuery = useQuery({
+    queryKey: queryKeys.usage,
+    queryFn: () => analyticsService.getUsage(filters),
+  });
+
+  const outcomesQuery = useQuery({
+    queryKey: queryKeys.outcomes,
+    queryFn: () => analyticsService.getOutcomes(filters),
+  });
+
   const data = useMemo(
-    () => (query.data ? mapOverviewToViewModel(query.data) : undefined),
-    [query.data]
+    () =>
+      overviewQuery.data
+        ? mapOverviewToViewModel(
+            overviewQuery.data,
+            usageQuery.data,
+            outcomesQuery.data
+          )
+        : undefined,
+    [overviewQuery.data, usageQuery.data, outcomesQuery.data]
   );
 
   return {
     data,
-    loading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : undefined,
-    refetch: query.refetch,
+    loading: overviewQuery.isLoading,
+    error: overviewQuery.error instanceof Error ? overviewQuery.error.message : undefined,
+    refetch: overviewQuery.refetch,
   };
 }

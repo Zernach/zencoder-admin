@@ -6,6 +6,7 @@ import type {
   CostResponse,
   ReliabilityResponse,
   GovernanceResponse,
+  ProjectsResponse,
   RunsPageRequest,
   RunsPageResponse,
   RunDetailResponse,
@@ -18,6 +19,7 @@ export interface IAnalyticsService {
   getCost(filters: AnalyticsFilters): Promise<CostResponse>;
   getReliability(filters: AnalyticsFilters): Promise<ReliabilityResponse>;
   getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse>;
+  getProjects(filters: AnalyticsFilters): Promise<ProjectsResponse>;
   getRunsPage(request: RunsPageRequest): Promise<RunsPageResponse>;
   getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse>;
 }

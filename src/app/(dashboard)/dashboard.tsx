@@ -86,7 +86,51 @@ export default function OverviewDashboardScreen() {
         </View>
       </View>
 
-      {/* Section 3 — Reliability */}
+      {/* Section 3 — Usage & Adoption */}
+      {data && data.usageKpis.length > 0 && (
+        <View style={styles.section}>
+          <SectionHeader title="Usage & Adoption" subtitle="Active user metrics" />
+          <CardGrid columns={3}>
+            {data.usageKpis.map((kpi) => (
+              <KpiCard
+                key={kpi.title}
+                title={kpi.title}
+                value={kpi.value}
+                caption={kpi.caption}
+              />
+            ))}
+          </CardGrid>
+          {data.activeUsersTrend && data.activeUsersTrend.length > 0 && (
+            <ChartCard title="Active Users Trend">
+              <TrendChart data={data.activeUsersTrend} variant="area" color="#a855f7" height={180} />
+            </ChartCard>
+          )}
+        </View>
+      )}
+
+      {/* Section 4 — Outcomes */}
+      {data && data.outcomesKpis.length > 0 && (
+        <View style={styles.section}>
+          <SectionHeader title="Outcomes" subtitle="Code quality & delivery" />
+          <CardGrid columns={3}>
+            {data.outcomesKpis.map((kpi) => (
+              <KpiCard
+                key={kpi.title}
+                title={kpi.title}
+                value={kpi.value}
+                caption={kpi.caption}
+              />
+            ))}
+          </CardGrid>
+          {data.outcomesTrend && data.outcomesTrend.length > 0 && (
+            <ChartCard title="PRs Merged Over Time">
+              <TrendChart data={data.outcomesTrend} variant="line" color="#f59e0b" height={180} />
+            </ChartCard>
+          )}
+        </View>
+      )}
+
+      {/* Section 5 — Reliability & Provider Mix */}
       <View style={styles.section}>
         <SectionHeader title="Reliability & Provider Mix" />
         {loading ? (
@@ -111,7 +155,7 @@ export default function OverviewDashboardScreen() {
         ) : null}
       </View>
 
-      {/* Section 4 — Anomalies */}
+      {/* Section 6 — Anomalies */}
       {data && data.anomalies.length > 0 && (
         <View style={styles.section}>
           <SectionHeader title="Anomalies" subtitle="Notable outliers" />

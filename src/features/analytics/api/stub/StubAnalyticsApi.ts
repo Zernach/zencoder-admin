@@ -8,6 +8,7 @@ import type {
   CostResponse,
   ReliabilityResponse,
   GovernanceResponse,
+  ProjectsResponse,
   RunsPageRequest,
   RunsPageResponse,
   RunDetailResponse,
@@ -16,6 +17,10 @@ import type {
   SeedData,
   RunAnomaly,
   KeyValueMetric,
+  AgentBreakdownRow,
+  ProjectBreakdownRow,
+  ProviderCostRow,
+  ModelProvider,
 } from "@/features/analytics/types";
 
 interface StubConfig {
@@ -381,6 +386,26 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       })
       .sort((a, b) => b.totalCostUsd - a.totalCostUsd);
 
+    // Provider breakdown
+    const providerMap = new Map<ModelProvider, { cost: number; count: number }>();
+    for (const run of runs) {
+      const entry = providerMap.get(run.provider) ?? { cost: 0, count: 0 };
+      entry.cost += run.costUsd;
+      entry.count++;
+      providerMap.set(run.provider, entry);
+    }
+    const providerBreakdown: ProviderCostRow[] = (["codex", "claude", "other"] as ModelProvider[])
+      .filter((p) => providerMap.has(p))
+      .map((provider) => {
+        const entry = providerMap.get(provider)!;
+        return {
+          provider,
+          totalCostUsd: Math.round(entry.cost * 100) / 100,
+          runCount: entry.count,
+          percentOfTotal: totalCost ? entry.cost / totalCost : 0,
+        };
+      });
+
     // Budget
     const dayCount = this.bucketByDay(runs, () => 0).length || 1;
     const dailySpend = totalCost / dayCount;
@@ -397,6 +422,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         Math.round(d.reduce((s, r) => s + r.costUsd, 0) * 100) / 100
       ),
       costBreakdown,
+      providerBreakdown,
       budget: {
         budgetUsd,
         spentUsd: Math.round(totalCost * 100) / 100,
@@ -440,6 +466,36 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     }
     const peakConcurrency = Math.max(0, ...minuteMap.values());
 
+    // Agent breakdown
+    const agentRunMap = new Map<string, RunListRow[]>();
+    for (const run of runs) {
+      const arr = agentRunMap.get(run.agentId);
+      if (arr) arr.push(run);
+      else agentRunMap.set(run.agentId, [run]);
+    }
+    const agentBreakdown: AgentBreakdownRow[] = this.seed.agents
+      .map((agent) => {
+        const agentRuns = agentRunMap.get(agent.id) ?? [];
+        if (agentRuns.length === 0) return null;
+        const agentSucceeded = agentRuns.filter((r) => r.status === "succeeded").length;
+        const project = this.seed.projects.find((p) => p.id === agent.projectId);
+        return {
+          agentId: agent.id,
+          agentName: agent.name,
+          projectName: project?.name ?? agent.projectId,
+          totalRuns: agentRuns.length,
+          successRate: agentRuns.length ? agentSucceeded / agentRuns.length : 0,
+          avgDurationMs: Math.round(
+            agentRuns.reduce((s, r) => s + r.durationMs, 0) / agentRuns.length
+          ),
+          totalCostUsd: Math.round(
+            agentRuns.reduce((s, r) => s + r.costUsd, 0) * 100
+          ) / 100,
+        };
+      })
+      .filter((row): row is AgentBreakdownRow => row !== null)
+      .sort((a, b) => b.totalRuns - a.totalRuns);
+
     return {
       runSuccessRate: succeeded / total,
       errorRate: failed / total,
@@ -452,6 +508,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         const s = d.filter((r) => r.status === "succeeded").length;
         return d.length ? s / d.length : 0;
       }),
+      agentBreakdown,
     };
   }
 
@@ -518,6 +575,66 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       policyChanges: changes
         .sort((a, b) => b.timestampIso.localeCompare(a.timestampIso))
         .slice(0, 20),
+    };
+  }
+
+  async getProjects(filters: AnalyticsFilters): Promise<ProjectsResponse> {
+    await this.simulate();
+    const runs = this.filterRuns(filters);
+    const totalCost = runs.reduce((s, r) => s + r.costUsd, 0);
+    const succeeded = runs.filter((r) => r.status === "succeeded").length;
+
+    // Group by project
+    const projRunMap = new Map<string, RunListRow[]>();
+    for (const run of runs) {
+      const arr = projRunMap.get(run.projectId);
+      if (arr) arr.push(run);
+      else projRunMap.set(run.projectId, [run]);
+    }
+
+    // Count agents per project
+    const projAgentCount = new Map<string, Set<string>>();
+    for (const run of runs) {
+      const set = projAgentCount.get(run.projectId) ?? new Set();
+      set.add(run.agentId);
+      projAgentCount.set(run.projectId, set);
+    }
+
+    const projectBreakdown: ProjectBreakdownRow[] = this.seed.projects
+      .map((project) => {
+        const projRuns = projRunMap.get(project.id) ?? [];
+        if (projRuns.length === 0) return null;
+        const projSucceeded = projRuns.filter((r) => r.status === "succeeded").length;
+        const projCost = projRuns.reduce((s, r) => s + r.costUsd, 0);
+        const team = this.seed.teams.find((t) => t.id === project.teamId);
+        return {
+          projectId: project.id,
+          projectName: project.name,
+          teamName: team?.name ?? project.teamId,
+          totalRuns: projRuns.length,
+          successRate: projRuns.length ? projSucceeded / projRuns.length : 0,
+          totalCostUsd: Math.round(projCost * 100) / 100,
+          avgCostPerRunUsd: Math.round((projCost / projRuns.length) * 10000) / 10000,
+          agentCount: projAgentCount.get(project.id)?.size ?? 0,
+        };
+      })
+      .filter((row): row is ProjectBreakdownRow => row !== null)
+      .sort((a, b) => b.totalRuns - a.totalRuns);
+
+    const activeProjects = projectBreakdown.length;
+
+    return {
+      totalProjects: this.seed.projects.length,
+      activeProjects,
+      totalRuns: runs.length,
+      overallSuccessRate: runs.length ? succeeded / runs.length : 0,
+      totalCostUsd: Math.round(totalCost * 100) / 100,
+      projectBreakdown,
+      runsTrend: this.bucketByDay(runs, (d) => d.length),
+      successRateTrend: this.bucketByDay(runs, (d) => {
+        const s = d.filter((r) => r.status === "succeeded").length;
+        return d.length ? s / d.length : 0;
+      }),
     };
   }
 
@@ -594,6 +711,34 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       },
     ];
 
+    // Dynamic policy context based on agent/project
+    const agent = this.seed.agents.find((a) => a.id === run.agentId);
+    const agentIdx = agent ? this.seed.agents.indexOf(agent) : 0;
+    const policyVariant = agentIdx % 4;
+
+    const policyContextVariants = [
+      {
+        blockedActions: ["shell_exec", "network_egress"],
+        allowedActions: ["file_read", "file_write", "git_commit", "test_run"],
+        networkMode: "limited" as const,
+      },
+      {
+        blockedActions: ["shell_exec", "network_egress", "secret_access"],
+        allowedActions: ["file_read", "file_write", "git_commit"],
+        networkMode: "none" as const,
+      },
+      {
+        blockedActions: ["secret_access"],
+        allowedActions: ["file_read", "file_write", "git_commit", "test_run", "shell_exec", "network_egress"],
+        networkMode: "full" as const,
+      },
+      {
+        blockedActions: ["shell_exec", "secret_access", "db_write"],
+        allowedActions: ["file_read", "file_write", "git_commit", "test_run", "network_egress"],
+        networkMode: "limited" as const,
+      },
+    ];
+
     return {
       run,
       timeline,
@@ -605,16 +750,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         testsExecuted: run.testsExecuted ?? 0,
         testsPassed: run.testsPassed ?? 0,
       },
-      policyContext: {
-        blockedActions: ["shell_exec", "network_egress"],
-        allowedActions: [
-          "file_read",
-          "file_write",
-          "git_commit",
-          "test_run",
-        ],
-        networkMode: "limited",
-      },
+      policyContext: policyContextVariants[policyVariant]!,
     };
   }
 }
