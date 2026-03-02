@@ -1,9 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import Svg, { Path, Text as SvgText } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 import { arc, pie } from "d3-shape";
 import type { ProviderCostRow } from "@/features/analytics/types";
 import { formatCompactNumber, formatCurrency } from "@/features/analytics/utils/formatters";
+import { typography } from "@/theme/typography";
+import { semanticThemes } from "@/theme/themes";
 import { DATA_PALETTE } from "./palette";
 
 interface ProviderCostChartProps {
@@ -42,78 +44,107 @@ export function ProviderCostChart({
     .outerRadius(radius);
 
   const arcs = pieGen(chartData);
+  const segmentLabelTypography = typography.label;
+  const centerValueTypography = typography.cardTitle;
+  const centerLabelTypography = typography.label;
+  const textColors = semanticThemes.dark.text;
 
   return (
     <View style={styles.container}>
       <View style={styles.top}>
-        <View style={{ width: size, height: size }}>
+        <View style={[styles.chartFrame, { width: size, height: size }]}>
           <Svg width={size} height={size}>
-            {arcs.map((a, i) => {
+            {arcs.map((a, i) => (
+              <Path
+                key={a.data.key}
+                d={arcGen(a) ?? ""}
+                fill={DATA_PALETTE[i % DATA_PALETTE.length]}
+                transform={`translate(${size / 2},${size / 2})`}
+              />
+            ))}
+          </Svg>
+          <View pointerEvents="none" style={styles.chartTextOverlay}>
+            {arcs.map((a) => {
+              if (a.data.value / total <= 0.05) {
+                return null;
+              }
+
               const centroid = arcGen.centroid(a);
               const pct = ((a.data.value / total) * 100).toFixed(0);
+              const x = size / 2 + centroid[0];
+              const y = size / 2 + centroid[1];
 
               return (
-                <React.Fragment key={a.data.key}>
-                  <Path
-                    d={arcGen(a) ?? ""}
-                    fill={DATA_PALETTE[i % DATA_PALETTE.length]}
-                    transform={`translate(${size / 2},${size / 2})`}
-                  />
-                  {a.data.value / total > 0.05 && (
-                    <SvgText
-                      x={size / 2 + centroid[0]}
-                      y={size / 2 + centroid[1]}
-                      fill="#e5e5e5"
-                      fontSize={10}
-                      fontWeight="600"
-                      textAnchor="middle"
-                      alignmentBaseline="middle"
-                    >
-                      {pct}%
-                    </SvgText>
-                  )}
-                </React.Fragment>
+                <Text
+                  key={`pct-${a.data.key}`}
+                  style={[
+                    styles.segmentLabel,
+                    {
+                      left: x - 18,
+                      top: y - segmentLabelTypography.lineHeight / 2,
+                      color: textColors.primary,
+                      fontFamily: segmentLabelTypography.fontFamily,
+                      fontSize: segmentLabelTypography.fontSize,
+                      fontWeight: "600",
+                      lineHeight: segmentLabelTypography.lineHeight,
+                    },
+                  ]}
+                >
+                  {pct}%
+                </Text>
               );
             })}
-
-            <SvgText
-              x={size / 2}
-              y={size / 2 - 6}
-              fill="#e5e5e5"
-              fontSize={16}
-              fontWeight="700"
-              textAnchor="middle"
-              alignmentBaseline="middle"
-            >
-              {formatCurrency(totalCostUsd)}
-            </SvgText>
-            <SvgText
-              x={size / 2}
-              y={size / 2 + 14}
-              fill="#8a8a8a"
-              fontSize={10}
-              textAnchor="middle"
-              alignmentBaseline="middle"
-            >
-              Cost by provider
-            </SvgText>
-          </Svg>
+            <View style={styles.centerTextWrap}>
+              <Text
+                style={[
+                  styles.centerValue,
+                  {
+                    color: textColors.primary,
+                    fontFamily: centerValueTypography.fontFamily,
+                    fontSize: centerValueTypography.fontSize,
+                    fontWeight: "600",
+                    lineHeight: centerValueTypography.lineHeight,
+                  },
+                ]}
+              >
+                {formatCurrency(totalCostUsd)}
+              </Text>
+              <Text
+                style={[
+                  styles.centerLabel,
+                  {
+                    color: textColors.tertiary,
+                    fontFamily: centerLabelTypography.fontFamily,
+                    fontSize: centerLabelTypography.fontSize,
+                    fontWeight: "500",
+                    lineHeight: centerLabelTypography.lineHeight,
+                  },
+                ]}
+              >
+                Cost by provider
+              </Text>
+            </View>
+          </View>
         </View>
 
         <View style={styles.statsColumn}>
-          <Text style={styles.statsLabel}>Top provider</Text>
-          <Text style={styles.statsValue}>
+          <Text style={[styles.statsLabel, { color: textColors.tertiary }]}>Top provider</Text>
+          <Text style={[styles.statsValue, { color: textColors.primary }]}>
             {topProvider ? PROVIDER_LABELS[topProvider.provider] : "N/A"}
           </Text>
-          <Text style={styles.statsSubtle}>
+          <Text style={[styles.statsSubtle, { color: textColors.secondary }]}>
             {topProvider
               ? `${((topProvider.totalCostUsd / total) * 100).toFixed(1)}% of cost`
               : "No data"}
           </Text>
 
-          <Text style={[styles.statsLabel, styles.metricSpacing]}>Total runs</Text>
-          <Text style={styles.statsValue}>{formatCompactNumber(sorted.reduce((sum, row) => sum + row.runCount, 0))}</Text>
-          <Text style={styles.statsSubtle}>Across all providers</Text>
+          <Text style={[styles.statsLabel, styles.metricSpacing, { color: textColors.tertiary }]}>
+            Total runs
+          </Text>
+          <Text style={[styles.statsValue, { color: textColors.primary }]}>
+            {formatCompactNumber(sorted.reduce((sum, row) => sum + row.runCount, 0))}
+          </Text>
+          <Text style={[styles.statsSubtle, { color: textColors.secondary }]}>Across all providers</Text>
         </View>
       </View>
 
@@ -132,15 +163,25 @@ export function ProviderCostChart({
                       { backgroundColor: DATA_PALETTE[i % DATA_PALETTE.length] },
                     ]}
                   />
-                  <Text style={styles.providerName}>{PROVIDER_LABELS[row.provider]}</Text>
+                  <Text style={[styles.providerName, { color: textColors.primary }]}>
+                    {PROVIDER_LABELS[row.provider]}
+                  </Text>
                 </View>
-                <Text style={styles.share}>{share.toFixed(1)}%</Text>
+                <Text style={[styles.share, { color: textColors.secondary }]}>
+                  {share.toFixed(1)}%
+                </Text>
               </View>
 
               <View style={styles.metricsRow}>
-                <Text style={styles.metric}>Cost {formatCurrency(row.totalCostUsd)}</Text>
-                <Text style={styles.metric}>Runs {formatCompactNumber(row.runCount)}</Text>
-                <Text style={styles.metric}>Avg/run {formatCurrency(avgCostPerRun)}</Text>
+                <Text style={[styles.metric, { color: textColors.secondary }]}>
+                  Cost {formatCurrency(row.totalCostUsd)}
+                </Text>
+                <Text style={[styles.metric, { color: textColors.secondary }]}>
+                  Runs {formatCompactNumber(row.runCount)}
+                </Text>
+                <Text style={[styles.metric, { color: textColors.secondary }]}>
+                  Avg/run {formatCurrency(avgCostPerRun)}
+                </Text>
               </View>
 
               <View style={styles.runBarTrack}>
@@ -172,24 +213,52 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexWrap: "wrap",
   },
+  chartFrame: {
+    position: "relative",
+  },
+  chartTextOverlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  segmentLabel: {
+    position: "absolute",
+    width: 36,
+    textAlign: "center",
+  },
+  centerTextWrap: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  centerValue: {
+    textAlign: "center",
+  },
+  centerLabel: {
+    textAlign: "center",
+    marginTop: 2,
+  },
   statsColumn: {
     flex: 1,
     minWidth: 150,
     gap: 2,
   },
   statsLabel: {
-    fontSize: 11,
-    color: "#8a8a8a",
+    fontFamily: typography.label.fontFamily,
+    fontSize: typography.label.fontSize,
+    fontWeight: "500",
+    lineHeight: typography.label.lineHeight,
     textTransform: "uppercase",
   },
   statsValue: {
-    fontSize: 16,
-    color: "#e5e5e5",
+    fontFamily: typography.cardTitle.fontFamily,
+    fontSize: typography.cardTitle.fontSize,
     fontWeight: "700",
+    lineHeight: typography.cardTitle.lineHeight,
   },
   statsSubtle: {
-    fontSize: 11,
-    color: "#a3a3a3",
+    fontFamily: typography.label.fontFamily,
+    fontSize: typography.label.fontSize,
+    fontWeight: "500",
+    lineHeight: typography.label.lineHeight,
   },
   metricSpacing: {
     marginTop: 12,
@@ -216,14 +285,16 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   providerName: {
-    fontSize: 12,
-    color: "#e5e5e5",
+    fontFamily: typography.tableBody.fontFamily,
+    fontSize: typography.tableBody.fontSize,
     fontWeight: "600",
+    lineHeight: typography.tableBody.lineHeight,
   },
   share: {
-    fontSize: 12,
-    color: "#d4d4d4",
+    fontFamily: typography.tableBody.fontFamily,
+    fontSize: typography.tableBody.fontSize,
     fontWeight: "600",
+    lineHeight: typography.tableBody.lineHeight,
   },
   metricsRow: {
     flexDirection: "row",
@@ -232,8 +303,10 @@ const styles = StyleSheet.create({
     rowGap: 3,
   },
   metric: {
-    fontSize: 11,
-    color: "#a3a3a3",
+    fontFamily: typography.label.fontFamily,
+    fontSize: typography.label.fontSize,
+    fontWeight: "500",
+    lineHeight: typography.label.lineHeight,
   },
   runBarTrack: {
     width: "100%",

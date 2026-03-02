@@ -49,7 +49,7 @@ export default function CostAnalyticsScreen() {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.chartRow}
             >
-              <ChartCard title="Daily Cost Trend">
+              <ChartCard title="Cost per Day">
                 <TrendChart data={data.costTrend} variant="area" color="#22c55e" />
               </ChartCard>
               <ChartCard title="Cost by Project">

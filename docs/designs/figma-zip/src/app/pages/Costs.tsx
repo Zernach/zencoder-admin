@@ -22,25 +22,25 @@ export function Costs() {
 
       {/* Top Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard 
+        <MetricCard
           title="Total Cost"
           value={`$${mockMetrics.cost.totalCost.current.toLocaleString()}`}
           change={mockMetrics.cost.totalCost.change}
           subtitle="Last 7 days"
         />
-        <MetricCard 
+        <MetricCard
           title="Cost Per Run"
           value={`$${mockMetrics.cost.costPerRun.current}`}
           change={mockMetrics.cost.costPerRun.change}
           subtitle="Average"
         />
-        <MetricCard 
+        <MetricCard
           title="Total Tokens"
           value={`${(mockMetrics.cost.totalTokens.current / 1000000).toFixed(1)}M`}
           change={mockMetrics.cost.totalTokens.change}
           subtitle="In + Out"
         />
-        <MetricCard 
+        <MetricCard
           title="Cache Hit Rate"
           value={mockMetrics.cost.cacheHitRate.current}
           unit="%"
@@ -51,12 +51,12 @@ export function Costs() {
 
       {/* Cost Trends */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartPlaceholder 
-          title="Daily Cost Trend"
+        <ChartPlaceholder
+          title="Cost per Day"
           type="area"
           height={250}
         />
-        <ChartPlaceholder 
+        <ChartPlaceholder
           title="Cost by Model Type"
           type="pie"
           height={250}
@@ -109,12 +109,12 @@ export function Costs() {
 
       {/* More Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartPlaceholder 
+        <ChartPlaceholder
           title="Token Usage by Agent"
           type="bar"
           height={250}
         />
-        <ChartPlaceholder 
+        <ChartPlaceholder
           title="Cost per Project Over Time"
           type="line"
           height={250}
@@ -122,7 +122,7 @@ export function Costs() {
       </div>
 
       {/* Cost by Project Table */}
-      <DataTable 
+      <DataTable
         title="Cost Breakdown by Project"
         columns={[
           { header: 'Project', key: 'name', width: '30%' },

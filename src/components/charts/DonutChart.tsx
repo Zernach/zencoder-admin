@@ -1,8 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import Svg, { Path, Text as SvgText } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 import { arc, pie } from "d3-shape";
 import type { KeyValueMetric } from "@/features/analytics/types";
+import { typography } from "@/theme/typography";
+import { semanticThemes } from "@/theme/themes";
 import { DATA_PALETTE } from "./palette";
 
 interface DonutChartProps {
@@ -32,14 +34,16 @@ export function DonutChart({
     .outerRadius(radius);
 
   const arcs = pieGen(data);
+  const segmentLabelTypography = typography.label;
+  const centerValueTypography = typography.cardTitle;
+  const centerLabelTypography = typography.label;
+  const textColors = semanticThemes.dark.text;
 
   return (
     <View style={styles.container}>
-      <View style={{ width: size, height: size, alignSelf: "center" }}>
+      <View style={[styles.chartFrame, { width: size, height: size }]}>
         <Svg width={size} height={size}>
           {arcs.map((a, i) => {
-            const centroid = arcGen.centroid(a);
-            const pct = ((a.data.value / total) * 100).toFixed(0);
             return (
               <React.Fragment key={a.data.key}>
                 <Path
@@ -47,52 +51,79 @@ export function DonutChart({
                   fill={DATA_PALETTE[i % DATA_PALETTE.length]}
                   transform={`translate(${size / 2},${size / 2})`}
                 />
-                {a.data.value / total > 0.05 && (
-                  <SvgText
-                    x={size / 2 + centroid[0]}
-                    y={size / 2 + centroid[1]}
-                    fill="#e5e5e5"
-                    fontSize={10}
-                    fontWeight="600"
-                    textAnchor="middle"
-                    alignmentBaseline="middle"
-                  >
-                    {pct}%
-                  </SvgText>
-                )}
               </React.Fragment>
             );
           })}
+        </Svg>
+        <View pointerEvents="none" style={styles.chartTextOverlay}>
+          {arcs.map((a) => {
+            if (a.data.value / total <= 0.05) {
+              return null;
+            }
+
+            const centroid = arcGen.centroid(a);
+            const pct = ((a.data.value / total) * 100).toFixed(0);
+            const x = size / 2 + centroid[0];
+            const y = size / 2 + centroid[1];
+
+            return (
+              <Text
+                key={`pct-${a.data.key}`}
+                style={[
+                  styles.segmentLabel,
+                  {
+                    left: x - 18,
+                    top: y - segmentLabelTypography.lineHeight / 2,
+                    color: textColors.primary,
+                    fontFamily: segmentLabelTypography.fontFamily,
+                    fontSize: segmentLabelTypography.fontSize,
+                    fontWeight: "600",
+                    lineHeight: segmentLabelTypography.lineHeight,
+                  },
+                ]}
+              >
+                {pct}%
+              </Text>
+            );
+          })}
+
           {(centerLabel || centerValue) && (
-            <>
+            <View style={styles.centerTextWrap}>
               {centerValue && (
-                <SvgText
-                  x={size / 2}
-                  y={size / 2 - (centerLabel ? 6 : 0)}
-                  fill="#e5e5e5"
-                  fontSize={16}
-                  fontWeight="700"
-                  textAnchor="middle"
-                  alignmentBaseline="middle"
+                <Text
+                  style={[
+                    styles.centerValue,
+                    {
+                      color: textColors.primary,
+                      fontFamily: centerValueTypography.fontFamily,
+                      fontSize: centerValueTypography.fontSize,
+                      fontWeight: "600",
+                      lineHeight: centerValueTypography.lineHeight,
+                    },
+                  ]}
                 >
                   {centerValue}
-                </SvgText>
+                </Text>
               )}
               {centerLabel && (
-                <SvgText
-                  x={size / 2}
-                  y={size / 2 + 14}
-                  fill="#8a8a8a"
-                  fontSize={10}
-                  textAnchor="middle"
-                  alignmentBaseline="middle"
+                <Text
+                  style={[
+                    styles.centerLabel,
+                    {
+                      color: textColors.tertiary,
+                      fontFamily: centerLabelTypography.fontFamily,
+                      fontSize: centerLabelTypography.fontSize,
+                      fontWeight: "500",
+                      lineHeight: centerLabelTypography.lineHeight,
+                    },
+                  ]}
                 >
                   {centerLabel}
-                </SvgText>
+                </Text>
               )}
-            </>
+            </View>
           )}
-        </Svg>
+        </View>
       </View>
       <View style={styles.legend}>
         {data.map((d, i) => (
@@ -106,8 +137,10 @@ export function DonutChart({
                 },
               ]}
             />
-            <Text style={styles.legendLabel}>{d.key}</Text>
-            <Text style={styles.legendPct}>
+            <Text style={[styles.legendLabel, { color: textColors.secondary }]}>
+              {d.key}
+            </Text>
+            <Text style={[styles.legendPct, { color: textColors.tertiary }]}>
               {((d.value / total) * 100).toFixed(1)}%
             </Text>
           </View>
@@ -120,6 +153,30 @@ export function DonutChart({
 const styles = StyleSheet.create({
   container: {
     gap: 12,
+  },
+  chartFrame: {
+    alignSelf: "center",
+    position: "relative",
+  },
+  chartTextOverlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  segmentLabel: {
+    position: "absolute",
+    width: 36,
+    textAlign: "center",
+  },
+  centerTextWrap: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  centerValue: {
+    textAlign: "center",
+  },
+  centerLabel: {
+    textAlign: "center",
+    marginTop: 2,
   },
   legend: {
     width: "100%",
@@ -138,12 +195,16 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   legendLabel: {
-    fontSize: 11,
-    color: "#a3a3a3",
+    fontFamily: typography.tableBody.fontFamily,
+    fontSize: typography.tableBody.fontSize,
+    fontWeight: "400",
+    lineHeight: typography.tableBody.lineHeight,
   },
   legendPct: {
     marginLeft: "auto",
-    fontSize: 11,
-    color: "#8a8a8a",
+    fontFamily: typography.tableBody.fontFamily,
+    fontSize: typography.tableBody.fontSize,
+    fontWeight: "400",
+    lineHeight: typography.tableBody.lineHeight,
   },
 });
