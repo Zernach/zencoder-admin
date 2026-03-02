@@ -3,14 +3,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet, Modal } from "react-nati
 import { ChevronDown, X, Filter } from "lucide-react-native";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import { useAppDependencies } from "@/core/di/AppDependencies";
-import type { TimeRangePreset, ModelProvider, RunStatus } from "@/features/analytics/types";
-
-const TIME_PRESETS: { label: string; value: TimeRangePreset }[] = [
-  { label: "24h", value: "24h" },
-  { label: "7d", value: "7d" },
-  { label: "30d", value: "30d" },
-  { label: "90d", value: "90d" },
-];
+import type { ModelProvider, RunStatus } from "@/features/analytics/types";
 
 const PROVIDER_OPTIONS: { label: string; value: ModelProvider }[] = [
   { label: "Codex", value: "codex" },
@@ -35,9 +28,7 @@ interface FilterBarProps {
 
 export function FilterBar({ visibleFilters }: FilterBarProps) {
   const {
-    preset,
     filters,
-    setTimeRange,
     setTeamFilter,
     setProjectFilter,
     setProviderFilter,
@@ -275,37 +266,8 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
 
   return (
     <View style={styles.container}>
-      {/* Row 1: Time range presets + Filter dropdowns */}
+      {/* Row 1: Filter dropdowns */}
       <View style={styles.topRow}>
-        {/* Time Range Presets */}
-        <View style={styles.presetGroup}>
-          {TIME_PRESETS.map((p) => (
-            <Pressable
-              key={p.value}
-              style={[
-                styles.presetButton,
-                preset === p.value && styles.presetButtonActive,
-              ]}
-              onPress={() => setTimeRange(p.value)}
-              accessibilityRole="button"
-              accessibilityLabel={`Set time range to ${p.label}`}
-              accessibilityState={{ selected: preset === p.value }}
-            >
-              <Text
-                style={[
-                  styles.presetText,
-                  preset === p.value && styles.presetTextActive,
-                ]}
-              >
-                {p.label}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-
-        {/* Separator */}
-        <View style={styles.separator} />
-
         {/* Filter Dropdowns */}
         <ScrollView
           horizontal
@@ -450,35 +412,6 @@ const styles = StyleSheet.create({
   topRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-  },
-  presetGroup: {
-    flexDirection: "row",
-    gap: 2,
-    backgroundColor: "#1a1a1a",
-    borderRadius: 8,
-    padding: 2,
-  },
-  presetButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  presetButtonActive: {
-    backgroundColor: "#30a8dc",
-  },
-  presetText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#8a8a8a",
-  },
-  presetTextActive: {
-    color: "#ffffff",
-  },
-  separator: {
-    width: 1,
-    height: 24,
-    backgroundColor: "#2d2d2d",
   },
   filterGroup: {
     flexDirection: "row",

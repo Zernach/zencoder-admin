@@ -1,4 +1,8 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSelector,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import type {
   AnalyticsFilters,
   TimeRange,
@@ -89,10 +93,16 @@ export const filtersSlice = createSlice({
 
 export const selectActiveFilters = (state: {
   filters: FiltersState;
-}): AnalyticsFilters => {
-  const { preset: _, ...filters } = state.filters;
-  return filters;
-};
+}): AnalyticsFilters =>
+  selectActiveFiltersMemoized(state.filters);
+
+const selectActiveFiltersMemoized = createSelector(
+  [(filters: FiltersState) => filters],
+  (filters): AnalyticsFilters => {
+    const { preset: _, ...activeFilters } = filters;
+    return activeFilters;
+  }
+);
 
 export const selectPreset = (state: {
   filters: FiltersState;

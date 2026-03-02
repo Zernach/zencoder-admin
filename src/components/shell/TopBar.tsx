@@ -1,23 +1,67 @@
 import React from "react";
-import { View, Text, Pressable, TextInput, StyleSheet } from "react-native";
-import { Menu, Search, Filter, Clock } from "lucide-react-native";
+import { View, Text, Pressable, TextInput, StyleSheet, Modal } from "react-native";
+import { Menu, Search, Clock, X } from "lucide-react-native";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
+import type { TimeRangePreset } from "@/features/analytics/types";
 import { useAppDispatch } from "@/store";
 import { toggleSidebar } from "@/store/slices/sidebarSlice";
+
+type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
+
+const TIME_PRESET_OPTIONS: {
+  value: SelectableTimeRangePreset;
+  label: string;
+  fullLabel: string;
+}[] = [
+  { value: "24h", label: "24h", fullLabel: "Last 24 hours" },
+  { value: "7d", label: "7d", fullLabel: "Last 7 days" },
+  { value: "30d", label: "30d", fullLabel: "Last 30 days" },
+  { value: "90d", label: "90d", fullLabel: "Last 90 days" },
+];
+
+const PRESET_LABELS: Record<TimeRangePreset, string> = {
+  "24h": "Last 24 hours",
+  "7d": "Last 7 days",
+  "30d": "Last 30 days",
+  "90d": "Last 90 days",
+  custom: "Custom range",
+};
+
+const PRESET_SHORT_LABELS: Record<TimeRangePreset, string> = {
+  "24h": "24h",
+  "7d": "7d",
+  "30d": "30d",
+  "90d": "90d",
+  custom: "Custom",
+};
 
 export function TopBar() {
   const breakpoint = useBreakpoint();
   const dispatch = useAppDispatch();
-  const { preset, activeFilterCount } = useDashboardFilters();
+  const { preset, setTimeRange } = useDashboardFilters();
+  const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = React.useState(false);
 
-  const presetLabels: Record<string, string> = {
-    "24h": "Last 24 hours",
-    "7d": "Last 7 days",
-    "30d": "Last 30 days",
-    "90d": "Last 90 days",
-    custom: "Custom range",
-  };
+  const openTimeRangeOverlay = React.useCallback(
+    () => setTimeRangeOverlayVisible(true),
+    []
+  );
+
+  const closeTimeRangeOverlay = React.useCallback(
+    () => setTimeRangeOverlayVisible(false),
+    []
+  );
+
+  const handleSelectTimeRange = React.useCallback(
+    (nextPreset: SelectableTimeRangePreset) => {
+      setTimeRange(nextPreset);
+      setTimeRangeOverlayVisible(false);
+    },
+    [setTimeRange]
+  );
+
+  const presetButtonLabel =
+    breakpoint === "mobile" ? PRESET_SHORT_LABELS[preset] : PRESET_LABELS[preset];
 
   return (
     <View style={styles.container}>
@@ -42,21 +86,71 @@ export function TopBar() {
         </View>
       </View>
       <View style={styles.right}>
-        <Pressable style={styles.presetBtn} accessibilityRole="button">
+        <Pressable
+          style={styles.presetBtn}
+          accessibilityRole="button"
+          accessibilityLabel="Open time range selector"
+          onPress={openTimeRangeOverlay}
+        >
           <Clock size={14} color="#a3a3a3" />
-          <Text style={styles.presetText}>
-            {presetLabels[preset] ?? preset}
-          </Text>
-        </Pressable>
-        <Pressable style={styles.iconBtn} accessibilityRole="button">
-          <Filter size={16} color="#a3a3a3" />
-          {activeFilterCount > 0 && (
-            <View style={styles.filterBadge}>
-              <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
-            </View>
-          )}
+          <Text style={styles.presetText}>{presetButtonLabel}</Text>
         </Pressable>
       </View>
+      <Modal
+        transparent
+        visible={isTimeRangeOverlayVisible}
+        animationType="fade"
+        onRequestClose={closeTimeRangeOverlay}
+      >
+        <View style={styles.modalOverlay}>
+          <Pressable
+            style={StyleSheet.absoluteFillObject}
+            onPress={closeTimeRangeOverlay}
+            accessibilityRole="button"
+            accessibilityLabel="Close time range selector"
+          />
+          <View style={styles.overlayPanel}>
+            <View style={styles.overlayHeader}>
+              <Text style={styles.overlayTitle}>Select Time Range</Text>
+              <Pressable
+                onPress={closeTimeRangeOverlay}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Close overlay"
+              >
+                <X size={16} color="#a3a3a3" />
+              </Pressable>
+            </View>
+            <View style={styles.overlayOptions}>
+              {TIME_PRESET_OPTIONS.map((option) => {
+                const isSelected = preset === option.value;
+                return (
+                  <Pressable
+                    key={option.value}
+                    style={[
+                      styles.overlayOptionButton,
+                      isSelected && styles.overlayOptionButtonSelected,
+                    ]}
+                    onPress={() => handleSelectTimeRange(option.value)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Set time range to ${option.fullLabel}`}
+                    accessibilityState={{ selected: isSelected }}
+                  >
+                    <Text
+                      style={[
+                        styles.overlayOptionText,
+                        isSelected && styles.overlayOptionTextSelected,
+                      ]}
+                    >
+                      {option.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -119,20 +213,56 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#a3a3a3",
   },
-  filterBadge: {
-    position: "absolute",
-    top: 6,
-    right: 6,
-    backgroundColor: "#30a8dc",
-    borderRadius: 8,
-    minWidth: 16,
-    height: 16,
-    alignItems: "center",
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.58)",
     justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
-  filterBadgeText: {
-    fontSize: 9,
-    color: "#00131c",
-    fontWeight: "700",
+  overlayPanel: {
+    width: 320,
+    maxWidth: "100%",
+    backgroundColor: "#111111",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#2d2d2d",
+    paddingHorizontal: 14,
+    paddingTop: 14,
+    paddingBottom: 12,
+    gap: 12,
+  },
+  overlayHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  overlayTitle: {
+    color: "#e5e5e5",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  overlayOptions: {
+    gap: 8,
+  },
+  overlayOptionButton: {
+    backgroundColor: "#1a1a1a",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#2d2d2d",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  overlayOptionButtonSelected: {
+    borderColor: "#30a8dc",
+    backgroundColor: "rgba(48, 168, 220, 0.13)",
+  },
+  overlayOptionText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#a3a3a3",
+  },
+  overlayOptionTextSelected: {
+    color: "#d6eef8",
   },
 });

@@ -77,4 +77,16 @@ describe("useDashboardFilters", () => {
     );
     expect(result.current.preset).toBe("custom");
   });
+
+  it("keeps filters reference stable across rerenders when state is unchanged", () => {
+    const { wrapper } = createTestWrapper();
+    const { result, rerender } = renderHook(() => useDashboardFilters(), {
+      wrapper,
+    });
+
+    const firstFiltersRef = result.current.filters;
+    rerender({});
+
+    expect(result.current.filters).toBe(firstFiltersRef);
+  });
 });

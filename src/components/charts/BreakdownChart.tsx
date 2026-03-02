@@ -25,7 +25,7 @@ export function BreakdownChart({
     return (
       <View style={[styles.container, { minHeight: height }]}>
         {sorted.map((item, i) => (
-          <View key={item.key} style={styles.hBarRow}>
+          <View key={`${item.key}-${i}`} style={styles.hBarRow}>
             <Text style={styles.hBarLabel} numberOfLines={1}>
               {item.key}
             </Text>
@@ -56,7 +56,7 @@ export function BreakdownChart({
   return (
     <View style={[styles.barContainer, { height }]}>
       {sorted.map((item, i) => (
-        <View key={item.key} style={styles.barCol}>
+        <View key={`${item.key}-${i}`} style={styles.barCol}>
           <View style={styles.barWrapper}>
             {showValues && (
               <Text style={styles.barValue}>
