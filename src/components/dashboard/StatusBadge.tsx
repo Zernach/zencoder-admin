@@ -52,7 +52,12 @@ export function StatusBadge({ variant, status, severity }: StatusBadgeProps) {
 
   return (
     <View
-      style={[styles.badge, { borderColor: color }]}
+      style={[
+        styles.badge,
+        variant === "run-status" && styles.runStatusBadge,
+        variant === "severity" && styles.severityBadge,
+        { borderColor: color },
+      ]}
       accessibilityRole="text"
       accessibilityLabel={`Status: ${label}`}
     >
@@ -72,6 +77,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
     alignSelf: "flex-start",
+  },
+  runStatusBadge: {
+    width: 88,
+    justifyContent: "center",
+  },
+  severityBadge: {
+    width: 88,
+    justifyContent: "center",
   },
   text: {
     fontSize: 11,

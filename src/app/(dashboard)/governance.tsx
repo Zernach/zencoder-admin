@@ -24,6 +24,18 @@ const securityCols: ColumnDef<SecurityEventRow>[] = [
   { key: "description", header: "Description" },
 ];
 
+const COMPLIANCE_STATUS_COLORS: Record<ComplianceItem["status"], string> = {
+  compliant: "#22c55e",
+  warning: "#f59e0b",
+  critical: "#ef4444",
+};
+
+function getComplianceCaption(status: ComplianceItem["status"]): string {
+  if (status === "compliant") return "Passing";
+  if (status === "warning") return "Attention needed";
+  return "Immediate action required";
+}
+
 export default function GovernanceScreen() {
   const { data, loading, error, refetch } = useGovernanceDashboard();
   const { seedData } = useAppDependencies();
@@ -93,7 +105,8 @@ export default function GovernanceScreen() {
                 key={item.label}
                 title={item.label}
                 value={item.status}
-                caption={item.status === "compliant" ? "Passing" : "Attention needed"}
+                valueColor={COMPLIANCE_STATUS_COLORS[item.status]}
+                caption={getComplianceCaption(item.status)}
               />
             ))}
           </CardGrid>

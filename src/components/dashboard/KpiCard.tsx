@@ -13,6 +13,7 @@ import { motion } from "@/theme/motion";
 interface KpiCardProps {
   title: string;
   value: string;
+  valueColor?: string;
   delta?: number;
   deltaPolarity?: "positive-good" | "negative-good";
   caption?: string;
@@ -24,6 +25,7 @@ interface KpiCardProps {
 export function KpiCard({
   title,
   value,
+  valueColor = "#e5e5e5",
   delta,
   deltaPolarity = "positive-good",
   caption,
@@ -68,7 +70,7 @@ export function KpiCard({
       </View>
       <View style={styles.valueRow}>
         <Animated.View style={valueAnimStyle}>
-          <Text style={styles.value}>{value}</Text>
+          <Text style={[styles.value, { color: valueColor }]}>{value}</Text>
         </Animated.View>
         {delta != null && (
           <DeltaIndicator value={delta} polarity={deltaPolarity} />

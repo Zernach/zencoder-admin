@@ -3,6 +3,7 @@ import { View, Text, Switch, Pressable, StyleSheet } from "react-native";
 import { SectionHeader } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
 import { spacing } from "@/theme/tokens";
+import { useThemeMode } from "@/providers/ThemeProvider";
 
 interface SettingToggle {
   label: string;
@@ -18,15 +19,21 @@ const TOGGLES: SettingToggle[] = [
 ];
 
 export default function SettingsScreen() {
+  const { mode, setMode } = useThemeMode();
   const [settings, setSettings] = useState<Record<string, boolean>>({
-    darkMode: true,
     emailNotifs: true,
     slackInteg: false,
     autoRefresh: true,
   });
 
-  const toggle = (key: string) =>
-    setSettings((s) => ({ ...s, [key]: !s[key] }));
+  const toggle = (key: string) => {
+    if (key === "darkMode") {
+      setMode(mode === "dark" ? "light" : "dark");
+      return;
+    }
+
+    setSettings((currentSettings) => ({ ...currentSettings, [key]: !currentSettings[key] }));
+  };
 
   return (
     <ScreenWrapper
@@ -41,17 +48,23 @@ export default function SettingsScreen() {
           {TOGGLES.map((t) => (
             <View key={t.key} style={styles.row}>
               <View style={styles.rowText}>
-                <Text style={styles.label}>{t.label}</Text>
+                <Text style={styles.label}>
+                  {t.key === "darkMode" ? `${t.label}: ${mode === "dark" ? "Dark" : "Light"}` : t.label}
+                </Text>
                 <Text style={styles.desc}>{t.description}</Text>
               </View>
               <Switch
-                value={settings[t.key] ?? false}
+                value={t.key === "darkMode" ? mode === "dark" : (settings[t.key] ?? false)}
                 onValueChange={() => toggle(t.key)}
                 trackColor={{ false: "#2d2d2d", true: "#30a8dc" }}
                 thumbColor="#e5e5e5"
                 accessibilityRole="switch"
-                accessibilityLabel={t.label}
-                accessibilityState={{ checked: settings[t.key] ?? false }}
+                accessibilityLabel={
+                  t.key === "darkMode" ? `Theme mode ${mode === "dark" ? "Dark" : "Light"}` : t.label
+                }
+                accessibilityState={{
+                  checked: t.key === "darkMode" ? mode === "dark" : (settings[t.key] ?? false),
+                }}
               />
             </View>
           ))}

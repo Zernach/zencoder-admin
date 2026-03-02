@@ -6,6 +6,7 @@ import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilt
 import type { TimeRangePreset } from "@/features/analytics/types";
 import { useAppDispatch } from "@/store";
 import { toggleSidebar } from "@/store/slices/sidebarSlice";
+import { useThemeMode } from "@/providers/ThemeProvider";
 
 type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
 
@@ -39,6 +40,7 @@ const PRESET_SHORT_LABELS: Record<TimeRangePreset, string> = {
 export function TopBar() {
   const breakpoint = useBreakpoint();
   const dispatch = useAppDispatch();
+  const { mode } = useThemeMode();
   const { preset, setTimeRange } = useDashboardFilters();
   const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = React.useState(false);
 
@@ -62,9 +64,18 @@ export function TopBar() {
 
   const presetButtonLabel =
     breakpoint === "mobile" ? PRESET_SHORT_LABELS[preset] : PRESET_LABELS[preset];
+  const isDark = mode === "dark";
+  const iconColor = isDark ? "#a3a3a3" : "#435160";
+  const panelBackground = isDark ? "#1a1a1a" : "#ffffff";
+  const panelBorder = isDark ? "#2d2d2d" : "#d5dce3";
+  const barBackground = isDark ? "#0a0a0a" : "#f6f7f8";
+  const barBorder = isDark ? "#2d2d2d" : "#d5dce3";
+  const textColor = isDark ? "#a3a3a3" : "#435160";
+  const placeholderColor = isDark ? "#8a8a8a" : "#6b7683";
+  const inputTextColor = isDark ? "#e5e5e5" : "#0f1720";
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: barBackground, borderBottomColor: barBorder }]}>
       <View style={styles.left}>
         {breakpoint !== "mobile" && (
           <Pressable
@@ -73,27 +84,27 @@ export function TopBar() {
             accessibilityRole="button"
             accessibilityLabel="Toggle sidebar"
           >
-            <Menu size={20} color="#a3a3a3" />
+            <Menu size={20} color={iconColor} />
           </Pressable>
         )}
-        <View style={styles.searchContainer}>
-          <Search size={14} color="#8a8a8a" />
+        <View style={[styles.searchContainer, { backgroundColor: panelBackground, borderColor: panelBorder }]}>
+          <Search size={14} color={placeholderColor} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: inputTextColor }]}
             placeholder="Search agents, projects, runs..."
-            placeholderTextColor="#8a8a8a"
+            placeholderTextColor={placeholderColor}
           />
         </View>
       </View>
       <View style={styles.right}>
         <Pressable
-          style={styles.presetBtn}
+          style={[styles.presetBtn, { backgroundColor: panelBackground, borderColor: panelBorder }]}
           accessibilityRole="button"
           accessibilityLabel="Open time range selector"
           onPress={openTimeRangeOverlay}
         >
-          <Clock size={14} color="#a3a3a3" />
-          <Text style={styles.presetText}>{presetButtonLabel}</Text>
+          <Clock size={14} color={textColor} />
+          <Text style={[styles.presetText, { color: textColor }]}>{presetButtonLabel}</Text>
         </Pressable>
       </View>
       <Modal
@@ -188,17 +199,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "#1a1a1a",
     borderRadius: 8,
     paddingHorizontal: 12,
     height: 36,
     flex: 1,
     maxWidth: 400,
+    borderWidth: 1,
   },
   searchInput: {
     flex: 1,
     fontSize: 13,
-    color: "#e5e5e5",
   },
   presetBtn: {
     flexDirection: "row",
@@ -207,11 +217,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 6,
-    backgroundColor: "#1a1a1a",
+    borderWidth: 1,
   },
   presetText: {
     fontSize: 12,
-    color: "#a3a3a3",
   },
   modalOverlay: {
     flex: 1,
