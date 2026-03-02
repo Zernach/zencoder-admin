@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
+import { render, fireEvent, within } from "@testing-library/react-native";
 import { DataTable, type ColumnDef } from "../DataTable";
 
 // Mock dependencies
@@ -34,7 +34,7 @@ interface TestRow {
 
 const columns: ColumnDef<TestRow>[] = [
   { key: "id", header: "ID", width: 80 },
-  { key: "name", header: "Name", sortable: true },
+  { key: "name", header: "Name" },
   { key: "value", header: "Value", width: 100, align: "right" },
 ];
 
@@ -42,6 +42,12 @@ const data: TestRow[] = [
   { id: "1", name: "Alice", value: 100 },
   { id: "2", name: "Bob", value: 200 },
   { id: "3", name: "Charlie", value: 300 },
+];
+
+const unsortedData: TestRow[] = [
+  { id: "3", name: "Charlie", value: 300 },
+  { id: "1", name: "Alice", value: 100 },
+  { id: "2", name: "Bob", value: 200 },
 ];
 
 describe("DataTable", () => {
@@ -69,6 +75,41 @@ describe("DataTable", () => {
     expect(getByText("Alice")).toBeDefined();
     expect(getByText("Bob")).toBeDefined();
     expect(getByText("Charlie")).toBeDefined();
+  });
+
+  it("renders all headers as sortable by default", () => {
+    const { getByLabelText } = render(
+      <DataTable
+        columns={columns}
+        data={data}
+        keyExtractor={(r) => r.id}
+      />
+    );
+
+    expect(getByLabelText("Sort by ID")).toBeDefined();
+    expect(getByLabelText("Sort by Name")).toBeDefined();
+    expect(getByLabelText("Sort by Value")).toBeDefined();
+  });
+
+  it("sorts rows and reverses direction when pressed again", () => {
+    const { getByText, getAllByTestId } = render(
+      <DataTable
+        columns={columns}
+        data={unsortedData}
+        keyExtractor={(r) => r.id}
+      />
+    );
+
+    let rows = getAllByTestId("table-row");
+    expect(within(rows[0]!).getByText("Charlie")).toBeDefined();
+
+    fireEvent.press(getByText("Name"));
+    rows = getAllByTestId("table-row");
+    expect(within(rows[0]!).getByText("Alice")).toBeDefined();
+
+    fireEvent.press(getByText("Name"));
+    rows = getAllByTestId("table-row");
+    expect(within(rows[0]!).getByText("Charlie")).toBeDefined();
   });
 
   it("sort handler fires with column key", () => {
@@ -113,7 +154,7 @@ describe("DataTable", () => {
 
   it("row press fires onRowPress", () => {
     const onRowPress = jest.fn();
-    const { getAllByRole } = render(
+    const { getByLabelText } = render(
       <DataTable
         columns={columns}
         data={data}
@@ -121,8 +162,7 @@ describe("DataTable", () => {
         onRowPress={onRowPress}
       />
     );
-    const buttons = getAllByRole("button");
-    fireEvent.press(buttons[0]!);
+    fireEvent.press(getByLabelText("Table row 1"));
     expect(onRowPress).toHaveBeenCalledWith(data[0]);
   });
 });

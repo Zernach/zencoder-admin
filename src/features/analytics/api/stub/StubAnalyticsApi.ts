@@ -21,6 +21,9 @@ import type {
   ProjectBreakdownRow,
   ProviderCostRow,
   ModelProvider,
+  PromptRole,
+  RunPromptMessageCost,
+  RunPromptChainSummary,
 } from "@/features/analytics/types";
 
 interface StubConfig {
@@ -33,6 +36,14 @@ function percentile(sorted: number[], p: number): number {
   if (sorted.length === 0) return 0;
   const idx = Math.ceil((p / 100) * sorted.length) - 1;
   return sorted[Math.max(0, idx)]!;
+}
+
+function hashString(input: string): number {
+  let h = 0;
+  for (let i = 0; i < input.length; i++) {
+    h = (h * 31 + input.charCodeAt(i)) >>> 0;
+  }
+  return h;
 }
 
 export class StubAnalyticsApi implements IAnalyticsApi {
@@ -101,6 +112,114 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         tsIso: `${day}T00:00:00.000Z`,
         value: valueFn(dayRuns),
       }));
+  }
+
+  private buildPromptChain(
+    run: RunListRow
+  ): {
+    promptChain: RunPromptMessageCost[];
+    promptChainSummary: RunPromptChainSummary;
+  } {
+    const runHash = hashString(run.id);
+    const messageCount = 8 + (runHash % 9); // 8..16
+    const roleCycle: PromptRole[] = ["user", "assistant", "tool", "assistant"];
+    const promptChain: RunPromptMessageCost[] = [];
+    const rawRows: Array<{
+      inputCostUsd: number;
+      outputCostUsd: number;
+      totalCostUsd: number;
+      inputTokens: number;
+      outputTokens: number;
+    }> = [];
+
+    const providerRates: Record<ModelProvider, { inputPer1k: number; outputPer1k: number }> = {
+      codex: { inputPer1k: 0.0035, outputPer1k: 0.014 },
+      claude: { inputPer1k: 0.003, outputPer1k: 0.015 },
+      other: { inputPer1k: 0.0025, outputPer1k: 0.012 },
+    };
+    const rates = providerRates[run.provider] ?? providerRates.other;
+
+    let contextBefore = 0;
+    for (let i = 0; i < messageCount; i++) {
+      const role: PromptRole = i === 0 ? "system" : roleCycle[(i - 1) % roleCycle.length]!;
+      const variance = ((runHash + i * 17) % 45) - 22;
+      const baseInput = 110 + i * 35 + Math.floor(contextBefore * 0.14);
+      const inputTokens = Math.max(24, Math.round(baseInput + variance));
+      const outputTokens = role === "assistant"
+        ? Math.max(40, Math.round(inputTokens * 0.55))
+        : role === "tool"
+          ? Math.max(8, Math.round(inputTokens * 0.08))
+          : Math.max(12, Math.round(inputTokens * 0.2));
+      const contextAfter = contextBefore + inputTokens + outputTokens;
+
+      const inputCostUsd = (inputTokens / 1000) * rates.inputPer1k;
+      const outputCostUsd = (outputTokens / 1000) * rates.outputPer1k;
+      rawRows.push({
+        inputCostUsd,
+        outputCostUsd,
+        totalCostUsd: inputCostUsd + outputCostUsd,
+        inputTokens,
+        outputTokens,
+      });
+
+      promptChain.push({
+        id: `${run.id}_msg_${i + 1}`,
+        order: i + 1,
+        role,
+        content:
+          role === "system"
+            ? "System policy and repo constraints are loaded for this run."
+            : role === "user"
+              ? `Task refinement step ${i}: apply requested changes and preserve architecture boundaries.`
+              : role === "assistant"
+                ? `Assistant response ${i}: proposes edits, summarizes tradeoffs, and prepares file updates.`
+                : `Tool call ${i}: reads files, runs targeted tests, and captures command output.`,
+        contextTokensBefore: contextBefore,
+        inputTokens,
+        outputTokens,
+        contextTokensAfter: contextAfter,
+        inputCostUsd: 0,
+        outputCostUsd: 0,
+        totalCostUsd: 0,
+        cumulativeCostUsd: 0,
+      });
+      contextBefore = contextAfter;
+    }
+
+    const rawTotal = rawRows.reduce((sum, row) => sum + row.totalCostUsd, 0);
+    const targetCost = Math.max(0, run.costUsd);
+    const scale = rawTotal > 0 ? targetCost / rawTotal : 0;
+    let cumulative = 0;
+
+    for (let i = 0; i < promptChain.length; i++) {
+      const row = promptChain[i]!;
+      const raw = rawRows[i]!;
+      const scaledInput = Math.round(raw.inputCostUsd * scale * 10_000) / 10_000;
+      const scaledOutput = Math.round(raw.outputCostUsd * scale * 10_000) / 10_000;
+      let total = Math.round((scaledInput + scaledOutput) * 10_000) / 10_000;
+
+      if (i === promptChain.length - 1) {
+        total = Math.round((targetCost - cumulative) * 10_000) / 10_000;
+      }
+
+      cumulative = Math.round((cumulative + total) * 10_000) / 10_000;
+      row.inputCostUsd = scaledInput;
+      row.outputCostUsd = scaledOutput;
+      row.totalCostUsd = total;
+      row.cumulativeCostUsd = cumulative;
+    }
+
+    const promptChainSummary: RunPromptChainSummary = {
+      totalMessages: promptChain.length,
+      maxContextTokens: promptChain[promptChain.length - 1]?.contextTokensAfter ?? 0,
+      totalInputTokens: promptChain.reduce((sum, row) => sum + row.inputTokens, 0),
+      totalOutputTokens: promptChain.reduce((sum, row) => sum + row.outputTokens, 0),
+      totalCostUsd: Math.round(
+        promptChain.reduce((sum, row) => sum + row.totalCostUsd, 0) * 10_000
+      ) / 10_000,
+    };
+
+    return { promptChain, promptChainSummary };
   }
 
   /** Compute previous period filters for delta comparisons */
@@ -739,6 +858,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       },
     ];
 
+    const { promptChain, promptChainSummary } = this.buildPromptChain(run);
+
     return {
       run,
       timeline,
@@ -751,6 +872,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         testsPassed: run.testsPassed ?? 0,
       },
       policyContext: policyContextVariants[policyVariant]!,
+      promptChain,
+      promptChainSummary,
     };
   }
 }

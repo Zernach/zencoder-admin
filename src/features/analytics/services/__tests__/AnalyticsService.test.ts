@@ -151,6 +151,35 @@ describe("getRunDetail", () => {
     const res = await service.getRunDetail("org_zencoder_001", runId);
     expect(res.run.id).toBe(runId);
     expect(res.timeline.length).toBe(6);
+    expect(res.promptChain.length).toBeGreaterThanOrEqual(8);
+    expect(res.promptChainSummary.totalMessages).toBe(res.promptChain.length);
+  });
+
+  it("returns monotonic prompt context and cumulative costs", async () => {
+    const runId = seedData.runs[1]!.id;
+    const res = await service.getRunDetail("org_zencoder_001", runId);
+    for (let i = 1; i < res.promptChain.length; i++) {
+      expect(res.promptChain[i]!.contextTokensAfter).toBeGreaterThanOrEqual(
+        res.promptChain[i - 1]!.contextTokensAfter
+      );
+      expect(res.promptChain[i]!.cumulativeCostUsd).toBeGreaterThanOrEqual(
+        res.promptChain[i - 1]!.cumulativeCostUsd
+      );
+    }
+  });
+
+  it("rounds prompt-chain money fields to 2 decimals", async () => {
+    const runId = seedData.runs[2]!.id;
+    const res = await service.getRunDetail("org_zencoder_001", runId);
+
+    const decimals = (value: number) => (String(value).split(".")[1] ?? "").length;
+    expect(decimals(res.promptChainSummary.totalCostUsd)).toBeLessThanOrEqual(2);
+    for (const row of res.promptChain) {
+      expect(decimals(row.inputCostUsd)).toBeLessThanOrEqual(2);
+      expect(decimals(row.outputCostUsd)).toBeLessThanOrEqual(2);
+      expect(decimals(row.totalCostUsd)).toBeLessThanOrEqual(2);
+      expect(decimals(row.cumulativeCostUsd)).toBeLessThanOrEqual(2);
+    }
   });
 });
 

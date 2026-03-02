@@ -21,7 +21,7 @@ describe("useRunDetail", () => {
     expect(result.current.data!.run.id).toBe(runId);
   });
 
-  it("data includes timeline and artifacts", async () => {
+  it("data includes timeline, artifacts, and prompt-chain fields", async () => {
     const { wrapper } = createTestWrapper();
     const runId = seedData.runs[0]!.id;
     const { result } = renderHook(() => useRunDetail(runId), { wrapper });
@@ -29,6 +29,10 @@ describe("useRunDetail", () => {
     expect(result.current.data!.timeline.length).toBe(6);
     expect(result.current.data!.artifacts).toBeDefined();
     expect(result.current.data!.policyContext).toBeDefined();
+    expect(Array.isArray(result.current.data!.promptChain)).toBe(true);
+    expect(result.current.data!.promptChainSummary.totalMessages).toBe(
+      result.current.data!.promptChain.length
+    );
   });
 
   it("returns { data, loading, error, refetch } shape", () => {

@@ -122,15 +122,15 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   legend: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    width: "100%",
+    alignSelf: "stretch",
     gap: 8,
-    justifyContent: "center",
   },
   legendItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    width: "100%",
+    gap: 6,
   },
   swatch: {
     width: 8,
@@ -142,6 +142,7 @@ const styles = StyleSheet.create({
     color: "#a3a3a3",
   },
   legendPct: {
+    marginLeft: "auto",
     fontSize: 11,
     color: "#8a8a8a",
   },

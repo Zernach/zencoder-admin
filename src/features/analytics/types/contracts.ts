@@ -82,6 +82,31 @@ export interface PolicyContext {
   networkMode: "none" | "limited" | "full";
 }
 
+export type PromptRole = "system" | "user" | "assistant" | "tool";
+
+export interface RunPromptMessageCost {
+  id: string;
+  order: number;
+  role: PromptRole;
+  content: string;
+  contextTokensBefore: number;
+  inputTokens: number;
+  outputTokens: number;
+  contextTokensAfter: number;
+  inputCostUsd: number;
+  outputCostUsd: number;
+  totalCostUsd: number;
+  cumulativeCostUsd: number;
+}
+
+export interface RunPromptChainSummary {
+  totalMessages: number;
+  maxContextTokens: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+  totalCostUsd: number;
+}
+
 // ─── Agent & Project Breakdown ──────────────────────────
 export interface AgentBreakdownRow {
   agentId: string; agentName: string; projectName: string;
@@ -218,10 +243,21 @@ export interface GovernanceResponse {
   policyChanges: PolicyChangeEvent[];
 }
 
+export type RunsPageSortBy =
+  | "id"
+  | "status"
+  | "projectId"
+  | "teamId"
+  | "startedAtIso"
+  | "durationMs"
+  | "totalTokens"
+  | "costUsd"
+  | "provider";
+
 export interface RunsPageRequest {
   filters: AnalyticsFilters;
   page: number; pageSize: number;
-  sortBy: "startedAtIso" | "costUsd" | "durationMs" | "totalTokens";
+  sortBy: RunsPageSortBy;
   sortDirection: "asc" | "desc";
 }
 
@@ -235,6 +271,8 @@ export interface RunDetailResponse {
   timeline: RunTimelineEvent[];
   artifacts: RunArtifacts;
   policyContext: PolicyContext;
+  promptChain: RunPromptMessageCost[];
+  promptChainSummary: RunPromptChainSummary;
 }
 
 // ─── Seed Data Container ────────────────────────────────

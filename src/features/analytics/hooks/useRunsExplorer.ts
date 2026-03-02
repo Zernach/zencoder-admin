@@ -1,8 +1,25 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAppDependencies } from "@/core/di";
+import type { RunsPageSortBy } from "@/features/analytics/types";
 import { useDashboardFilters } from "./useDashboardFilters";
 import { useQueryKeyFactory } from "./useQueryKeyFactory";
+
+const RUNS_SORT_COLUMNS: RunsPageSortBy[] = [
+  "id",
+  "status",
+  "projectId",
+  "teamId",
+  "startedAtIso",
+  "durationMs",
+  "totalTokens",
+  "costUsd",
+  "provider",
+];
+
+function isRunsPageSortBy(key: string): key is RunsPageSortBy {
+  return RUNS_SORT_COLUMNS.includes(key as RunsPageSortBy);
+}
 
 export function useRunsExplorer() {
   const { analyticsService } = useAppDependencies();
@@ -10,7 +27,7 @@ export function useRunsExplorer() {
   const { filters } = useDashboardFilters();
   const [page, setPage] = useState(1);
   const [pageSize] = useState(25);
-  const [sortBy, setSortBy] = useState<"startedAtIso" | "costUsd" | "durationMs" | "totalTokens">("startedAtIso");
+  const [sortBy, setSortBy] = useState<RunsPageSortBy>("startedAtIso");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const query = useQuery({
@@ -26,10 +43,12 @@ export function useRunsExplorer() {
   });
 
   const handleSort = (key: string) => {
+    if (!isRunsPageSortBy(key)) return;
+
     if (key === sortBy) {
       setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
     } else {
-      setSortBy(key as typeof sortBy);
+      setSortBy(key);
       setSortDirection("desc");
     }
     setPage(1);

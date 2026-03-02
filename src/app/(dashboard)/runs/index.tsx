@@ -30,7 +30,7 @@ export default function RunsExplorerScreen() {
 
   const columns: ColumnDef<RunListRow>[] = useMemo(
     () => [
-      { key: "id", header: "Run ID", width: 110, sortable: false, render: (row) => <Text style={{ color: "#67c4ea", fontSize: 12 }} numberOfLines={1}>{row.id}</Text> },
+      { key: "id", header: "Run ID", width: 110, render: (row) => <Text style={{ color: "#67c4ea", fontSize: 12 }} numberOfLines={1}>{row.id}</Text> },
       {
         key: "status",
         header: "Status",

@@ -103,6 +103,15 @@ export class AnalyticsService implements IAnalyticsService {
   }
 
   async getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse> {
-    return this.api.getRunDetail(orgId, runId);
+    const res = await this.api.getRunDetail(orgId, runId);
+    res.promptChain = res.promptChain.map((row) => ({
+      ...row,
+      inputCostUsd: round2(row.inputCostUsd),
+      outputCostUsd: round2(row.outputCostUsd),
+      totalCostUsd: round2(row.totalCostUsd),
+      cumulativeCostUsd: round2(row.cumulativeCostUsd),
+    }));
+    res.promptChainSummary.totalCostUsd = round2(res.promptChainSummary.totalCostUsd);
+    return res;
   }
 }

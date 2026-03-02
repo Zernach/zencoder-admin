@@ -10,11 +10,31 @@ import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
 import { spacing } from "@/theme/tokens";
 
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+function interpolateColorChannel(start: number, end: number, progress: number): number {
+  return Math.round(start + (end - start) * progress);
+}
+
+function getSuccessRateColor(successRate: number): string {
+  const progress = clamp(successRate, 0, 1);
+  const start = { r: 43, g: 9, b: 9 };
+  const end = { r: 34, g: 197, b: 94 };
+
+  const r = interpolateColorChannel(start.r, end.r, progress);
+  const g = interpolateColorChannel(start.g, end.g, progress);
+  const b = interpolateColorChannel(start.b, end.b, progress);
+
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
 const agentCols: ColumnDef<AgentBreakdownRow>[] = [
   { key: "agentName", header: "Agent", width: 160 },
   { key: "projectName", header: "Project", width: 160, render: (row) => <Text style={{ color: "#a3a3a3", fontSize: 12 }} numberOfLines={1}>{row.projectName}</Text> },
   { key: "totalRuns", header: "Runs", width: 80, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCompactNumber(row.totalRuns)}</Text> },
-  { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={{ color: row.successRate >= 0.8 ? "#22c55e" : row.successRate >= 0.6 ? "#f59e0b" : "#ef4444", fontSize: 12 }}>{formatPercent(row.successRate * 100)}</Text> },
+  { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={{ color: getSuccessRateColor(row.successRate), fontSize: 12 }}>{formatPercent(row.successRate * 100)}</Text> },
   { key: "avgDurationMs", header: "Avg Duration", width: 100, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatDuration(row.avgDurationMs)}</Text> },
   { key: "totalCostUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCurrency(row.totalCostUsd)}</Text> },
 ];

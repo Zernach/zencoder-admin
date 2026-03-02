@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { useCostDashboard } from "@/features/analytics/hooks/useCostDashboard";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
-import { ChartCard, TrendChart, BreakdownChart, DonutChart } from "@/components/charts";
+import { ChartCard, TrendChart, BreakdownChart, DonutChart, ProviderCostChart } from "@/components/charts";
 import { formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
 import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
@@ -67,26 +67,15 @@ export default function CostAnalyticsScreen() {
       {data && (
         <View style={styles.section}>
           <SectionHeader title="Cost by Provider" />
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chartRow}
+          <ChartCard
+            title="Provider Cost Breakdown"
+            subtitle="Cost share, run volume, and efficiency by provider"
           >
-            <ChartCard title="Provider Breakdown">
-              <DonutChart
-                data={data.providerBreakdown.map(r => ({ key: r.provider, value: r.totalCostUsd }))}
-                centerLabel="By Provider"
-                centerValue={formatCurrency(data.totalCostUsd)}
-              />
-            </ChartCard>
-            <ChartCard title="Runs by Provider">
-              <BreakdownChart
-                data={data.providerBreakdown.map(r => ({ key: r.provider, value: r.runCount }))}
-                variant="bar"
-                height={220}
-              />
-            </ChartCard>
-          </ScrollView>
+            <ProviderCostChart
+              data={data.providerBreakdown}
+              totalCostUsd={data.totalCostUsd}
+            />
+          </ChartCard>
         </View>
       )}
 
