@@ -65,7 +65,7 @@ export function CardGrid({
 
   let effectiveCols: number = columns;
   if (width < 768) effectiveCols = 1;
-  else if (width < 1024) effectiveCols = Math.min(columns, 2);
+  else if (width < 1360) effectiveCols = Math.min(columns, 2);
 
   const childArray = React.Children.toArray(children);
 

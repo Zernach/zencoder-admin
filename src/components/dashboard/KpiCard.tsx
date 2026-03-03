@@ -69,11 +69,22 @@ export function KpiCard({
         </Text>
       </View>
       <View style={styles.valueRow}>
-        <Animated.View style={valueAnimStyle}>
-          <Text style={[styles.value, { color: valueColor }]}>{value}</Text>
+        <Animated.View style={[styles.valueWrap, valueAnimStyle]}>
+          <Text
+            style={[styles.value, { color: valueColor }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.58}
+            allowFontScaling
+            maxFontSizeMultiplier={1.2}
+          >
+            {value}
+          </Text>
         </Animated.View>
         {delta != null && (
-          <DeltaIndicator value={delta} polarity={deltaPolarity} />
+          <View style={styles.deltaWrap}>
+            <DeltaIndicator value={delta} polarity={deltaPolarity} />
+          </View>
         )}
       </View>
       {(caption || period) && (
@@ -131,15 +142,26 @@ const styles = StyleSheet.create({
   },
   valueRow: {
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "flex-end",
+    flexWrap: "nowrap",
     gap: 8,
     marginBottom: 4,
+    width: "100%",
+    minWidth: 0,
+  },
+  valueWrap: {
+    flex: 1,
+    minWidth: 0,
   },
   value: {
     fontSize: 28,
     fontWeight: "700",
     color: "#e5e5e5",
     letterSpacing: -0.3,
+    flexShrink: 1,
+  },
+  deltaWrap: {
+    flexShrink: 0,
   },
   caption: {
     fontSize: 11,
