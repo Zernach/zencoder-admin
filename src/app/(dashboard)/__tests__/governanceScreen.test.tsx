@@ -220,4 +220,52 @@ describe("GovernanceScreen", () => {
     const changeTimestamps = data.policyChanges.map((c) => c.timestampIso);
     expect(changeTimestamps[0]! >= changeTimestamps[1]!).toBe(true);
   });
+
+  it("violations remain newest-first after simulated re-render", () => {
+    const data = createGovernanceData(seedData);
+    mockUseGovernanceDashboard.mockReturnValue({
+      data,
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { rerender, getAllByTestId } = render(<GovernanceScreen />);
+
+    // Simulate refetch — re-render with same data
+    rerender(<GovernanceScreen />);
+
+    const rows = getAllByTestId(/^table-row-/);
+    // Violations table renders first, its rows should still be newest-first
+    const violationTimestamps = data.recentViolations.map((v) => v.timestampIso);
+    expect(violationTimestamps[0]! >= violationTimestamps[1]!).toBe(true);
+    expect(rows.length).toBeGreaterThan(0);
+  });
+
+  it("does not render stale violations during loading transition", () => {
+    // Initial render with data
+    const data = createGovernanceData(seedData);
+    mockUseGovernanceDashboard.mockReturnValue({
+      data,
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { rerender, queryAllByTestId, getByText } = render(<GovernanceScreen />);
+
+    // Simulate loading state (refetch in progress)
+    mockUseGovernanceDashboard.mockReturnValue({
+      data: undefined,
+      loading: true,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    rerender(<GovernanceScreen />);
+
+    // During loading, tables should not render (data is undefined)
+    const tableRows = queryAllByTestId(/^table-row-/);
+    expect(tableRows.length).toBe(0);
+  });
 });

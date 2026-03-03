@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react-native";
+import { renderHook, waitFor, act } from "@testing-library/react-native";
 import { useGovernanceDashboard } from "../useGovernanceDashboard";
 import { createTestWrapper } from "@/testing/testUtils";
 
@@ -89,6 +89,35 @@ describe("useGovernanceDashboard", () => {
     const rows = result.current.data!.policyChanges;
     for (let i = 1; i < rows.length; i++) {
       expect(rows[i - 1]!.timestampIso >= rows[i]!.timestampIso).toBe(true);
+    }
+  });
+
+  it("recentViolations remains newest-first after refetch", async () => {
+    const { wrapper } = createTestWrapper();
+    const { result } = renderHook(() => useGovernanceDashboard(), { wrapper });
+    await waitFor(() => expect(result.current.data).toBeDefined());
+
+    // Trigger refetch
+    await act(async () => {
+      await result.current.refetch();
+    });
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    const rows = result.current.data!.recentViolations;
+    for (let i = 1; i < rows.length; i++) {
+      expect(rows[i - 1]!.timestampIso >= rows[i]!.timestampIso).toBe(true);
+    }
+  });
+
+  it("recentViolations tie-breaking by id ascending is deterministic", async () => {
+    const { wrapper } = createTestWrapper();
+    const { result } = renderHook(() => useGovernanceDashboard(), { wrapper });
+    await waitFor(() => expect(result.current.data).toBeDefined());
+    const rows = result.current.data!.recentViolations;
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i - 1]!.timestampIso === rows[i]!.timestampIso) {
+        expect(rows[i - 1]!.id.localeCompare(rows[i]!.id)).toBeLessThanOrEqual(0);
+      }
     }
   });
 });
