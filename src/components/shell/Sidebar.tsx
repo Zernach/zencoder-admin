@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
 import { View, Image, Pressable, StyleSheet, Platform } from "react-native";
 import {
-  LayoutDashboard,
-  FolderKanban,
+  Home,
   Bot,
-  Play,
   DollarSign,
   Shield,
   Settings,
@@ -21,10 +19,8 @@ import { useRouter, usePathname } from "expo-router";
 import { SidebarNavItem } from "./SidebarNavItem";
 
 const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: "Dashboard", route: "/(dashboard)/dashboard" },
-  { icon: FolderKanban, label: "Projects", route: "/(dashboard)/projects" },
+  { icon: Home, label: "Home", route: "/(dashboard)/dashboard" },
   { icon: Bot, label: "Agents", route: "/(dashboard)/agents" },
-  { icon: Play, label: "Runs", route: "/(dashboard)/runs" },
   { icon: DollarSign, label: "Costs", route: "/(dashboard)/costs" },
   { icon: Shield, label: "Governance", route: "/(dashboard)/governance" },
   { icon: Settings, label: "Settings", route: "/(dashboard)/settings" },

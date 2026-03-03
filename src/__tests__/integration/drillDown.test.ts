@@ -1,11 +1,10 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
-import { useRunsExplorer } from "@/features/analytics/hooks/useRunsExplorer";
-import { useRunDetail } from "@/features/analytics/hooks/useRunDetail";
+import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
 import { createTestWrapper } from "@/testing/testUtils";
 
 describe("drill-down integration", () => {
-  it("overview anomaly runId is resolvable by useRunDetail", async () => {
+  it("overview anomaly runIds are present and valid", async () => {
     const { wrapper } = createTestWrapper();
 
     const { result: overviewResult } = renderHook(
@@ -16,75 +15,53 @@ describe("drill-down integration", () => {
 
     const anomalyRunId = overviewResult.current.data!.anomalies[0]!.runId;
     expect(anomalyRunId).toBeDefined();
-
-    const { result: detailResult } = renderHook(
-      () => useRunDetail(anomalyRunId),
-      { wrapper }
-    );
-    await waitFor(() => expect(detailResult.current.data).toBeDefined());
-    expect(detailResult.current.data!.run.id).toBe(anomalyRunId);
+    expect(typeof anomalyRunId).toBe("string");
   });
 
-  it("runs explorer row is resolvable by useRunDetail", async () => {
+  it("agents hub includes project breakdown data", async () => {
     const { wrapper } = createTestWrapper();
 
-    const { result: runsResult } = renderHook(
-      () => useRunsExplorer(),
+    const { result: hubResult } = renderHook(
+      () => useAgentsHub(),
       { wrapper }
     );
-    await waitFor(() => expect(runsResult.current.data).toBeDefined());
+    await waitFor(() => expect(hubResult.current.data).toBeDefined());
 
-    const firstRunId = runsResult.current.data!.rows[0]!.id;
-
-    const { result: detailResult } = renderHook(
-      () => useRunDetail(firstRunId),
-      { wrapper }
-    );
-    await waitFor(() => expect(detailResult.current.data).toBeDefined());
-    expect(detailResult.current.data!.run.id).toBe(firstRunId);
+    const data = hubResult.current.data!;
+    expect(data.projectBreakdown.length).toBeGreaterThan(0);
+    expect(data.agentBreakdown.length).toBeGreaterThan(0);
+    expect(data.recentRuns.length).toBeGreaterThan(0);
   });
 
-  it("run detail includes timeline with 6 steps", async () => {
+  it("agents hub recent runs have valid fields", async () => {
     const { wrapper } = createTestWrapper();
 
-    const { result: runsResult } = renderHook(
-      () => useRunsExplorer(),
+    const { result: hubResult } = renderHook(
+      () => useAgentsHub(),
       { wrapper }
     );
-    await waitFor(() => expect(runsResult.current.data).toBeDefined());
+    await waitFor(() => expect(hubResult.current.data).toBeDefined());
 
-    const runId = runsResult.current.data!.rows[0]!.id;
-    const { result: detailResult } = renderHook(
-      () => useRunDetail(runId),
-      { wrapper }
-    );
-    await waitFor(() => expect(detailResult.current.data).toBeDefined());
-
-    const timeline = detailResult.current.data!.timeline;
-    expect(timeline.length).toBe(6);
-    expect(timeline[0]!.step).toBe("queued");
-    expect(timeline[5]!.step).toBe("completed");
+    const firstRun = hubResult.current.data!.recentRuns[0]!;
+    expect(firstRun.id).toBeDefined();
+    expect(firstRun.status).toBeDefined();
+    expect(typeof firstRun.costUsd).toBe("number");
+    expect(typeof firstRun.durationMs).toBe("number");
   });
 
-  it("run detail artifacts are accessible", async () => {
+  it("agents hub project breakdown includes agent counts", async () => {
     const { wrapper } = createTestWrapper();
 
-    const { result: runsResult } = renderHook(
-      () => useRunsExplorer(),
+    const { result: hubResult } = renderHook(
+      () => useAgentsHub(),
       { wrapper }
     );
-    await waitFor(() => expect(runsResult.current.data).toBeDefined());
+    await waitFor(() => expect(hubResult.current.data).toBeDefined());
 
-    const runId = runsResult.current.data!.rows[0]!.id;
-    const { result: detailResult } = renderHook(
-      () => useRunDetail(runId),
-      { wrapper }
-    );
-    await waitFor(() => expect(detailResult.current.data).toBeDefined());
-
-    const artifacts = detailResult.current.data!.artifacts;
-    expect(typeof artifacts.linesAdded).toBe("number");
-    expect(typeof artifacts.prCreated).toBe("boolean");
-    expect(typeof artifacts.testsExecuted).toBe("number");
+    const firstProject = hubResult.current.data!.projectBreakdown[0]!;
+    expect(firstProject.projectId).toBeDefined();
+    expect(firstProject.projectName).toBeDefined();
+    expect(typeof firstProject.agentCount).toBe("number");
+    expect(firstProject.agentCount).toBeGreaterThan(0);
   });
 });

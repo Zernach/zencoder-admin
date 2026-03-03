@@ -1,21 +1,21 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import {
-  LayoutDashboard,
-  FolderKanban,
-  Play,
+  Home,
+  Bot,
   DollarSign,
-  MoreHorizontal,
+  Shield,
+  Settings,
 } from "lucide-react-native";
 import { useRouter, usePathname } from "expo-router";
 import type { LucideIcon } from "lucide-react-native";
 
 const TABS: { icon: LucideIcon; label: string; route: string }[] = [
-  { icon: LayoutDashboard, label: "Dashboard", route: "/(dashboard)/dashboard" },
-  { icon: FolderKanban, label: "Projects", route: "/(dashboard)/projects" },
-  { icon: Play, label: "Runs", route: "/(dashboard)/runs" },
+  { icon: Home, label: "Home", route: "/(dashboard)/dashboard" },
+  { icon: Bot, label: "Agents", route: "/(dashboard)/agents" },
   { icon: DollarSign, label: "Costs", route: "/(dashboard)/costs" },
-  { icon: MoreHorizontal, label: "More", route: "/(dashboard)/settings" },
+  { icon: Shield, label: "Governance", route: "/(dashboard)/governance" },
+  { icon: Settings, label: "Settings", route: "/(dashboard)/settings" },
 ];
 
 export function BottomTabs() {

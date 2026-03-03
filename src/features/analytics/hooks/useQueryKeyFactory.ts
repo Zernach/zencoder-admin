@@ -10,15 +10,7 @@ export function useQueryKeyFactory() {
     cost: ["analytics", "cost", filters] as const,
     reliability: ["analytics", "reliability", filters] as const,
     governance: ["analytics", "governance", filters] as const,
-    projects: ["analytics", "projects", filters] as const,
+    agentsHub: ["analytics", "agents-hub", filters] as const,
     liveAgentSessions: ["analytics", "live-agent-sessions", filters] as const,
-    runsPage: (
-      page: number,
-      pageSize: number,
-      sortBy: string,
-      sortDir: string
-    ) =>
-      ["analytics", "runs", filters, page, pageSize, sortBy, sortDir] as const,
-    runDetail: (runId: string) => ["analytics", "run", runId] as const,
   };
 }

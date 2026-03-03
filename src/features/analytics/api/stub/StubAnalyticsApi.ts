@@ -8,11 +8,8 @@ import type {
   CostResponse,
   ReliabilityResponse,
   GovernanceResponse,
-  ProjectsResponse,
+  AgentsHubResponse,
   LiveAgentSessionsResponse,
-  RunsPageRequest,
-  RunsPageResponse,
-  RunDetailResponse,
   RunListRow,
   TimeSeriesPoint,
   SeedData,
@@ -22,9 +19,6 @@ import type {
   ProjectBreakdownRow,
   ProviderCostRow,
   ModelProvider,
-  PromptRole,
-  RunPromptMessageCost,
-  RunPromptChainSummary,
   LiveAgentSession,
   SeatUserUsageRow,
 } from "@/features/analytics/types";
@@ -126,114 +120,6 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         tsIso: `${day}T00:00:00.000Z`,
         value: valueFn(dayRuns),
       }));
-  }
-
-  private buildPromptChain(
-    run: RunListRow
-  ): {
-    promptChain: RunPromptMessageCost[];
-    promptChainSummary: RunPromptChainSummary;
-  } {
-    const runHash = hashString(run.id);
-    const messageCount = 8 + (runHash % 9); // 8..16
-    const roleCycle: PromptRole[] = ["user", "assistant", "tool", "assistant"];
-    const promptChain: RunPromptMessageCost[] = [];
-    const rawRows: Array<{
-      inputCostUsd: number;
-      outputCostUsd: number;
-      totalCostUsd: number;
-      inputTokens: number;
-      outputTokens: number;
-    }> = [];
-
-    const providerRates: Record<ModelProvider, { inputPer1k: number; outputPer1k: number }> = {
-      codex: { inputPer1k: 0.0035, outputPer1k: 0.014 },
-      claude: { inputPer1k: 0.003, outputPer1k: 0.015 },
-      other: { inputPer1k: 0.0025, outputPer1k: 0.012 },
-    };
-    const rates = providerRates[run.provider] ?? providerRates.other;
-
-    let contextBefore = 0;
-    for (let i = 0; i < messageCount; i++) {
-      const role: PromptRole = i === 0 ? "system" : roleCycle[(i - 1) % roleCycle.length]!;
-      const variance = ((runHash + i * 17) % 45) - 22;
-      const baseInput = 110 + i * 35 + Math.floor(contextBefore * 0.14);
-      const inputTokens = Math.max(24, Math.round(baseInput + variance));
-      const outputTokens = role === "assistant"
-        ? Math.max(40, Math.round(inputTokens * 0.55))
-        : role === "tool"
-          ? Math.max(8, Math.round(inputTokens * 0.08))
-          : Math.max(12, Math.round(inputTokens * 0.2));
-      const contextAfter = contextBefore + inputTokens + outputTokens;
-
-      const inputCostUsd = (inputTokens / 1000) * rates.inputPer1k;
-      const outputCostUsd = (outputTokens / 1000) * rates.outputPer1k;
-      rawRows.push({
-        inputCostUsd,
-        outputCostUsd,
-        totalCostUsd: inputCostUsd + outputCostUsd,
-        inputTokens,
-        outputTokens,
-      });
-
-      promptChain.push({
-        id: `${run.id}_msg_${i + 1}`,
-        order: i + 1,
-        role,
-        content:
-          role === "system"
-            ? "System policy and repo constraints are loaded for this run."
-            : role === "user"
-              ? `Task refinement step ${i}: apply requested changes and preserve architecture boundaries.`
-              : role === "assistant"
-                ? `Assistant response ${i}: proposes edits, summarizes tradeoffs, and prepares file updates.`
-                : `Tool call ${i}: reads files, runs targeted tests, and captures command output.`,
-        contextTokensBefore: contextBefore,
-        inputTokens,
-        outputTokens,
-        contextTokensAfter: contextAfter,
-        inputCostUsd: 0,
-        outputCostUsd: 0,
-        totalCostUsd: 0,
-        cumulativeCostUsd: 0,
-      });
-      contextBefore = contextAfter;
-    }
-
-    const rawTotal = rawRows.reduce((sum, row) => sum + row.totalCostUsd, 0);
-    const targetCost = Math.max(0, run.costUsd);
-    const scale = rawTotal > 0 ? targetCost / rawTotal : 0;
-    let cumulative = 0;
-
-    for (let i = 0; i < promptChain.length; i++) {
-      const row = promptChain[i]!;
-      const raw = rawRows[i]!;
-      const scaledInput = Math.round(raw.inputCostUsd * scale * 10_000) / 10_000;
-      const scaledOutput = Math.round(raw.outputCostUsd * scale * 10_000) / 10_000;
-      let total = Math.round((scaledInput + scaledOutput) * 10_000) / 10_000;
-
-      if (i === promptChain.length - 1) {
-        total = Math.round((targetCost - cumulative) * 10_000) / 10_000;
-      }
-
-      cumulative = Math.round((cumulative + total) * 10_000) / 10_000;
-      row.inputCostUsd = scaledInput;
-      row.outputCostUsd = scaledOutput;
-      row.totalCostUsd = total;
-      row.cumulativeCostUsd = cumulative;
-    }
-
-    const promptChainSummary: RunPromptChainSummary = {
-      totalMessages: promptChain.length,
-      maxContextTokens: promptChain[promptChain.length - 1]?.contextTokensAfter ?? 0,
-      totalInputTokens: promptChain.reduce((sum, row) => sum + row.inputTokens, 0),
-      totalOutputTokens: promptChain.reduce((sum, row) => sum + row.outputTokens, 0),
-      totalCostUsd: Math.round(
-        promptChain.reduce((sum, row) => sum + row.totalCostUsd, 0) * 10_000
-      ) / 10_000,
-    };
-
-    return { promptChain, promptChainSummary };
   }
 
   /** Compute previous period filters for delta comparisons */
@@ -758,28 +644,77 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     };
   }
 
-  async getProjects(filters: AnalyticsFilters): Promise<ProjectsResponse> {
+  async getAgentsHub(filters: AnalyticsFilters): Promise<AgentsHubResponse> {
     await this.simulate();
     const runs = this.filterRuns(filters);
-    const totalCost = runs.reduce((s, r) => s + r.costUsd, 0);
+    const total = runs.length || 1;
     const succeeded = runs.filter((r) => r.status === "succeeded").length;
+    const failed = runs.filter((r) => r.status === "failed").length;
+    const totalCost = runs.reduce((s, r) => s + r.costUsd, 0);
 
-    // Group by project
+    const durations = runs.map((r) => r.durationMs).sort((a, b) => a - b);
+    const queueWaits = runs.map((r) => r.queueWaitMs).sort((a, b) => a - b);
+
+    // Failure category breakdown
+    const catMap = new Map<string, number>();
+    for (const run of runs) {
+      if (run.failureCategory) {
+        catMap.set(run.failureCategory, (catMap.get(run.failureCategory) ?? 0) + 1);
+      }
+    }
+    const failureCategoryBreakdown: KeyValueMetric[] = Array.from(catMap.entries()).map(
+      ([key, value]) => ({ key, value })
+    );
+
+    // Peak concurrency
+    const minuteMap = new Map<string, number>();
+    for (const run of runs) {
+      const min = run.startedAtIso.slice(0, 16);
+      minuteMap.set(min, (minuteMap.get(min) ?? 0) + 1);
+    }
+    const peakConcurrency = Math.max(0, ...minuteMap.values());
+
+    // Agent breakdown
+    const agentRunMap = new Map<string, RunListRow[]>();
+    for (const run of runs) {
+      const arr = agentRunMap.get(run.agentId);
+      if (arr) arr.push(run);
+      else agentRunMap.set(run.agentId, [run]);
+    }
+    const agentBreakdown: AgentBreakdownRow[] = this.seed.agents
+      .map((agent) => {
+        const agentRuns = agentRunMap.get(agent.id) ?? [];
+        if (agentRuns.length === 0) return null;
+        const agentSucceeded = agentRuns.filter((r) => r.status === "succeeded").length;
+        const project = this.seed.projects.find((p) => p.id === agent.projectId);
+        return {
+          agentId: agent.id,
+          agentName: agent.name,
+          projectName: project?.name ?? agent.projectId,
+          totalRuns: agentRuns.length,
+          successRate: agentRuns.length ? agentSucceeded / agentRuns.length : 0,
+          avgDurationMs: Math.round(
+            agentRuns.reduce((s, r) => s + r.durationMs, 0) / agentRuns.length
+          ),
+          totalCostUsd: Math.round(agentRuns.reduce((s, r) => s + r.costUsd, 0) * 100) / 100,
+        };
+      })
+      .filter((row): row is AgentBreakdownRow => row !== null)
+      .sort((a, b) => b.totalRuns - a.totalRuns);
+
+    // Project breakdown
     const projRunMap = new Map<string, RunListRow[]>();
     for (const run of runs) {
       const arr = projRunMap.get(run.projectId);
       if (arr) arr.push(run);
       else projRunMap.set(run.projectId, [run]);
     }
-
-    // Count agents per project
     const projAgentCount = new Map<string, Set<string>>();
     for (const run of runs) {
       const set = projAgentCount.get(run.projectId) ?? new Set();
       set.add(run.agentId);
       projAgentCount.set(run.projectId, set);
     }
-
     const projectBreakdown: ProjectBreakdownRow[] = this.seed.projects
       .map((project) => {
         const projRuns = projRunMap.get(project.id) ?? [];
@@ -800,21 +735,33 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       })
       .filter((row): row is ProjectBreakdownRow => row !== null)
       .sort((a, b) => b.totalRuns - a.totalRuns);
-
     const activeProjects = projectBreakdown.length;
 
+    // Recent runs (latest 25)
+    const recentRuns = [...runs]
+      .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
+      .slice(0, 25);
+
     return {
+      runSuccessRate: succeeded / total,
+      errorRate: failed / total,
+      p50RunDurationMs: percentile(durations, 50),
+      p95RunDurationMs: percentile(durations, 95),
+      p95QueueWaitMs: percentile(queueWaits, 95),
+      peakConcurrency,
+      failureCategoryBreakdown,
+      reliabilityTrend: this.bucketByDay(runs, (d) => {
+        const s = d.filter((r) => r.status === "succeeded").length;
+        return d.length ? s / d.length : 0;
+      }),
+      agentBreakdown,
       totalProjects: this.seed.projects.length,
       activeProjects,
       totalRuns: runs.length,
       overallSuccessRate: runs.length ? succeeded / runs.length : 0,
       totalCostUsd: Math.round(totalCost * 100) / 100,
       projectBreakdown,
-      runsTrend: this.bucketByDay(runs, (d) => d.length),
-      successRateTrend: this.bucketByDay(runs, (d) => {
-        const s = d.filter((r) => r.status === "succeeded").length;
-        return d.length ? s / d.length : 0;
-      }),
+      recentRuns,
     };
   }
 
@@ -896,123 +843,4 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     };
   }
 
-  async getRunsPage(request: RunsPageRequest): Promise<RunsPageResponse> {
-    await this.simulate();
-    const runs = this.filterRuns(request.filters);
-    const dir = request.sortDirection === "asc" ? 1 : -1;
-    const key = request.sortBy;
-
-    const sorted = [...runs].sort((a, b) => {
-      const av = a[key];
-      const bv = b[key];
-      if (typeof av === "string" && typeof bv === "string")
-        return av.localeCompare(bv) * dir;
-      return ((av as number) - (bv as number)) * dir;
-    });
-
-    const start = (request.page - 1) * request.pageSize;
-    const rows = sorted.slice(start, start + request.pageSize);
-
-    return {
-      total: sorted.length,
-      page: request.page,
-      pageSize: request.pageSize,
-      rows,
-    };
-  }
-
-  async getRunDetail(
-    _orgId: string,
-    runId: string
-  ): Promise<RunDetailResponse> {
-    await this.simulate();
-    const run = this.seed.runs.find((r) => r.id === runId);
-    if (!run) throw new Error(`Run not found: ${runId}`);
-
-    const startTime = new Date(run.startedAtIso).getTime();
-    const duration = run.durationMs;
-
-    const timeline = [
-      {
-        step: "queued" as const,
-        timestampIso: new Date(startTime - run.queueWaitMs).toISOString(),
-        detail: `Queued for ${run.queueWaitMs}ms`,
-      },
-      {
-        step: "started" as const,
-        timestampIso: run.startedAtIso,
-        detail: `Started with ${run.provider}/${run.modelId}`,
-      },
-      {
-        step: "tools" as const,
-        timestampIso: new Date(startTime + duration * 0.3).toISOString(),
-        detail: "Tool execution phase",
-      },
-      {
-        step: "tests" as const,
-        timestampIso: new Date(startTime + duration * 0.6).toISOString(),
-        detail: run.testsExecuted
-          ? `Ran ${run.testsExecuted} tests`
-          : "No tests",
-      },
-      {
-        step: "artifact" as const,
-        timestampIso: new Date(startTime + duration * 0.85).toISOString(),
-        detail: run.prCreated ? "PR created" : "No PR",
-      },
-      {
-        step: "completed" as const,
-        timestampIso:
-          run.completedAtIso ??
-          new Date(startTime + duration).toISOString(),
-        detail: `Finished: ${run.status}`,
-      },
-    ];
-
-    // Dynamic policy context based on agent/project
-    const agent = this.seed.agents.find((a) => a.id === run.agentId);
-    const agentIdx = agent ? this.seed.agents.indexOf(agent) : 0;
-    const policyVariant = agentIdx % 4;
-
-    const policyContextVariants = [
-      {
-        blockedActions: ["shell_exec", "network_egress"],
-        allowedActions: ["file_read", "file_write", "git_commit", "test_run"],
-        networkMode: "limited" as const,
-      },
-      {
-        blockedActions: ["shell_exec", "network_egress", "secret_access"],
-        allowedActions: ["file_read", "file_write", "git_commit"],
-        networkMode: "none" as const,
-      },
-      {
-        blockedActions: ["secret_access"],
-        allowedActions: ["file_read", "file_write", "git_commit", "test_run", "shell_exec", "network_egress"],
-        networkMode: "full" as const,
-      },
-      {
-        blockedActions: ["shell_exec", "secret_access", "db_write"],
-        allowedActions: ["file_read", "file_write", "git_commit", "test_run", "network_egress"],
-        networkMode: "limited" as const,
-      },
-    ];
-
-    const { promptChain, promptChainSummary } = this.buildPromptChain(run);
-
-    return {
-      run,
-      timeline,
-      artifacts: {
-        linesAdded: run.linesAdded ?? 0,
-        linesRemoved: run.linesRemoved ?? 0,
-        prCreated: run.prCreated ?? false,
-        prMerged: run.prMerged ?? false,
-        testsExecuted: run.testsExecuted ?? 0,
-        testsPassed: run.testsPassed ?? 0,
-      },
-      policyContext: policyContextVariants[policyVariant]!,
-      promptChain,
-      promptChainSummary,
-    };
-  }
 }

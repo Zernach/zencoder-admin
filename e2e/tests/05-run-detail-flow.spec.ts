@@ -1,18 +1,14 @@
 import { test, expect } from "@playwright/test";
-import { navigateTo, waitForPageLoad } from "../helpers/navigation";
-import { expectTableRows } from "../helpers/assertions";
+import { waitForPageLoad } from "../helpers/navigation";
 
-test.describe("Run Detail", () => {
-  test("navigate to runs and verify page loads", async ({ page }) => {
+test.describe("Home screen", () => {
+  test("root URL renders Home screen", async ({ page }) => {
     await page.goto("/");
     await waitForPageLoad(page);
 
-    await navigateTo(page, "Runs");
-    await waitForPageLoad(page);
-
-    // Verify runs page loaded
-    await expect(page.locator("text=Runs Explorer")).toBeVisible({
-      timeout: 10_000,
+    // Verify home page loaded with title
+    await expect(page.locator("text=Home")).toBeVisible({
+      timeout: 15_000,
     });
   });
 });

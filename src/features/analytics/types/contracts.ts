@@ -78,48 +78,6 @@ export interface LiveAgentSession {
   currentTask: string;
 }
 
-export interface RunTimelineEvent {
-  step: "queued" | "started" | "tools" | "tests" | "artifact" | "completed";
-  timestampIso: string;
-  detail: string;
-}
-
-export interface RunArtifacts {
-  linesAdded: number; linesRemoved: number;
-  prCreated: boolean; prMerged: boolean;
-  testsExecuted: number; testsPassed: number;
-}
-
-export interface PolicyContext {
-  blockedActions: string[];
-  allowedActions: string[];
-  networkMode: "none" | "limited" | "full";
-}
-
-export type PromptRole = "system" | "user" | "assistant" | "tool";
-
-export interface RunPromptMessageCost {
-  id: string;
-  order: number;
-  role: PromptRole;
-  content: string;
-  contextTokensBefore: number;
-  inputTokens: number;
-  outputTokens: number;
-  contextTokensAfter: number;
-  inputCostUsd: number;
-  outputCostUsd: number;
-  totalCostUsd: number;
-  cumulativeCostUsd: number;
-}
-
-export interface RunPromptChainSummary {
-  totalMessages: number;
-  maxContextTokens: number;
-  totalInputTokens: number;
-  totalOutputTokens: number;
-  totalCostUsd: number;
-}
 
 // ─── Agent & Project Breakdown ──────────────────────────
 export interface AgentBreakdownRow {
@@ -253,13 +211,26 @@ export interface ReliabilityResponse {
   agentBreakdown: AgentBreakdownRow[];
 }
 
-export interface ProjectsResponse {
-  totalProjects: number; activeProjects: number;
-  totalRuns: number; overallSuccessRate: number;
+export interface AgentsHubResponse {
+  // Reliability metrics
+  runSuccessRate: number;
+  errorRate: number;
+  p50RunDurationMs: number;
+  p95RunDurationMs: number;
+  p95QueueWaitMs: number;
+  peakConcurrency: number;
+  failureCategoryBreakdown: KeyValueMetric[];
+  reliabilityTrend: TimeSeriesPoint[];
+  agentBreakdown: AgentBreakdownRow[];
+  // Project breakdown
+  totalProjects: number;
+  activeProjects: number;
+  totalRuns: number;
+  overallSuccessRate: number;
   totalCostUsd: number;
   projectBreakdown: ProjectBreakdownRow[];
-  runsTrend: TimeSeriesPoint[];
-  successRateTrend: TimeSeriesPoint[];
+  // Recent runs (latest N, no pagination)
+  recentRuns: RunListRow[];
 }
 
 export interface GovernanceResponse {
@@ -273,37 +244,6 @@ export interface GovernanceResponse {
   seatUserUsage: SeatUserUsageRow[];
 }
 
-export type RunsPageSortBy =
-  | "id"
-  | "status"
-  | "projectId"
-  | "teamId"
-  | "startedAtIso"
-  | "durationMs"
-  | "totalTokens"
-  | "costUsd"
-  | "provider";
-
-export interface RunsPageRequest {
-  filters: AnalyticsFilters;
-  page: number; pageSize: number;
-  sortBy: RunsPageSortBy;
-  sortDirection: "asc" | "desc";
-}
-
-export interface RunsPageResponse {
-  total: number; page: number; pageSize: number;
-  rows: RunListRow[];
-}
-
-export interface RunDetailResponse {
-  run: RunListRow;
-  timeline: RunTimelineEvent[];
-  artifacts: RunArtifacts;
-  policyContext: PolicyContext;
-  promptChain: RunPromptMessageCost[];
-  promptChainSummary: RunPromptChainSummary;
-}
 
 // ─── Seed Data Container ────────────────────────────────
 export interface SeedData {

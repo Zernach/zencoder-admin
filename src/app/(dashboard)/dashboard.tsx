@@ -39,7 +39,7 @@ export default function OverviewDashboardScreen() {
   return (
     <ScreenWrapper
       headerProps={{
-        title: "Overview Dashboard",
+        title: "Home",
         subtitle,
         isLoading: loading,
       }}
@@ -193,9 +193,6 @@ export default function OverviewDashboardScreen() {
                 title={a.type.replace(/_/g, " ")}
                 value={a.label}
                 caption={`Run ${a.runId}`}
-                onPress={() =>
-                  router.push(`/(dashboard)/runs/${a.runId}` as never)
-                }
               />
             ))}
           </CardGrid>

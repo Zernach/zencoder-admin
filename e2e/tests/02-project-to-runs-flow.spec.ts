@@ -1,17 +1,40 @@
 import { test, expect } from "@playwright/test";
 import { navigateTo, waitForPageLoad } from "../helpers/navigation";
-import { expectTableRows } from "../helpers/assertions";
 
-test.describe("Project Drill-down", () => {
-  test("navigate to projects screen", async ({ page }) => {
+test.describe("Agents Hub", () => {
+  test("navigate to agents and verify consolidated page loads", async ({ page }) => {
     await page.goto("/");
     await waitForPageLoad(page);
 
-    await navigateTo(page, "Projects");
+    await navigateTo(page, "Agents");
     await waitForPageLoad(page);
 
-    // Verify projects page loaded
-    await expect(page.locator("text=Projects")).toBeVisible({
+    // Verify agents page loaded with consolidated content
+    await expect(page.locator("text=Agents")).toBeVisible({
+      timeout: 10_000,
+    });
+  });
+
+  test("agents page shows project breakdown section", async ({ page }) => {
+    await page.goto("/");
+    await waitForPageLoad(page);
+
+    await navigateTo(page, "Agents");
+    await waitForPageLoad(page);
+
+    await expect(page.locator("text=Project Breakdown")).toBeVisible({
+      timeout: 10_000,
+    });
+  });
+
+  test("agents page shows recent runs section", async ({ page }) => {
+    await page.goto("/");
+    await waitForPageLoad(page);
+
+    await navigateTo(page, "Agents");
+    await waitForPageLoad(page);
+
+    await expect(page.locator("text=Recent Runs")).toBeVisible({
       timeout: 10_000,
     });
   });

@@ -6,11 +6,8 @@ import type {
   CostResponse,
   ReliabilityResponse,
   GovernanceResponse,
-  ProjectsResponse,
+  AgentsHubResponse,
   LiveAgentSessionsResponse,
-  RunsPageRequest,
-  RunsPageResponse,
-  RunDetailResponse,
 } from "@/features/analytics/types";
 
 export interface IAnalyticsApi {
@@ -20,8 +17,6 @@ export interface IAnalyticsApi {
   getCost(filters: AnalyticsFilters): Promise<CostResponse>;
   getReliability(filters: AnalyticsFilters): Promise<ReliabilityResponse>;
   getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse>;
-  getProjects(filters: AnalyticsFilters): Promise<ProjectsResponse>;
+  getAgentsHub(filters: AnalyticsFilters): Promise<AgentsHubResponse>;
   getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse>;
-  getRunsPage(request: RunsPageRequest): Promise<RunsPageResponse>;
-  getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse>;
 }

@@ -1,11 +1,11 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { useAgentsDashboard } from "@/features/analytics/hooks/useAgentsDashboard";
-import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
+import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
+import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef } from "@/components/tables";
 import { formatPercent, formatDuration, formatCurrency, formatCompactNumber } from "@/features/analytics/utils/formatters";
-import type { AgentBreakdownRow } from "@/features/analytics/types";
+import type { AgentBreakdownRow, ProjectBreakdownRow, RunListRow } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
 import { spacing } from "@/theme/tokens";
 
@@ -38,8 +38,28 @@ const agentCols: ColumnDef<AgentBreakdownRow>[] = [
   { key: "totalCostUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCurrency(row.totalCostUsd)}</Text> },
 ];
 
+const projectCols: ColumnDef<ProjectBreakdownRow>[] = [
+  { key: "projectName", header: "Project", width: 180 },
+  { key: "teamName", header: "Team", width: 130, render: (row) => <Text style={{ color: "#a3a3a3", fontSize: 12 }} numberOfLines={1}>{row.teamName}</Text> },
+  { key: "totalRuns", header: "Runs", width: 80, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCompactNumber(row.totalRuns)}</Text> },
+  { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={{ color: row.successRate >= 0.8 ? "#22c55e" : row.successRate >= 0.6 ? "#f59e0b" : "#ef4444", fontSize: 12 }}>{formatPercent(row.successRate * 100)}</Text> },
+  { key: "totalCostUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCurrency(row.totalCostUsd)}</Text> },
+  { key: "avgCostPerRunUsd", header: "Avg/Run", width: 80, align: "right", render: (row) => <Text style={{ color: "#a3a3a3", fontSize: 12 }}>{formatCurrency(row.avgCostPerRunUsd)}</Text> },
+  { key: "agentCount", header: "Agents", width: 70, align: "right", render: (row) => <Text style={{ color: "#a3a3a3", fontSize: 12 }}>{row.agentCount}</Text> },
+];
+
+const recentRunCols: ColumnDef<RunListRow>[] = [
+  { key: "id", header: "Run ID", width: 110, render: (row) => <Text style={{ color: "#67c4ea", fontSize: 12 }} numberOfLines={1}>{row.id}</Text> },
+  { key: "status", header: "Status", width: 100, render: (row) => <StatusBadge variant="run-status" status={row.status} /> },
+  { key: "startedAtIso", header: "Started", width: 160, render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{new Date(row.startedAtIso).toLocaleString()}</Text> },
+  { key: "durationMs", header: "Duration", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatDuration(row.durationMs)}</Text> },
+  { key: "totalTokens", header: "Tokens", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCompactNumber(row.totalTokens)}</Text> },
+  { key: "costUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCurrency(row.costUsd)}</Text> },
+  { key: "provider", header: "Provider", width: 80 },
+];
+
 export default function AgentsScreen() {
-  const { data, loading, error, refetch } = useAgentsDashboard();
+  const { data, loading, error, refetch } = useAgentsHub();
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
@@ -98,6 +118,33 @@ export default function AgentsScreen() {
             columns={agentCols}
             data={data.agentBreakdown}
             keyExtractor={(row) => row.agentId}
+          />
+        </View>
+      )}
+
+      {data && (
+        <View style={styles.section}>
+          <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} of ${data.totalProjects} projects active`} />
+          <CardGrid columns={3}>
+            <KpiCard title="Active Projects" value={formatCompactNumber(data.activeProjects)} caption={`of ${data.totalProjects} total`} />
+            <KpiCard title="Success Rate" value={formatPercent(data.overallSuccessRate * 100)} />
+            <KpiCard title="Total Cost" value={formatCurrency(data.totalCostUsd)} />
+          </CardGrid>
+          <DataTable
+            columns={projectCols}
+            data={data.projectBreakdown}
+            keyExtractor={(row) => row.projectId}
+          />
+        </View>
+      )}
+
+      {data && data.recentRuns.length > 0 && (
+        <View style={styles.section}>
+          <SectionHeader title="Recent Runs" subtitle={`Latest ${data.recentRuns.length} runs`} />
+          <DataTable
+            columns={recentRunCols}
+            data={data.recentRuns}
+            keyExtractor={(row) => row.id}
           />
         </View>
       )}

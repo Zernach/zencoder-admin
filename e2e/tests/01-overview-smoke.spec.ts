@@ -8,7 +8,7 @@ test.describe("Overview Dashboard", () => {
     await waitForPageLoad(page);
 
     // Should render the dashboard page with title
-    await expect(page.locator("text=Overview Dashboard")).toBeVisible({
+    await expect(page.locator("text=Home")).toBeVisible({
       timeout: 15_000,
     });
   });
@@ -18,7 +18,7 @@ test.describe("Overview Dashboard", () => {
     await waitForPageLoad(page);
 
     // Verify page loaded
-    await expect(page.locator("text=Overview Dashboard")).toBeVisible({
+    await expect(page.locator("text=Home")).toBeVisible({
       timeout: 15_000,
     });
   });

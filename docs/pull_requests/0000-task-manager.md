@@ -41,8 +41,8 @@
 | ✅ | [0033](./0033-governance-recent-violations-default-sort-hardening.md) | Governance Recent Violations Sort Hardening | Screens |
 | ✅ | [0034](./0034-cost-project-breakdown-full-title-visibility.md) | Cost Project Breakdown Full Title Visibility | Polish |
 | ✅ | [0035](./0035-sticky-top-search-filter-bar-all-screens.md) | Sticky Top Search + Filter Bar Across All Screens | Polish |
-| ⬜ | [0036](./0036-home-navigation-and-agents-consolidation-hard-remove.md) | Home Navigation + Agents Consolidation (Hard Remove) | Screens |
+| ✅ | [0036](./0036-home-navigation-and-agents-consolidation-hard-remove.md) | Home Navigation + Agents Consolidation (Hard Remove) | Screens |
 
 ---
 
-**Progress: 35 / 36**
+**Progress: 36 / 36**

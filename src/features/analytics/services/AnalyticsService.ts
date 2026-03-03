@@ -8,11 +8,8 @@ import type {
   CostResponse,
   ReliabilityResponse,
   GovernanceResponse,
-  ProjectsResponse,
+  AgentsHubResponse,
   LiveAgentSessionsResponse,
-  RunsPageRequest,
-  RunsPageResponse,
-  RunDetailResponse,
 } from "@/features/analytics/types";
 
 function round2(v: number): number {
@@ -87,8 +84,10 @@ export class AnalyticsService implements IAnalyticsService {
     return res;
   }
 
-  async getProjects(filters: AnalyticsFilters): Promise<ProjectsResponse> {
-    const res = await this.api.getProjects(filters);
+  async getAgentsHub(filters: AnalyticsFilters): Promise<AgentsHubResponse> {
+    const res = await this.api.getAgentsHub(filters);
+    res.runSuccessRate = round1(res.runSuccessRate);
+    res.errorRate = round1(res.errorRate);
     res.overallSuccessRate = round1(res.overallSuccessRate);
     res.totalCostUsd = round2(res.totalCostUsd);
     for (const row of res.projectBreakdown) {
@@ -101,22 +100,5 @@ export class AnalyticsService implements IAnalyticsService {
 
   async getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse> {
     return this.api.getLiveAgentSessions(filters);
-  }
-
-  async getRunsPage(request: RunsPageRequest): Promise<RunsPageResponse> {
-    return this.api.getRunsPage(request);
-  }
-
-  async getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse> {
-    const res = await this.api.getRunDetail(orgId, runId);
-    res.promptChain = res.promptChain.map((row) => ({
-      ...row,
-      inputCostUsd: round2(row.inputCostUsd),
-      outputCostUsd: round2(row.outputCostUsd),
-      totalCostUsd: round2(row.totalCostUsd),
-      cumulativeCostUsd: round2(row.cumulativeCostUsd),
-    }));
-    res.promptChainSummary.totalCostUsd = round2(res.promptChainSummary.totalCostUsd);
-    return res;
   }
 }

@@ -42,10 +42,8 @@ describe("getOverview", () => {
 
   it("rounds kpi values", async () => {
     const res = await service.getOverview(defaultFilters);
-    // totalCostUsd should be rounded to 2 decimals
     const costStr = String(res.kpis.totalCostUsd).split(".")[1] || "";
     expect(costStr.length).toBeLessThanOrEqual(2);
-    // seatAdoptionRate should be rounded to 1 decimal
     const adoptStr = String(res.kpis.seatAdoptionRate).split(".")[1] || "";
     expect(adoptStr.length).toBeLessThanOrEqual(1);
   });
@@ -137,18 +135,23 @@ describe("getGovernance", () => {
   });
 });
 
-describe("getRunsPage", () => {
-  it("passes through to api without modification", async () => {
-    const request = {
-      filters: defaultFilters,
-      page: 1,
-      pageSize: 10,
-      sortBy: "startedAtIso" as const,
-      sortDirection: "desc" as const,
-    };
-    const res = await service.getRunsPage(request);
-    expect(res.rows.length).toBeLessThanOrEqual(10);
-    expect(res.page).toBe(1);
+describe("getAgentsHub", () => {
+  it("returns rounded rate and cost values", async () => {
+    const res = await service.getAgentsHub(defaultFilters);
+    const successDec = String(res.runSuccessRate).split(".")[1] || "";
+    expect(successDec.length).toBeLessThanOrEqual(1);
+    const costDec = String(res.totalCostUsd).split(".")[1] || "";
+    expect(costDec.length).toBeLessThanOrEqual(2);
+  });
+
+  it("rounds project breakdown values", async () => {
+    const res = await service.getAgentsHub(defaultFilters);
+    for (const row of res.projectBreakdown) {
+      const costDec = String(row.totalCostUsd).split(".")[1] || "";
+      expect(costDec.length).toBeLessThanOrEqual(2);
+      const successDec = String(row.successRate).split(".")[1] || "";
+      expect(successDec.length).toBeLessThanOrEqual(1);
+    }
   });
 });
 
@@ -159,69 +162,6 @@ describe("getLiveAgentSessions", () => {
     for (const session of res.activeSessions) {
       expect(session.status === "running" || session.status === "queued").toBe(true);
     }
-  });
-});
-
-describe("getRunDetail", () => {
-  it("passes through to api", async () => {
-    const runId = seedData.runs[0]!.id;
-    const res = await service.getRunDetail("org_zencoder_001", runId);
-    expect(res.run.id).toBe(runId);
-    expect(res.timeline.length).toBe(6);
-    expect(res.promptChain.length).toBeGreaterThanOrEqual(8);
-    expect(res.promptChainSummary.totalMessages).toBe(res.promptChain.length);
-  });
-
-  it("returns monotonic prompt context and cumulative costs", async () => {
-    const runId = seedData.runs[1]!.id;
-    const res = await service.getRunDetail("org_zencoder_001", runId);
-    for (let i = 1; i < res.promptChain.length; i++) {
-      expect(res.promptChain[i]!.contextTokensAfter).toBeGreaterThanOrEqual(
-        res.promptChain[i - 1]!.contextTokensAfter
-      );
-      expect(res.promptChain[i]!.cumulativeCostUsd).toBeGreaterThanOrEqual(
-        res.promptChain[i - 1]!.cumulativeCostUsd
-      );
-    }
-  });
-
-  it("rounds prompt-chain money fields to 2 decimals", async () => {
-    const runId = seedData.runs[2]!.id;
-    const res = await service.getRunDetail("org_zencoder_001", runId);
-
-    const decimals = (value: number) => (String(value).split(".")[1] ?? "").length;
-    expect(decimals(res.promptChainSummary.totalCostUsd)).toBeLessThanOrEqual(2);
-    for (const row of res.promptChain) {
-      expect(decimals(row.inputCostUsd)).toBeLessThanOrEqual(2);
-      expect(decimals(row.outputCostUsd)).toBeLessThanOrEqual(2);
-      expect(decimals(row.totalCostUsd)).toBeLessThanOrEqual(2);
-      expect(decimals(row.cumulativeCostUsd)).toBeLessThanOrEqual(2);
-    }
-  });
-});
-
-// ── Drill-down linkage ───────────────────────────────────
-
-describe("drill-down linkage", () => {
-  it("anomaly runId from getOverview is resolvable by getRunDetail", async () => {
-    const overview = await service.getOverview(defaultFilters);
-    expect(overview.anomalies.length).toBeGreaterThan(0);
-    const runId = overview.anomalies[0]!.runId;
-    const detail = await service.getRunDetail(defaultFilters.orgId, runId);
-    expect(detail.run.id).toBe(runId);
-  });
-
-  it("run from getRunsPage is resolvable by getRunDetail", async () => {
-    const page = await service.getRunsPage({
-      filters: defaultFilters,
-      page: 1,
-      pageSize: 5,
-      sortBy: "startedAtIso",
-      sortDirection: "desc",
-    });
-    const runId = page.rows[0]!.id;
-    const detail = await service.getRunDetail(defaultFilters.orgId, runId);
-    expect(detail.run.id).toBe(runId);
   });
 });
 
@@ -256,10 +196,8 @@ describe("delegation via mock", () => {
       getCost: jest.fn(),
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
-      getProjects: jest.fn(),
+      getAgentsHub: jest.fn(),
       getLiveAgentSessions: jest.fn(),
-      getRunsPage: jest.fn(),
-      getRunDetail: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -301,10 +239,8 @@ describe("delegation via mock", () => {
       getCost: jest.fn().mockResolvedValue(mockCost),
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
-      getProjects: jest.fn(),
+      getAgentsHub: jest.fn(),
       getLiveAgentSessions: jest.fn(),
-      getRunsPage: jest.fn(),
-      getRunDetail: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -333,20 +269,5 @@ describe("edge cases", () => {
     const res = await service.getOverview(emptyFilters);
     expect(res.kpis).toBeDefined();
     expect(res.runsTrend.length).toBe(0);
-  });
-
-  it("handles impossible filter combination gracefully", async () => {
-    const res = await service.getRunsPage({
-      filters: {
-        ...defaultFilters,
-        teamIds: ["nonexistent_team"],
-      },
-      page: 1,
-      pageSize: 10,
-      sortBy: "startedAtIso",
-      sortDirection: "desc",
-    });
-    expect(res.total).toBe(0);
-    expect(res.rows.length).toBe(0);
   });
 });
