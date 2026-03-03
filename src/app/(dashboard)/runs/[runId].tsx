@@ -132,6 +132,7 @@ export default function RunDetailScreen() {
 
   return (
     <ScreenWrapper
+      showFilterBar={false}
       headerProps={{
         title: `Run ${run.id}`,
         subtitle: `${entityNames.projectName} \u00B7 ${entityNames.agentName}`,

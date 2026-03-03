@@ -8,7 +8,6 @@ import { DataTable, PaginationControls, type ColumnDef } from "@/components/tabl
 import { formatCurrency, formatDuration, formatCompactNumber } from "@/features/analytics/utils/formatters";
 import type { RunListRow } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
-import { FilterBar } from "@/components/filters";
 import { spacing } from "@/theme/tokens";
 
 export default function RunsExplorerScreen() {
@@ -58,7 +57,6 @@ export default function RunsExplorerScreen() {
         isLoading: loading,
       }}
     >
-      <FilterBar />
       <View style={styles.section}>
         <SectionHeader title="All Runs" />
         <DataTable

@@ -5,7 +5,6 @@ import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@
 import { ChartCard, TrendChart, BreakdownChart, DonutChart, ProviderCostChart } from "@/components/charts";
 import { formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
 import { ScreenWrapper } from "@/components/screen";
-import { FilterBar } from "@/components/filters";
 import { spacing } from "@/theme/tokens";
 
 export default function CostAnalyticsScreen() {
@@ -25,8 +24,6 @@ export default function CostAnalyticsScreen() {
         isLoading: loading,
       }}
     >
-      <FilterBar />
-
       <View style={styles.section}>
         <SectionHeader title="Cost Summary" />
         {loading ? (

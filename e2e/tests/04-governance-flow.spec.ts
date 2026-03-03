@@ -26,4 +26,16 @@ test.describe("Governance", () => {
       timeout: 10_000,
     });
   });
+
+  test("sticky filter bar is visible on governance page", async ({ page }) => {
+    await page.goto("/");
+    await waitForPageLoad(page);
+
+    await navigateTo(page, "Governance");
+    await waitForPageLoad(page);
+
+    await expect(page.locator("[data-testid='sticky-filter-bar']")).toBeVisible({
+      timeout: 10_000,
+    });
+  });
 });

@@ -22,14 +22,6 @@ jest.mock("@/components/screen", () => {
   };
 });
 
-jest.mock("@/components/filters", () => {
-  const React = require("react");
-  const { View } = require("react-native");
-  return {
-    FilterBar: () => <View />,
-  };
-});
-
 jest.mock("@/components/dashboard", () => {
   const React = require("react");
   const { Text, View } = require("react-native");

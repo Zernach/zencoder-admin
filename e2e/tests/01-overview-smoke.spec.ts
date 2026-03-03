@@ -22,4 +22,14 @@ test.describe("Overview Dashboard", () => {
       timeout: 15_000,
     });
   });
+
+  test("sticky filter bar remains visible on scroll", async ({ page }) => {
+    await page.goto("/");
+    await waitForPageLoad(page);
+
+    // Filter controls should be visible on load
+    await expect(page.locator("[data-testid='sticky-filter-bar']")).toBeVisible({
+      timeout: 10_000,
+    });
+  });
 });

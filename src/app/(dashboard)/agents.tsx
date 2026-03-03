@@ -7,7 +7,6 @@ import { DataTable, type ColumnDef } from "@/components/tables";
 import { formatPercent, formatDuration, formatCurrency, formatCompactNumber } from "@/features/analytics/utils/formatters";
 import type { AgentBreakdownRow } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
-import { FilterBar } from "@/components/filters";
 import { spacing } from "@/theme/tokens";
 
 function clamp(value: number, min: number, max: number): number {
@@ -56,8 +55,6 @@ export default function AgentsScreen() {
         isLoading: loading,
       }}
     >
-      <FilterBar />
-
       <View style={styles.section}>
         <SectionHeader title="Reliability" />
         {loading ? (

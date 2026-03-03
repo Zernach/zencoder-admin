@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { ContentViewport, TopBar } from "@/components/shell";
+import { FilterBar } from "@/components/filters";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { motion } from "@/theme/motion";
@@ -24,6 +25,8 @@ interface ScreenWrapperProps {
   children: ReactNode;
   /** Style applied to the outer container View */
   style?: StyleProp<ViewStyle>;
+  /** Whether to show the sticky FilterBar above scroll content. Defaults to true. */
+  showFilterBar?: boolean;
 }
 
 /**
@@ -33,7 +36,7 @@ interface ScreenWrapperProps {
  * This component includes ContentViewport (ScrollView + responsive padding),
  * then renders TopBar, ScreenHeader, and children.
  */
-function ScreenWrapper({ headerProps, children, style }: ScreenWrapperProps) {
+function ScreenWrapper({ headerProps, children, style, showFilterBar = true }: ScreenWrapperProps) {
   const pathname = usePathname();
   const bp = useBreakpoint();
   const reducedMotion = useReducedMotion();
@@ -73,6 +76,11 @@ function ScreenWrapper({ headerProps, children, style }: ScreenWrapperProps) {
           <ScreenHeader {...headerProps} />
         </View>
       )}
+      {showFilterBar && (
+        <View testID="sticky-filter-bar" style={[styles.filterBarContainer, { paddingHorizontal: headerHorizontalPadding }]}>
+          <FilterBar />
+        </View>
+      )}
       <ContentViewport>
         <Animated.View style={[styles.content, contentStyle]}>{children}</Animated.View>
       </ContentViewport>
@@ -93,5 +101,8 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingTop: 2,
+  },
+  filterBarContainer: {
+    paddingTop: 0,
   },
 });

@@ -14,7 +14,6 @@ import {
 } from "@/components/dashboard";
 import { ChartCard, TrendChart } from "@/components/charts";
 import { ScreenWrapper } from "@/components/screen";
-import { FilterBar } from "@/components/filters";
 import { spacing } from "@/theme/tokens";
 
 export default function OverviewDashboardScreen() {
@@ -45,8 +44,6 @@ export default function OverviewDashboardScreen() {
         isLoading: loading,
       }}
     >
-      <FilterBar />
-
       <LiveAssistantsSection
         sessions={liveSessions}
         loading={liveLoading}

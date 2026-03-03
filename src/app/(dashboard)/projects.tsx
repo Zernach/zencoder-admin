@@ -7,7 +7,6 @@ import { DataTable, type ColumnDef } from "@/components/tables";
 import { formatCurrency, formatPercent, formatCompactNumber } from "@/features/analytics/utils/formatters";
 import type { ProjectBreakdownRow } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
-import { FilterBar } from "@/components/filters";
 import { spacing } from "@/theme/tokens";
 
 const projectCols: ColumnDef<ProjectBreakdownRow>[] = [
@@ -37,8 +36,6 @@ export default function ProjectsScreen() {
         isLoading: loading,
       }}
     >
-      <FilterBar />
-
       <View style={styles.section}>
         <SectionHeader title="Summary" />
         {loading ? (

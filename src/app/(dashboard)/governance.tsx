@@ -8,7 +8,6 @@ import { DataTable, type ColumnDef } from "@/components/tables";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import type { PolicyViolationRow, SecurityEventRow, PolicyChangeEvent, ComplianceItem, SeatUserUsageRow, KeyValueMetric } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
-import { FilterBar } from "@/components/filters";
 import { spacing } from "@/theme/tokens";
 
 const violationCols: ColumnDef<PolicyViolationRow>[] = [
@@ -109,8 +108,6 @@ export default function GovernanceScreen() {
         isLoading: loading,
       }}
     >
-      <FilterBar />
-
       <View style={styles.section}>
         <SectionHeader title="Overview" />
         {loading ? (

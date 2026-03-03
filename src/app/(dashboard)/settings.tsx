@@ -37,6 +37,7 @@ export default function SettingsScreen() {
 
   return (
     <ScreenWrapper
+      showFilterBar={false}
       headerProps={{
         title: "Settings",
         subtitle: "Configure your dashboard preferences",
