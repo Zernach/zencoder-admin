@@ -14,4 +14,16 @@ test.describe("Governance", () => {
       timeout: 10_000,
     });
   });
+
+  test("seat usage chart section is visible", async ({ page }) => {
+    await page.goto("/");
+    await waitForPageLoad(page);
+
+    await navigateTo(page, "Governance");
+    await waitForPageLoad(page);
+
+    await expect(page.locator("text=Seat Usage by Runs")).toBeVisible({
+      timeout: 10_000,
+    });
+  });
 });

@@ -6,7 +6,7 @@ import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorSt
 import { ChartCard, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef } from "@/components/tables";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
-import type { PolicyViolationRow, SecurityEventRow, PolicyChangeEvent, ComplianceItem, SeatUserUsageRow } from "@/features/analytics/types";
+import type { PolicyViolationRow, SecurityEventRow, PolicyChangeEvent, ComplianceItem, SeatUserUsageRow, KeyValueMetric } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
 import { spacing } from "@/theme/tokens";
@@ -93,6 +93,14 @@ export default function GovernanceScreen() {
     ? data.seatUserUsage[data.seatUserUsage.length - 1]
     : undefined;
 
+  const seatUsageChartData: KeyValueMetric[] = useMemo(() => {
+    if (!data?.seatUserUsage) return [];
+    return data.seatUserUsage.map((row) => ({
+      key: row.fullName,
+      value: row.runsCount,
+    }));
+  }, [data?.seatUserUsage]);
+
   return (
     <ScreenWrapper
       headerProps={{
@@ -158,6 +166,12 @@ export default function GovernanceScreen() {
               Least AI usage: {leastActiveSeatUser ? `${leastActiveSeatUser.fullName} (${formatCompactNumber(leastActiveSeatUser.runsCount)} runs)` : "No active seat usage"}
             </Text>
           </View>
+          <ChartCard
+            title="Seat Usage by Runs"
+            subtitle="AI runs per seat user, sorted by usage"
+          >
+            <BreakdownChart data={seatUsageChartData} variant="horizontal-bar" />
+          </ChartCard>
           <DataTable
             columns={seatUsageCols}
             data={data.seatUserUsage}

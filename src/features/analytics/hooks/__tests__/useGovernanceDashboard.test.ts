@@ -37,4 +37,28 @@ describe("useGovernanceDashboard", () => {
     expect(result.current).toHaveProperty("error");
     expect(result.current).toHaveProperty("refetch");
   });
+
+  it("seatUserUsage is sorted by runsCount descending", async () => {
+    const { wrapper } = createTestWrapper();
+    const { result } = renderHook(() => useGovernanceDashboard(), { wrapper });
+    await waitFor(() => expect(result.current.data).toBeDefined());
+    const rows = result.current.data!.seatUserUsage;
+    expect(rows.length).toBeGreaterThan(0);
+    for (let i = 1; i < rows.length; i++) {
+      expect(rows[i - 1]!.runsCount).toBeGreaterThanOrEqual(rows[i]!.runsCount);
+    }
+  });
+
+  it("seatUserUsage rows have chart-ready fields (fullName, runsCount)", async () => {
+    const { wrapper } = createTestWrapper();
+    const { result } = renderHook(() => useGovernanceDashboard(), { wrapper });
+    await waitFor(() => expect(result.current.data).toBeDefined());
+    const rows = result.current.data!.seatUserUsage;
+    for (const row of rows) {
+      expect(typeof row.fullName).toBe("string");
+      expect(row.fullName.length).toBeGreaterThan(0);
+      expect(typeof row.runsCount).toBe("number");
+      expect(row.runsCount).toBeGreaterThan(0);
+    }
+  });
 });
