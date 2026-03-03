@@ -486,7 +486,8 @@ export function LiveAssistantsSection({
   return (
     <View style={styles.section}>
       <SectionHeader
-        title={"Live\nAI Assistants in Action"}
+        title="Live"
+        subtitle="AI Assistants in Action"
         action={<LiveBadge reducedMotion={reducedMotion} />}
       />
       {error ? (

@@ -1,11 +1,9 @@
 import React from "react";
 import { View, Text, Pressable, TextInput, StyleSheet, Modal } from "react-native";
-import { Menu, Search, Clock, X } from "lucide-react-native";
+import { Search, Clock, X } from "lucide-react-native";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import type { TimeRangePreset } from "@/features/analytics/types";
-import { useAppDispatch } from "@/store";
-import { toggleSidebar } from "@/store/slices/sidebarSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 
 type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
@@ -44,7 +42,6 @@ const CONTROL_TEXT_LINE_HEIGHT = 18;
 
 export function TopBar() {
   const breakpoint = useBreakpoint();
-  const dispatch = useAppDispatch();
   const { mode } = useThemeMode();
   const { preset, setTimeRange } = useDashboardFilters();
   const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = React.useState(false);
@@ -82,16 +79,6 @@ export function TopBar() {
   return (
     <View style={[styles.container, { backgroundColor: barBackground, borderBottomColor: barBorder }]}>
       <View style={styles.left}>
-        {breakpoint !== "mobile" && (
-          <Pressable
-            onPress={() => dispatch(toggleSidebar())}
-            style={styles.iconBtn}
-            accessibilityRole="button"
-            accessibilityLabel="Toggle sidebar"
-          >
-            <Menu size={20} color={iconColor} />
-          </Pressable>
-        )}
         <View style={[styles.searchContainer, { backgroundColor: panelBackground, borderColor: panelBorder }]}>
           <Search size={14} color={placeholderColor} />
           <TextInput
@@ -192,13 +179,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-  },
-  iconBtn: {
-    width: 44,
-    height: 44,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
+    marginLeft: 12,
   },
   searchContainer: {
     flexDirection: "row",

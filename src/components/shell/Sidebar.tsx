@@ -113,18 +113,20 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
+    justifyContent: "flex-start",
+    paddingHorizontal: 0,
     marginBottom: 24,
     minHeight: 32,
   },
   brandImage: {
     width: 150,
     height: 28,
+    alignSelf: "flex-start",
   },
   toggleBtn: {
     width: 32,
     height: 32,
+    marginLeft: "auto",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 6,
