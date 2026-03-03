@@ -736,14 +736,23 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       auditEventsCount: changes.length + violations.length,
       violationsByTeam,
       recentViolations: violations
-        .sort((a, b) => b.timestampIso.localeCompare(a.timestampIso))
+        .sort((a, b) => {
+          const cmp = b.timestampIso.localeCompare(a.timestampIso);
+          return cmp !== 0 ? cmp : a.id.localeCompare(b.id);
+        })
         .slice(0, 20),
       securityEvents: secEvents
-        .sort((a, b) => b.timestampIso.localeCompare(a.timestampIso))
+        .sort((a, b) => {
+          const cmp = b.timestampIso.localeCompare(a.timestampIso);
+          return cmp !== 0 ? cmp : a.id.localeCompare(b.id);
+        })
         .slice(0, 20),
       complianceItems: this.seed.complianceItems,
       policyChanges: changes
-        .sort((a, b) => b.timestampIso.localeCompare(a.timestampIso))
+        .sort((a, b) => {
+          const cmp = b.timestampIso.localeCompare(a.timestampIso);
+          return cmp !== 0 ? cmp : a.id.localeCompare(b.id);
+        })
         .slice(0, 20),
       seatUserUsage,
     };

@@ -162,6 +162,48 @@ describe("getGovernance", () => {
     expect(Array.isArray(res.seatUserUsage)).toBe(true);
   });
 
+  it("recentViolations sorted by timestampIso descending with deterministic ties", async () => {
+    const res = await api.getGovernance(defaultFilters);
+    for (let i = 1; i < res.recentViolations.length; i++) {
+      const prev = res.recentViolations[i - 1]!;
+      const curr = res.recentViolations[i]!;
+      const cmp = prev.timestampIso.localeCompare(curr.timestampIso);
+      if (cmp === 0) {
+        expect(prev.id.localeCompare(curr.id)).toBeLessThanOrEqual(0);
+      } else {
+        expect(cmp).toBeGreaterThanOrEqual(0);
+      }
+    }
+  });
+
+  it("securityEvents sorted by timestampIso descending with deterministic ties", async () => {
+    const res = await api.getGovernance(defaultFilters);
+    for (let i = 1; i < res.securityEvents.length; i++) {
+      const prev = res.securityEvents[i - 1]!;
+      const curr = res.securityEvents[i]!;
+      const cmp = prev.timestampIso.localeCompare(curr.timestampIso);
+      if (cmp === 0) {
+        expect(prev.id.localeCompare(curr.id)).toBeLessThanOrEqual(0);
+      } else {
+        expect(cmp).toBeGreaterThanOrEqual(0);
+      }
+    }
+  });
+
+  it("policyChanges sorted by timestampIso descending with deterministic ties", async () => {
+    const res = await api.getGovernance(defaultFilters);
+    for (let i = 1; i < res.policyChanges.length; i++) {
+      const prev = res.policyChanges[i - 1]!;
+      const curr = res.policyChanges[i]!;
+      const cmp = prev.timestampIso.localeCompare(curr.timestampIso);
+      if (cmp === 0) {
+        expect(prev.id.localeCompare(curr.id)).toBeLessThanOrEqual(0);
+      } else {
+        expect(cmp).toBeGreaterThanOrEqual(0);
+      }
+    }
+  });
+
   it("returns seat usage rows with full names sorted by usage", async () => {
     const res = await api.getGovernance(defaultFilters);
     expect(res.seatUserUsage.length).toBeGreaterThan(0);

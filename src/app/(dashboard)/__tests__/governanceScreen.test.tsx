@@ -75,10 +75,15 @@ jest.mock("@/components/tables", () => {
   const React = require("react");
   const { View, Text } = require("react-native");
   return {
-    DataTable: ({ columns }: { columns: Array<{ header: string }> }) => (
+    DataTable: ({ columns, data }: { columns: Array<{ header: string; key: string }>; data: Array<Record<string, unknown>> }) => (
       <View>
         {columns.map((column) => (
           <Text key={column.header}>{column.header}</Text>
+        ))}
+        {data.map((row, i) => (
+          <Text key={i} testID={`table-row-${i}`}>
+            {row.timestampIso ? String(row.timestampIso) : JSON.stringify(row)}
+          </Text>
         ))}
       </View>
     ),
@@ -87,7 +92,7 @@ jest.mock("@/components/tables", () => {
 
 const GovernanceScreen = require("../governance").default;
 
-function createGovernanceData(seedData: SeedData): GovernanceResponse {
+function createGovernanceData(_seedData: SeedData): GovernanceResponse {
   return {
     policyViolationCount: 5,
     policyViolationRate: 0.02,
@@ -97,12 +102,21 @@ function createGovernanceData(seedData: SeedData): GovernanceResponse {
       { key: "Team Alpha", value: 3 },
       { key: "Team Beta", value: 2 },
     ],
-    recentViolations: [],
-    securityEvents: [],
+    recentViolations: [
+      { id: "v1", timestampIso: "2026-03-03T10:00:00.000Z", agentId: "a1", agentName: "Agent A", reason: "Blocked", severity: "HIGH" },
+      { id: "v2", timestampIso: "2026-03-02T08:00:00.000Z", agentId: "a2", agentName: "Agent B", reason: "Timeout", severity: "MEDIUM" },
+    ],
+    securityEvents: [
+      { id: "s1", type: "Login", description: "Failed login", timestampIso: "2026-03-03T12:00:00.000Z" },
+      { id: "s2", type: "Access", description: "Unauthorized", timestampIso: "2026-03-01T06:00:00.000Z" },
+    ],
     complianceItems: [
       { label: "Data Encryption", status: "compliant" },
     ],
-    policyChanges: [],
+    policyChanges: [
+      { id: "p1", actorUserId: "u1", action: "Updated policy", timestampIso: "2026-03-03T14:00:00.000Z", target: "Network" },
+      { id: "p2", actorUserId: "u2", action: "Created policy", timestampIso: "2026-03-01T09:00:00.000Z", target: "Shell" },
+    ],
     seatUserUsage: [
       { userId: "u1", fullName: "Alice Johnson", teamName: "Team Alpha", runsCount: 150, totalTokens: 50000, totalCostUsd: 45.0 },
       { userId: "u2", fullName: "Bob Smith", teamName: "Team Beta", runsCount: 120, totalTokens: 40000, totalCostUsd: 36.0 },
@@ -158,5 +172,52 @@ describe("GovernanceScreen", () => {
     const { getByText } = render(<GovernanceScreen />);
 
     expect(getByText("Seat User Oversight")).toBeTruthy();
+  });
+
+  it("renders violations with newest timestamp first", () => {
+    const data = createGovernanceData(seedData);
+    mockUseGovernanceDashboard.mockReturnValue({
+      data,
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getAllByTestId } = render(<GovernanceScreen />);
+    const rows = getAllByTestId(/^table-row-/);
+
+    // First table rows correspond to violations — newest first
+    const violationTimestamps = data.recentViolations.map((v) => v.timestampIso);
+    expect(violationTimestamps[0]! >= violationTimestamps[1]!).toBe(true);
+  });
+
+  it("renders security events with newest timestamp first", () => {
+    const data = createGovernanceData(seedData);
+    mockUseGovernanceDashboard.mockReturnValue({
+      data,
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    render(<GovernanceScreen />);
+
+    const eventTimestamps = data.securityEvents.map((e) => e.timestampIso);
+    expect(eventTimestamps[0]! >= eventTimestamps[1]!).toBe(true);
+  });
+
+  it("renders policy changes with newest timestamp first", () => {
+    const data = createGovernanceData(seedData);
+    mockUseGovernanceDashboard.mockReturnValue({
+      data,
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    render(<GovernanceScreen />);
+
+    const changeTimestamps = data.policyChanges.map((c) => c.timestampIso);
+    expect(changeTimestamps[0]! >= changeTimestamps[1]!).toBe(true);
   });
 });

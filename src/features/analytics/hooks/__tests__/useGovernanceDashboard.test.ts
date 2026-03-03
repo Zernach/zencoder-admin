@@ -61,4 +61,34 @@ describe("useGovernanceDashboard", () => {
       expect(row.runsCount).toBeGreaterThan(0);
     }
   });
+
+  it("recentViolations sorted by timestampIso descending", async () => {
+    const { wrapper } = createTestWrapper();
+    const { result } = renderHook(() => useGovernanceDashboard(), { wrapper });
+    await waitFor(() => expect(result.current.data).toBeDefined());
+    const rows = result.current.data!.recentViolations;
+    for (let i = 1; i < rows.length; i++) {
+      expect(rows[i - 1]!.timestampIso >= rows[i]!.timestampIso).toBe(true);
+    }
+  });
+
+  it("securityEvents sorted by timestampIso descending", async () => {
+    const { wrapper } = createTestWrapper();
+    const { result } = renderHook(() => useGovernanceDashboard(), { wrapper });
+    await waitFor(() => expect(result.current.data).toBeDefined());
+    const rows = result.current.data!.securityEvents;
+    for (let i = 1; i < rows.length; i++) {
+      expect(rows[i - 1]!.timestampIso >= rows[i]!.timestampIso).toBe(true);
+    }
+  });
+
+  it("policyChanges sorted by timestampIso descending", async () => {
+    const { wrapper } = createTestWrapper();
+    const { result } = renderHook(() => useGovernanceDashboard(), { wrapper });
+    await waitFor(() => expect(result.current.data).toBeDefined());
+    const rows = result.current.data!.policyChanges;
+    for (let i = 1; i < rows.length; i++) {
+      expect(rows[i - 1]!.timestampIso >= rows[i]!.timestampIso).toBe(true);
+    }
+  });
 });

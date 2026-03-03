@@ -37,7 +37,7 @@
 | ✅ | [0029](./0029-live-agents.md) | Live Agents | Screens |
 | ✅ | 0030 | Polishing | Touchups |
 | ✅ | [0031](./0031-governance-seat-usage-runs-bar-chart.md) | Governance Seat User Runs Bar Chart | Screens |
-| ⬜ | [0032](./0032-governance-default-time-sort-all-tables.md) | Governance Default Time Sort for All Tables | Screens |
+| ✅ | [0032](./0032-governance-default-time-sort-all-tables.md) | Governance Default Time Sort for All Tables | Screens |
 | ⬜ | [0033](./0033-governance-recent-violations-default-sort-hardening.md) | Governance Recent Violations Sort Hardening | Screens |
 | ⬜ | [0034](./0034-cost-project-breakdown-full-title-visibility.md) | Cost Project Breakdown Full Title Visibility | Polish |
 | ⬜ | [0035](./0035-sticky-top-search-filter-bar-all-screens.md) | Sticky Top Search + Filter Bar Across All Screens | Polish |
@@ -45,4 +45,4 @@
 
 ---
 
-**Progress: 31 / 36**
+**Progress: 32 / 36**
