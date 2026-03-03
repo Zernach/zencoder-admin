@@ -322,8 +322,8 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
     card.phase === "completed"
       ? "Completed"
       : card.session.status === "queued"
-        ? `Queued | ${elapsedClock}`
-        : `Running | ${elapsedClock}`;
+        ? "Queued"
+        : "Running";
 
   return (
     <View style={styles.card}>
@@ -349,9 +349,14 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
       <Text style={styles.task} numberOfLines={1}>
         {card.session.currentTask}
       </Text>
-      <Text style={styles.meta} numberOfLines={1}>
-        {statusLabel} | {card.session.userName}
-      </Text>
+      <View style={styles.metaRow}>
+        <Text style={styles.meta} numberOfLines={1}>
+          {statusLabel}
+          <Text style={styles.metaDivider}> by </Text>
+          <Text style={styles.metaUser}>{card.session.userName}</Text>
+        </Text>
+        <Text style={styles.elapsedTime}>{elapsedClock}</Text>
+      </View>
     </View>
   );
 });
@@ -610,6 +615,24 @@ const styles = StyleSheet.create({
     color: "#86efac",
     fontSize: 11,
     fontWeight: "500",
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    gap: spacing[2],
+  },
+  metaDivider: {
+    color: "#9ca3af",
+  },
+  metaUser: {
+    color: "#9ca3af",
+    fontWeight: "500",
+  },
+  elapsedTime: {
+    color: "#d4d4d4",
+    fontSize: 11,
+    fontWeight: "600",
   },
   indicatorWrap: {
     width: INDICATOR_SIZE,

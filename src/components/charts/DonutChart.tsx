@@ -56,7 +56,7 @@ export function DonutChart({
             );
           })}
         </Svg>
-        <View pointerEvents="none" style={styles.chartTextOverlay}>
+        <View style={styles.chartTextOverlay}>
           {arcs.map((a) => {
             if (a.data.value / total <= 0.05) {
               return null;
@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
   },
   chartTextOverlay: {
     ...StyleSheet.absoluteFillObject,
+    pointerEvents: "none",
   },
   segmentLabel: {
     position: "absolute",

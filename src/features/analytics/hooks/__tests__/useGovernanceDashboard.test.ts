@@ -26,6 +26,7 @@ describe("useGovernanceDashboard", () => {
     expect(typeof data.blockedNetworkAttempts).toBe("number");
     expect(Array.isArray(data.recentViolations)).toBe(true);
     expect(Array.isArray(data.complianceItems)).toBe(true);
+    expect(Array.isArray(data.seatUserUsage)).toBe(true);
   });
 
   it("returns { data, loading, error, refetch } shape", () => {

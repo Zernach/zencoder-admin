@@ -6,7 +6,7 @@ import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorSt
 import { ChartCard, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef } from "@/components/tables";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
-import type { PolicyViolationRow, SecurityEventRow, PolicyChangeEvent, ComplianceItem } from "@/features/analytics/types";
+import type { PolicyViolationRow, SecurityEventRow, PolicyChangeEvent, ComplianceItem, SeatUserUsageRow } from "@/features/analytics/types";
 import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
 import { spacing } from "@/theme/tokens";
@@ -22,6 +22,32 @@ const securityCols: ColumnDef<SecurityEventRow>[] = [
   { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{new Date(row.timestampIso).toLocaleString()}</Text> },
   { key: "type", header: "Type", width: 160 },
   { key: "description", header: "Description" },
+];
+
+const seatUsageCols: ColumnDef<SeatUserUsageRow>[] = [
+  { key: "fullName", header: "Full Name", width: 220 },
+  { key: "teamName", header: "Team", width: 180 },
+  {
+    key: "runsCount",
+    header: "Runs",
+    width: 90,
+    align: "right",
+    render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCompactNumber(row.runsCount)}</Text>,
+  },
+  {
+    key: "totalTokens",
+    header: "Tokens",
+    width: 120,
+    align: "right",
+    render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCompactNumber(row.totalTokens)}</Text>,
+  },
+  {
+    key: "totalCostUsd",
+    header: "Cost",
+    width: 100,
+    align: "right",
+    render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>${row.totalCostUsd.toFixed(2)}</Text>,
+  },
 ];
 
 const COMPLIANCE_STATUS_COLORS: Record<ComplianceItem["status"], string> = {
@@ -61,6 +87,11 @@ export default function GovernanceScreen() {
   const subtitle = data
     ? `${data.policyViolationCount} violations, ${data.securityEvents.length} security events`
     : "Policy enforcement and security monitoring";
+
+  const mostActiveSeatUser = data?.seatUserUsage[0];
+  const leastActiveSeatUser = data?.seatUserUsage.length
+    ? data.seatUserUsage[data.seatUserUsage.length - 1]
+    : undefined;
 
   return (
     <ScreenWrapper
@@ -115,6 +146,29 @@ export default function GovernanceScreen() {
 
       {data && (
         <View style={styles.section}>
+          <SectionHeader
+            title="Seat User Oversight"
+            subtitle="Full names of active seat users and AI usage by account seat"
+          />
+          <View style={styles.seatUsageSummary}>
+            <Text style={styles.summaryText}>
+              Most AI usage: {mostActiveSeatUser ? `${mostActiveSeatUser.fullName} (${formatCompactNumber(mostActiveSeatUser.runsCount)} runs)` : "No active seat usage"}
+            </Text>
+            <Text style={styles.summaryText}>
+              Least AI usage: {leastActiveSeatUser ? `${leastActiveSeatUser.fullName} (${formatCompactNumber(leastActiveSeatUser.runsCount)} runs)` : "No active seat usage"}
+            </Text>
+          </View>
+          <DataTable
+            columns={seatUsageCols}
+            data={data.seatUserUsage}
+            emptyMessage="No seat usage data for the selected time range."
+            keyExtractor={(row) => row.userId}
+          />
+        </View>
+      )}
+
+      {data && (
+        <View style={styles.section}>
           <SectionHeader title="Recent Violations" />
           <DataTable
             columns={violationCols}
@@ -152,5 +206,12 @@ export default function GovernanceScreen() {
 const styles = StyleSheet.create({
   section: {
     gap: spacing[3],
+  },
+  seatUsageSummary: {
+    gap: spacing[1],
+  },
+  summaryText: {
+    color: "#cfcfcf",
+    fontSize: 12,
   },
 });

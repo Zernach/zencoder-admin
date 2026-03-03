@@ -2,6 +2,11 @@ export function formatCurrency(usd: number): string {
   return `$${usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
+export function formatCostPerToken(usdPerToken: number): string {
+  const tenThousandthsOfPennyPerToken = Math.round(usdPerToken * 1_000_000);
+  return `${tenThousandthsOfPennyPerToken.toLocaleString("en-US")} ten-thousandths of a penny per token`;
+}
+
 export function formatPercent(value: number): string {
   return `${value.toFixed(1)}%`;
 }

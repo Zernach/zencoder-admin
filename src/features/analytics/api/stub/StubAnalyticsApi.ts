@@ -26,6 +26,7 @@ import type {
   RunPromptMessageCost,
   RunPromptChainSummary,
   LiveAgentSession,
+  SeatUserUsageRow,
 } from "@/features/analytics/types";
 
 interface StubConfig {
@@ -519,11 +520,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       .sort((a, b) => b.totalCostUsd - a.totalCostUsd);
 
     // Provider breakdown
-    const providerMap = new Map<ModelProvider, { cost: number; count: number }>();
+    const providerMap = new Map<ModelProvider, { cost: number; count: number; tokens: number }>();
     for (const run of runs) {
-      const entry = providerMap.get(run.provider) ?? { cost: 0, count: 0 };
+      const entry = providerMap.get(run.provider) ?? { cost: 0, count: 0, tokens: 0 };
       entry.cost += run.costUsd;
       entry.count++;
+      entry.tokens += run.totalTokens;
       providerMap.set(run.provider, entry);
     }
     const providerBreakdown: ProviderCostRow[] = (["codex", "claude", "other"] as ModelProvider[])
@@ -534,6 +536,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
           provider,
           totalCostUsd: Math.round(entry.cost * 100) / 100,
           runCount: entry.count,
+          totalTokens: entry.tokens,
           percentOfTotal: totalCost ? entry.cost / totalCost : 0,
         };
       });
@@ -689,6 +692,41 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       v.reason.toLowerCase().includes("unauthorized")
     ).length;
 
+    const teamNameById = new Map(this.seed.teams.map((team) => [team.id, team.name]));
+    const userUsageMap = new Map<string, { runsCount: number; totalTokens: number; totalCostUsd: number }>();
+    for (const run of runs) {
+      const usage = userUsageMap.get(run.userId) ?? {
+        runsCount: 0,
+        totalTokens: 0,
+        totalCostUsd: 0,
+      };
+      usage.runsCount += 1;
+      usage.totalTokens += run.totalTokens;
+      usage.totalCostUsd += run.costUsd;
+      userUsageMap.set(run.userId, usage);
+    }
+
+    const seatUserUsage: SeatUserUsageRow[] = Array.from(userUsageMap.entries())
+      .map(([userId, usage]) => {
+        const user = this.seed.users.find((seedUser) => seedUser.id === userId);
+        if (!user) return null;
+        return {
+          userId,
+          fullName: user.name,
+          teamName: teamNameById.get(user.teamId) ?? user.teamId,
+          runsCount: usage.runsCount,
+          totalTokens: usage.totalTokens,
+          totalCostUsd: Math.round(usage.totalCostUsd * 100) / 100,
+        };
+      })
+      .filter((row): row is SeatUserUsageRow => row !== null)
+      .sort((a, b) => {
+        if (b.runsCount !== a.runsCount) return b.runsCount - a.runsCount;
+        if (b.totalTokens !== a.totalTokens) return b.totalTokens - a.totalTokens;
+        if (b.totalCostUsd !== a.totalCostUsd) return b.totalCostUsd - a.totalCostUsd;
+        return a.fullName.localeCompare(b.fullName);
+      });
+
     return {
       policyViolationCount: violations.length,
       policyViolationRate: runs.length
@@ -707,6 +745,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       policyChanges: changes
         .sort((a, b) => b.timestampIso.localeCompare(a.timestampIso))
         .slice(0, 20),
+      seatUserUsage,
     };
   }
 

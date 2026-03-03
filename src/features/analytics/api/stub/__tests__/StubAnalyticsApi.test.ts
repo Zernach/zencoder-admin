@@ -159,6 +159,24 @@ describe("getGovernance", () => {
     expect(Array.isArray(res.securityEvents)).toBe(true);
     expect(Array.isArray(res.complianceItems)).toBe(true);
     expect(Array.isArray(res.policyChanges)).toBe(true);
+    expect(Array.isArray(res.seatUserUsage)).toBe(true);
+  });
+
+  it("returns seat usage rows with full names sorted by usage", async () => {
+    const res = await api.getGovernance(defaultFilters);
+    expect(res.seatUserUsage.length).toBeGreaterThan(0);
+
+    const first = res.seatUserUsage[0]!;
+    expect(first.fullName).toContain(" ");
+    expect(typeof first.runsCount).toBe("number");
+    expect(typeof first.totalTokens).toBe("number");
+    expect(typeof first.totalCostUsd).toBe("number");
+
+    for (let i = 1; i < res.seatUserUsage.length; i++) {
+      expect(res.seatUserUsage[i - 1]!.runsCount).toBeGreaterThanOrEqual(
+        res.seatUserUsage[i]!.runsCount
+      );
+    }
   });
 });
 

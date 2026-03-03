@@ -128,6 +128,13 @@ describe("getGovernance", () => {
     const decStr = String(res.policyViolationRate).split(".")[1] || "";
     expect(decStr.length).toBeLessThanOrEqual(1);
   });
+
+  it("returns seat user usage with full names", async () => {
+    const res = await service.getGovernance(defaultFilters);
+    expect(Array.isArray(res.seatUserUsage)).toBe(true);
+    expect(res.seatUserUsage.length).toBeGreaterThan(0);
+    expect(res.seatUserUsage[0]!.fullName).toContain(" ");
+  });
 });
 
 describe("getRunsPage", () => {

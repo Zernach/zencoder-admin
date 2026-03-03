@@ -1,5 +1,6 @@
 import {
   formatCurrency,
+  formatCostPerToken,
   formatPercent,
   formatNumber,
   formatCompactNumber,
@@ -26,6 +27,15 @@ describe("formatCurrency", () => {
   });
   it("negative value", () => {
     expect(formatCurrency(-50)).toBe("$-50.00");
+  });
+});
+
+describe("formatCostPerToken", () => {
+  it("formats in ten-thousandths of a cent per token", () => {
+    expect(formatCostPerToken(0.123456)).toBe("123,456 ten-thousandths of a penny per token");
+  });
+  it("keeps small values visible", () => {
+    expect(formatCostPerToken(0.000031)).toBe("31 ten-thousandths of a penny per token");
   });
 });
 

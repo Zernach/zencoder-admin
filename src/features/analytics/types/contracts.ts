@@ -137,6 +137,7 @@ export interface ProjectBreakdownRow {
 
 export interface ProviderCostRow {
   provider: ModelProvider; totalCostUsd: number; runCount: number;
+  totalTokens: number;
   percentOfTotal: number;
 }
 
@@ -178,6 +179,15 @@ export interface SecurityEventRow {
 
 export interface ComplianceItem {
   label: string; status: "compliant" | "warning" | "critical";
+}
+
+export interface SeatUserUsageRow {
+  userId: string;
+  fullName: string;
+  teamName: string;
+  runsCount: number;
+  totalTokens: number;
+  totalCostUsd: number;
 }
 
 // ─── Overview KPIs ──────────────────────────────────────
@@ -260,6 +270,7 @@ export interface GovernanceResponse {
   securityEvents: SecurityEventRow[];
   complianceItems: ComplianceItem[];
   policyChanges: PolicyChangeEvent[];
+  seatUserUsage: SeatUserUsageRow[];
 }
 
 export type RunsPageSortBy =
