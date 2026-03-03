@@ -9,6 +9,7 @@ import type {
   ReliabilityResponse,
   GovernanceResponse,
   ProjectsResponse,
+  LiveAgentSessionsResponse,
   RunsPageRequest,
   RunsPageResponse,
   RunDetailResponse,
@@ -96,6 +97,10 @@ export class AnalyticsService implements IAnalyticsService {
       row.successRate = round1(row.successRate);
     }
     return res;
+  }
+
+  async getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse> {
+    return this.api.getLiveAgentSessions(filters);
   }
 
   async getRunsPage(request: RunsPageRequest): Promise<RunsPageResponse> {

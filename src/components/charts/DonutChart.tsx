@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { arc, pie } from "d3-shape";
 import type { KeyValueMetric } from "@/features/analytics/types";
+import { formatPercent } from "@/features/analytics/utils/formatters";
 import { typography } from "@/theme/typography";
 import { semanticThemes } from "@/theme/themes";
 import { DATA_PALETTE } from "./palette";
@@ -62,7 +63,7 @@ export function DonutChart({
             }
 
             const centroid = arcGen.centroid(a);
-            const pct = ((a.data.value / total) * 100).toFixed(0);
+            const pct = formatPercent((a.data.value / total) * 100);
             const x = size / 2 + centroid[0];
             const y = size / 2 + centroid[1];
 
@@ -75,14 +76,10 @@ export function DonutChart({
                     left: x - 18,
                     top: y - segmentLabelTypography.lineHeight / 2,
                     color: textColors.primary,
-                    fontFamily: segmentLabelTypography.fontFamily,
-                    fontSize: segmentLabelTypography.fontSize,
-                    fontWeight: "600",
-                    lineHeight: segmentLabelTypography.lineHeight,
                   },
                 ]}
               >
-                {pct}%
+                {pct}
               </Text>
             );
           })}
@@ -95,10 +92,6 @@ export function DonutChart({
                     styles.centerValue,
                     {
                       color: textColors.primary,
-                      fontFamily: centerValueTypography.fontFamily,
-                      fontSize: centerValueTypography.fontSize,
-                      fontWeight: "600",
-                      lineHeight: centerValueTypography.lineHeight,
                     },
                   ]}
                 >
@@ -111,10 +104,6 @@ export function DonutChart({
                     styles.centerLabel,
                     {
                       color: textColors.tertiary,
-                      fontFamily: centerLabelTypography.fontFamily,
-                      fontSize: centerLabelTypography.fontSize,
-                      fontWeight: "500",
-                      lineHeight: centerLabelTypography.lineHeight,
                     },
                   ]}
                 >
@@ -141,7 +130,7 @@ export function DonutChart({
               {d.key}
             </Text>
             <Text style={[styles.legendPct, { color: textColors.tertiary }]}>
-              {((d.value / total) * 100).toFixed(1)}%
+              {formatPercent((d.value / total) * 100)}
             </Text>
           </View>
         ))}
@@ -165,6 +154,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 36,
     textAlign: "center",
+    fontFamily: typography.label.fontFamily,
+    fontSize: typography.label.fontSize,
+    fontWeight: typography.label.fontWeight,
+    lineHeight: typography.label.lineHeight,
   },
   centerTextWrap: {
     ...StyleSheet.absoluteFillObject,
@@ -173,10 +166,18 @@ const styles = StyleSheet.create({
   },
   centerValue: {
     textAlign: "center",
+    fontFamily: typography.cardTitle.fontFamily,
+    fontSize: typography.cardTitle.fontSize,
+    fontWeight: typography.cardTitle.fontWeight,
+    lineHeight: typography.cardTitle.lineHeight,
   },
   centerLabel: {
     textAlign: "center",
     marginTop: 2,
+    fontFamily: typography.label.fontFamily,
+    fontSize: typography.label.fontSize,
+    fontWeight: typography.label.fontWeight,
+    lineHeight: typography.label.lineHeight,
   },
   legend: {
     width: "100%",
@@ -197,14 +198,14 @@ const styles = StyleSheet.create({
   legendLabel: {
     fontFamily: typography.tableBody.fontFamily,
     fontSize: typography.tableBody.fontSize,
-    fontWeight: "400",
+    fontWeight: typography.tableBody.fontWeight,
     lineHeight: typography.tableBody.lineHeight,
   },
   legendPct: {
     marginLeft: "auto",
     fontFamily: typography.tableBody.fontFamily,
     fontSize: typography.tableBody.fontSize,
-    fontWeight: "400",
+    fontWeight: typography.tableBody.fontWeight,
     lineHeight: typography.tableBody.lineHeight,
   },
 });

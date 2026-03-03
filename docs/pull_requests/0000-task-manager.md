@@ -34,7 +34,8 @@
 | ✅ | [0026](./0026-realistic-90-day-dashboard-data.md) | Realistic 90-Day Dashboard Data & Interactive Filters | Polish |
 | ✅ | [0027](./0027-dashboard-data-completeness.md) | Dashboard Data Completeness & Screen Enhancements | Polish |
 | ⬜ | [0028](./0028-run-detail-prompt-chain-cost-breakdown.md) | Run Detail Prompt Chain & Per-Message Cost Ballooning | Screens |
+| ⬜ | [0029](./0029-live-agents.md) | Live Agents | Screens |
 
 ---
 
-**Progress: 27 / 28**
+**Progress: 29 / 29**

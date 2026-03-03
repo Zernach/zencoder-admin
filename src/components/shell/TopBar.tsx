@@ -37,6 +37,11 @@ const PRESET_SHORT_LABELS: Record<TimeRangePreset, string> = {
   custom: "Custom",
 };
 
+const CONTROL_HORIZONTAL_PADDING = 12;
+const CONTROL_VERTICAL_PADDING = 8;
+const CONTROL_TEXT_SIZE = 13;
+const CONTROL_TEXT_LINE_HEIGHT = 18;
+
 export function TopBar() {
   const breakpoint = useBreakpoint();
   const dispatch = useAppDispatch();
@@ -200,27 +205,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    height: 36,
+    paddingHorizontal: CONTROL_HORIZONTAL_PADDING,
+    paddingVertical: CONTROL_VERTICAL_PADDING,
     flex: 1,
     maxWidth: 400,
     borderWidth: 1,
   },
   searchInput: {
     flex: 1,
-    fontSize: 13,
+    fontSize: CONTROL_TEXT_SIZE,
+    lineHeight: CONTROL_TEXT_LINE_HEIGHT,
+    paddingVertical: 0,
   },
   presetBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: CONTROL_HORIZONTAL_PADDING,
+    paddingVertical: CONTROL_VERTICAL_PADDING,
     borderRadius: 6,
     borderWidth: 1,
   },
   presetText: {
-    fontSize: 12,
+    fontSize: CONTROL_TEXT_SIZE,
+    lineHeight: CONTROL_TEXT_LINE_HEIGHT,
   },
   modalOverlay: {
     flex: 1,

@@ -1,0 +1,655 @@
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Animated as RNAnimated,
+  Easing,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  type ListRenderItemInfo,
+} from "react-native";
+import Svg, { Circle } from "react-native-svg";
+import { Check } from "lucide-react-native";
+import Reanimated, {
+  Easing as ReanimatedEasing,
+  cancelAnimation,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
+import type { LiveAgentSession } from "@/features/analytics/types";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { radius, spacing } from "@/theme/tokens";
+import { ErrorState } from "./ErrorState";
+import { SectionHeader } from "./SectionHeader";
+
+const AVATAR_COLORS = [
+  "#22c55e",
+  "#30a8dc",
+  "#f59e0b",
+  "#06b6d4",
+  "#84cc16",
+  "#f97316",
+  "#10b981",
+  "#14b8a6",
+] as const;
+
+const EMPTY_STATE_MESSAGES = [
+  "Agents are resting right now.",
+  "It's quiet in here.",
+  "No team members are running agents right now.",
+  "Waiting for the next agent workflow.",
+] as const;
+
+const PROGRESS_TICK_MS = 280;
+const REDUCED_MOTION_PROGRESS_TICK_MS = 950;
+const COMPLETION_HOLD_MS = 520;
+const ROWS_PER_COLUMN = 2;
+const MAX_VISIBLE_CARDS = 12;
+const INDICATOR_SIZE = 34;
+const INDICATOR_STROKE = 3;
+const INDICATOR_RADIUS = (INDICATOR_SIZE - INDICATOR_STROKE) / 2;
+const INDICATOR_CIRCUMFERENCE = 2 * Math.PI * INDICATOR_RADIUS;
+const PROGRESS_MORPH_DURATION_MS = PROGRESS_TICK_MS + 120;
+const ACTIVE_SPIN_DURATION_MS = 1000;
+const CHECK_POP_DURATION_MS = 220;
+
+const AnimatedCircle = Reanimated.createAnimatedComponent(Circle);
+
+interface LiveAssistantsSectionProps {
+  sessions: LiveAgentSession[];
+  loading: boolean;
+  error?: string;
+  onRetry?: () => void;
+}
+
+interface SessionCardState {
+  session: LiveAgentSession;
+  progress: number;
+  phase: "active" | "completed";
+  completedAtMs?: number;
+}
+
+interface SessionColumn {
+  id: string;
+  rows: SessionCardState[];
+}
+
+function hashString(input: string): number {
+  let h = 0;
+  for (let i = 0; i < input.length; i++) {
+    h = (h * 31 + input.charCodeAt(i)) >>> 0;
+  }
+  return h;
+}
+
+function getInitialProgress(sessionId: string): number {
+  const hashed = hashString(sessionId);
+  const normalized = (hashed % 42) / 100;
+  return 0.18 + normalized;
+}
+
+function chunkSessions(items: SessionCardState[], chunkSize: number): SessionColumn[] {
+  const columns: SessionColumn[] = [];
+  for (let i = 0; i < items.length; i += chunkSize) {
+    const rows = items.slice(i, i + chunkSize);
+    columns.push({
+      id: rows.map((row) => row.session.sessionId).join("_"),
+      rows,
+    });
+  }
+  return columns;
+}
+
+function firstInitial(name: string): string {
+  const trimmed = name.trim();
+  return trimmed.length > 0 ? trimmed[0]!.toUpperCase() : "?";
+}
+
+function elapsedSecondsSince(iso: string): number {
+  const delta = Date.now() - new Date(iso).getTime();
+  if (!Number.isFinite(delta) || delta <= 0) return 0;
+  return Math.max(0, Math.floor(delta / 1000));
+}
+
+function formatElapsedClock(iso: string): string {
+  const totalSeconds = elapsedSecondsSince(iso);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function createCardState(session: LiveAgentSession): SessionCardState {
+  return {
+    session,
+    progress: getInitialProgress(session.sessionId),
+    phase: "active",
+  };
+}
+
+function LiveBadge({ reducedMotion }: { reducedMotion: boolean }) {
+  const pulse = useRef(new RNAnimated.Value(0)).current;
+
+  useEffect(() => {
+    if (reducedMotion) {
+      pulse.setValue(0);
+      return undefined;
+    }
+
+    const animation = RNAnimated.loop(
+      RNAnimated.timing(pulse, {
+        toValue: 1,
+        duration: 1200,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      })
+    );
+    animation.start();
+
+    return () => {
+      animation.stop();
+      pulse.setValue(0);
+    };
+  }, [pulse, reducedMotion]);
+
+  const animatedStyle = {
+    opacity: reducedMotion
+      ? 0
+      : pulse.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0.5, 0],
+        }),
+    transform: [
+      {
+        scale: reducedMotion
+          ? 1
+          : pulse.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 1.7],
+            }),
+      },
+    ],
+  };
+
+  return (
+    <View style={styles.liveBadge}>
+      <View style={styles.liveDotWrap}>
+        <RNAnimated.View style={[styles.liveDotPulse, animatedStyle]} />
+        <View style={styles.liveDotCore} />
+      </View>
+      <Text style={styles.liveBadgeLabel}>LIVE</Text>
+    </View>
+  );
+}
+
+interface SessionIndicatorProps {
+  progress: number;
+  color: string;
+  completed: boolean;
+  reducedMotion: boolean;
+}
+
+const SessionProgressIndicator = memo(function SessionProgressIndicator({
+  progress,
+  color,
+  completed,
+  reducedMotion,
+}: SessionIndicatorProps) {
+  const clampedProgress = Math.max(0.08, Math.min(1, progress));
+  const animatedProgress = useSharedValue(clampedProgress);
+  const spinDegrees = useSharedValue(0);
+  const checkScale = useSharedValue(completed ? 1 : 0.86);
+  const checkOpacity = useSharedValue(completed ? 1 : 0);
+
+  useEffect(() => {
+    if (reducedMotion) {
+      animatedProgress.value = clampedProgress;
+      return;
+    }
+
+    animatedProgress.value = withTiming(clampedProgress, {
+      duration: completed ? 180 : PROGRESS_MORPH_DURATION_MS,
+      easing: ReanimatedEasing.linear,
+    });
+  }, [animatedProgress, clampedProgress, completed, reducedMotion]);
+
+  useEffect(() => {
+    if (reducedMotion || completed) {
+      cancelAnimation(spinDegrees);
+      spinDegrees.value = 0;
+      return undefined;
+    }
+
+    spinDegrees.value = 0;
+    spinDegrees.value = withRepeat(
+      withTiming(360, {
+        duration: ACTIVE_SPIN_DURATION_MS,
+        easing: ReanimatedEasing.linear,
+      }),
+      -1,
+      false
+    );
+
+    return () => {
+      cancelAnimation(spinDegrees);
+      spinDegrees.value = 0;
+    };
+  }, [completed, reducedMotion, spinDegrees]);
+
+  useEffect(() => {
+    if (reducedMotion) {
+      checkScale.value = completed ? 1 : 0.86;
+      checkOpacity.value = completed ? 1 : 0;
+      return;
+    }
+
+    if (completed) {
+      checkScale.value = 0.72;
+      checkOpacity.value = 0;
+      checkScale.value = withTiming(1, {
+        duration: CHECK_POP_DURATION_MS,
+        easing: ReanimatedEasing.bezier(0.22, 1, 0.36, 1),
+      });
+      checkOpacity.value = withTiming(1, {
+        duration: CHECK_POP_DURATION_MS - 40,
+        easing: ReanimatedEasing.out(ReanimatedEasing.cubic),
+      });
+      return;
+    }
+
+    checkScale.value = 0.86;
+    checkOpacity.value = 0;
+  }, [checkOpacity, checkScale, completed, reducedMotion]);
+
+  const indicatorArcProps = useAnimatedProps<React.ComponentProps<typeof Circle>>(() => ({
+    strokeDashoffset: INDICATOR_CIRCUMFERENCE * (1 - animatedProgress.value),
+  }));
+
+  const spinnerStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${spinDegrees.value}deg` }],
+  }));
+  const checkStyle = useAnimatedStyle(() => ({
+    opacity: checkOpacity.value,
+    transform: [{ scale: checkScale.value }],
+  }));
+
+  return (
+    <View style={styles.indicatorWrap}>
+      <Reanimated.View style={!completed && !reducedMotion ? spinnerStyle : undefined}>
+        <Svg width={INDICATOR_SIZE} height={INDICATOR_SIZE}>
+          <Circle
+            cx={INDICATOR_SIZE / 2}
+            cy={INDICATOR_SIZE / 2}
+            r={INDICATOR_RADIUS}
+            stroke="#2a2a2a"
+            strokeWidth={INDICATOR_STROKE}
+            fill="none"
+          />
+          <AnimatedCircle
+            cx={INDICATOR_SIZE / 2}
+            cy={INDICATOR_SIZE / 2}
+            r={INDICATOR_RADIUS}
+            stroke={completed ? "#22c55e" : color}
+            strokeWidth={INDICATOR_STROKE}
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={`${INDICATOR_CIRCUMFERENCE} ${INDICATOR_CIRCUMFERENCE}`}
+            animatedProps={indicatorArcProps}
+          />
+        </Svg>
+      </Reanimated.View>
+      {completed ? (
+        <Reanimated.View style={[styles.checkWrap, checkStyle]}>
+          <Check size={16} color="#22c55e" />
+        </Reanimated.View>
+      ) : null}
+    </View>
+  );
+});
+
+const LiveAssistantCard = memo(function LiveAssistantCard({
+  card,
+  reducedMotion,
+}: {
+  card: SessionCardState;
+  reducedMotion: boolean;
+}) {
+  const avatarColor = AVATAR_COLORS[hashString(card.session.agentId) % AVATAR_COLORS.length]!;
+  const elapsedClock = formatElapsedClock(card.session.startedAtIso);
+  const statusLabel =
+    card.phase === "completed"
+      ? "Completed"
+      : card.session.status === "queued"
+        ? `Queued | ${elapsedClock}`
+        : `Running | ${elapsedClock}`;
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.topRow}>
+        <View style={[styles.avatar, { backgroundColor: avatarColor }]}>
+          <Text style={styles.avatarInitial}>{firstInitial(card.session.agentName)}</Text>
+        </View>
+        <View style={styles.titleWrap}>
+          <Text style={styles.agentName} numberOfLines={1}>
+            {card.session.agentName}
+          </Text>
+          <Text style={styles.projectName} numberOfLines={1}>
+            {card.session.projectName}
+          </Text>
+        </View>
+        <SessionProgressIndicator
+          progress={card.progress}
+          color={avatarColor}
+          completed={card.phase === "completed"}
+          reducedMotion={reducedMotion}
+        />
+      </View>
+      <Text style={styles.task} numberOfLines={1}>
+        {card.session.currentTask}
+      </Text>
+      <Text style={styles.meta} numberOfLines={1}>
+        {statusLabel} | {card.session.userName}
+      </Text>
+    </View>
+  );
+});
+
+function EmptyLiveState() {
+  const messageIndex = Math.floor(Date.now() / 60_000) % EMPTY_STATE_MESSAGES.length;
+  return (
+    <View style={styles.emptyState}>
+      <Text style={styles.emptyTitle}>{EMPTY_STATE_MESSAGES[messageIndex]}</Text>
+      <Text style={styles.emptySubtitle}>
+        New live sessions will appear automatically as engineers start runs.
+      </Text>
+    </View>
+  );
+}
+
+export function LiveAssistantsSection({
+  sessions,
+  loading,
+  error,
+  onRetry,
+}: LiveAssistantsSectionProps) {
+  const reducedMotion = useReducedMotion();
+  const [cards, setCards] = useState<SessionCardState[]>([]);
+
+  useEffect(() => {
+    const now = Date.now();
+    setCards((previousCards) => {
+      const previousById = new Map(
+        previousCards.map((existingCard) => [existingCard.session.sessionId, existingCard])
+      );
+      const incoming = sessions.slice(0, MAX_VISIBLE_CARDS * 2);
+      const seen = new Set<string>();
+      const nextCards: SessionCardState[] = [];
+
+      for (const session of incoming) {
+        if (seen.has(session.sessionId)) continue;
+        seen.add(session.sessionId);
+        const existing = previousById.get(session.sessionId);
+        nextCards.push(existing ? { ...existing, session } : createCardState(session));
+      }
+
+      for (const existingCard of previousCards) {
+        if (
+          existingCard.phase === "completed" &&
+          !seen.has(existingCard.session.sessionId) &&
+          now - (existingCard.completedAtMs ?? now) < COMPLETION_HOLD_MS
+        ) {
+          seen.add(existingCard.session.sessionId);
+          nextCards.push(existingCard);
+        }
+      }
+
+      return nextCards.slice(0, MAX_VISIBLE_CARDS);
+    });
+  }, [sessions]);
+
+  useEffect(() => {
+    const intervalMs = reducedMotion ? REDUCED_MOTION_PROGRESS_TICK_MS : PROGRESS_TICK_MS;
+    let previousTickAtMs = Date.now();
+    const timer = setInterval(() => {
+      const now = Date.now();
+      const elapsedScale = Math.max(0.65, (now - previousTickAtMs) / intervalMs);
+      previousTickAtMs = now;
+
+      setCards((previousCards) => {
+        let changed = false;
+        const nextCards: SessionCardState[] = [];
+
+        for (const card of previousCards) {
+          if (card.phase === "active") {
+            const tickHash = hashString(
+              `${card.session.sessionId}_${Math.floor(now / (intervalMs * 2))}`
+            );
+            const baseIncrement = card.session.status === "queued" ? 0.008 : 0.013;
+            const increment = (baseIncrement + (tickHash % 6) * 0.0028) * elapsedScale;
+            const nextProgress = Math.min(1, card.progress + increment);
+
+            if (nextProgress >= 1) {
+              changed = true;
+              nextCards.push({
+                ...card,
+                progress: 1,
+                phase: "completed",
+                completedAtMs: now,
+              });
+              continue;
+            }
+
+            if (nextProgress !== card.progress) {
+              changed = true;
+            }
+            nextCards.push({
+              ...card,
+              progress: nextProgress,
+            });
+            continue;
+          }
+
+          if (now - (card.completedAtMs ?? now) < COMPLETION_HOLD_MS) {
+            nextCards.push(card);
+          } else {
+            changed = true;
+          }
+        }
+
+        return changed ? nextCards : previousCards;
+      });
+    }, intervalMs);
+
+    return () => clearInterval(timer);
+  }, [reducedMotion]);
+
+  const columns = useMemo(() => chunkSessions(cards, ROWS_PER_COLUMN), [cards]);
+
+  const renderColumn = ({ item }: ListRenderItemInfo<SessionColumn>) => {
+    return (
+      <View style={styles.column}>
+        {item.rows.map((card) => (
+          <LiveAssistantCard key={card.session.sessionId} card={card} reducedMotion={reducedMotion} />
+        ))}
+        {item.rows.length < ROWS_PER_COLUMN ? <View style={styles.cardSpacer} /> : null}
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.section}>
+      <SectionHeader
+        title={"Live\nAI Assistants in Action"}
+        action={<LiveBadge reducedMotion={reducedMotion} />}
+      />
+      {error ? (
+        <ErrorState message={error} onRetry={onRetry ?? (() => undefined)} />
+      ) : loading && columns.length === 0 ? (
+        <View style={styles.placeholderWrap}>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <View key={index} style={styles.placeholderCard} />
+          ))}
+        </View>
+      ) : columns.length === 0 ? (
+        <EmptyLiveState />
+      ) : (
+        <FlatList
+          horizontal
+          data={columns}
+          renderItem={renderColumn}
+          keyExtractor={(item) => item.id}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          ItemSeparatorComponent={() => <View style={styles.columnGap} />}
+        />
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  section: {
+    gap: spacing[3],
+  },
+  liveBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing[2],
+    paddingHorizontal: spacing[2],
+    paddingVertical: spacing[1],
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: "rgba(34, 197, 94, 0.25)",
+    backgroundColor: "rgba(34, 197, 94, 0.08)",
+  },
+  liveDotWrap: {
+    width: 10,
+    height: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  liveDotPulse: {
+    position: "absolute",
+    width: 10,
+    height: 10,
+    borderRadius: radius.full,
+    backgroundColor: "#22c55e",
+  },
+  liveDotCore: {
+    width: 6,
+    height: 6,
+    borderRadius: radius.full,
+    backgroundColor: "#22c55e",
+  },
+  liveBadgeLabel: {
+    color: "#86efac",
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 0.4,
+  },
+  listContent: {
+    paddingVertical: 2,
+  },
+  column: {
+    width: 240,
+    gap: spacing[3],
+  },
+  columnGap: {
+    width: spacing[3],
+  },
+  card: {
+    minHeight: 108,
+    backgroundColor: "#171717",
+    borderColor: "#262626",
+    borderWidth: 1,
+    borderRadius: radius.md,
+    padding: spacing[3],
+    justifyContent: "space-between",
+    gap: spacing[2],
+  },
+  cardSpacer: {
+    minHeight: 108,
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing[2],
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.full,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarInitial: {
+    color: "#021207",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  titleWrap: {
+    flex: 1,
+    gap: 1,
+  },
+  agentName: {
+    color: "#f5f5f5",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  projectName: {
+    color: "#9ca3af",
+    fontSize: 12,
+  },
+  task: {
+    color: "#d4d4d4",
+    fontSize: 12,
+  },
+  meta: {
+    color: "#86efac",
+    fontSize: 11,
+    fontWeight: "500",
+  },
+  indicatorWrap: {
+    width: INDICATOR_SIZE,
+    height: INDICATOR_SIZE,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkWrap: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  placeholderWrap: {
+    flexDirection: "row",
+    gap: spacing[3],
+  },
+  placeholderCard: {
+    width: 180,
+    height: 108,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    backgroundColor: "#151515",
+  },
+  emptyState: {
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: "#2a2a2a",
+    backgroundColor: "#141414",
+    padding: spacing[4],
+    gap: spacing[2],
+  },
+  emptyTitle: {
+    color: "#d1fae5",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  emptySubtitle: {
+    color: "#9ca3af",
+    fontSize: 12,
+    lineHeight: 18,
+  },
+});

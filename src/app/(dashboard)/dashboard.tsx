@@ -2,8 +2,16 @@ import React, { useMemo } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
+import { useLiveAgentSessions } from "@/features/analytics/hooks/useLiveAgentSessions";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
-import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
+import {
+  SectionHeader,
+  CardGrid,
+  KpiCard,
+  LoadingSkeleton,
+  ErrorState,
+  LiveAssistantsSection,
+} from "@/components/dashboard";
 import { ChartCard, TrendChart } from "@/components/charts";
 import { ScreenWrapper } from "@/components/screen";
 import { FilterBar } from "@/components/filters";
@@ -11,6 +19,12 @@ import { spacing } from "@/theme/tokens";
 
 export default function OverviewDashboardScreen() {
   const { data, loading, error, refetch } = useOverviewDashboard();
+  const {
+    data: liveSessions,
+    loading: liveLoading,
+    error: liveError,
+    refetch: refetchLiveSessions,
+  } = useLiveAgentSessions();
   const { preset } = useDashboardFilters();
   const router = useRouter();
 
@@ -32,6 +46,15 @@ export default function OverviewDashboardScreen() {
       }}
     >
       <FilterBar />
+
+      <LiveAssistantsSection
+        sessions={liveSessions}
+        loading={liveLoading}
+        error={liveError}
+        onRetry={() => {
+          void refetchLiveSessions();
+        }}
+      />
 
       {/* Section 1 — Key Metrics */}
       <View style={styles.section}>

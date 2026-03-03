@@ -9,6 +9,7 @@ import type {
   ReliabilityResponse,
   GovernanceResponse,
   ProjectsResponse,
+  LiveAgentSessionsResponse,
   RunsPageRequest,
   RunsPageResponse,
   RunDetailResponse,
@@ -24,6 +25,7 @@ import type {
   PromptRole,
   RunPromptMessageCost,
   RunPromptChainSummary,
+  LiveAgentSession,
 } from "@/features/analytics/types";
 
 interface StubConfig {
@@ -45,6 +47,17 @@ function hashString(input: string): number {
   }
   return h;
 }
+
+const LIVE_TASKS = [
+  "Analyzing repository changes",
+  "Generating implementation plan",
+  "Running focused unit tests",
+  "Executing lint and type checks",
+  "Refactoring service layer",
+  "Applying dashboard UI updates",
+  "Validating pull request changes",
+  "Summarizing runtime findings",
+] as const;
 
 export class StubAnalyticsApi implements IAnalyticsApi {
   private seed: SeedData;
@@ -754,6 +767,84 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         const s = d.filter((r) => r.status === "succeeded").length;
         return d.length ? s / d.length : 0;
       }),
+    };
+  }
+
+  async getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse> {
+    await this.simulate();
+    const filteredRuns = this.filterRuns({ ...filters, statuses: ["queued", "running"] });
+    const orgWideActive = this.seed.runs.filter(
+      (run) => run.status === "queued" || run.status === "running"
+    );
+    const sourcePool = filteredRuns.length > 0 ? filteredRuns : orgWideActive;
+    const safePool = sourcePool.length > 0 ? sourcePool : this.seed.runs;
+    if (safePool.length === 0) {
+      return {
+        activeSessions: [],
+        lastUpdatedIso: new Date().toISOString(),
+      };
+    }
+
+    const baseSessions: LiveAgentSession[] = safePool
+      .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
+      .slice(0, 10)
+      .map((run) => {
+        const agent = this.seed.agents.find((item) => item.id === run.agentId);
+        const project = this.seed.projects.find((item) => item.id === run.projectId);
+        const user = this.seed.users.find((item) => item.id === run.userId);
+        const taskIndex = hashString(run.id + run.agentId) % LIVE_TASKS.length;
+
+        return {
+          sessionId: `seed_${run.id}`,
+          runId: run.id,
+          agentId: run.agentId,
+          agentName: agent?.name ?? run.agentId,
+          projectName: project?.name ?? run.projectId,
+          userName: user?.name ?? run.userId,
+          status: run.status === "queued" ? "queued" : "running",
+          startedAtIso: run.startedAtIso,
+          currentTask: LIVE_TASKS[taskIndex]!,
+        };
+      });
+
+    const nowMs = Date.now();
+    const window = Math.floor(nowMs / 12_000);
+    const syntheticCount = 6 + (window % 5);
+    const fallbackRun = safePool[0]!;
+    const syntheticSessions: LiveAgentSession[] = Array.from({ length: syntheticCount }).map(
+      (_, index) => {
+        const run = safePool[(window + index) % safePool.length] ?? fallbackRun;
+        const agent = this.seed.agents.find((item) => item.id === run.agentId) ?? this.seed.agents[0]!;
+        const project = this.seed.projects.find((item) => item.id === run.projectId) ?? this.seed.projects[0]!;
+        const user = this.seed.users.find((item) => item.id === run.userId) ?? this.seed.users[0]!;
+        const taskIndex = (window + index) % LIVE_TASKS.length;
+        const startedAgoMs = 40_000 + index * 55_000 + ((window + index) % 5) * 10_000;
+
+        return {
+          sessionId: `live_${window}_${index}_${agent.id}`,
+          runId: `live_run_${window}_${index}`,
+          agentId: agent.id,
+          agentName: agent.name,
+          projectName: project.name,
+          userName: user.name,
+          status: (window + index) % 4 === 0 ? "queued" : "running",
+          startedAtIso: new Date(nowMs - startedAgoMs).toISOString(),
+          currentTask: LIVE_TASKS[taskIndex]!,
+        };
+      }
+    );
+
+    const sessionsById = new Map<string, LiveAgentSession>();
+    for (const session of [...syntheticSessions, ...baseSessions]) {
+      sessionsById.set(session.sessionId, session);
+    }
+    const sessions = Array.from(sessionsById.values())
+      .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
+      .slice(0, 18);
+
+    return {
+      activeSessions: sessions,
+      lastUpdatedIso: new Date().toISOString(),
     };
   }
 

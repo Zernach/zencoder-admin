@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { arc, pie } from "d3-shape";
 import type { ProviderCostRow } from "@/features/analytics/types";
-import { formatCompactNumber, formatCurrency } from "@/features/analytics/utils/formatters";
+import { formatCompactNumber, formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
 import { typography } from "@/theme/typography";
 import { semanticThemes } from "@/theme/themes";
 import { DATA_PALETTE } from "./palette";
@@ -45,8 +45,6 @@ export function ProviderCostChart({
 
   const arcs = pieGen(chartData);
   const segmentLabelTypography = typography.label;
-  const centerValueTypography = typography.cardTitle;
-  const centerLabelTypography = typography.label;
   const textColors = semanticThemes.dark.text;
 
   return (
@@ -70,7 +68,7 @@ export function ProviderCostChart({
               }
 
               const centroid = arcGen.centroid(a);
-              const pct = ((a.data.value / total) * 100).toFixed(0);
+              const pct = formatPercent((a.data.value / total) * 100);
               const x = size / 2 + centroid[0];
               const y = size / 2 + centroid[1];
 
@@ -83,14 +81,10 @@ export function ProviderCostChart({
                       left: x - 18,
                       top: y - segmentLabelTypography.lineHeight / 2,
                       color: textColors.primary,
-                      fontFamily: segmentLabelTypography.fontFamily,
-                      fontSize: segmentLabelTypography.fontSize,
-                      fontWeight: "600",
-                      lineHeight: segmentLabelTypography.lineHeight,
                     },
                   ]}
                 >
-                  {pct}%
+                  {pct}
                 </Text>
               );
             })}
@@ -100,10 +94,6 @@ export function ProviderCostChart({
                   styles.centerValue,
                   {
                     color: textColors.primary,
-                    fontFamily: centerValueTypography.fontFamily,
-                    fontSize: centerValueTypography.fontSize,
-                    fontWeight: "600",
-                    lineHeight: centerValueTypography.lineHeight,
                   },
                 ]}
               >
@@ -114,14 +104,10 @@ export function ProviderCostChart({
                   styles.centerLabel,
                   {
                     color: textColors.tertiary,
-                    fontFamily: centerLabelTypography.fontFamily,
-                    fontSize: centerLabelTypography.fontSize,
-                    fontWeight: "500",
-                    lineHeight: centerLabelTypography.lineHeight,
                   },
                 ]}
               >
-                Cost by provider
+                Cost by Provider
               </Text>
             </View>
           </View>
@@ -133,8 +119,8 @@ export function ProviderCostChart({
             {topProvider ? PROVIDER_LABELS[topProvider.provider] : "N/A"}
           </Text>
           <Text style={[styles.statsSubtle, { color: textColors.secondary }]}>
-            {topProvider
-              ? `${((topProvider.totalCostUsd / total) * 100).toFixed(1)}% of cost`
+                {topProvider
+              ? `${formatPercent((topProvider.totalCostUsd / total) * 100)} of cost`
               : "No data"}
           </Text>
 
@@ -168,7 +154,7 @@ export function ProviderCostChart({
                   </Text>
                 </View>
                 <Text style={[styles.share, { color: textColors.secondary }]}>
-                  {share.toFixed(1)}%
+                  {formatPercent(share)}
                 </Text>
               </View>
 
@@ -223,6 +209,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 36,
     textAlign: "center",
+    fontFamily: typography.label.fontFamily,
+    fontSize: typography.label.fontSize,
+    fontWeight: typography.label.fontWeight,
+    lineHeight: typography.label.lineHeight,
   },
   centerTextWrap: {
     ...StyleSheet.absoluteFillObject,
@@ -231,10 +221,18 @@ const styles = StyleSheet.create({
   },
   centerValue: {
     textAlign: "center",
+    fontFamily: typography.cardTitle.fontFamily,
+    fontSize: typography.cardTitle.fontSize,
+    fontWeight: typography.cardTitle.fontWeight,
+    lineHeight: typography.cardTitle.lineHeight,
   },
   centerLabel: {
     textAlign: "center",
     marginTop: 2,
+    fontFamily: typography.label.fontFamily,
+    fontSize: typography.label.fontSize,
+    fontWeight: typography.label.fontWeight,
+    lineHeight: typography.label.lineHeight,
   },
   statsColumn: {
     flex: 1,
@@ -244,20 +242,20 @@ const styles = StyleSheet.create({
   statsLabel: {
     fontFamily: typography.label.fontFamily,
     fontSize: typography.label.fontSize,
-    fontWeight: "500",
+    fontWeight: typography.label.fontWeight,
     lineHeight: typography.label.lineHeight,
     textTransform: "uppercase",
   },
   statsValue: {
     fontFamily: typography.cardTitle.fontFamily,
     fontSize: typography.cardTitle.fontSize,
-    fontWeight: "700",
+    fontWeight: typography.cardTitle.fontWeight,
     lineHeight: typography.cardTitle.lineHeight,
   },
   statsSubtle: {
     fontFamily: typography.label.fontFamily,
     fontSize: typography.label.fontSize,
-    fontWeight: "500",
+    fontWeight: typography.label.fontWeight,
     lineHeight: typography.label.lineHeight,
   },
   metricSpacing: {
@@ -287,13 +285,13 @@ const styles = StyleSheet.create({
   providerName: {
     fontFamily: typography.tableBody.fontFamily,
     fontSize: typography.tableBody.fontSize,
-    fontWeight: "600",
+    fontWeight: typography.tableBody.fontWeight,
     lineHeight: typography.tableBody.lineHeight,
   },
   share: {
     fontFamily: typography.tableBody.fontFamily,
     fontSize: typography.tableBody.fontSize,
-    fontWeight: "600",
+    fontWeight: typography.tableBody.fontWeight,
     lineHeight: typography.tableBody.lineHeight,
   },
   metricsRow: {
@@ -305,7 +303,7 @@ const styles = StyleSheet.create({
   metric: {
     fontFamily: typography.label.fontFamily,
     fontSize: typography.label.fontSize,
-    fontWeight: "500",
+    fontWeight: typography.label.fontWeight,
     lineHeight: typography.label.lineHeight,
   },
   runBarTrack: {

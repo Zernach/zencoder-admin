@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, Pressable, StyleSheet, Platform } from "react-native";
+import { View, Image, Pressable, StyleSheet, Platform } from "react-native";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -64,7 +64,14 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
   return (
     <Animated.View style={[styles.sidebar, animatedStyle]}>
       <View style={styles.header}>
-        {expanded && <Text style={styles.brand}>Zencoder</Text>}
+        {expanded && (
+          <Image
+            source={require("../../assets/images/zencoder-text-dark-bg.png")}
+            style={styles.brandImage}
+            resizeMode="contain"
+            accessibilityIgnoresInvertColors
+          />
+        )}
         <Pressable
           onPress={onToggle}
           style={styles.toggleBtn}
@@ -111,10 +118,9 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     minHeight: 32,
   },
-  brand: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#e5e5e5",
+  brandImage: {
+    width: 150,
+    height: 28,
   },
   toggleBtn: {
     width: 32,

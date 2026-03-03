@@ -64,6 +64,20 @@ export interface RunAnomaly {
   value: number;
 }
 
+export type LiveAgentSessionStatus = "queued" | "running";
+
+export interface LiveAgentSession {
+  sessionId: string;
+  runId: string;
+  agentId: string;
+  agentName: string;
+  projectName: string;
+  userName: string;
+  status: LiveAgentSessionStatus;
+  startedAtIso: string;
+  currentTask: string;
+}
+
 export interface RunTimelineEvent {
   step: "queued" | "started" | "tools" | "tests" | "artifact" | "completed";
   timestampIso: string;
@@ -188,6 +202,11 @@ export interface OverviewResponse {
   runsTrend: TimeSeriesPoint[];
   costTrend: TimeSeriesPoint[];
   anomalies: RunAnomaly[];
+}
+
+export interface LiveAgentSessionsResponse {
+  activeSessions: LiveAgentSession[];
+  lastUpdatedIso: string;
 }
 
 export interface UsageResponse {

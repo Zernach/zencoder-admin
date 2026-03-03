@@ -59,6 +59,24 @@ describe("getOverview", () => {
   });
 });
 
+describe("getLiveAgentSessions", () => {
+  it("returns only active sessions and required fields", async () => {
+    const res = await api.getLiveAgentSessions(defaultFilters);
+    expect(Array.isArray(res.activeSessions)).toBe(true);
+    expect(res.activeSessions.length).toBeGreaterThan(0);
+    for (const session of res.activeSessions) {
+      expect(session.status === "running" || session.status === "queued").toBe(true);
+      expect(typeof session.sessionId).toBe("string");
+      expect(typeof session.runId).toBe("string");
+      expect(typeof session.agentName).toBe("string");
+      expect(typeof session.projectName).toBe("string");
+      expect(typeof session.userName).toBe("string");
+      expect(typeof session.currentTask).toBe("string");
+    }
+    expect(typeof res.lastUpdatedIso).toBe("string");
+  });
+});
+
 describe("getUsage", () => {
   it("returns valid UsageResponse", async () => {
     const res = await api.getUsage(defaultFilters);

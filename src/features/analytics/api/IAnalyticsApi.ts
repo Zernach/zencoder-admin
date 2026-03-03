@@ -7,6 +7,7 @@ import type {
   ReliabilityResponse,
   GovernanceResponse,
   ProjectsResponse,
+  LiveAgentSessionsResponse,
   RunsPageRequest,
   RunsPageResponse,
   RunDetailResponse,
@@ -20,6 +21,7 @@ export interface IAnalyticsApi {
   getReliability(filters: AnalyticsFilters): Promise<ReliabilityResponse>;
   getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse>;
   getProjects(filters: AnalyticsFilters): Promise<ProjectsResponse>;
+  getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse>;
   getRunsPage(request: RunsPageRequest): Promise<RunsPageResponse>;
   getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse>;
 }

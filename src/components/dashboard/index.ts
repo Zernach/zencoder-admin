@@ -7,3 +7,4 @@ export { EmptyState } from "./EmptyState";
 export { SectionHeader } from "./SectionHeader";
 export { CardGrid } from "./CardGrid";
 export { DataTransition } from "./DataTransition";
+export { LiveAssistantsSection } from "./LiveAssistantsSection";

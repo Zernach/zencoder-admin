@@ -145,6 +145,16 @@ describe("getRunsPage", () => {
   });
 });
 
+describe("getLiveAgentSessions", () => {
+  it("returns active sessions from api", async () => {
+    const res = await service.getLiveAgentSessions(defaultFilters);
+    expect(Array.isArray(res.activeSessions)).toBe(true);
+    for (const session of res.activeSessions) {
+      expect(session.status === "running" || session.status === "queued").toBe(true);
+    }
+  });
+});
+
 describe("getRunDetail", () => {
   it("passes through to api", async () => {
     const runId = seedData.runs[0]!.id;
@@ -240,6 +250,7 @@ describe("delegation via mock", () => {
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
       getProjects: jest.fn(),
+      getLiveAgentSessions: jest.fn(),
       getRunsPage: jest.fn(),
       getRunDetail: jest.fn(),
     };
@@ -284,6 +295,7 @@ describe("delegation via mock", () => {
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
       getProjects: jest.fn(),
+      getLiveAgentSessions: jest.fn(),
       getRunsPage: jest.fn(),
       getRunDetail: jest.fn(),
     };
