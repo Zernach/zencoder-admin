@@ -16,5 +16,15 @@ RALPH_PROMPT='Read the `docs/pull_requests/0000-task-manager.md` file and the cu
 # 2. Simulated Data Improvements Loop
 # RALPH_PROMPT='Continue improving the stubbed data implementation. We need the user to feel like they are viewing 90 days of simulated dashboard data for the Zencoder Admin Dashboard. This should include for the data tables, charts, and filters to be fully functional and realistic.'
 
+start_time=$(date +%s)
 
 claude --dangerously-skip-permissions "/ralph-loop $RALPH_PROMPT"
+
+end_time=$(date +%s)
+elapsed=$((end_time - start_time))
+elapsed_m=$((elapsed / 60))
+elapsed_s=$((elapsed % 60))
+echo ""
+echo "---"
+echo "Completed at: $(date)"
+echo "Time elapsed: ${elapsed_m}m ${elapsed_s}s"
