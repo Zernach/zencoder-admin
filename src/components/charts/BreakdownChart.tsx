@@ -10,6 +10,7 @@ interface BreakdownChartProps {
   color?: string;
   height?: number;
   showValues?: boolean;
+  truncateLabels?: boolean;
 }
 
 export function BreakdownChart({
@@ -17,6 +18,7 @@ export function BreakdownChart({
   variant = "bar",
   height = 200,
   showValues = true,
+  truncateLabels = true,
 }: BreakdownChartProps) {
   const sorted = [...data].sort((a, b) => b.value - a.value);
   const maxVal = Math.max(...sorted.map((d) => d.value), 1);
@@ -26,7 +28,10 @@ export function BreakdownChart({
       <View style={[styles.container, { minHeight: height }]}>
         {sorted.map((item, i) => (
           <View key={`${item.key}-${i}`} style={styles.hBarRow}>
-            <Text style={styles.hBarLabel} numberOfLines={1}>
+            <Text
+              style={[styles.hBarLabel, !truncateLabels && styles.hBarLabelFull]}
+              numberOfLines={truncateLabels ? 1 : undefined}
+            >
               {item.key}
             </Text>
             <View style={styles.hBarTrack}>
@@ -96,6 +101,11 @@ const styles = StyleSheet.create({
     width: 80,
     fontSize: 11,
     color: "#a3a3a3",
+  },
+  hBarLabelFull: {
+    width: "auto",
+    minWidth: 80,
+    flexShrink: 0,
   },
   hBarTrack: {
     flex: 1,

@@ -93,7 +93,7 @@ export default function CostAnalyticsScreen() {
       {data && (
         <View style={styles.section}>
           <SectionHeader title="Project Breakdown" />
-          <BreakdownChart data={data.costBreakdown.slice(0, 10).map(r => ({ key: r.key, value: r.totalCostUsd }))} variant="horizontal-bar" height={300} />
+          <BreakdownChart data={data.costBreakdown.slice(0, 10).map(r => ({ key: r.key, value: r.totalCostUsd }))} variant="horizontal-bar" height={300} truncateLabels={false} />
         </View>
       )}
     </ScreenWrapper>
