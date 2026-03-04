@@ -20,16 +20,59 @@ export function BreakdownChart({
   showValues = true,
   truncateLabels = true,
 }: BreakdownChartProps) {
+  const [measuredLabelWidth, setMeasuredLabelWidth] = React.useState<number>(0);
+  const [measuredRowHeight, setMeasuredRowHeight] = React.useState<number>(0);
   const sorted = [...data].sort((a, b) => b.value - a.value);
   const maxVal = Math.max(...sorted.map((d) => d.value), 1);
+  const longestLabel = React.useMemo(
+    () => sorted.reduce((longest, item) => (item.key.length > longest.length ? item.key : longest), ""),
+    [sorted]
+  );
+
+  const handleLongestLabelLayout = React.useCallback((width: number): void => {
+    if (width > measuredLabelWidth) {
+      setMeasuredLabelWidth(width);
+    }
+  }, [measuredLabelWidth]);
+
+  const handleRowHeightLayout = React.useCallback((height: number): void => {
+    if (height > measuredRowHeight) {
+      setMeasuredRowHeight(height);
+    }
+  }, [measuredRowHeight]);
 
   if (variant === "horizontal-bar") {
     return (
       <View style={[styles.container, { minHeight: height }]}>
+        {!truncateLabels && longestLabel.length > 0 ? (
+          <Text
+            style={[styles.hBarLabel, styles.hBarLabelFull, styles.measureLabel]}
+            onLayout={(event) => handleLongestLabelLayout(event.nativeEvent.layout.width)}
+          >
+            {longestLabel}
+          </Text>
+        ) : null}
         {sorted.map((item, i) => (
-          <View key={`${item.key}-${i}`} style={styles.hBarRow}>
+          <View
+            key={`${item.key}-${i}`}
+            style={[
+              styles.hBarRow,
+              !truncateLabels && measuredRowHeight > 0
+                ? { height: measuredRowHeight }
+                : null,
+            ]}
+            onLayout={
+              truncateLabels
+                ? undefined
+                : (event) => handleRowHeightLayout(event.nativeEvent.layout.height)
+            }
+          >
             <Text
-              style={[styles.hBarLabel, !truncateLabels && styles.hBarLabelFull]}
+              style={[
+                styles.hBarLabel,
+                !truncateLabels && styles.hBarLabelFull,
+                !truncateLabels && measuredLabelWidth > 0 ? { width: measuredLabelWidth } : null,
+              ]}
               numberOfLines={truncateLabels ? 1 : undefined}
             >
               {item.key}
@@ -103,9 +146,12 @@ const styles = StyleSheet.create({
     color: "#a3a3a3",
   },
   hBarLabelFull: {
-    width: "auto",
-    minWidth: 80,
     flexShrink: 0,
+  },
+  measureLabel: {
+    position: "absolute",
+    opacity: 0,
+    zIndex: -1,
   },
   hBarTrack: {
     flex: 1,

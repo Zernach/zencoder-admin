@@ -20,6 +20,14 @@ jest.mock("lucide-react-native", () => ({
   X: () => null,
 }));
 
+jest.mock("@/providers/ThemeProvider", () => ({
+  useThemeMode: () => ({
+    mode: "dark",
+    setMode: jest.fn(),
+    toggleMode: jest.fn(),
+  }),
+}));
+
 function renderTopBar() {
   const store = configureStore({
     reducer: {

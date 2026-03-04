@@ -1,10 +1,12 @@
 import React from "react";
-import { View, Text, Pressable, TextInput, StyleSheet, Modal } from "react-native";
+import { View, Text, Pressable, StyleSheet, Modal } from "react-native";
+import type { TextInput as TextInputHandle } from "react-native";
 import { Search, Clock, X } from "lucide-react-native";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import type { TimeRangePreset } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { AppTextInput } from "@/components/inputs";
 
 type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
 
@@ -44,6 +46,7 @@ export function TopBar() {
   const breakpoint = useBreakpoint();
   const { mode } = useThemeMode();
   const { preset, setTimeRange } = useDashboardFilters();
+  const searchInputRef = React.useRef<TextInputHandle>(null);
   const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = React.useState(false);
 
   const openTimeRangeOverlay = React.useCallback(
@@ -74,17 +77,16 @@ export function TopBar() {
   const barBorder = isDark ? "#2d2d2d" : "#d5dce3";
   const textColor = isDark ? "#a3a3a3" : "#435160";
   const placeholderColor = isDark ? "#8a8a8a" : "#6b7683";
-  const inputTextColor = isDark ? "#e5e5e5" : "#0f1720";
 
   return (
     <View style={[styles.container, { backgroundColor: barBackground, borderBottomColor: barBorder }]}>
       <View style={styles.left}>
         <View style={[styles.searchContainer, { backgroundColor: panelBackground, borderColor: panelBorder }]}>
           <Search size={14} color={placeholderColor} />
-          <TextInput
-            style={[styles.searchInput, { color: inputTextColor }]}
+          <AppTextInput
+            ref={searchInputRef}
+            style={styles.searchInput}
             placeholder="Search agents, projects, runs..."
-            placeholderTextColor={placeholderColor}
           />
         </View>
       </View>

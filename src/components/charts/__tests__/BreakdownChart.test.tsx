@@ -25,13 +25,13 @@ describe("BreakdownChart", () => {
   });
 
   it("renders long labels fully when truncateLabels is false", () => {
-    const { getByText } = render(
+    const { getByText, getAllByText } = render(
       <BreakdownChart data={longNameData} variant="horizontal-bar" truncateLabels={false} />
     );
 
     expect(getByText("Enterprise Cloud Migration Platform")).toBeTruthy();
     expect(getByText("Internal Developer Tools Dashboard")).toBeTruthy();
-    expect(getByText("Customer Analytics and Reporting Suite")).toBeTruthy();
+    expect(getAllByText("Customer Analytics and Reporting Suite").length).toBeGreaterThan(0);
   });
 
   it("label text element has numberOfLines=undefined when truncateLabels is false", () => {
@@ -42,6 +42,19 @@ describe("BreakdownChart", () => {
     const label = getByText("Enterprise Cloud Migration Platform");
     // When truncateLabels is false, numberOfLines should not be set (undefined)
     expect(label.props.numberOfLines).toBeUndefined();
+  });
+
+  it("does not hardcode a fixed label column width when truncateLabels is false", () => {
+    const { getByText } = render(
+      <BreakdownChart data={longNameData} variant="horizontal-bar" truncateLabels={false} />
+    );
+
+    const label = getByText("Enterprise Cloud Migration Platform");
+    const flattenedStyles = Array.isArray(label.props.style) ? label.props.style : [label.props.style];
+    const hasHardcodedWidth = flattenedStyles.some(
+      (style: { width?: unknown } | null | undefined) => style?.width === 240
+    );
+    expect(hasHardcodedWidth).toBe(false);
   });
 
   it("label text element has numberOfLines=1 when truncateLabels is true (default)", () => {
