@@ -16,26 +16,26 @@ export function CostByProjectChart({ data, height = 250 }: CostByProjectChartPro
   return (
     <div className="border-2 border-gray-300 p-4 bg-white">
       <div className="text-sm font-medium text-gray-700 mb-4">
-        Cost by Project
+        Cost per Project
       </div>
       <ResponsiveContainer width="100%" height={height}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis 
-            dataKey="name" 
+          <XAxis
+            dataKey="name"
             tick={{ fontSize: 10, fill: '#6b7280' }}
             stroke="#9ca3af"
             angle={-45}
             textAnchor="end"
             height={80}
           />
-          <YAxis 
+          <YAxis
             tick={{ fontSize: 11, fill: '#6b7280' }}
             stroke="#9ca3af"
           />
-          <Tooltip 
-            contentStyle={{ 
-              border: '2px solid #1f2937', 
+          <Tooltip
+            contentStyle={{
+              border: '2px solid #1f2937',
               borderRadius: 0,
               backgroundColor: '#fff',
               fontFamily: 'monospace'

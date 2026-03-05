@@ -5,3 +5,4 @@ ios
 android
 .expo
 dist
+test-results

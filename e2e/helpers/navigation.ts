@@ -2,7 +2,8 @@ import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
 export async function navigateTo(page: Page, label: string) {
-  await page.click(`text=${label}`);
+  // Click the sidebar nav button (exact match) to avoid hitting page content
+  await page.getByRole("button", { name: label, exact: true }).click();
   await page.waitForTimeout(500);
 }
 

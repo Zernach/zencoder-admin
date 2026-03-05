@@ -9,8 +9,8 @@ test.describe("Agents Hub", () => {
     await navigateTo(page, "Agents");
     await waitForPageLoad(page);
 
-    // Verify agents page loaded with consolidated content
-    await expect(page.locator("text=Agents")).toBeVisible({
+    // Verify agents page loaded (Project Breakdown is unique to agents page)
+    await expect(page.getByText("Project Breakdown", { exact: true })).toBeVisible({
       timeout: 10_000,
     });
   });

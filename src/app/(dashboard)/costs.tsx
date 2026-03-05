@@ -49,7 +49,7 @@ export default function CostAnalyticsScreen() {
               <ChartCard title="Cost per Day">
                 <TrendChart data={data.costTrend} variant="area" color="#22c55e" />
               </ChartCard>
-              <ChartCard title="Cost by Project">
+              <ChartCard title="Cost per Project">
                 <DonutChart
                   data={data.costBreakdown.slice(0, 6).map(r => ({ key: r.key, value: r.totalCostUsd }))}
                   centerLabel="Total"

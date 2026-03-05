@@ -104,7 +104,11 @@ export default function AgentsScreen() {
                 <TrendChart data={data.reliabilityTrend} variant="line" color="#22c55e" />
               </ChartCard>
               <ChartCard title="Failure Categories">
-                <BreakdownChart data={data.failureCategoryBreakdown} variant="horizontal-bar" />
+                <BreakdownChart
+                  data={data.failureCategoryBreakdown}
+                  variant="horizontal-bar"
+                  truncateLabels={false}
+                />
               </ChartCard>
             </ScrollView>
           </>

@@ -1,8 +1,12 @@
 {
   "name": "zencoder-admin",
   "private": true,
+  "engines": {
+    "node": ">=22 <24"
+  },
   "main": "expo-router/entry",
   "scripts": {
+    "clean": "rm -rf node_modules ios android .expo package-lock.json dist && npm install",
     "figma:sync": "node --experimental-strip-types docs/designs/src/index.ts",
     "ralph": "sh docs/ralph/ralph.sh",
     "start": "expo start",

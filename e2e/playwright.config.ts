@@ -1,3 +1,4 @@
+import path from "path";
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
@@ -13,5 +14,6 @@ export default defineConfig({
     command: "npx expo start --web --port 8081",
     port: 8081,
     reuseExistingServer: true,
+    cwd: path.join(__dirname, ".."),
   },
 });

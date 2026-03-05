@@ -53,8 +53,15 @@ jest.mock("@/components/charts", () => {
         {children}
       </View>
     ),
-    BreakdownChart: ({ data }: { data: Array<{ key: string; value: number }> }) => (
+    BreakdownChart: ({
+      data,
+      truncateLabels,
+    }: {
+      data: Array<{ key: string; value: number }>;
+      truncateLabels?: boolean;
+    }) => (
       <View>
+        <Text testID="truncateLabels">{String(truncateLabels ?? true)}</Text>
         {data.map((item) => (
           <Text key={item.key}>{`${item.key}: ${item.value}`}</Text>
         ))}
@@ -164,6 +171,22 @@ describe("GovernanceScreen", () => {
     const { getByText } = render(<GovernanceScreen />);
 
     expect(getByText("Seat User Oversight")).toBeTruthy();
+  });
+
+  it("passes truncateLabels=false to governance horizontal breakdown charts", () => {
+    mockUseGovernanceDashboard.mockReturnValue({
+      data: createGovernanceData(seedData),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getAllByTestId } = render(<GovernanceScreen />);
+    const truncateFlags = getAllByTestId("truncateLabels");
+    const falseFlags = truncateFlags.filter((el) => el.props.children === "false");
+
+    // Governance screen renders two horizontal-bar breakdown charts.
+    expect(falseFlags.length).toBeGreaterThanOrEqual(2);
   });
 
   it("renders violations with newest timestamp first", () => {

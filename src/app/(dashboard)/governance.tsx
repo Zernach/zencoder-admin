@@ -126,7 +126,11 @@ export default function GovernanceScreen() {
             </CardGrid>
 
             <ChartCard title="Violations by Team">
-              <BreakdownChart data={data.violationsByTeam} variant="horizontal-bar" />
+              <BreakdownChart
+                data={data.violationsByTeam}
+                variant="horizontal-bar"
+                truncateLabels={false}
+              />
             </ChartCard>
           </>
         ) : null}
@@ -167,7 +171,11 @@ export default function GovernanceScreen() {
             title="Seat Usage by Runs"
             subtitle="AI runs per seat user, sorted by usage"
           >
-            <BreakdownChart data={seatUsageChartData} variant="horizontal-bar" />
+            <BreakdownChart
+              data={seatUsageChartData}
+              variant="horizontal-bar"
+              truncateLabels={false}
+            />
           </ChartCard>
           <DataTable
             columns={seatUsageCols}

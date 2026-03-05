@@ -6,8 +6,8 @@ test.describe("Home screen", () => {
     await page.goto("/");
     await waitForPageLoad(page);
 
-    // Verify home page loaded with title
-    await expect(page.locator("text=Home")).toBeVisible({
+    // Verify home page loaded (Key Metrics section is unique to overview)
+    await expect(page.getByText("Key Metrics", { exact: true })).toBeVisible({
       timeout: 15_000,
     });
   });
