@@ -8,11 +8,17 @@ jest.mock("@/features/analytics/hooks/useCostDashboard", () => ({
   useCostDashboard: () => mockUseCostDashboard(),
 }));
 
+jest.mock("@/hooks/useSearchFilter", () => ({
+  useSearchFilter: <T,>(data: T[]) => data,
+}));
+
 jest.mock("@/components/screen", () => {
   const React = require("react");
   const { View } = require("react-native");
+  const { StyleSheet } = require("react-native");
   return {
     ScreenWrapper: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    sectionStyles: StyleSheet.create({ section: { gap: 12 }, chartRow: { flexDirection: "row", gap: 16 } }),
   };
 });
 

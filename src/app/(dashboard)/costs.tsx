@@ -1,14 +1,21 @@
 import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { useCostDashboard } from "@/features/analytics/hooks/useCostDashboard";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart, DonutChart, ProviderCostChart } from "@/components/charts";
+import { chartColors } from "@/components/tables";
 import { formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
-import { ScreenWrapper } from "@/components/screen";
-import { spacing } from "@/theme/tokens";
+import type { CostBreakdownRow } from "@/features/analytics/types";
+import { ScreenWrapper, sectionStyles } from "@/components/screen";
+import { useSearchFilter } from "@/hooks/useSearchFilter";
+
+const styles = sectionStyles;
+
+const COST_BREAKDOWN_SEARCH_KEYS: (keyof CostBreakdownRow)[] = ["key"];
 
 export default function CostAnalyticsScreen() {
   const { data, loading, error, refetch } = useCostDashboard();
+  const filteredCostBreakdown = useSearchFilter(data?.costBreakdown ?? [], COST_BREAKDOWN_SEARCH_KEYS);
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
@@ -47,7 +54,7 @@ export default function CostAnalyticsScreen() {
               contentContainerStyle={styles.chartRow}
             >
               <ChartCard title="Cost per Day">
-                <TrendChart data={data.costTrend} variant="area" color="#22c55e" />
+                <TrendChart data={data.costTrend} variant="area" color={chartColors.success} />
               </ChartCard>
               <ChartCard title="Cost per Project">
                 <DonutChart
@@ -90,14 +97,9 @@ export default function CostAnalyticsScreen() {
       {data && (
         <View style={styles.section}>
           <SectionHeader title="Project Breakdown" />
-          <BreakdownChart data={data.costBreakdown.slice(0, 10).map(r => ({ key: r.key, value: r.totalCostUsd }))} variant="horizontal-bar" height={300} truncateLabels={false} />
+          <BreakdownChart data={filteredCostBreakdown.slice(0, 10).map(r => ({ key: r.key, value: r.totalCostUsd }))} variant="horizontal-bar" height={300} truncateLabels={false} />
         </View>
       )}
     </ScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  section: { gap: spacing[3] },
-  chartRow: { flexDirection: "row", gap: spacing[4] },
-});

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
 import { useLiveAgentSessions } from "@/features/analytics/hooks/useLiveAgentSessions";
@@ -13,8 +13,14 @@ import {
   LiveAssistantsSection,
 } from "@/components/dashboard";
 import { ChartCard, TrendChart } from "@/components/charts";
-import { ScreenWrapper } from "@/components/screen";
-import { spacing } from "@/theme/tokens";
+import { chartColors } from "@/components/tables";
+import { ScreenWrapper, sectionStyles } from "@/components/screen";
+import { useSearchFilter } from "@/hooks/useSearchFilter";
+import type { LiveAgentSession } from "@/features/analytics/types";
+
+const styles = sectionStyles;
+
+const SESSION_SEARCH_KEYS: (keyof LiveAgentSession)[] = ["agentName", "projectName", "userName", "currentTask"];
 
 export default function OverviewDashboardScreen() {
   const { data, loading, error, refetch } = useOverviewDashboard();
@@ -25,6 +31,7 @@ export default function OverviewDashboardScreen() {
     refetch: refetchLiveSessions,
   } = useLiveAgentSessions();
   const { preset } = useDashboardFilters();
+  const filteredSessions = useSearchFilter(liveSessions, SESSION_SEARCH_KEYS);
   const router = useRouter();
 
   const subtitle = useMemo(() => {
@@ -45,7 +52,7 @@ export default function OverviewDashboardScreen() {
       }}
     >
       <LiveAssistantsSection
-        sessions={liveSessions}
+        sessions={filteredSessions}
         loading={liveLoading}
         error={liveError}
         onRetry={() => {
@@ -53,7 +60,7 @@ export default function OverviewDashboardScreen() {
         }}
       />
 
-      {/* Section 1 — Key Metrics */}
+      {/* Section 1 -- Key Metrics */}
       <View style={styles.section}>
         <SectionHeader title="Key Metrics" subtitle="At a glance" />
         {loading ? (
@@ -83,7 +90,7 @@ export default function OverviewDashboardScreen() {
         ) : null}
       </View>
 
-      {/* Section 2 — Trends */}
+      {/* Section 2 -- Trends */}
       <View style={styles.section}>
         <SectionHeader title="Trends" />
         <ScrollView
@@ -105,7 +112,7 @@ export default function OverviewDashboardScreen() {
               <TrendChart
                 data={data.costTrend}
                 variant="line"
-                color="#22c55e"
+                color={chartColors.success}
                 height={200}
               />
             )}
@@ -113,7 +120,7 @@ export default function OverviewDashboardScreen() {
         </ScrollView>
       </View>
 
-      {/* Section 3 — Usage & Adoption */}
+      {/* Section 3 -- Usage & Adoption */}
       {data && data.usageKpis.length > 0 && (
         <View style={styles.section}>
           <SectionHeader title="Usage & Adoption" subtitle="Active user metrics" />
@@ -135,7 +142,7 @@ export default function OverviewDashboardScreen() {
         </View>
       )}
 
-      {/* Section 4 — Outcomes */}
+      {/* Section 4 -- Outcomes */}
       {data && data.outcomesKpis.length > 0 && (
         <View style={styles.section}>
           <SectionHeader title="Outcomes" subtitle="Code quality & delivery" />
@@ -151,13 +158,13 @@ export default function OverviewDashboardScreen() {
           </CardGrid>
           {data.outcomesTrend && data.outcomesTrend.length > 0 && (
             <ChartCard title="PRs Merged Over Time">
-              <TrendChart data={data.outcomesTrend} variant="line" color="#f59e0b" height={180} />
+              <TrendChart data={data.outcomesTrend} variant="line" color={chartColors.warning} height={180} />
             </ChartCard>
           )}
         </View>
       )}
 
-      {/* Section 5 — Reliability & Provider Mix */}
+      {/* Section 5 -- Reliability & Provider Mix */}
       <View style={styles.section}>
         <SectionHeader title="Reliability & Provider Mix" />
         {loading ? (
@@ -182,7 +189,7 @@ export default function OverviewDashboardScreen() {
         ) : null}
       </View>
 
-      {/* Section 6 — Anomalies */}
+      {/* Section 6 -- Anomalies */}
       {data && data.anomalies.length > 0 && (
         <View style={styles.section}>
           <SectionHeader title="Anomalies" subtitle="Notable outliers" />
@@ -201,13 +208,3 @@ export default function OverviewDashboardScreen() {
     </ScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    gap: spacing[3],
-  },
-  chartRow: {
-    flexDirection: "row",
-    gap: spacing[4],
-  },
-});

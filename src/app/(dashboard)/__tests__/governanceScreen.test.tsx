@@ -14,11 +14,17 @@ jest.mock("@/core/di/AppDependencies", () => ({
   useAppDependencies: () => mockUseAppDependencies(),
 }));
 
+jest.mock("@/hooks/useSearchFilter", () => ({
+  useSearchFilter: <T,>(data: T[]) => data,
+}));
+
 jest.mock("@/components/screen", () => {
   const React = require("react");
   const { View } = require("react-native");
+  const { StyleSheet } = require("react-native");
   return {
     ScreenWrapper: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    sectionStyles: StyleSheet.create({ section: { gap: 12 }, chartRow: { flexDirection: "row", gap: 16 } }),
   };
 });
 
@@ -72,7 +78,7 @@ jest.mock("@/components/charts", () => {
 
 jest.mock("@/components/tables", () => {
   const React = require("react");
-  const { View, Text } = require("react-native");
+  const { View, Text, StyleSheet } = require("react-native");
   return {
     DataTable: ({ columns, data }: { columns: Array<{ header: string; key: string }>; data: Array<Record<string, unknown>> }) => (
       <View>
@@ -86,6 +92,13 @@ jest.mock("@/components/tables", () => {
         ))}
       </View>
     ),
+    cellText: StyleSheet.create({
+      primary: { color: "#e5e5e5", fontSize: 12 },
+      secondary: { color: "#a3a3a3", fontSize: 12 },
+      brand: { color: "#67c4ea", fontSize: 12 },
+    }),
+    getSuccessRateColor: () => "#22c55e",
+    chartColors: { success: "#22c55e", warning: "#f59e0b", error: "#ef4444" },
   };
 });
 

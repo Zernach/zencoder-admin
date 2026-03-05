@@ -1,65 +1,54 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart } from "@/components/charts";
-import { DataTable, type ColumnDef } from "@/components/tables";
+import { DataTable, type ColumnDef, cellText, getSuccessRateColor, chartColors } from "@/components/tables";
 import { formatPercent, formatDuration, formatCurrency, formatCompactNumber } from "@/features/analytics/utils/formatters";
 import type { AgentBreakdownRow, ProjectBreakdownRow, RunListRow } from "@/features/analytics/types";
-import { ScreenWrapper } from "@/components/screen";
-import { spacing } from "@/theme/tokens";
+import { ScreenWrapper, sectionStyles } from "@/components/screen";
+import { useSearchFilter } from "@/hooks/useSearchFilter";
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
-}
-
-function interpolateColorChannel(start: number, end: number, progress: number): number {
-  return Math.round(start + (end - start) * progress);
-}
-
-function getSuccessRateColor(successRate: number): string {
-  const progress = clamp(successRate, 0, 1);
-  const start = { r: 43, g: 9, b: 9 };
-  const end = { r: 34, g: 197, b: 94 };
-
-  const r = interpolateColorChannel(start.r, end.r, progress);
-  const g = interpolateColorChannel(start.g, end.g, progress);
-  const b = interpolateColorChannel(start.b, end.b, progress);
-
-  return `rgb(${r}, ${g}, ${b})`;
-}
+const styles = sectionStyles;
 
 const agentCols: ColumnDef<AgentBreakdownRow>[] = [
   { key: "agentName", header: "Agent", width: 160 },
-  { key: "projectName", header: "Project", width: 160, render: (row) => <Text style={{ color: "#a3a3a3", fontSize: 12 }} numberOfLines={1}>{row.projectName}</Text> },
-  { key: "totalRuns", header: "Runs", width: 80, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCompactNumber(row.totalRuns)}</Text> },
-  { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={{ color: getSuccessRateColor(row.successRate), fontSize: 12 }}>{formatPercent(row.successRate * 100)}</Text> },
-  { key: "avgDurationMs", header: "Avg Duration", width: 100, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatDuration(row.avgDurationMs)}</Text> },
-  { key: "totalCostUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCurrency(row.totalCostUsd)}</Text> },
+  { key: "projectName", header: "Project", width: 160, render: (row) => <Text style={cellText.secondary} numberOfLines={1}>{row.projectName}</Text> },
+  { key: "totalRuns", header: "Runs", width: 80, align: "right", render: (row) => <Text style={cellText.primary}>{formatCompactNumber(row.totalRuns)}</Text> },
+  { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={[cellText.primary, { color: getSuccessRateColor(row.successRate) }]}>{formatPercent(row.successRate * 100)}</Text> },
+  { key: "avgDurationMs", header: "Avg Duration", width: 100, align: "right", render: (row) => <Text style={cellText.primary}>{formatDuration(row.avgDurationMs)}</Text> },
+  { key: "totalCostUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={cellText.primary}>{formatCurrency(row.totalCostUsd)}</Text> },
 ];
 
 const projectCols: ColumnDef<ProjectBreakdownRow>[] = [
   { key: "projectName", header: "Project", width: 180 },
-  { key: "teamName", header: "Team", width: 130, render: (row) => <Text style={{ color: "#a3a3a3", fontSize: 12 }} numberOfLines={1}>{row.teamName}</Text> },
-  { key: "totalRuns", header: "Runs", width: 80, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCompactNumber(row.totalRuns)}</Text> },
-  { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={{ color: row.successRate >= 0.8 ? "#22c55e" : row.successRate >= 0.6 ? "#f59e0b" : "#ef4444", fontSize: 12 }}>{formatPercent(row.successRate * 100)}</Text> },
-  { key: "totalCostUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCurrency(row.totalCostUsd)}</Text> },
-  { key: "avgCostPerRunUsd", header: "Avg/Run", width: 80, align: "right", render: (row) => <Text style={{ color: "#a3a3a3", fontSize: 12 }}>{formatCurrency(row.avgCostPerRunUsd)}</Text> },
-  { key: "agentCount", header: "Agents", width: 70, align: "right", render: (row) => <Text style={{ color: "#a3a3a3", fontSize: 12 }}>{row.agentCount}</Text> },
+  { key: "teamName", header: "Team", width: 130, render: (row) => <Text style={cellText.secondary} numberOfLines={1}>{row.teamName}</Text> },
+  { key: "totalRuns", header: "Runs", width: 80, align: "right", render: (row) => <Text style={cellText.primary}>{formatCompactNumber(row.totalRuns)}</Text> },
+  { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={[cellText.primary, { color: getSuccessRateColor(row.successRate) }]}>{formatPercent(row.successRate * 100)}</Text> },
+  { key: "totalCostUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={cellText.primary}>{formatCurrency(row.totalCostUsd)}</Text> },
+  { key: "avgCostPerRunUsd", header: "Avg/Run", width: 80, align: "right", render: (row) => <Text style={cellText.secondary}>{formatCurrency(row.avgCostPerRunUsd)}</Text> },
+  { key: "agentCount", header: "Agents", width: 70, align: "right", render: (row) => <Text style={cellText.secondary}>{row.agentCount}</Text> },
 ];
 
 const recentRunCols: ColumnDef<RunListRow>[] = [
-  { key: "id", header: "Run ID", width: 110, render: (row) => <Text style={{ color: "#67c4ea", fontSize: 12 }} numberOfLines={1}>{row.id}</Text> },
+  { key: "id", header: "Run ID", width: 110, render: (row) => <Text style={cellText.brand} numberOfLines={1}>{row.id}</Text> },
   { key: "status", header: "Status", width: 100, render: (row) => <StatusBadge variant="run-status" status={row.status} /> },
-  { key: "startedAtIso", header: "Started", width: 160, render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{new Date(row.startedAtIso).toLocaleString()}</Text> },
-  { key: "durationMs", header: "Duration", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatDuration(row.durationMs)}</Text> },
-  { key: "totalTokens", header: "Tokens", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCompactNumber(row.totalTokens)}</Text> },
-  { key: "costUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={{ color: "#e5e5e5", fontSize: 12 }}>{formatCurrency(row.costUsd)}</Text> },
+  { key: "startedAtIso", header: "Started", width: 160, render: (row) => <Text style={cellText.primary}>{new Date(row.startedAtIso).toLocaleString()}</Text> },
+  { key: "durationMs", header: "Duration", width: 90, align: "right", render: (row) => <Text style={cellText.primary}>{formatDuration(row.durationMs)}</Text> },
+  { key: "totalTokens", header: "Tokens", width: 90, align: "right", render: (row) => <Text style={cellText.primary}>{formatCompactNumber(row.totalTokens)}</Text> },
+  { key: "costUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={cellText.primary}>{formatCurrency(row.costUsd)}</Text> },
   { key: "provider", header: "Provider", width: 80 },
 ];
 
+const AGENT_SEARCH_KEYS: (keyof AgentBreakdownRow)[] = ["agentName", "projectName"];
+const PROJECT_SEARCH_KEYS: (keyof ProjectBreakdownRow)[] = ["projectName", "teamName"];
+const RUN_SEARCH_KEYS: (keyof RunListRow)[] = ["id", "status", "provider"];
+
 export default function AgentsScreen() {
   const { data, loading, error, refetch } = useAgentsHub();
+  const filteredAgents = useSearchFilter(data?.agentBreakdown ?? [], AGENT_SEARCH_KEYS);
+  const filteredProjects = useSearchFilter(data?.projectBreakdown ?? [], PROJECT_SEARCH_KEYS);
+  const filteredRuns = useSearchFilter(data?.recentRuns ?? [], RUN_SEARCH_KEYS);
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
@@ -101,7 +90,7 @@ export default function AgentsScreen() {
               contentContainerStyle={styles.chartRow}
             >
               <ChartCard title="Reliability Trend">
-                <TrendChart data={data.reliabilityTrend} variant="line" color="#22c55e" />
+                <TrendChart data={data.reliabilityTrend} variant="line" color={chartColors.success} />
               </ChartCard>
               <ChartCard title="Failure Categories">
                 <BreakdownChart
@@ -117,10 +106,10 @@ export default function AgentsScreen() {
 
       {data && (
         <View style={styles.section}>
-          <SectionHeader title="Agent Performance" subtitle={`${data.agentBreakdown.length} agents with activity`} />
+          <SectionHeader title="Agent Performance" subtitle={`${filteredAgents.length} agents with activity`} />
           <DataTable
             columns={agentCols}
-            data={data.agentBreakdown}
+            data={filteredAgents}
             keyExtractor={(row) => row.agentId}
           />
         </View>
@@ -136,18 +125,18 @@ export default function AgentsScreen() {
           </CardGrid>
           <DataTable
             columns={projectCols}
-            data={data.projectBreakdown}
+            data={filteredProjects}
             keyExtractor={(row) => row.projectId}
           />
         </View>
       )}
 
-      {data && data.recentRuns.length > 0 && (
+      {data && filteredRuns.length > 0 && (
         <View style={styles.section}>
-          <SectionHeader title="Recent Runs" subtitle={`Latest ${data.recentRuns.length} runs`} />
+          <SectionHeader title="Recent Runs" subtitle={`Latest ${filteredRuns.length} runs`} />
           <DataTable
             columns={recentRunCols}
-            data={data.recentRuns}
+            data={filteredRuns}
             keyExtractor={(row) => row.id}
           />
         </View>
@@ -155,8 +144,3 @@ export default function AgentsScreen() {
     </ScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  section: { gap: spacing[3] },
-  chartRow: { flexDirection: "row", gap: spacing[4] },
-});
