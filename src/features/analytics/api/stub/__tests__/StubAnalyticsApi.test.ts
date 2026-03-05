@@ -254,6 +254,96 @@ describe("getAgentsHub", () => {
   });
 });
 
+// ── Entity detail endpoints ─────────────────────────────
+
+describe("getAgentDetail", () => {
+  it("returns valid agent detail for existing agent", async () => {
+    const agentId = seedData.agents[0]!.id;
+    const res = await api.getAgentDetail("org1", agentId);
+    expect(res.agent.id).toBe(agentId);
+    expect(typeof res.projectName).toBe("string");
+    expect(typeof res.teamName).toBe("string");
+    expect(typeof res.totalRuns).toBe("number");
+    expect(typeof res.successRate).toBe("number");
+    expect(typeof res.avgDurationMs).toBe("number");
+    expect(typeof res.totalCostUsd).toBe("number");
+    expect(Array.isArray(res.recentRuns)).toBe(true);
+  });
+
+  it("throws for unknown agent", async () => {
+    await expect(api.getAgentDetail("org1", "nonexistent")).rejects.toThrow("Agent not found");
+  });
+});
+
+describe("getProjectDetail", () => {
+  it("returns valid project detail for existing project", async () => {
+    const projectId = seedData.projects[0]!.id;
+    const res = await api.getProjectDetail("org1", projectId);
+    expect(res.project.id).toBe(projectId);
+    expect(typeof res.teamName).toBe("string");
+    expect(typeof res.agentCount).toBe("number");
+    expect(typeof res.totalRuns).toBe("number");
+    expect(typeof res.totalCostUsd).toBe("number");
+    expect(Array.isArray(res.agents)).toBe(true);
+    expect(Array.isArray(res.recentRuns)).toBe(true);
+  });
+
+  it("throws for unknown project", async () => {
+    await expect(api.getProjectDetail("org1", "nonexistent")).rejects.toThrow("Project not found");
+  });
+});
+
+describe("getTeamDetail", () => {
+  it("returns valid team detail for existing team", async () => {
+    const teamId = seedData.teams[0]!.id;
+    const res = await api.getTeamDetail("org1", teamId);
+    expect(res.team.id).toBe(teamId);
+    expect(typeof res.memberCount).toBe("number");
+    expect(typeof res.projectCount).toBe("number");
+    expect(typeof res.totalRuns).toBe("number");
+    expect(typeof res.totalCostUsd).toBe("number");
+    expect(Array.isArray(res.members)).toBe(true);
+    expect(Array.isArray(res.projects)).toBe(true);
+  });
+
+  it("throws for unknown team", async () => {
+    await expect(api.getTeamDetail("org1", "nonexistent")).rejects.toThrow("Team not found");
+  });
+});
+
+describe("getHumanDetail", () => {
+  it("returns valid human detail for existing user", async () => {
+    const userId = seedData.users[0]!.id;
+    const res = await api.getHumanDetail("org1", userId);
+    expect(res.user.id).toBe(userId);
+    expect(typeof res.teamName).toBe("string");
+    expect(typeof res.totalRuns).toBe("number");
+    expect(typeof res.totalTokens).toBe("number");
+    expect(typeof res.totalCostUsd).toBe("number");
+    expect(Array.isArray(res.recentRuns)).toBe(true);
+  });
+
+  it("throws for unknown human", async () => {
+    await expect(api.getHumanDetail("org1", "nonexistent")).rejects.toThrow("Human not found");
+  });
+});
+
+describe("getRunDetail", () => {
+  it("returns valid run detail for existing run", async () => {
+    const runId = seedData.runs[0]!.id;
+    const res = await api.getRunDetail("org1", runId);
+    expect(res.run.id).toBe(runId);
+    expect(typeof res.agentName).toBe("string");
+    expect(typeof res.projectName).toBe("string");
+    expect(typeof res.teamName).toBe("string");
+    expect(typeof res.userName).toBe("string");
+  });
+
+  it("throws for unknown run", async () => {
+    await expect(api.getRunDetail("org1", "nonexistent")).rejects.toThrow("Run not found");
+  });
+});
+
 // ── Search suggestions ──────────────────────────────────
 
 describe("getSearchSuggestions", () => {

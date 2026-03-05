@@ -12,6 +12,11 @@ import type {
   LiveAgentSessionsResponse,
   SearchSuggestionsRequest,
   SearchSuggestionsResponse,
+  AgentDetailResponse,
+  ProjectDetailResponse,
+  TeamDetailResponse,
+  HumanDetailResponse,
+  RunDetailResponse,
 } from "@/features/analytics/types";
 import { round1, round2 } from "../utils/metricFormulas";
 
@@ -99,5 +104,25 @@ export class AnalyticsService implements IAnalyticsService {
 
   async getSearchSuggestions(request: SearchSuggestionsRequest): Promise<SearchSuggestionsResponse> {
     return this.api.getSearchSuggestions(request);
+  }
+
+  async getAgentDetail(orgId: string, agentId: string): Promise<AgentDetailResponse> {
+    return this.api.getAgentDetail(orgId, agentId);
+  }
+
+  async getProjectDetail(orgId: string, projectId: string): Promise<ProjectDetailResponse> {
+    return this.api.getProjectDetail(orgId, projectId);
+  }
+
+  async getTeamDetail(orgId: string, teamId: string): Promise<TeamDetailResponse> {
+    return this.api.getTeamDetail(orgId, teamId);
+  }
+
+  async getHumanDetail(orgId: string, humanId: string): Promise<HumanDetailResponse> {
+    return this.api.getHumanDetail(orgId, humanId);
+  }
+
+  async getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse> {
+    return this.api.getRunDetail(orgId, runId);
   }
 }

@@ -10,6 +10,11 @@ import type {
   LiveAgentSessionsResponse,
   SearchSuggestionsRequest,
   SearchSuggestionsResponse,
+  AgentDetailResponse,
+  ProjectDetailResponse,
+  TeamDetailResponse,
+  HumanDetailResponse,
+  RunDetailResponse,
 } from "@/features/analytics/types";
 
 export interface IAnalyticsService {
@@ -22,4 +27,9 @@ export interface IAnalyticsService {
   getAgentsHub(filters: AnalyticsFilters): Promise<AgentsHubResponse>;
   getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse>;
   getSearchSuggestions(request: SearchSuggestionsRequest): Promise<SearchSuggestionsResponse>;
+  getAgentDetail(orgId: string, agentId: string): Promise<AgentDetailResponse>;
+  getProjectDetail(orgId: string, projectId: string): Promise<ProjectDetailResponse>;
+  getTeamDetail(orgId: string, teamId: string): Promise<TeamDetailResponse>;
+  getHumanDetail(orgId: string, humanId: string): Promise<HumanDetailResponse>;
+  getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse>;
 }

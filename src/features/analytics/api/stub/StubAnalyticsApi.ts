@@ -24,6 +24,11 @@ import type {
   SearchSuggestion,
   SearchSuggestionGroup,
   SearchEntityType,
+  AgentDetailResponse,
+  ProjectDetailResponse,
+  TeamDetailResponse,
+  HumanDetailResponse,
+  RunDetailResponse,
 } from "@/features/analytics/types";
 import { round2, round4 } from "../../utils/metricFormulas";
 import {
@@ -709,5 +714,100 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     }
 
     return { groups, totalCount };
+  }
+
+  async getAgentDetail(_orgId: string, agentId: string): Promise<AgentDetailResponse> {
+    await this.simulate();
+    const agent = this.seed.agents.find((a) => a.id === agentId);
+    if (!agent) throw new Error(`Agent not found: ${agentId}`);
+    const project = this.seed.projects.find((p) => p.id === agent.projectId);
+    const team = project ? this.seed.teams.find((t) => t.id === project.teamId) : undefined;
+    const agentRuns = this.seed.runs.filter((r) => r.agentId === agentId);
+    const succeeded = agentRuns.filter((r) => r.status === "succeeded").length;
+    return {
+      agent,
+      projectName: project?.name ?? agent.projectId,
+      teamName: team?.name ?? "Unknown",
+      totalRuns: agentRuns.length,
+      successRate: safeRate(succeeded, agentRuns.length),
+      avgDurationMs: agentRuns.length > 0 ? Math.round(sumField(agentRuns, "durationMs") / agentRuns.length) : 0,
+      totalCostUsd: round2(sumField(agentRuns, "costUsd")),
+      recentRuns: agentRuns.sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso)).slice(0, 10),
+    };
+  }
+
+  async getProjectDetail(_orgId: string, projectId: string): Promise<ProjectDetailResponse> {
+    await this.simulate();
+    const project = this.seed.projects.find((p) => p.id === projectId);
+    if (!project) throw new Error(`Project not found: ${projectId}`);
+    const team = this.seed.teams.find((t) => t.id === project.teamId);
+    const projectAgents = this.seed.agents.filter((a) => a.projectId === projectId);
+    const projectRuns = this.seed.runs.filter((r) => r.projectId === projectId);
+    const succeeded = projectRuns.filter((r) => r.status === "succeeded").length;
+    const totalCost = sumField(projectRuns, "costUsd");
+    return {
+      project,
+      teamName: team?.name ?? project.teamId,
+      agentCount: projectAgents.length,
+      totalRuns: projectRuns.length,
+      successRate: safeRate(succeeded, projectRuns.length),
+      totalCostUsd: round2(totalCost),
+      avgCostPerRunUsd: round2(safeRate(totalCost, projectRuns.length)),
+      agents: projectAgents,
+      recentRuns: projectRuns.sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso)).slice(0, 10),
+    };
+  }
+
+  async getTeamDetail(_orgId: string, teamId: string): Promise<TeamDetailResponse> {
+    await this.simulate();
+    const team = this.seed.teams.find((t) => t.id === teamId);
+    if (!team) throw new Error(`Team not found: ${teamId}`);
+    const members = this.seed.users.filter((u) => u.teamId === teamId);
+    const projects = this.seed.projects.filter((p) => p.teamId === teamId);
+    const teamRuns = this.seed.runs.filter((r) => r.teamId === teamId);
+    const succeeded = teamRuns.filter((r) => r.status === "succeeded").length;
+    return {
+      team,
+      memberCount: members.length,
+      projectCount: projects.length,
+      totalRuns: teamRuns.length,
+      successRate: safeRate(succeeded, teamRuns.length),
+      totalCostUsd: round2(sumField(teamRuns, "costUsd")),
+      members,
+      projects,
+    };
+  }
+
+  async getHumanDetail(_orgId: string, humanId: string): Promise<HumanDetailResponse> {
+    await this.simulate();
+    const user = this.seed.users.find((u) => u.id === humanId);
+    if (!user) throw new Error(`Human not found: ${humanId}`);
+    const team = this.seed.teams.find((t) => t.id === user.teamId);
+    const userRuns = this.seed.runs.filter((r) => r.userId === humanId);
+    return {
+      user,
+      teamName: team?.name ?? user.teamId,
+      totalRuns: userRuns.length,
+      totalTokens: userRuns.reduce((s, r) => s + r.totalTokens, 0),
+      totalCostUsd: round2(sumField(userRuns, "costUsd")),
+      recentRuns: userRuns.sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso)).slice(0, 10),
+    };
+  }
+
+  async getRunDetail(_orgId: string, runId: string): Promise<RunDetailResponse> {
+    await this.simulate();
+    const run = this.seed.runs.find((r) => r.id === runId);
+    if (!run) throw new Error(`Run not found: ${runId}`);
+    const agent = this.seed.agents.find((a) => a.id === run.agentId);
+    const project = this.seed.projects.find((p) => p.id === run.projectId);
+    const team = project ? this.seed.teams.find((t) => t.id === project.teamId) : undefined;
+    const user = this.seed.users.find((u) => u.id === run.userId);
+    return {
+      run,
+      agentName: agent?.name ?? run.agentId,
+      projectName: project?.name ?? run.projectId,
+      teamName: team?.name ?? "Unknown",
+      userName: user?.name ?? run.userId,
+    };
   }
 }

@@ -278,6 +278,58 @@ export interface SearchSuggestionsResponse {
   totalCount: number;
 }
 
+// ─── Entity Detail Responses ────────────────────────────
+export interface AgentDetailResponse {
+  agent: Agent;
+  projectName: string;
+  teamName: string;
+  totalRuns: number;
+  successRate: number;
+  avgDurationMs: number;
+  totalCostUsd: number;
+  recentRuns: RunListRow[];
+}
+
+export interface ProjectDetailResponse {
+  project: Project;
+  teamName: string;
+  agentCount: number;
+  totalRuns: number;
+  successRate: number;
+  totalCostUsd: number;
+  avgCostPerRunUsd: number;
+  agents: Agent[];
+  recentRuns: RunListRow[];
+}
+
+export interface TeamDetailResponse {
+  team: Team;
+  memberCount: number;
+  projectCount: number;
+  totalRuns: number;
+  successRate: number;
+  totalCostUsd: number;
+  members: User[];
+  projects: Project[];
+}
+
+export interface HumanDetailResponse {
+  user: User;
+  teamName: string;
+  totalRuns: number;
+  totalTokens: number;
+  totalCostUsd: number;
+  recentRuns: RunListRow[];
+}
+
+export interface RunDetailResponse {
+  run: RunListRow;
+  agentName: string;
+  projectName: string;
+  teamName: string;
+  userName: string;
+}
+
 // ─── Seed Data Container ────────────────────────────────
 export interface SeedData {
   teams: Team[]; users: User[]; projects: Project[]; agents: Agent[];

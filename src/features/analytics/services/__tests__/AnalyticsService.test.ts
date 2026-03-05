@@ -200,6 +200,11 @@ describe("delegation via mock", () => {
       getAgentsHub: jest.fn(),
       getLiveAgentSessions: jest.fn(),
       getSearchSuggestions: jest.fn(),
+      getAgentDetail: jest.fn(),
+      getProjectDetail: jest.fn(),
+      getTeamDetail: jest.fn(),
+      getHumanDetail: jest.fn(),
+      getRunDetail: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -244,6 +249,11 @@ describe("delegation via mock", () => {
       getAgentsHub: jest.fn(),
       getLiveAgentSessions: jest.fn(),
       getSearchSuggestions: jest.fn(),
+      getAgentDetail: jest.fn(),
+      getProjectDetail: jest.fn(),
+      getTeamDetail: jest.fn(),
+      getHumanDetail: jest.fn(),
+      getRunDetail: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -284,6 +294,11 @@ describe("getSearchSuggestions", () => {
       getAgentsHub: jest.fn(),
       getLiveAgentSessions: jest.fn(),
       getSearchSuggestions: jest.fn().mockResolvedValue(mockResponse),
+      getAgentDetail: jest.fn(),
+      getProjectDetail: jest.fn(),
+      getTeamDetail: jest.fn(),
+      getHumanDetail: jest.fn(),
+      getRunDetail: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -298,6 +313,43 @@ describe("getSearchSuggestions", () => {
     const res = await service.getSearchSuggestions({ query: "a" });
     expect(res.groups.length).toBeGreaterThan(0);
     expect(res.totalCount).toBeGreaterThan(0);
+  });
+});
+
+describe("entity detail delegation", () => {
+  it("getAgentDetail delegates to api", async () => {
+    const agentId = seedData.agents[0]!.id;
+    const res = await service.getAgentDetail("org1", agentId);
+    expect(res.agent.id).toBe(agentId);
+    expect(typeof res.totalRuns).toBe("number");
+  });
+
+  it("getProjectDetail delegates to api", async () => {
+    const projectId = seedData.projects[0]!.id;
+    const res = await service.getProjectDetail("org1", projectId);
+    expect(res.project.id).toBe(projectId);
+    expect(typeof res.agentCount).toBe("number");
+  });
+
+  it("getTeamDetail delegates to api", async () => {
+    const teamId = seedData.teams[0]!.id;
+    const res = await service.getTeamDetail("org1", teamId);
+    expect(res.team.id).toBe(teamId);
+    expect(typeof res.memberCount).toBe("number");
+  });
+
+  it("getHumanDetail delegates to api", async () => {
+    const userId = seedData.users[0]!.id;
+    const res = await service.getHumanDetail("org1", userId);
+    expect(res.user.id).toBe(userId);
+    expect(typeof res.totalTokens).toBe("number");
+  });
+
+  it("getRunDetail delegates to api", async () => {
+    const runId = seedData.runs[0]!.id;
+    const res = await service.getRunDetail("org1", runId);
+    expect(res.run.id).toBe(runId);
+    expect(typeof res.agentName).toBe("string");
   });
 });
 
