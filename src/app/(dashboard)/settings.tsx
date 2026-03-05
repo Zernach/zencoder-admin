@@ -95,7 +95,7 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <SectionHeader title="Danger Zone" />
         <Pressable
-          style={[styles.dangerBtn, { borderColor: theme.state.error }]}
+          style={[styles.dangerBtn, { borderColor: theme.state.error, backgroundColor: theme.state.error + "1A" }]}
           accessibilityRole="button"
           accessibilityLabel="Clear all cached data"
         >
@@ -132,7 +132,6 @@ const styles = StyleSheet.create({
   infoLabel: { fontSize: 13 },
   infoValue: { fontSize: 13 },
   dangerBtn: {
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
     borderWidth: 1,
     borderRadius: 8,
     padding: spacing[3],

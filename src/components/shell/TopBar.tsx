@@ -150,7 +150,7 @@ export function TopBar() {
         animationType="fade"
         onRequestClose={closeTimeRangeOverlay}
       >
-        <View style={styles.modalOverlay}>
+        <View style={[styles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
           <Pressable
             style={StyleSheet.absoluteFillObject}
             onPress={closeTimeRangeOverlay}
@@ -261,7 +261,6 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.58)",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,

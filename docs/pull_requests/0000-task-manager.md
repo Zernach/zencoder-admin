@@ -43,7 +43,8 @@
 | ✅ | [0035](./0035-sticky-top-search-filter-bar-all-screens.md) | Sticky Top Search + Filter Bar Across All Screens | Polish |
 | ✅ | [0036](./0036-home-navigation-and-agents-consolidation-hard-remove.md) | Home Navigation + Agents Consolidation (Hard Remove) | Screens |
 | ✅ | [0037](./0037-typescript-type-dryness-cleanup.md) | TypeScript Type DRYness Cleanup | Polish |
+| ✅ | [0038](./0038-dark-light-theme-completeness.md) | Dark & Light Theme Completeness | Polish |
 
 ---
 
-**Progress: 37 / 37**
+**Progress: 38 / 38**

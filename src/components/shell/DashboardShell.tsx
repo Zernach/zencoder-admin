@@ -3,6 +3,8 @@ import { View, StyleSheet } from "react-native";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { setSidebarExpanded, toggleSidebar } from "@/store/slices/sidebarSlice";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 import { Sidebar } from "./Sidebar";
 import { BottomTabs } from "./BottomTabs";
 
@@ -14,6 +16,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const bp = useBreakpoint();
   const dispatch = useAppDispatch();
   const expanded = useAppSelector((state) => state.sidebar.expanded);
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const isMobile = bp === "mobile";
 
   useEffect(() => {
@@ -22,7 +26,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }, [bp, dispatch]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.bg.canvas }]}>
       {!isMobile && (
         <Sidebar
           expanded={expanded}
@@ -41,7 +45,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: "#0a0a0a",
   },
   main: {
     flex: 1,

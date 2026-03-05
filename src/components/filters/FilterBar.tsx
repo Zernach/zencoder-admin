@@ -239,7 +239,7 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
           visible
           onRequestClose={() => setOpenDropdown(null)}
         >
-          <Pressable style={styles.modalOverlay} onPress={() => setOpenDropdown(null)}>
+          <Pressable style={[styles.modalOverlay, { backgroundColor: theme.bg.overlay }]} onPress={() => setOpenDropdown(null)}>
             <View style={[styles.dropdownPanel, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }]}>
               <View style={[styles.dropdownHeader, { borderBottomColor: theme.border.default }]}>
                 <Text style={[styles.dropdownTitle, { color: theme.text.primary }]}>
@@ -347,7 +347,6 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
   },

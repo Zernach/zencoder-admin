@@ -18,6 +18,7 @@ import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import type { LiveAgentSession } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 const styles = sectionStyles;
 
@@ -25,6 +26,7 @@ const SESSION_SEARCH_KEYS: (keyof LiveAgentSession)[] = ["agentName", "projectNa
 
 export default function OverviewDashboardScreen() {
   const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const cc = chartColors(mode);
   const { data, loading, error, refetch } = useOverviewDashboard();
   const {
@@ -139,7 +141,7 @@ export default function OverviewDashboardScreen() {
           </CardGrid>
           {data.activeUsersTrend && data.activeUsersTrend.length > 0 && (
             <ChartCard title="Active Users Trend">
-              <TrendChart data={data.activeUsersTrend} variant="area" color="#a855f7" height={180} />
+              <TrendChart data={data.activeUsersTrend} variant="area" color={theme.data.seriesTertiary} height={180} />
             </ChartCard>
           )}
         </View>

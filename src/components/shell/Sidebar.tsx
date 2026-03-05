@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Image, Pressable, StyleSheet, Platform } from "react-native";
+import { View, Image, Text, Pressable, StyleSheet, Platform } from "react-native";
 import {
   Home,
   Bot,
@@ -62,20 +62,29 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
   }));
 
   const isDark = mode === "dark";
-  const brandImage = isDark
-    ? require("../../assets/images/zencoder-text-dark-bg.png")
-    : require("../../assets/images/zencoder-text-dark-bg.png");
 
   return (
     <Animated.View style={[styles.sidebar, { backgroundColor: theme.bg.canvas, borderRightColor: theme.border.default }, animatedStyle]}>
       <View style={styles.header}>
         {expanded && (
-          <Image
-            source={brandImage}
-            style={styles.brandImage}
-            resizeMode="contain"
-            accessibilityIgnoresInvertColors
-          />
+          isDark ? (
+            <Image
+              source={require("../../assets/images/zencoder-text-dark-bg.png")}
+              style={styles.brandImage}
+              resizeMode="contain"
+              accessibilityIgnoresInvertColors
+            />
+          ) : (
+            <View style={styles.brandRow}>
+              <Image
+                source={require("../../assets/images/zencoder-orange.png")}
+                style={styles.brandIcon}
+                resizeMode="contain"
+                accessibilityIgnoresInvertColors
+              />
+              <Text style={[styles.brandText, { color: theme.text.primary }]}>zencoder</Text>
+            </View>
+          )
         )}
         <Pressable
           onPress={onToggle}
@@ -125,6 +134,21 @@ const styles = StyleSheet.create({
     width: 150,
     height: 28,
     alignSelf: "flex-start",
+  },
+  brandRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  brandIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+  },
+  brandText: {
+    fontSize: 20,
+    fontWeight: "600",
+    letterSpacing: 0.5,
   },
   toggleBtn: {
     width: 32,

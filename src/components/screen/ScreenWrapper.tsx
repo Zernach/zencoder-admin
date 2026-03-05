@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StatusBar, StyleSheet } from "react-native";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,6 +14,8 @@ import { ContentViewport, TopBar } from "@/components/shell";
 import { FilterBar } from "@/components/filters";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 import { motion } from "@/theme/motion";
 import { layout } from "@/theme/tokens";
 import ScreenHeader from "./ScreenHeader";
@@ -39,6 +41,8 @@ interface ScreenWrapperProps {
 function ScreenWrapper({ headerProps, children, style, showFilterBar = true }: ScreenWrapperProps) {
   const pathname = usePathname();
   const bp = useBreakpoint();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const reducedMotion = useReducedMotion();
   const opacity = useSharedValue(1);
   const translateY = useSharedValue(0);
@@ -69,7 +73,8 @@ function ScreenWrapper({ headerProps, children, style, showFilterBar = true }: S
   }));
 
   return (
-    <SafeAreaView edges={["top", "bottom"]} style={[styles.container, style]}>
+    <SafeAreaView edges={["top", "bottom"]} style={[styles.container, { backgroundColor: theme.bg.canvas }, style]}>
+      <StatusBar barStyle={mode === "dark" ? "light-content" : "dark-content"} backgroundColor={theme.bg.canvas} />
       <TopBar />
       {headerProps && (
         <View style={[styles.headerContainer, { paddingHorizontal: headerHorizontalPadding }]}>

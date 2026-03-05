@@ -8,6 +8,7 @@ export interface SemanticTheme {
     surfaceElevated: string;
     surfaceHover: string;
     brandSubtle: string;
+    overlay: string;
   };
   border: {
     default: string;
@@ -36,6 +37,7 @@ export interface SemanticTheme {
     gridLine: string;
     seriesPrimary: string;
     seriesSecondary: string;
+    seriesTertiary: string;
   };
   shadows: (typeof shadowsByTheme)[ThemeName];
 }
@@ -48,7 +50,8 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
       surface: "#1a1a1a",
       surfaceElevated: "#262626",
       surfaceHover: "#2f2f2f",
-      brandSubtle: "rgba(48, 168, 220, 0.14)"
+      brandSubtle: "rgba(48, 168, 220, 0.14)",
+      overlay: "rgba(0, 0, 0, 0.58)"
     },
     border: {
       default: "#2d2d2d",
@@ -76,7 +79,8 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
     data: {
       gridLine: "#2a2a2a",
       seriesPrimary: "#30a8dc",
-      seriesSecondary: "#7fa6b8"
+      seriesSecondary: "#7fa6b8",
+      seriesTertiary: "#a855f7"
     }
   },
   light: {
@@ -86,7 +90,8 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
       surface: "#ffffff",
       surfaceElevated: "#fbfdff",
       surfaceHover: "#f3f6f9",
-      brandSubtle: "rgba(48, 168, 220, 0.12)"
+      brandSubtle: "rgba(48, 168, 220, 0.12)",
+      overlay: "rgba(15, 23, 32, 0.38)"
     },
     border: {
       default: "#d7dde3",
@@ -114,7 +119,8 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
     data: {
       gridLine: "#e3e7eb",
       seriesPrimary: "#30a8dc",
-      seriesSecondary: "#6f8ca5"
+      seriesSecondary: "#6f8ca5",
+      seriesTertiary: "#7c3aed"
     }
   }
 };
