@@ -3,6 +3,7 @@ import {
   filtersSlice,
   selectActiveFilters,
   selectPreset,
+  selectSearchQuery,
 } from "@/store/slices/filtersSlice";
 import type {
   AnalyticsFilters,
@@ -27,10 +28,12 @@ export function useDashboardFilters() {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(selectActiveFilters);
   const preset = useAppSelector(selectPreset);
+  const searchQuery = useAppSelector(selectSearchQuery);
 
   return {
     filters,
     preset,
+    searchQuery,
     setTimeRange: (p: TimeRangePreset) =>
       dispatch(filtersSlice.actions.setTimeRangePreset(p)),
     setCustomTimeRange: (r: TimeRange) =>
@@ -45,6 +48,8 @@ export function useDashboardFilters() {
       dispatch(filtersSlice.actions.setProviderFilter(p)),
     setStatusFilter: (s?: RunStatus[]) =>
       dispatch(filtersSlice.actions.setStatusFilter(s)),
+    setSearchQuery: (q: string) =>
+      dispatch(filtersSlice.actions.setSearchQuery(q)),
     clearAll: () => dispatch(filtersSlice.actions.clearAllFilters()),
     activeFilterCount: countActiveFilters(filters),
   };

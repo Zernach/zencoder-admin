@@ -13,6 +13,7 @@ import type {
 
 interface FiltersState extends AnalyticsFilters {
   preset: TimeRangePreset;
+  searchQuery: string;
 }
 
 function computeTimeRange(preset: TimeRangePreset): TimeRange {
@@ -41,6 +42,7 @@ function computeTimeRange(preset: TimeRangePreset): TimeRange {
 const initialState: FiltersState = {
   orgId: "org_zencoder_001",
   preset: "30d",
+  searchQuery: "",
   timeRange: computeTimeRange("30d"),
   teamIds: undefined,
   userIds: undefined,
@@ -85,6 +87,9 @@ export const filtersSlice = createSlice({
     setStatusFilter(state, action: PayloadAction<RunStatus[] | undefined>) {
       state.statuses = action.payload;
     },
+    setSearchQuery(state, action: PayloadAction<string>) {
+      state.searchQuery = action.payload;
+    },
     clearAllFilters() {
       return { ...initialState, timeRange: computeTimeRange("30d") };
     },
@@ -99,7 +104,7 @@ export const selectActiveFilters = (state: {
 const selectActiveFiltersMemoized = createSelector(
   [(filters: FiltersState) => filters],
   (filters): AnalyticsFilters => {
-    const { preset: _, ...activeFilters } = filters;
+    const { preset: _, searchQuery: _sq, ...activeFilters } = filters;
     return activeFilters;
   }
 );
@@ -107,3 +112,7 @@ const selectActiveFiltersMemoized = createSelector(
 export const selectPreset = (state: {
   filters: FiltersState;
 }): TimeRangePreset => state.filters.preset;
+
+export const selectSearchQuery = (state: {
+  filters: FiltersState;
+}): string => state.filters.searchQuery;

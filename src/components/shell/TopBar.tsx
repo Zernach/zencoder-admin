@@ -37,6 +37,7 @@ const PRESET_SHORT_LABELS: Record<TimeRangePreset, string> = {
   custom: "Custom",
 };
 
+const DEBOUNCE_MS = 250;
 const CONTROL_HORIZONTAL_PADDING = 12;
 const CONTROL_VERTICAL_PADDING = 8;
 const CONTROL_TEXT_SIZE = 13;
@@ -45,18 +46,47 @@ const CONTROL_TEXT_LINE_HEIGHT = 18;
 export function TopBar() {
   const breakpoint = useBreakpoint();
   const { mode } = useThemeMode();
-  const { preset, setTimeRange } = useDashboardFilters();
+  const { preset, setTimeRange, searchQuery, setSearchQuery } = useDashboardFilters();
   const searchInputRef = React.useRef<TextInputHandle>(null);
+  const [localQuery, setLocalQuery] = React.useState(searchQuery);
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = React.useState(false);
+
+  // Sync local state when Redux changes externally (e.g. clearAll)
+  React.useEffect(() => {
+    setLocalQuery(searchQuery);
+  }, [searchQuery]);
+
+  const handleSearchChange = React.useCallback(
+    (text: string) => {
+      setLocalQuery(text);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => setSearchQuery(text), DEBOUNCE_MS);
+    },
+    [setSearchQuery],
+  );
+
+  const handleClearSearch = React.useCallback(() => {
+    setLocalQuery("");
+    setSearchQuery("");
+    searchInputRef.current?.focus();
+  }, [setSearchQuery]);
+
+  // Cleanup debounce on unmount
+  React.useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   const openTimeRangeOverlay = React.useCallback(
     () => setTimeRangeOverlayVisible(true),
-    []
+    [],
   );
 
   const closeTimeRangeOverlay = React.useCallback(
     () => setTimeRangeOverlayVisible(false),
-    []
+    [],
   );
 
   const handleSelectTimeRange = React.useCallback(
@@ -64,7 +94,7 @@ export function TopBar() {
       setTimeRange(nextPreset);
       setTimeRangeOverlayVisible(false);
     },
-    [setTimeRange]
+    [setTimeRange],
   );
 
   const presetButtonLabel =
@@ -77,17 +107,38 @@ export function TopBar() {
   const barBorder = isDark ? "#2d2d2d" : "#d5dce3";
   const textColor = isDark ? "#a3a3a3" : "#435160";
   const placeholderColor = isDark ? "#8a8a8a" : "#6b7683";
+  const hasQuery = localQuery.length > 0;
 
   return (
     <View style={[styles.container, { backgroundColor: barBackground, borderBottomColor: barBorder }]}>
       <View style={styles.left}>
-        <View style={[styles.searchContainer, { backgroundColor: panelBackground, borderColor: panelBorder }]}>
-          <Search size={14} color={placeholderColor} />
+        <View
+          style={[
+            styles.searchContainer,
+            { backgroundColor: panelBackground, borderColor: hasQuery ? "#30a8dc" : panelBorder },
+          ]}
+        >
+          <Search size={14} color={hasQuery ? "#30a8dc" : placeholderColor} />
           <AppTextInput
             ref={searchInputRef}
             style={styles.searchInput}
             placeholder="Search agents, projects, runs..."
+            value={localQuery}
+            onChangeText={handleSearchChange}
+            accessibilityLabel="Search"
+            accessibilityHint="Filter dashboard data by keyword"
           />
+          {hasQuery && (
+            <Pressable
+              onPress={handleClearSearch}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Clear search"
+              style={styles.clearButton}
+            >
+              <X size={14} color={iconColor} />
+            </Pressable>
+          )}
         </View>
       </View>
       <View style={styles.right}>
@@ -199,6 +250,9 @@ const styles = StyleSheet.create({
     fontSize: CONTROL_TEXT_SIZE,
     lineHeight: CONTROL_TEXT_LINE_HEIGHT,
     paddingVertical: 0,
+  },
+  clearButton: {
+    padding: 2,
   },
   presetBtn: {
     flexDirection: "row",
