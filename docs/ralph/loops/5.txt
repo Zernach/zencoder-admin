@@ -1,0 +1,3 @@
+Search the codebase for ways to improve the TypeScript type definitions.
+
+Emphasize maintainability, codebase cleanliness, keeping things DRY, and keep things readable.

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
-# ralph.sh — Autonomous 0-to-1 development loop for Zencoder Analytics Dashboard
-# Run: sh ralph.sh  OR  zsh ralph.sh  OR  ./ralph.sh
+# ralph_options.sh — Ralph loop prompts selectable via -p/--prompt integer flag
+# Run: ./ralph_options.sh -p 3  OR  ./ralph_options.sh --prompt 1
 # Requires: claude CLI and /ralph-loop extension
 
 set -e
@@ -10,11 +10,32 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$PROJECT_ROOT"
 
-# 1. Task Manager Loop
-RALPH_PROMPT='Read the `docs/pull_requests/0000-task-manager.md` file and the current directory structure of the React Native codebase, then decide which is the first incomplete pull_request, read its associated markdown plan, and begin working on it. After you complete a pull_request in its entirety, you may commit, but do NOT push to the remote repository. I want to review one commit for each pull_request. Only output `DONE` after all pull_requests in the `0000-task-manager.md` file are ✅'
+# Parse -p/--prompt flag (default: 1)
+PROMPT_ID=1
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -p|--prompt)
+      PROMPT_ID="$2"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
 
-# 2. Simulated Data Improvements Loop
-# RALPH_PROMPT='Continue improving the stubbed data implementation. We need the user to feel like they are viewing 90 days of simulated dashboard data for the Zencoder Admin Dashboard. This should include for the data tables, charts, and filters to be fully functional and realistic.'
+# Ralph prompt definitions by ID (loaded from docs/ralph/loops/<id>.txt)
+get_ralph_prompt() {
+  local loop_file="$SCRIPT_DIR/loops/$1.txt"
+  if [[ ! -f "$loop_file" ]]; then
+    echo "Unknown prompt ID: $1. Valid IDs: 1–5" >&2
+    exit 1
+  fi
+  cat "$loop_file"
+}
+
+RALPH_PROMPT=$(get_ralph_prompt "$PROMPT_ID")
+echo "Using prompt $PROMPT_ID: ${RALPH_PROMPT:0:60}..."
 
 start_time=$(date +%s)
 

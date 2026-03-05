@@ -1,0 +1,3 @@
+Continue improving the stubbed data implementation. We need the user to feel like they are viewing 90 days of simulated dashboard data for the Zencoder Admin Dashboard.
+
+This should include for the data tables, charts, and filters to be fully functional and realistic.

@@ -1,0 +1,110 @@
+Here’s a reusable **“loop prompt”** you can run file-by-file (or module-by-module) against your React Native codebase to systematically close that gap: **clean responsibility splits + maintainable abstractions**.
+
+---
+
+## Core loop prompt (use on one file/module at a time)
+
+**Prompt:**
+
+You are a senior React Native/TypeScript architect doing a maintainability refactor pass.
+
+**Context / Goal**
+
+* We’ve identified a gap: the system doesn’t consistently split responsibilities cleanly (interfaces/abstractions/classes/modules) and doesn’t anticipate long-term maintainability.
+* Your job is to review the provided code and propose changes that improve: SRP boundaries, dependency direction, testability, and future feature velocity—without over-engineering.
+
+**Inputs**
+
+* I will paste: (1) file contents, (2) any relevant adjacent files, and (3) a brief description of what this area does.
+
+**Tasks**
+
+1. **Responsibility map**
+
+   * List the responsibilities currently mixed together (UI, state, domain rules, I/O, analytics, navigation, formatting, feature flags, etc.).
+   * Identify which ones should be split and why.
+
+2. **Proposed architecture boundaries**
+
+   * Suggest a target module structure (e.g., `ui/`, `state/`, `domain/`, `data/`, `platform/`).
+   * Identify *stable interfaces* vs *volatile implementations*.
+   * Specify dependency direction (“UI depends on domain interfaces; implementations live behind adapters”).
+
+3. **Concrete refactor plan**
+
+   * Provide a step-by-step plan in small PR-sized chunks.
+   * For each step: what moves where, what new abstractions are introduced, and how we keep behavior unchanged.
+
+4. **Abstractions you would introduce**
+
+   * Propose the minimum set of:
+
+     * Interfaces/types (e.g., `UserRepository`, `AnalyticsClient`, `Clock`, `FeatureFlagProvider`)
+     * “Use-case” functions (domain actions) if applicable
+     * Adapters/wrappers for external libs
+   * Explain why each abstraction pays for itself.
+
+5. **Code changes**
+
+   * Show representative code snippets for the key changes (not necessarily every line).
+   * If you recommend new files, include their full content.
+
+6. **Maintainability scorecard**
+   Rate 1–5 and justify:
+
+   * Single Responsibility / cohesion
+   * Coupling
+   * Dependency direction
+   * Testability
+   * Change amplification risk
+   * Naming and module clarity
+
+7. **Tests & safety**
+
+   * Recommend what to unit test vs integration test after the refactor.
+   * Point out risky areas and how to de-risk (feature flags, characterization tests, etc.).
+
+**Constraints**
+
+* Prefer functions + modules over classes unless a class is clearly warranted.
+* Don’t invent a new architecture; adapt to the existing style.
+* Avoid abstractions that only wrap a single call site unless it reduces future change amplification.
+* Keep runtime behavior stable and avoid large cross-cutting rewrites.
+
+**Output format**
+
+* Start with: “Key issues (top 3)”
+* Then: “Target boundaries”
+* Then: “PR plan (3–7 steps)”
+* Then: “Snippets / new files”
+* End with: “Scorecard + tests”
+
+Now analyze the code below.
+
+---
+
+## Optional: repo-wide “system scan” variant (higher leverage)
+
+Use this when you can provide a **directory tree** + a few representative files.
+
+**Prompt addition:**
+
+Before refactoring individual files, create a **maintainability heatmap**:
+
+* Identify top 5 “change amplification zones” (files that force edits in many places).
+* Identify top 5 “God modules” (too many responsibilities).
+* Identify inconsistent patterns (state mgmt, API calls, navigation, error handling).
+* Propose 2–3 **standard patterns** to adopt across the repo (e.g., “service layer”, “query hooks”, “domain use-cases”, “adapters for platform APIs”), with examples.
+
+---
+
+## Practical usage loop (copy/paste as your workflow)
+
+1. Run the core prompt on a high-churn file.
+2. Implement only the first PR step.
+3. Re-run the prompt with the updated code + adjacent modules.
+4. Repeat.
+
+---
+
+If you paste (a) a folder tree and (b) one “problem” file you feel is most representative, I’ll tailor the prompt to match your current patterns (Redux vs hooks vs Zustand, API layer shape, navigation, etc.) and suggest the first highest-impact pass.

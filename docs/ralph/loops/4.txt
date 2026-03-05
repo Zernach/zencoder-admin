@@ -1,0 +1,3 @@
+Continue improving the search bar implementation, and EMPHASIZE MAINTAINABILITY, codebase cleanliness, keeping things DRY, and keep things readable.
+
+Make sure the search bar works beautifully, in a modern way, and is fully functional on all screens.
