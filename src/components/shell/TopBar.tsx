@@ -4,10 +4,12 @@ import type { TextInput as TextInputHandle } from "react-native";
 import { Search, Clock, X } from "lucide-react-native";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
-import type { TimeRangePreset } from "@/features/analytics/types";
+import { useSearchAutocomplete } from "@/features/analytics/hooks/useSearchAutocomplete";
+import type { TimeRangePreset, SearchSuggestion } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { CustomTextInput } from "@/components/inputs";
+import { SearchAutocompletePanel } from "@/components/search";
 
 type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
 
@@ -38,7 +40,6 @@ const PRESET_SHORT_LABELS: Record<TimeRangePreset, string> = {
   custom: "Custom",
 };
 
-const DEBOUNCE_MS = 250;
 const CONTROL_HORIZONTAL_PADDING = 12;
 const CONTROL_VERTICAL_PADDING = 8;
 const CONTROL_TEXT_SIZE = 13;
@@ -51,8 +52,19 @@ export function TopBar() {
   const { preset, setTimeRange, searchQuery, setSearchQuery } = useDashboardFilters();
   const searchInputRef = useRef<TextInputHandle>(null);
   const [localQuery, setLocalQuery] = useState(searchQuery);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  const handleSuggestionSelect = useCallback(
+    (suggestion: SearchSuggestion) => {
+      setLocalQuery(suggestion.title);
+      setSearchQuery(suggestion.title);
+      setIsPanelOpen(false);
+    },
+    [setSearchQuery],
+  );
+
+  const autocomplete = useSearchAutocomplete(handleSuggestionSelect);
 
   useEffect(() => {
     setLocalQuery(searchQuery);
@@ -61,22 +73,22 @@ export function TopBar() {
   const handleSearchChange = useCallback(
     (text: string) => {
       setLocalQuery(text);
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => setSearchQuery(text), DEBOUNCE_MS);
+      autocomplete.setQuery(text);
+      setIsPanelOpen(text.trim().length >= 2);
     },
-    [setSearchQuery],
+    [autocomplete],
   );
 
   const handleClearSearch = useCallback(() => {
     setLocalQuery("");
     setSearchQuery("");
+    autocomplete.clear();
+    setIsPanelOpen(false);
     searchInputRef.current?.focus();
-  }, [setSearchQuery]);
+  }, [setSearchQuery, autocomplete]);
 
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
+  const handleDismissPanel = useCallback(() => {
+    setIsPanelOpen(false);
   }, []);
 
   const openTimeRangeOverlay = useCallback(
@@ -133,6 +145,14 @@ export function TopBar() {
               <X size={14} color={theme.icon.secondary} />
             </Pressable>
           )}
+          <SearchAutocompletePanel
+            suggestions={autocomplete.suggestions}
+            loading={autocomplete.loading}
+            error={autocomplete.error}
+            onSelect={autocomplete.selectSuggestion}
+            onDismiss={handleDismissPanel}
+            visible={isPanelOpen}
+          />
         </View>
       </View>
       <View style={styles.right}>
@@ -238,6 +258,7 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: 400,
     borderWidth: 1,
+    zIndex: 100,
   },
   searchInput: {
     flex: 1,

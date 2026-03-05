@@ -28,6 +28,27 @@ jest.mock("@/providers/ThemeProvider", () => ({
   }),
 }));
 
+const mockSetQuery = jest.fn();
+const mockClear = jest.fn();
+const mockSelectSuggestion = jest.fn();
+
+jest.mock("@/features/analytics/hooks/useSearchAutocomplete", () => ({
+  useSearchAutocomplete: () => ({
+    suggestions: null,
+    loading: false,
+    error: undefined,
+    query: "",
+    setQuery: mockSetQuery,
+    clear: mockClear,
+    selectSuggestion: mockSelectSuggestion,
+    selectedSuggestion: null,
+  }),
+}));
+
+jest.mock("@/components/search", () => ({
+  SearchAutocompletePanel: () => null,
+}));
+
 function renderTopBar() {
   const store = configureStore({
     reducer: {
@@ -48,6 +69,7 @@ function renderTopBar() {
 describe("TopBar", () => {
   beforeEach(() => {
     mockBreakpoint = "desktop";
+    jest.clearAllMocks();
   });
 
   it("opens time range overlay when clock button is pressed", () => {
@@ -76,5 +98,33 @@ describe("TopBar", () => {
     const { getByText } = renderTopBar();
 
     expect(getByText("30d")).toBeTruthy();
+  });
+
+  it("calls autocomplete setQuery when typing", () => {
+    const { getByLabelText } = renderTopBar();
+    const input = getByLabelText("Search");
+
+    fireEvent.changeText(input, "test query");
+
+    expect(mockSetQuery).toHaveBeenCalledWith("test query");
+  });
+
+  it("calls autocomplete clear when clearing search", () => {
+    const { getByLabelText } = renderTopBar();
+    const input = getByLabelText("Search");
+
+    fireEvent.changeText(input, "something");
+    fireEvent.press(getByLabelText("Clear search"));
+
+    expect(mockClear).toHaveBeenCalled();
+  });
+
+  it("does not dispatch setSearchQuery to Redux while typing", () => {
+    const { getByLabelText, store } = renderTopBar();
+    const input = getByLabelText("Search");
+
+    fireEvent.changeText(input, "test");
+
+    expect(store.getState().filters.searchQuery).toBe("");
   });
 });

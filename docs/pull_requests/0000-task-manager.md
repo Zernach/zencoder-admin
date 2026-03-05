@@ -45,7 +45,7 @@
 | ✅ | [0037](./0037-typescript-type-dryness-cleanup.md) | TypeScript Type DRYness Cleanup | Polish |
 | ✅ | [0038](./0038-dark-light-theme-completeness.md) | Dark & Light Theme Completeness | Polish |
 | ✅ | [0039](./0039-search-autocomplete-shared-contracts-and-stub-api.md) | Search Autocomplete Shared Contracts & Stub API | Search |
-| 📝 | [0040](./0040-search-autocomplete-topbar-ux-and-grouping.md) | TopBar Search Autocomplete UX & Grouped Suggestions | Search |
+| ✅ | [0040](./0040-search-autocomplete-topbar-ux-and-grouping.md) | TopBar Search Autocomplete UX & Grouped Suggestions | Search |
 | 📝 | [0041](./0041-stack-aware-search-routing-and-route-contracts.md) | Stack-Aware Search Routing & Entity Route Contracts | Search |
 | 📝 | [0042](./0042-entity-detail-services-hooks-and-shared-screen-models.md) | Entity Detail Services, Hooks & Shared Screen Models | Data Layer |
 | 📝 | [0043](./0043-entity-screens-per-tab-stack-route-wrappers.md) | Entity Screens in Every Tab Stack (Route Wrappers + Shared Views) | Screens |
@@ -56,7 +56,10 @@
 | 📝 | [0048](./0048-create-project.md) | Create Project Flow | Projects |
 | 📝 | [0049](./0049-create-team.md) | Create Team Flow | Teams |
 | 📝 | [0050](./0050-create-entity-workflows-test-coverage.md) | Create Entity Workflows Test Coverage | Testing |
+| 📝 | [0051](./0051-sidebar-subsection-contracts-and-shared-constants.md) | Sidebar Subsection Contracts and Shared Constants | Foundation |
+| 📝 | [0052](./0052-sidebar-subsections-for-agents-costs-governance.md) | Sidebar Subsections for Agents, Costs, and Governance | Components |
+| 📝 | [0053](./0053-sidebar-subsection-navigation-test-coverage.md) | Sidebar Subsection Navigation Test Coverage | Testing |
 
 ---
 
-**Progress: 39 / 50**
+**Progress: 40 / 53**
