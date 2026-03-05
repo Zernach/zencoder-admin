@@ -28,13 +28,9 @@ export function useOverviewDashboard() {
   const data = useMemo(
     () =>
       overviewQuery.data
-        ? mapOverviewToViewModel(
-            overviewQuery.data,
-            usageQuery.data,
-            outcomesQuery.data
-          )
+        ? mapOverviewToViewModel(overviewQuery.data, usageQuery.data, outcomesQuery.data)
         : undefined,
-    [overviewQuery.data, usageQuery.data, outcomesQuery.data]
+    [overviewQuery.data, usageQuery.data, outcomesQuery.data],
   );
 
   return {
