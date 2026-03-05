@@ -48,7 +48,7 @@
 | ✅ | [0040](./0040-search-autocomplete-topbar-ux-and-grouping.md) | TopBar Search Autocomplete UX & Grouped Suggestions | Search |
 | ✅ | [0041](./0041-stack-aware-search-routing-and-route-contracts.md) | Stack-Aware Search Routing & Entity Route Contracts | Search |
 | ✅ | [0042](./0042-entity-detail-services-hooks-and-shared-screen-models.md) | Entity Detail Services, Hooks & Shared Screen Models | Data Layer |
-| 📝 | [0043](./0043-entity-screens-per-tab-stack-route-wrappers.md) | Entity Screens in Every Tab Stack (Route Wrappers + Shared Views) | Screens |
+| ✅ | [0043](./0043-entity-screens-per-tab-stack-route-wrappers.md) | Entity Screens in Every Tab Stack (Route Wrappers + Shared Views) | Screens |
 | 📝 | [0044](./0044-search-autocomplete-and-entity-navigation-test-plan.md) | Search Autocomplete + Entity Navigation Test Coverage | Testing |
 | 📝 | [0045](./0045-create-entity-form-foundation-hooks-and-contracts.md) | Create Entity Form Foundations (Hooks, Components, Shared Contracts) | Foundation |
 | 📝 | [0046](./0046-create-compliance-violation-rule.md) | Create Compliance Violation Rule Flow | Governance |
@@ -62,4 +62,4 @@
 
 ---
 
-**Progress: 42 / 53**
+**Progress: 43 / 53**
