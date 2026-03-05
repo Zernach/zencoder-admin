@@ -8,6 +8,8 @@ import type {
   GovernanceResponse,
   AgentsHubResponse,
   LiveAgentSessionsResponse,
+  SearchSuggestionsRequest,
+  SearchSuggestionsResponse,
 } from "@/features/analytics/types";
 
 export interface IAnalyticsApi {
@@ -19,4 +21,5 @@ export interface IAnalyticsApi {
   getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse>;
   getAgentsHub(filters: AnalyticsFilters): Promise<AgentsHubResponse>;
   getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse>;
+  getSearchSuggestions(request: SearchSuggestionsRequest): Promise<SearchSuggestionsResponse>;
 }

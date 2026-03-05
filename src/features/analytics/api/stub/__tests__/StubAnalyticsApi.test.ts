@@ -254,6 +254,83 @@ describe("getAgentsHub", () => {
   });
 });
 
+// ── Search suggestions ──────────────────────────────────
+
+describe("getSearchSuggestions", () => {
+  it("returns empty groups for empty query", async () => {
+    const res = await api.getSearchSuggestions({ query: "" });
+    expect(res.groups).toEqual([]);
+    expect(res.totalCount).toBe(0);
+  });
+
+  it("returns empty groups for whitespace-only query", async () => {
+    const res = await api.getSearchSuggestions({ query: "   " });
+    expect(res.groups).toEqual([]);
+    expect(res.totalCount).toBe(0);
+  });
+
+  it("returns groups ordered as agent, project, team, human, run", async () => {
+    // Use a broad query that matches across entity types
+    const res = await api.getSearchSuggestions({ query: "a" });
+    const entityTypes = res.groups.map((g) => g.entityType);
+    const expectedOrder = ["agent", "project", "team", "human", "run"];
+    for (let i = 0; i < entityTypes.length; i++) {
+      const idx = expectedOrder.indexOf(entityTypes[i]!);
+      expect(idx).toBeGreaterThanOrEqual(0);
+      if (i > 0) {
+        const prevIdx = expectedOrder.indexOf(entityTypes[i - 1]!);
+        expect(prevIdx).toBeLessThan(idx);
+      }
+    }
+  });
+
+  it("respects per-group limit", async () => {
+    const res = await api.getSearchSuggestions({ query: "a", limit: 2 });
+    for (const group of res.groups) {
+      expect(group.suggestions.length).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it("default per-group limit is 5", async () => {
+    const res = await api.getSearchSuggestions({ query: "a" });
+    for (const group of res.groups) {
+      expect(group.suggestions.length).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it("totalCount equals sum of all group suggestion counts", async () => {
+    const res = await api.getSearchSuggestions({ query: "a" });
+    const sum = res.groups.reduce((s, g) => s + g.suggestions.length, 0);
+    expect(res.totalCount).toBe(sum);
+  });
+
+  it("matches query case-insensitively", async () => {
+    const lowerRes = await api.getSearchSuggestions({ query: "team" });
+    const upperRes = await api.getSearchSuggestions({ query: "TEAM" });
+    expect(lowerRes.totalCount).toBe(upperRes.totalCount);
+  });
+
+  it("each suggestion has required fields", async () => {
+    const res = await api.getSearchSuggestions({ query: "a" });
+    for (const group of res.groups) {
+      expect(typeof group.entityType).toBe("string");
+      expect(typeof group.label).toBe("string");
+      for (const s of group.suggestions) {
+        expect(typeof s.id).toBe("string");
+        expect(typeof s.entityType).toBe("string");
+        expect(typeof s.title).toBe("string");
+        expect(s.entityType).toBe(group.entityType);
+      }
+    }
+  });
+
+  it("returns no groups when query matches nothing", async () => {
+    const res = await api.getSearchSuggestions({ query: "zzzzxyznonexistent" });
+    expect(res.groups).toEqual([]);
+    expect(res.totalCount).toBe(0);
+  });
+});
+
 // ── Failure injection ────────────────────────────────────
 
 describe("failure injection", () => {

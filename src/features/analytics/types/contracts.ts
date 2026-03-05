@@ -252,6 +252,32 @@ export interface GovernanceResponse {
 }
 
 
+// ─── Search Autocomplete ────────────────────────────────
+export type SearchEntityType = "agent" | "project" | "team" | "human" | "run";
+
+export interface SearchSuggestion {
+  id: string;
+  entityType: SearchEntityType;
+  title: string;
+  subtitle?: string;
+}
+
+export interface SearchSuggestionGroup {
+  entityType: SearchEntityType;
+  label: string;
+  suggestions: SearchSuggestion[];
+}
+
+export interface SearchSuggestionsRequest {
+  query: string;
+  limit?: number;
+}
+
+export interface SearchSuggestionsResponse {
+  groups: SearchSuggestionGroup[];
+  totalCount: number;
+}
+
 // ─── Seed Data Container ────────────────────────────────
 export interface SeedData {
   teams: Team[]; users: User[]; projects: Project[]; agents: Agent[];

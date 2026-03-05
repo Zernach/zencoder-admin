@@ -10,6 +10,8 @@ import type {
   GovernanceResponse,
   AgentsHubResponse,
   LiveAgentSessionsResponse,
+  SearchSuggestionsRequest,
+  SearchSuggestionsResponse,
 } from "@/features/analytics/types";
 import { round1, round2 } from "../utils/metricFormulas";
 
@@ -93,5 +95,9 @@ export class AnalyticsService implements IAnalyticsService {
 
   async getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse> {
     return this.api.getLiveAgentSessions(filters);
+  }
+
+  async getSearchSuggestions(request: SearchSuggestionsRequest): Promise<SearchSuggestionsResponse> {
+    return this.api.getSearchSuggestions(request);
   }
 }

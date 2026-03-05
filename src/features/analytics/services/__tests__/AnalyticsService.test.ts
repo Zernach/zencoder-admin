@@ -6,6 +6,7 @@ import type {
   AnalyticsFilters,
   OverviewResponse,
   CostResponse,
+  SearchSuggestionsResponse,
 } from "@/features/analytics/types";
 
 const seedData = generateSeedData(42);
@@ -198,6 +199,7 @@ describe("delegation via mock", () => {
       getGovernance: jest.fn(),
       getAgentsHub: jest.fn(),
       getLiveAgentSessions: jest.fn(),
+      getSearchSuggestions: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -241,6 +243,7 @@ describe("delegation via mock", () => {
       getGovernance: jest.fn(),
       getAgentsHub: jest.fn(),
       getLiveAgentSessions: jest.fn(),
+      getSearchSuggestions: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -255,6 +258,46 @@ describe("delegation via mock", () => {
     expect(res.costBreakdown[0]!.totalCostUsd).toBe(501);
     expect(res.costBreakdown[0]!.averageCostPerRunUsd).toBe(5.01);
     expect(res.costBreakdown[0]!.percentOfTotal).toBe(0.4);
+  });
+});
+
+describe("getSearchSuggestions", () => {
+  it("delegates to api.getSearchSuggestions and returns result", async () => {
+    const mockResponse: SearchSuggestionsResponse = {
+      groups: [
+        {
+          entityType: "agent",
+          label: "Agents",
+          suggestions: [{ id: "a1", entityType: "agent", title: "Agent X" }],
+        },
+      ],
+      totalCount: 1,
+    };
+
+    const mockApi: IAnalyticsApi = {
+      getOverview: jest.fn(),
+      getUsage: jest.fn(),
+      getOutcomes: jest.fn(),
+      getCost: jest.fn(),
+      getReliability: jest.fn(),
+      getGovernance: jest.fn(),
+      getAgentsHub: jest.fn(),
+      getLiveAgentSessions: jest.fn(),
+      getSearchSuggestions: jest.fn().mockResolvedValue(mockResponse),
+    };
+
+    const svc = new AnalyticsService(mockApi);
+    const request = { query: "agent" };
+    const res = await svc.getSearchSuggestions(request);
+
+    expect(mockApi.getSearchSuggestions).toHaveBeenCalledWith(request);
+    expect(res).toEqual(mockResponse);
+  });
+
+  it("returns grouped suggestions from stub", async () => {
+    const res = await service.getSearchSuggestions({ query: "a" });
+    expect(res.groups.length).toBeGreaterThan(0);
+    expect(res.totalCount).toBeGreaterThan(0);
   });
 });
 

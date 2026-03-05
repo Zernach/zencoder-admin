@@ -19,6 +19,11 @@ import type {
   ModelProvider,
   LiveAgentSession,
   SeatUserUsageRow,
+  SearchSuggestionsRequest,
+  SearchSuggestionsResponse,
+  SearchSuggestion,
+  SearchSuggestionGroup,
+  SearchEntityType,
 } from "@/features/analytics/types";
 import { round2, round4 } from "../../utils/metricFormulas";
 import {
@@ -607,5 +612,102 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       .slice(0, 18);
 
     return { activeSessions: sessions, lastUpdatedIso: new Date().toISOString() };
+  }
+
+  async getSearchSuggestions(
+    request: SearchSuggestionsRequest,
+  ): Promise<SearchSuggestionsResponse> {
+    await this.simulate();
+
+    const query = request.query.trim().toLowerCase();
+    const perGroupLimit = request.limit ?? 5;
+
+    if (query.length === 0) {
+      return { groups: [], totalCount: 0 };
+    }
+
+    const matchAndScore = (text: string): number => {
+      const lower = text.toLowerCase();
+      if (lower === query) return 3;
+      if (lower.startsWith(query)) return 2;
+      if (lower.includes(query)) return 1;
+      return 0;
+    };
+
+    const buildGroup = (
+      entityType: SearchEntityType,
+      label: string,
+      candidates: SearchSuggestion[],
+    ): SearchSuggestionGroup | null => {
+      const scored = candidates
+        .map((s) => ({ suggestion: s, score: Math.max(matchAndScore(s.title), matchAndScore(s.subtitle ?? "")) }))
+        .filter((s) => s.score > 0)
+        .sort((a, b) => b.score - a.score || a.suggestion.title.localeCompare(b.suggestion.title))
+        .slice(0, perGroupLimit)
+        .map((s) => s.suggestion);
+
+      if (scored.length === 0) return null;
+      return { entityType, label, suggestions: scored };
+    };
+
+    const teamNameById = new Map(this.seed.teams.map((t) => [t.id, t.name]));
+    const projectNameById = new Map(this.seed.projects.map((p) => [p.id, p.name]));
+
+    const agentCandidates: SearchSuggestion[] = this.seed.agents.map((a) => ({
+      id: a.id,
+      entityType: "agent" as const,
+      title: a.name,
+      subtitle: projectNameById.get(a.projectId) ?? a.projectId,
+    }));
+
+    const projectCandidates: SearchSuggestion[] = this.seed.projects.map((p) => {
+      const team = this.seed.teams.find((t) => t.id === p.teamId);
+      return {
+        id: p.id,
+        entityType: "project" as const,
+        title: p.name,
+        subtitle: team?.name ?? p.teamId,
+      };
+    });
+
+    const teamCandidates: SearchSuggestion[] = this.seed.teams.map((t) => ({
+      id: t.id,
+      entityType: "team" as const,
+      title: t.name,
+    }));
+
+    const humanCandidates: SearchSuggestion[] = this.seed.users.map((u) => ({
+      id: u.id,
+      entityType: "human" as const,
+      title: u.name,
+      subtitle: teamNameById.get(u.teamId) ?? u.teamId,
+    }));
+
+    const runCandidates: SearchSuggestion[] = this.seed.runs.slice(0, 200).map((r) => ({
+      id: r.id,
+      entityType: "run" as const,
+      title: r.id,
+      subtitle: `${r.status} — ${r.provider}`,
+    }));
+
+    const groupDefs: [SearchEntityType, string, SearchSuggestion[]][] = [
+      ["agent", "Agents", agentCandidates],
+      ["project", "Projects", projectCandidates],
+      ["team", "Teams", teamCandidates],
+      ["human", "Humans", humanCandidates],
+      ["run", "Runs", runCandidates],
+    ];
+
+    const groups: SearchSuggestionGroup[] = [];
+    let totalCount = 0;
+    for (const [entityType, label, candidates] of groupDefs) {
+      const group = buildGroup(entityType, label, candidates);
+      if (group) {
+        groups.push(group);
+        totalCount += group.suggestions.length;
+      }
+    }
+
+    return { groups, totalCount };
   }
 }
