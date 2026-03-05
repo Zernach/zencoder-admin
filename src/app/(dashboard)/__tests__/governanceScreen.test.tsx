@@ -12,6 +12,10 @@ jest.mock("@/hooks/useSearchFilter", () => ({
   useSearchFilter: <T,>(data: T[]) => data,
 }));
 
+jest.mock("@/providers/ThemeProvider", () => ({
+  useThemeMode: () => ({ mode: "dark" }),
+}));
+
 jest.mock("@/components/screen", () => {
   const React = require("react");
   const { View } = require("react-native");

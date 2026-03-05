@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, BreakdownChart } from "@/components/charts";
@@ -8,16 +8,9 @@ import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import type { PolicyViolationRow, SecurityEventRow, PolicyChangeEvent, ComplianceItem, SeatUserUsageRow, KeyValueMetric } from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
+import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
-
-const dark = semanticThemes.dark;
-
-const COMPLIANCE_STATUS_COLORS: Record<ComplianceItem["status"], string> = {
-  compliant: dark.state.success,
-  warning: dark.state.warning,
-  critical: dark.state.error,
-};
 
 function getComplianceCaption(status: ComplianceItem["status"]): string {
   if (status === "compliant") return "Passing";
@@ -58,8 +51,16 @@ const policyChangeCols: ColumnDef<PolicyChangeEvent>[] = [
   { key: "target", header: "Target", width: 130 },
 ];
 
+function getComplianceColor(status: ComplianceItem["status"], t: typeof semanticThemes["dark"]): string {
+  if (status === "compliant") return t.state.success;
+  if (status === "warning") return t.state.warning;
+  return t.state.error;
+}
+
 export default function GovernanceScreen() {
   const { data, loading, error, refetch } = useGovernanceDashboard();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
 
   const filteredViolations = useSearchFilter(data?.recentViolations ?? [], VIOLATION_SEARCH_KEYS);
   const filteredSecurityEvents = useSearchFilter(data?.securityEvents ?? [], SECURITY_SEARCH_KEYS);
@@ -130,7 +131,7 @@ export default function GovernanceScreen() {
                 key={item.label}
                 title={item.label}
                 value={item.status}
-                valueColor={COMPLIANCE_STATUS_COLORS[item.status]}
+                valueColor={getComplianceColor(item.status, theme)}
                 caption={getComplianceCaption(item.status)}
               />
             ))}
@@ -144,11 +145,11 @@ export default function GovernanceScreen() {
             title="Seat User Oversight"
             subtitle="Full names of active seat users and AI usage by account seat"
           />
-          <View style={localStyles.seatUsageSummary}>
-            <Text style={localStyles.summaryText}>
+          <View style={{ gap: spacing[1] }}>
+            <Text style={{ color: theme.text.secondary, fontSize: 12 }}>
               Most AI usage: {mostActiveSeatUser ? `${mostActiveSeatUser.fullName} (${formatCompactNumber(mostActiveSeatUser.runsCount)} runs)` : "No active seat usage"}
             </Text>
-            <Text style={localStyles.summaryText}>
+            <Text style={{ color: theme.text.secondary, fontSize: 12 }}>
               Least AI usage: {leastActiveSeatUser ? `${leastActiveSeatUser.fullName} (${formatCompactNumber(leastActiveSeatUser.runsCount)} runs)` : "No active seat usage"}
             </Text>
           </View>
@@ -206,13 +207,3 @@ export default function GovernanceScreen() {
     </ScreenWrapper>
   );
 }
-
-const localStyles = StyleSheet.create({
-  seatUsageSummary: {
-    gap: spacing[1],
-  },
-  summaryText: {
-    color: dark.text.secondary,
-    fontSize: 12,
-  },
-});
