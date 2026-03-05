@@ -1,17 +1,11 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
-import { createTestSeedData } from "@/testing/testUtils";
-import type { GovernanceResponse, SeedData } from "@/features/analytics/types";
+import type { GovernanceResponse } from "@/features/analytics/types";
 
 const mockUseGovernanceDashboard = jest.fn();
-const mockUseAppDependencies = jest.fn();
 
 jest.mock("@/features/analytics/hooks/useGovernanceDashboard", () => ({
   useGovernanceDashboard: () => mockUseGovernanceDashboard(),
-}));
-
-jest.mock("@/core/di/AppDependencies", () => ({
-  useAppDependencies: () => mockUseAppDependencies(),
 }));
 
 jest.mock("@/hooks/useSearchFilter", () => ({
@@ -104,7 +98,7 @@ jest.mock("@/components/tables", () => {
 
 const GovernanceScreen = require("../governance").default;
 
-function createGovernanceData(_seedData: SeedData): GovernanceResponse {
+function createGovernanceData(): GovernanceResponse {
   return {
     policyViolationCount: 5,
     policyViolationRate: 0.02,
@@ -126,8 +120,8 @@ function createGovernanceData(_seedData: SeedData): GovernanceResponse {
       { label: "Data Encryption", status: "compliant" },
     ],
     policyChanges: [
-      { id: "p1", actorUserId: "u1", action: "Updated policy", timestampIso: "2026-03-03T14:00:00.000Z", target: "Network" },
-      { id: "p2", actorUserId: "u2", action: "Created policy", timestampIso: "2026-03-01T09:00:00.000Z", target: "Shell" },
+      { id: "p1", actorUserId: "u1", actorName: "Alice Johnson", action: "Updated policy", timestampIso: "2026-03-03T14:00:00.000Z", target: "Network" },
+      { id: "p2", actorUserId: "u2", actorName: "Bob Smith", action: "Created policy", timestampIso: "2026-03-01T09:00:00.000Z", target: "Shell" },
     ],
     seatUserUsage: [
       { userId: "u1", fullName: "Alice Johnson", teamName: "Team Alpha", runsCount: 150, totalTokens: 50000, totalCostUsd: 45.0 },
@@ -138,15 +132,9 @@ function createGovernanceData(_seedData: SeedData): GovernanceResponse {
 }
 
 describe("GovernanceScreen", () => {
-  const seedData = createTestSeedData();
-
-  beforeEach(() => {
-    mockUseAppDependencies.mockReturnValue({ seedData });
-  });
-
   it("renders seat usage chart section title and subtitle", () => {
     mockUseGovernanceDashboard.mockReturnValue({
-      data: createGovernanceData(seedData),
+      data: createGovernanceData(),
       loading: false,
       error: undefined,
       refetch: jest.fn(),
@@ -160,7 +148,7 @@ describe("GovernanceScreen", () => {
 
   it("renders full-name labels in the seat usage chart", () => {
     mockUseGovernanceDashboard.mockReturnValue({
-      data: createGovernanceData(seedData),
+      data: createGovernanceData(),
       loading: false,
       error: undefined,
       refetch: jest.fn(),
@@ -175,7 +163,7 @@ describe("GovernanceScreen", () => {
 
   it("renders seat user oversight section header", () => {
     mockUseGovernanceDashboard.mockReturnValue({
-      data: createGovernanceData(seedData),
+      data: createGovernanceData(),
       loading: false,
       error: undefined,
       refetch: jest.fn(),
@@ -188,7 +176,7 @@ describe("GovernanceScreen", () => {
 
   it("passes truncateLabels=false to governance horizontal breakdown charts", () => {
     mockUseGovernanceDashboard.mockReturnValue({
-      data: createGovernanceData(seedData),
+      data: createGovernanceData(),
       loading: false,
       error: undefined,
       refetch: jest.fn(),
@@ -203,7 +191,7 @@ describe("GovernanceScreen", () => {
   });
 
   it("renders violations with newest timestamp first", () => {
-    const data = createGovernanceData(seedData);
+    const data = createGovernanceData();
     mockUseGovernanceDashboard.mockReturnValue({
       data,
       loading: false,
@@ -220,7 +208,7 @@ describe("GovernanceScreen", () => {
   });
 
   it("renders security events with newest timestamp first", () => {
-    const data = createGovernanceData(seedData);
+    const data = createGovernanceData();
     mockUseGovernanceDashboard.mockReturnValue({
       data,
       loading: false,
@@ -235,7 +223,7 @@ describe("GovernanceScreen", () => {
   });
 
   it("renders policy changes with newest timestamp first", () => {
-    const data = createGovernanceData(seedData);
+    const data = createGovernanceData();
     mockUseGovernanceDashboard.mockReturnValue({
       data,
       loading: false,
@@ -250,7 +238,7 @@ describe("GovernanceScreen", () => {
   });
 
   it("violations remain newest-first after simulated re-render", () => {
-    const data = createGovernanceData(seedData);
+    const data = createGovernanceData();
     mockUseGovernanceDashboard.mockReturnValue({
       data,
       loading: false,
@@ -272,7 +260,7 @@ describe("GovernanceScreen", () => {
 
   it("does not render stale violations during loading transition", () => {
     // Initial render with data
-    const data = createGovernanceData(seedData);
+    const data = createGovernanceData();
     mockUseGovernanceDashboard.mockReturnValue({
       data,
       loading: false,

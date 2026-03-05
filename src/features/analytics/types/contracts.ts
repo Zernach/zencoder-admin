@@ -128,7 +128,7 @@ export interface BudgetSummary {
 }
 
 export interface PolicyChangeEvent {
-  id: string; actorUserId: string; action: string;
+  id: string; actorUserId: string; actorName: string; action: string;
   timestampIso: string; target: string;
 }
 

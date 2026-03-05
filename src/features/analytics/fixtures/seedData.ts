@@ -506,9 +506,11 @@ export function generateSeedData(seed: number = 42): SeedData {
         dayOffset * DAY_MS +
         randInt(rng, 9, 17) * HOUR_MS
     );
+    const actor = pick(rng, users);
     policyChanges.push({
       id: padId("pc", i + 1),
-      actorUserId: pick(rng, users).id,
+      actorUserId: actor.id,
+      actorName: actor.name,
       action: pick(rng, POLICY_ACTIONS),
       timestampIso: ts.toISOString(),
       target: pick(rng, teams).name,

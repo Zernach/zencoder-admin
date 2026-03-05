@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
-import { useAppDependencies } from "@/core/di/AppDependencies";
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText } from "@/components/tables";
@@ -52,25 +51,15 @@ const SECURITY_SEARCH_KEYS: (keyof SecurityEventRow)[] = ["type", "description"]
 const SEAT_SEARCH_KEYS: (keyof SeatUserUsageRow)[] = ["fullName", "teamName"];
 const POLICY_CHANGE_SEARCH_KEYS: (keyof PolicyChangeEvent)[] = ["action", "target"];
 
+const policyChangeCols: ColumnDef<PolicyChangeEvent>[] = [
+  { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={cellText.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
+  { key: "actorName", header: "Actor", width: 140, render: (row) => <Text style={cellText.primary} numberOfLines={1}>{row.actorName}</Text> },
+  { key: "action", header: "Action", width: 220 },
+  { key: "target", header: "Target", width: 130 },
+];
+
 export default function GovernanceScreen() {
   const { data, loading, error, refetch } = useGovernanceDashboard();
-  const { seedData } = useAppDependencies();
-
-  const userMap = useMemo(() => {
-    const m = new Map<string, string>();
-    for (const u of seedData.users) m.set(u.id, u.name);
-    return m;
-  }, [seedData.users]);
-
-  const policyChangeCols: ColumnDef<PolicyChangeEvent>[] = useMemo(
-    () => [
-      { key: "timestampIso", header: "Time", width: 160, render: (row: PolicyChangeEvent) => <Text style={cellText.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
-      { key: "actorUserId", header: "Actor", width: 140, render: (row: PolicyChangeEvent) => <Text style={cellText.primary} numberOfLines={1}>{userMap.get(row.actorUserId) ?? row.actorUserId}</Text> },
-      { key: "action", header: "Action", width: 220 },
-      { key: "target", header: "Target", width: 130 },
-    ],
-    [userMap],
-  );
 
   const filteredViolations = useSearchFilter(data?.recentViolations ?? [], VIOLATION_SEARCH_KEYS);
   const filteredSecurityEvents = useSearchFilter(data?.securityEvents ?? [], SECURITY_SEARCH_KEYS);
