@@ -17,12 +17,15 @@ import { chartColors } from "@/components/tables";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import type { LiveAgentSession } from "@/features/analytics/types";
+import { useThemeMode } from "@/providers/ThemeProvider";
 
 const styles = sectionStyles;
 
 const SESSION_SEARCH_KEYS: (keyof LiveAgentSession)[] = ["agentName", "projectName", "userName", "currentTask"];
 
 export default function OverviewDashboardScreen() {
+  const { mode } = useThemeMode();
+  const cc = chartColors(mode);
   const { data, loading, error, refetch } = useOverviewDashboard();
   const {
     data: liveSessions,
@@ -112,7 +115,7 @@ export default function OverviewDashboardScreen() {
               <TrendChart
                 data={data.costTrend}
                 variant="line"
-                color={chartColors.success}
+                color={cc.success}
                 height={200}
               />
             )}
@@ -158,7 +161,7 @@ export default function OverviewDashboardScreen() {
           </CardGrid>
           {data.outcomesTrend && data.outcomesTrend.length > 0 && (
             <ChartCard title="PRs Merged Over Time">
-              <TrendChart data={data.outcomesTrend} variant="line" color={chartColors.warning} height={180} />
+              <TrendChart data={data.outcomesTrend} variant="line" color={cc.warning} height={180} />
             </ChartCard>
           )}
         </View>

@@ -3,6 +3,8 @@ import { View, Text, StyleSheet } from "react-native";
 import type { KeyValueMetric } from "@/features/analytics/types";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import { DATA_PALETTE } from "./palette";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface BreakdownChartProps {
   data: KeyValueMetric[];
@@ -20,6 +22,8 @@ export function BreakdownChart({
   showValues = true,
   truncateLabels = true,
 }: BreakdownChartProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const [measuredLabelWidth, setMeasuredLabelWidth] = useState<number>(0);
   const [measuredRowHeight, setMeasuredRowHeight] = useState<number>(0);
   const sorted = [...data].sort((a, b) => b.value - a.value);
@@ -46,7 +50,7 @@ export function BreakdownChart({
       <View style={[styles.container, { minHeight: height }]}>
         {!truncateLabels && longestLabel.length > 0 ? (
           <Text
-            style={[styles.hBarLabel, styles.hBarLabelFull, styles.measureLabel]}
+            style={[styles.hBarLabel, styles.hBarLabelFull, styles.measureLabel, { color: theme.text.secondary }]}
             onLayout={(event) => handleLongestLabelLayout(event.nativeEvent.layout.width)}
           >
             {longestLabel}
@@ -70,6 +74,7 @@ export function BreakdownChart({
             <Text
               style={[
                 styles.hBarLabel,
+                { color: theme.text.secondary },
                 !truncateLabels && styles.hBarLabelFull,
                 !truncateLabels && measuredLabelWidth > 0 ? { width: measuredLabelWidth } : null,
               ]}
@@ -77,7 +82,7 @@ export function BreakdownChart({
             >
               {item.key}
             </Text>
-            <View style={styles.hBarTrack}>
+            <View style={[styles.hBarTrack, { backgroundColor: theme.bg.surfaceElevated }]}>
               <View
                 style={[
                   styles.hBarFill,
@@ -90,7 +95,7 @@ export function BreakdownChart({
               />
             </View>
             {showValues && (
-              <Text style={styles.hBarValue}>
+              <Text style={[styles.hBarValue, { color: theme.text.primary }]}>
                 {formatCompactNumber(item.value)}
               </Text>
             )}
@@ -107,7 +112,7 @@ export function BreakdownChart({
         <View key={`${item.key}-${i}`} style={styles.barCol}>
           <View style={styles.barWrapper}>
             {showValues && (
-              <Text style={styles.barValue}>
+              <Text style={[styles.barValue, { color: theme.text.secondary }]}>
                 {formatCompactNumber(item.value)}
               </Text>
             )}
@@ -122,7 +127,7 @@ export function BreakdownChart({
               ]}
             />
           </View>
-          <Text style={styles.barLabel} numberOfLines={1}>
+          <Text style={[styles.barLabel, { color: theme.text.tertiary }]} numberOfLines={1}>
             {item.key}
           </Text>
         </View>
@@ -143,7 +148,6 @@ const styles = StyleSheet.create({
   hBarLabel: {
     width: 80,
     fontSize: 11,
-    color: "#a3a3a3",
   },
   hBarLabelFull: {
     flexShrink: 0,
@@ -156,7 +160,6 @@ const styles = StyleSheet.create({
   hBarTrack: {
     flex: 1,
     height: 16,
-    backgroundColor: "#262626",
     borderRadius: 4,
     overflow: "hidden",
   },
@@ -167,7 +170,6 @@ const styles = StyleSheet.create({
   hBarValue: {
     width: 48,
     fontSize: 11,
-    color: "#e5e5e5",
     textAlign: "right",
   },
   barContainer: {
@@ -192,12 +194,10 @@ const styles = StyleSheet.create({
   },
   barValue: {
     fontSize: 10,
-    color: "#a3a3a3",
     marginBottom: 4,
   },
   barLabel: {
     fontSize: 10,
-    color: "#8a8a8a",
     marginTop: 4,
     textAlign: "center",
   },

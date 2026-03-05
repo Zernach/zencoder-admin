@@ -5,8 +5,9 @@ import { arc, pie } from "d3-shape";
 import type { KeyValueMetric } from "@/features/analytics/types";
 import { formatPercent } from "@/features/analytics/utils/formatters";
 import { typography } from "@/theme/typography";
-import { semanticThemes } from "@/theme/themes";
 import { DATA_PALETTE } from "./palette";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface DonutChartProps {
   data: KeyValueMetric[];
@@ -21,6 +22,8 @@ export function DonutChart({
   centerValue,
   height = 220,
 }: DonutChartProps) {
+  const { mode } = useThemeMode();
+  const textColors = semanticThemes[mode].text;
   const size = Math.min(height, 220);
   const radius = size / 2 - 8;
   const innerRadius = radius * 0.6;
@@ -36,9 +39,6 @@ export function DonutChart({
 
   const arcs = pieGen(data);
   const segmentLabelTypography = typography.label;
-  const centerValueTypography = typography.cardTitle;
-  const centerLabelTypography = typography.label;
-  const textColors = semanticThemes.dark.text;
 
   return (
     <View style={styles.container}>

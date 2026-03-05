@@ -2,6 +2,8 @@ import React from "react";
 import { ActivityIndicator, type StyleProp, type ViewStyle } from "react-native";
 import { useAppSelector } from "@/store/hooks";
 import { selectIsLoading } from "@/store/slices/loadingSlice";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface ReduxLoadingSpinnerProps {
   reduxKey: string;
@@ -10,24 +12,23 @@ interface ReduxLoadingSpinnerProps {
   style?: StyleProp<ViewStyle>;
 }
 
-/**
- * Spinner that automatically shows/hides based on a Redux loading key.
- * Reads `state.loading[reduxKey]` and renders an ActivityIndicator when true.
- */
 function ReduxLoadingSpinner({
   reduxKey,
   size = "small",
-  color = "#30a8dc",
+  color,
   style,
 }: ReduxLoadingSpinnerProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const isLoading = useAppSelector(selectIsLoading(reduxKey));
+  const resolvedColor = color ?? theme.border.brand;
 
   if (!isLoading) return null;
 
   return (
     <ActivityIndicator
       size={size}
-      color={color}
+      color={resolvedColor}
       style={style}
       accessibilityLabel="Loading"
     />

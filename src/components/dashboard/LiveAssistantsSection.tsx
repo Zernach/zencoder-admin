@@ -22,6 +22,8 @@ import Reanimated, {
 import type { LiveAgentSession } from "@/features/analytics/types";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { radius, spacing } from "@/theme/tokens";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes, type SemanticTheme } from "@/theme/themes";
 import { ErrorState } from "./ErrorState";
 import { SectionHeader } from "./SectionHeader";
 
@@ -77,6 +79,8 @@ interface SessionColumn {
   rows: SessionCardState[];
 }
 
+type ThemeColors = Omit<SemanticTheme, "shadows">;
+
 function hashString(input: string): number {
   let h = 0;
   for (let i = 0; i < input.length; i++) {
@@ -129,7 +133,7 @@ function createCardState(session: LiveAgentSession): SessionCardState {
   };
 }
 
-function LiveBadge({ reducedMotion }: { reducedMotion: boolean }) {
+function LiveBadge({ reducedMotion, theme }: { reducedMotion: boolean; theme: ThemeColors }) {
   const pulse = useRef(new RNAnimated.Value(0)).current;
 
   useEffect(() => {
@@ -174,12 +178,12 @@ function LiveBadge({ reducedMotion }: { reducedMotion: boolean }) {
   };
 
   return (
-    <View style={styles.liveBadge}>
+    <View style={[styles.liveBadge, { borderColor: `${theme.state.success}40`, backgroundColor: `${theme.state.success}14` }]}>
       <View style={styles.liveDotWrap}>
-        <RNAnimated.View style={[styles.liveDotPulse, animatedStyle]} />
-        <View style={styles.liveDotCore} />
+        <RNAnimated.View style={[styles.liveDotPulse, { backgroundColor: theme.state.success }, animatedStyle]} />
+        <View style={[styles.liveDotCore, { backgroundColor: theme.state.success }]} />
       </View>
-      <Text style={styles.liveBadgeLabel}>LIVE</Text>
+      <Text style={[styles.liveBadgeLabel, { color: theme.state.success }]}>LIVE</Text>
     </View>
   );
 }
@@ -189,6 +193,7 @@ interface SessionIndicatorProps {
   color: string;
   completed: boolean;
   reducedMotion: boolean;
+  theme: ThemeColors;
 }
 
 const SessionProgressIndicator = memo(function SessionProgressIndicator({
@@ -196,6 +201,7 @@ const SessionProgressIndicator = memo(function SessionProgressIndicator({
   color,
   completed,
   reducedMotion,
+  theme,
 }: SessionIndicatorProps) {
   const clampedProgress = Math.max(0.08, Math.min(1, progress));
   const animatedProgress = useSharedValue(clampedProgress);
@@ -283,7 +289,7 @@ const SessionProgressIndicator = memo(function SessionProgressIndicator({
             cx={INDICATOR_SIZE / 2}
             cy={INDICATOR_SIZE / 2}
             r={INDICATOR_RADIUS}
-            stroke="#2a2a2a"
+            stroke={theme.data.gridLine}
             strokeWidth={INDICATOR_STROKE}
             fill="none"
           />
@@ -291,7 +297,7 @@ const SessionProgressIndicator = memo(function SessionProgressIndicator({
             cx={INDICATOR_SIZE / 2}
             cy={INDICATOR_SIZE / 2}
             r={INDICATOR_RADIUS}
-            stroke={completed ? "#22c55e" : color}
+            stroke={completed ? theme.state.success : color}
             strokeWidth={INDICATOR_STROKE}
             fill="none"
             strokeLinecap="round"
@@ -302,7 +308,7 @@ const SessionProgressIndicator = memo(function SessionProgressIndicator({
       </Reanimated.View>
       {completed ? (
         <Reanimated.View style={[styles.checkWrap, checkStyle]}>
-          <Check size={16} color="#22c55e" />
+          <Check size={16} color={theme.state.success} />
         </Reanimated.View>
       ) : null}
     </View>
@@ -312,9 +318,11 @@ const SessionProgressIndicator = memo(function SessionProgressIndicator({
 const LiveAssistantCard = memo(function LiveAssistantCard({
   card,
   reducedMotion,
+  theme,
 }: {
   card: SessionCardState;
   reducedMotion: boolean;
+  theme: ThemeColors;
 }) {
   const avatarColor = AVATAR_COLORS[hashString(card.session.agentId) % AVATAR_COLORS.length]!;
   const elapsedClock = formatElapsedClock(card.session.startedAtIso);
@@ -326,16 +334,16 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
         : "Running";
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
       <View style={styles.topRow}>
         <View style={[styles.avatar, { backgroundColor: avatarColor }]}>
-          <Text style={styles.avatarInitial}>{firstInitial(card.session.agentName)}</Text>
+          <Text style={[styles.avatarInitial, { color: theme.text.onBrand }]}>{firstInitial(card.session.agentName)}</Text>
         </View>
         <View style={styles.titleWrap}>
-          <Text style={styles.agentName} numberOfLines={1}>
+          <Text style={[styles.agentName, { color: theme.text.primary }]} numberOfLines={1}>
             {card.session.agentName}
           </Text>
-          <Text style={styles.projectName} numberOfLines={1}>
+          <Text style={[styles.projectName, { color: theme.text.tertiary }]} numberOfLines={1}>
             {card.session.projectName}
           </Text>
         </View>
@@ -344,29 +352,30 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
           color={avatarColor}
           completed={card.phase === "completed"}
           reducedMotion={reducedMotion}
+          theme={theme}
         />
       </View>
-      <Text style={styles.task} numberOfLines={1}>
+      <Text style={[styles.task, { color: theme.text.secondary }]} numberOfLines={1}>
         {card.session.currentTask}
       </Text>
       <View style={styles.metaRow}>
-        <Text style={styles.meta} numberOfLines={1}>
+        <Text style={[styles.meta, { color: theme.state.success }]} numberOfLines={1}>
           {statusLabel}
-          <Text style={styles.metaDivider}> by </Text>
-          <Text style={styles.metaUser}>{card.session.userName}</Text>
+          <Text style={{ color: theme.text.tertiary }}> by </Text>
+          <Text style={{ color: theme.text.tertiary, fontWeight: "500" }}>{card.session.userName}</Text>
         </Text>
-        <Text style={styles.elapsedTime}>{elapsedClock}</Text>
+        <Text style={[styles.elapsedTime, { color: theme.text.secondary }]}>{elapsedClock}</Text>
       </View>
     </View>
   );
 });
 
-function EmptyLiveState() {
+function EmptyLiveState({ theme }: { theme: ThemeColors }) {
   const messageIndex = Math.floor(Date.now() / 60_000) % EMPTY_STATE_MESSAGES.length;
   return (
-    <View style={styles.emptyState}>
-      <Text style={styles.emptyTitle}>{EMPTY_STATE_MESSAGES[messageIndex]}</Text>
-      <Text style={styles.emptySubtitle}>
+    <View style={[styles.emptyState, { borderColor: theme.border.subtle, backgroundColor: theme.bg.subtle }]}>
+      <Text style={[styles.emptyTitle, { color: theme.text.primary }]}>{EMPTY_STATE_MESSAGES[messageIndex]}</Text>
+      <Text style={[styles.emptySubtitle, { color: theme.text.tertiary }]}>
         New live sessions will appear automatically as engineers start runs.
       </Text>
     </View>
@@ -379,6 +388,8 @@ export function LiveAssistantsSection({
   error,
   onRetry,
 }: LiveAssistantsSectionProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const reducedMotion = useReducedMotion();
   const [cards, setCards] = useState<SessionCardState[]>([]);
 
@@ -476,7 +487,7 @@ export function LiveAssistantsSection({
     return (
       <View style={styles.column}>
         {item.rows.map((card) => (
-          <LiveAssistantCard key={card.session.sessionId} card={card} reducedMotion={reducedMotion} />
+          <LiveAssistantCard key={card.session.sessionId} card={card} reducedMotion={reducedMotion} theme={theme} />
         ))}
         {item.rows.length < ROWS_PER_COLUMN ? <View style={styles.cardSpacer} /> : null}
       </View>
@@ -488,18 +499,18 @@ export function LiveAssistantsSection({
       <SectionHeader
         title="Live"
         subtitle="AI Assistants in Action"
-        action={<LiveBadge reducedMotion={reducedMotion} />}
+        action={<LiveBadge reducedMotion={reducedMotion} theme={theme} />}
       />
       {error ? (
         <ErrorState message={error} onRetry={onRetry ?? (() => undefined)} />
       ) : loading && columns.length === 0 ? (
         <View style={styles.placeholderWrap}>
           {Array.from({ length: 4 }).map((_, index) => (
-            <View key={index} style={styles.placeholderCard} />
+            <View key={index} style={[styles.placeholderCard, { borderColor: theme.border.subtle, backgroundColor: theme.bg.subtle }]} />
           ))}
         </View>
       ) : columns.length === 0 ? (
-        <EmptyLiveState />
+        <EmptyLiveState theme={theme} />
       ) : (
         <FlatList
           horizontal
@@ -527,8 +538,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[1],
     borderRadius: radius.full,
     borderWidth: 1,
-    borderColor: "rgba(34, 197, 94, 0.25)",
-    backgroundColor: "rgba(34, 197, 94, 0.08)",
   },
   liveDotWrap: {
     width: 10,
@@ -541,16 +550,13 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: radius.full,
-    backgroundColor: "#22c55e",
   },
   liveDotCore: {
     width: 6,
     height: 6,
     borderRadius: radius.full,
-    backgroundColor: "#22c55e",
   },
   liveBadgeLabel: {
-    color: "#86efac",
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 0.4,
@@ -567,8 +573,6 @@ const styles = StyleSheet.create({
   },
   card: {
     minHeight: 108,
-    backgroundColor: "#171717",
-    borderColor: "#262626",
     borderWidth: 1,
     borderRadius: radius.md,
     padding: spacing[3],
@@ -591,7 +595,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   avatarInitial: {
-    color: "#021207",
     fontSize: 16,
     fontWeight: "700",
   },
@@ -600,20 +603,16 @@ const styles = StyleSheet.create({
     gap: 1,
   },
   agentName: {
-    color: "#f5f5f5",
     fontSize: 14,
     fontWeight: "600",
   },
   projectName: {
-    color: "#9ca3af",
     fontSize: 12,
   },
   task: {
-    color: "#d4d4d4",
     fontSize: 12,
   },
   meta: {
-    color: "#86efac",
     fontSize: 11,
     fontWeight: "500",
   },
@@ -623,15 +622,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: spacing[2],
   },
-  metaDivider: {
-    color: "#9ca3af",
-  },
-  metaUser: {
-    color: "#9ca3af",
-    fontWeight: "500",
-  },
   elapsedTime: {
-    color: "#d4d4d4",
     fontSize: 11,
     fontWeight: "600",
   },
@@ -655,24 +646,18 @@ const styles = StyleSheet.create({
     height: 108,
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: "#2a2a2a",
-    backgroundColor: "#151515",
   },
   emptyState: {
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: "#2a2a2a",
-    backgroundColor: "#141414",
     padding: spacing[4],
     gap: spacing[2],
   },
   emptyTitle: {
-    color: "#d1fae5",
     fontSize: 14,
     fontWeight: "600",
   },
   emptySubtitle: {
-    color: "#9ca3af",
     fontSize: 12,
     lineHeight: 18,
   },

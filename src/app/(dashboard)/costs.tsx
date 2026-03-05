@@ -8,12 +8,15 @@ import { formatCurrency, formatPercent } from "@/features/analytics/utils/format
 import type { CostBreakdownRow } from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
+import { useThemeMode } from "@/providers/ThemeProvider";
 
 const styles = sectionStyles;
 
 const COST_BREAKDOWN_SEARCH_KEYS: (keyof CostBreakdownRow)[] = ["key"];
 
 export default function CostAnalyticsScreen() {
+  const { mode } = useThemeMode();
+  const cc = chartColors(mode);
   const { data, loading, error, refetch } = useCostDashboard();
   const filteredCostBreakdown = useSearchFilter(data?.costBreakdown ?? [], COST_BREAKDOWN_SEARCH_KEYS);
 
@@ -54,7 +57,7 @@ export default function CostAnalyticsScreen() {
               contentContainerStyle={styles.chartRow}
             >
               <ChartCard title="Cost per Day">
-                <TrendChart data={data.costTrend} variant="area" color={chartColors.success} />
+                <TrendChart data={data.costTrend} variant="area" color={cc.success} />
               </ChartCard>
               <ChartCard title="Cost per Project">
                 <DonutChart

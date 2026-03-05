@@ -2,6 +2,8 @@ import React from "react";
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
 import type { SortDirection } from "@/features/analytics/types";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface SortableHeaderProps {
   label: string;
@@ -16,6 +18,8 @@ export function SortableHeader({
   direction,
   onPress,
 }: SortableHeaderProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const Icon = direction === "asc" ? ChevronUp : ChevronDown;
 
   return (
@@ -26,10 +30,10 @@ export function SortableHeader({
       accessibilityLabel={`Sort by ${label}${active ? `, ${direction === "asc" ? "ascending" : "descending"}` : ""}`}
       accessibilityState={{ selected: active }}
     >
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, { color: theme.text.secondary }]}>{label}</Text>
       {active && (
         <View style={styles.icon}>
-          <Icon size={12} color="#e5e5e5" />
+          <Icon size={12} color={theme.text.primary} />
         </View>
       )}
     </Pressable>
@@ -46,7 +50,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#a3a3a3",
   },
   icon: {
     width: 12,

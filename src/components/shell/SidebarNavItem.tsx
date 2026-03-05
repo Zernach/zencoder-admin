@@ -8,6 +8,8 @@ import Animated, {
 } from "react-native-reanimated";
 import type { LucideIcon } from "lucide-react-native";
 import { motion } from "@/theme/motion";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface SidebarNavItemProps {
   icon: LucideIcon;
@@ -27,6 +29,8 @@ export function SidebarNavItem({
   expanded,
   onPress,
 }: SidebarNavItemProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const labelOpacity = useSharedValue(expanded ? 1 : 0);
   const labelTranslateX = useSharedValue(expanded ? 0 : -8);
 
@@ -49,17 +53,17 @@ export function SidebarNavItem({
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.item, active && styles.active]}
+      style={[styles.item, active && { backgroundColor: theme.bg.brandSubtle }]}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ selected: active }}
     >
-      {active && <View style={styles.activeBorder} />}
-      <Icon size={20} color={active ? "#30a8dc" : "#a3a3a3"} />
+      {active && <View style={[styles.activeBorder, { backgroundColor: theme.border.brand }]} />}
+      <Icon size={20} color={active ? theme.border.brand : theme.text.secondary} />
       {expanded && (
         <Animated.View style={labelStyle}>
           <Text
-            style={[styles.label, active && styles.activeLabel]}
+            style={[styles.label, { color: active ? theme.text.primary : theme.text.secondary }, active && styles.activeLabelWeight]}
             numberOfLines={1}
           >
             {label}
@@ -67,8 +71,8 @@ export function SidebarNavItem({
         </Animated.View>
       )}
       {badge != null && badge > 0 && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{badge}</Text>
+        <View style={[styles.badge, { backgroundColor: theme.state.error }]}>
+          <Text style={[styles.badgeText, { color: theme.text.onBrand }]}>{badge}</Text>
         </View>
       )}
     </Pressable>
@@ -86,29 +90,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     position: "relative",
   },
-  active: {
-    backgroundColor: "rgba(48, 168, 220, 0.1)",
-  },
   activeBorder: {
     position: "absolute",
     left: 0,
     top: 8,
     bottom: 8,
     width: 3,
-    backgroundColor: "#30a8dc",
     borderRadius: 2,
   },
   label: {
     fontSize: 14,
-    color: "#a3a3a3",
     flex: 1,
   },
-  activeLabel: {
-    color: "#e5e5e5",
+  activeLabelWeight: {
     fontWeight: "500",
   },
   badge: {
-    backgroundColor: "#ef4444",
     borderRadius: 10,
     minWidth: 20,
     height: 20,
@@ -117,7 +114,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   badgeText: {
-    color: "#ffffff",
     fontSize: 10,
     fontWeight: "700",
   },

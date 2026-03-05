@@ -5,6 +5,8 @@ import { scaleTime, scaleLinear } from "d3-scale";
 import { line, area, curveMonotoneX } from "d3-shape";
 import type { TimeSeriesPoint } from "@/features/analytics/types";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface TrendChartProps {
   data: TimeSeriesPoint[];
@@ -22,11 +24,14 @@ const MARGIN = { top: 8, right: 8, bottom: 24, left: 44 };
 export function TrendChart({
   data,
   variant,
-  color = "#30a8dc",
+  color,
   fillOpacity = 0.15,
   height = 200,
   showGrid = true,
 }: TrendChartProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const resolvedColor = color ?? theme.data.seriesPrimary;
   const [containerWidth, setContainerWidth] = useState(300);
 
   if (data.length === 0) return null;
@@ -73,14 +78,14 @@ export function TrendChart({
               x2={width - MARGIN.right}
               y1={MARGIN.top + yScale(t)}
               y2={MARGIN.top + yScale(t)}
-              stroke="#242424"
+              stroke={theme.border.subtle}
               strokeDasharray="4,4"
             />
           ))}
         {variant === "area" && (
           <Path
             d={areaD}
-            fill={color}
+            fill={resolvedColor}
             fillOpacity={fillOpacity}
             transform={`translate(${MARGIN.left},${MARGIN.top})`}
           />
@@ -88,7 +93,7 @@ export function TrendChart({
         <Path
           d={pathD}
           fill="none"
-          stroke={color}
+          stroke={resolvedColor}
           strokeWidth={2}
           transform={`translate(${MARGIN.left},${MARGIN.top})`}
         />
@@ -98,7 +103,7 @@ export function TrendChart({
             x={MARGIN.left - 6}
             y={MARGIN.top + yScale(t) + 4}
             fontSize={10}
-            fill="#8a8a8a"
+            fill={theme.text.tertiary}
             textAnchor="end"
           >
             {formatCompactNumber(t)}
@@ -110,7 +115,7 @@ export function TrendChart({
             x={MARGIN.left + xScale(t)}
             y={height - 4}
             fontSize={10}
-            fill="#8a8a8a"
+            fill={theme.text.tertiary}
             textAnchor="middle"
           >
             {t.toLocaleDateString("en-US", { month: "short", day: "numeric" })}

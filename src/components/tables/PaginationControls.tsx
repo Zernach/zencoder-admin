@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { formatNumber } from "@/features/analytics/utils/formatters";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface PaginationControlsProps {
   page: number;
@@ -18,6 +20,8 @@ export function PaginationControls({
   total,
   onPageChange,
 }: PaginationControlsProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const start = (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, total);
   const totalPages = Math.ceil(total / pageSize);
@@ -26,7 +30,7 @@ export function PaginationControls({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.info}>
+      <Text style={[styles.info, { color: theme.text.secondary }]}>
         Showing {formatNumber(start)}–{formatNumber(end)} of{" "}
         {formatNumber(total)}
       </Text>
@@ -34,23 +38,23 @@ export function PaginationControls({
         <Pressable
           onPress={() => hasPrev && onPageChange(page - 1)}
           disabled={!hasPrev}
-          style={[styles.button, !hasPrev && styles.disabled]}
+          style={[styles.button, { backgroundColor: theme.bg.surfaceElevated }, !hasPrev && styles.disabled]}
           accessibilityRole="button"
           accessibilityLabel="Previous page"
         >
-          <ChevronLeft size={16} color={hasPrev ? "#e5e5e5" : "#8a8a8a"} />
+          <ChevronLeft size={16} color={hasPrev ? theme.text.primary : theme.text.tertiary} />
         </Pressable>
-        <Text style={styles.pageNum}>
+        <Text style={[styles.pageNum, { color: theme.text.primary }]}>
           {page} / {totalPages}
         </Text>
         <Pressable
           onPress={() => hasNext && onPageChange(page + 1)}
           disabled={!hasNext}
-          style={[styles.button, !hasNext && styles.disabled]}
+          style={[styles.button, { backgroundColor: theme.bg.surfaceElevated }, !hasNext && styles.disabled]}
           accessibilityRole="button"
           accessibilityLabel="Next page"
         >
-          <ChevronRight size={16} color={hasNext ? "#e5e5e5" : "#8a8a8a"} />
+          <ChevronRight size={16} color={hasNext ? theme.text.primary : theme.text.tertiary} />
         </Pressable>
       </View>
     </View>
@@ -66,7 +70,6 @@ const styles = StyleSheet.create({
   },
   info: {
     fontSize: 12,
-    color: "#a3a3a3",
   },
   buttons: {
     flexDirection: "row",
@@ -79,14 +82,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 6,
-    backgroundColor: "#262626",
   },
   disabled: {
     opacity: 0.5,
   },
   pageNum: {
     fontSize: 12,
-    color: "#e5e5e5",
     minWidth: 40,
     textAlign: "center",
   },

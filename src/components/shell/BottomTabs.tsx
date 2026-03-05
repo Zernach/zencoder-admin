@@ -9,6 +9,8 @@ import {
 } from "lucide-react-native";
 import { useRouter, usePathname } from "expo-router";
 import type { LucideIcon } from "lucide-react-native";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 const TABS: { icon: LucideIcon; label: string; route: string }[] = [
   { icon: Home, label: "Home", route: "/(dashboard)/dashboard" },
@@ -21,9 +23,11 @@ const TABS: { icon: LucideIcon; label: string; route: string }[] = [
 export function BottomTabs() {
   const router = useRouter();
   const pathname = usePathname();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.bg.canvas, borderTopColor: theme.border.default }]}>
       {TABS.map((tab) => {
         const active = pathname.includes(
           tab.route.replace("/(dashboard)", "")
@@ -38,11 +42,11 @@ export function BottomTabs() {
             accessibilityLabel={tab.label}
             accessibilityState={{ selected: active }}
           >
-            <Icon size={20} color={active ? "#30a8dc" : "#8a8a8a"} />
-            <Text style={[styles.label, active && styles.activeLabel]}>
+            <Icon size={20} color={active ? theme.border.brand : theme.text.tertiary} />
+            <Text style={[styles.label, { color: active ? theme.border.brand : theme.text.tertiary }]}>
               {tab.label}
             </Text>
-            {active && <View style={styles.indicator} />}
+            {active && <View style={[styles.indicator, { backgroundColor: theme.border.brand }]} />}
           </Pressable>
         );
       })}
@@ -53,9 +57,7 @@ export function BottomTabs() {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    backgroundColor: "#0a0a0a",
     borderTopWidth: 1,
-    borderTopColor: "#2d2d2d",
     paddingBottom: 20,
     paddingTop: 8,
   },
@@ -69,17 +71,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 10,
-    color: "#8a8a8a",
-  },
-  activeLabel: {
-    color: "#30a8dc",
   },
   indicator: {
     position: "absolute",
     top: -8,
     width: 24,
     height: 2,
-    backgroundColor: "#30a8dc",
     borderRadius: 1,
   },
 });

@@ -6,6 +6,7 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import type { TimeRangePreset } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 import { AppTextInput } from "@/components/inputs";
 
 type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
@@ -46,13 +47,13 @@ const CONTROL_TEXT_LINE_HEIGHT = 18;
 export function TopBar() {
   const breakpoint = useBreakpoint();
   const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const { preset, setTimeRange, searchQuery, setSearchQuery } = useDashboardFilters();
   const searchInputRef = useRef<TextInputHandle>(null);
   const [localQuery, setLocalQuery] = useState(searchQuery);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = useState(false);
 
-  // Sync local state when Redux changes externally (e.g. clearAll)
   useEffect(() => {
     setLocalQuery(searchQuery);
   }, [searchQuery]);
@@ -72,7 +73,6 @@ export function TopBar() {
     searchInputRef.current?.focus();
   }, [setSearchQuery]);
 
-  // Cleanup debounce on unmount
   useEffect(() => {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -99,26 +99,18 @@ export function TopBar() {
 
   const presetButtonLabel =
     breakpoint === "mobile" ? PRESET_SHORT_LABELS[preset] : PRESET_LABELS[preset];
-  const isDark = mode === "dark";
-  const iconColor = isDark ? "#a3a3a3" : "#435160";
-  const panelBackground = isDark ? "#1a1a1a" : "#ffffff";
-  const panelBorder = isDark ? "#2d2d2d" : "#d5dce3";
-  const barBackground = isDark ? "#0a0a0a" : "#f6f7f8";
-  const barBorder = isDark ? "#2d2d2d" : "#d5dce3";
-  const textColor = isDark ? "#a3a3a3" : "#435160";
-  const placeholderColor = isDark ? "#8a8a8a" : "#6b7683";
   const hasQuery = localQuery.length > 0;
 
   return (
-    <View style={[styles.container, { backgroundColor: barBackground, borderBottomColor: barBorder }]}>
+    <View style={[styles.container, { backgroundColor: theme.bg.canvas, borderBottomColor: theme.border.default }]}>
       <View style={styles.left}>
         <View
           style={[
             styles.searchContainer,
-            { backgroundColor: panelBackground, borderColor: hasQuery ? "#30a8dc" : panelBorder },
+            { backgroundColor: theme.bg.surface, borderColor: hasQuery ? theme.border.brand : theme.border.default },
           ]}
         >
-          <Search size={14} color={hasQuery ? "#30a8dc" : placeholderColor} />
+          <Search size={14} color={hasQuery ? theme.border.brand : theme.text.tertiary} />
           <AppTextInput
             ref={searchInputRef}
             style={styles.searchInput}
@@ -136,20 +128,20 @@ export function TopBar() {
               accessibilityLabel="Clear search"
               style={styles.clearButton}
             >
-              <X size={14} color={iconColor} />
+              <X size={14} color={theme.icon.secondary} />
             </Pressable>
           )}
         </View>
       </View>
       <View style={styles.right}>
         <Pressable
-          style={[styles.presetBtn, { backgroundColor: panelBackground, borderColor: panelBorder }]}
+          style={[styles.presetBtn, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }]}
           accessibilityRole="button"
           accessibilityLabel="Open time range selector"
           onPress={openTimeRangeOverlay}
         >
-          <Clock size={14} color={textColor} />
-          <Text style={[styles.presetText, { color: textColor }]}>{presetButtonLabel}</Text>
+          <Clock size={14} color={theme.text.secondary} />
+          <Text style={[styles.presetText, { color: theme.text.secondary }]}>{presetButtonLabel}</Text>
         </Pressable>
       </View>
       <Modal
@@ -165,16 +157,16 @@ export function TopBar() {
             accessibilityRole="button"
             accessibilityLabel="Close time range selector"
           />
-          <View style={styles.overlayPanel}>
+          <View style={[styles.overlayPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
             <View style={styles.overlayHeader}>
-              <Text style={styles.overlayTitle}>Select Time Range</Text>
+              <Text style={[styles.overlayTitle, { color: theme.text.primary }]}>Select Time Range</Text>
               <Pressable
                 onPress={closeTimeRangeOverlay}
                 hitSlop={8}
                 accessibilityRole="button"
                 accessibilityLabel="Close overlay"
               >
-                <X size={16} color="#a3a3a3" />
+                <X size={16} color={theme.text.secondary} />
               </Pressable>
             </View>
             <View style={styles.overlayOptions}>
@@ -185,7 +177,8 @@ export function TopBar() {
                     key={option.value}
                     style={[
                       styles.overlayOptionButton,
-                      isSelected && styles.overlayOptionButtonSelected,
+                      { backgroundColor: theme.bg.surface, borderColor: theme.border.default },
+                      isSelected && { borderColor: theme.border.brand, backgroundColor: theme.bg.brandSubtle },
                     ]}
                     onPress={() => handleSelectTimeRange(option.value)}
                     accessibilityRole="button"
@@ -195,7 +188,8 @@ export function TopBar() {
                     <Text
                       style={[
                         styles.overlayOptionText,
-                        isSelected && styles.overlayOptionTextSelected,
+                        { color: theme.text.secondary },
+                        isSelected && { color: theme.text.brand },
                       ]}
                     >
                       {option.label}
@@ -218,9 +212,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    backgroundColor: "#0a0a0a",
     borderBottomWidth: 1,
-    borderBottomColor: "#2d2d2d",
   },
   left: {
     flexDirection: "row",
@@ -277,10 +269,8 @@ const styles = StyleSheet.create({
   overlayPanel: {
     width: 320,
     maxWidth: "100%",
-    backgroundColor: "#111111",
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#2d2d2d",
     paddingHorizontal: 14,
     paddingTop: 14,
     paddingBottom: 12,
@@ -292,7 +282,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   overlayTitle: {
-    color: "#e5e5e5",
     fontSize: 14,
     fontWeight: "600",
   },
@@ -300,23 +289,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   overlayOptionButton: {
-    backgroundColor: "#1a1a1a",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#2d2d2d",
     paddingHorizontal: 14,
     paddingVertical: 12,
-  },
-  overlayOptionButtonSelected: {
-    borderColor: "#30a8dc",
-    backgroundColor: "rgba(48, 168, 220, 0.13)",
   },
   overlayOptionText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#a3a3a3",
-  },
-  overlayOptionTextSelected: {
-    color: "#d6eef8",
   },
 });

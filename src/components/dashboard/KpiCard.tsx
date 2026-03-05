@@ -10,6 +10,8 @@ import { DeltaIndicator } from "./DeltaIndicator";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { motion } from "@/theme/motion";
 import type { DeltaPolarity } from "@/features/analytics/types";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface KpiCardProps {
   title: string;
@@ -26,7 +28,7 @@ interface KpiCardProps {
 export function KpiCard({
   title,
   value,
-  valueColor = "#e5e5e5",
+  valueColor,
   delta,
   deltaPolarity = "positive-good",
   caption,
@@ -34,14 +36,16 @@ export function KpiCard({
   icon,
   onPress,
 }: KpiCardProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const reducedMotion = useReducedMotion();
   const prevValue = useRef(value);
   const opacity = useSharedValue(1);
   const translateY = useSharedValue(0);
+  const resolvedValueColor = valueColor ?? theme.text.primary;
 
   useEffect(() => {
     if (prevValue.current !== value && !reducedMotion) {
-      // Animate cross-fade
       opacity.value = 0;
       translateY.value = 8;
       opacity.value = withTiming(1, {
@@ -62,17 +66,17 @@ export function KpiCard({
   }));
 
   const content = (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
       <View style={styles.header}>
         {icon && <View style={styles.icon}>{icon}</View>}
-        <Text style={styles.title} numberOfLines={1}>
+        <Text style={[styles.title, { color: theme.text.secondary }]} numberOfLines={1}>
           {title}
         </Text>
       </View>
       <View style={styles.valueRow}>
         <Animated.View style={[styles.valueWrap, valueAnimStyle]}>
           <Text
-            style={[styles.value, { color: valueColor }]}
+            style={[styles.value, { color: resolvedValueColor }]}
             numberOfLines={1}
             adjustsFontSizeToFit
             minimumFontScale={0.58}
@@ -89,7 +93,7 @@ export function KpiCard({
         )}
       </View>
       {(caption || period) && (
-        <Text style={styles.caption}>
+        <Text style={[styles.caption, { color: theme.text.tertiary }]}>
           {caption}
           {caption && period ? " · " : ""}
           {period}
@@ -116,9 +120,7 @@ export function KpiCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#1a1a1a",
     borderWidth: 1,
-    borderColor: "#242424",
     borderRadius: 10,
     padding: 16,
     minHeight: 132,
@@ -137,7 +139,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 11,
     fontWeight: "500",
-    color: "#a3a3a3",
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -157,7 +158,6 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#e5e5e5",
     letterSpacing: -0.3,
     flexShrink: 1,
   },
@@ -166,7 +166,6 @@ const styles = StyleSheet.create({
   },
   caption: {
     fontSize: 11,
-    color: "#8a8a8a",
   },
   pressed: {
     opacity: 0.85,

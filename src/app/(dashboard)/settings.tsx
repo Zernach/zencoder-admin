@@ -4,6 +4,7 @@ import { SectionHeader } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
 import { spacing } from "@/theme/tokens";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface SettingToggle {
   label: string;
@@ -20,6 +21,7 @@ const TOGGLES: SettingToggle[] = [
 
 export default function SettingsScreen() {
   const { mode, setMode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const [settings, setSettings] = useState<Record<string, boolean>>({
     emailNotifs: true,
     slackInteg: false,
@@ -45,20 +47,20 @@ export default function SettingsScreen() {
     >
       <View style={styles.section}>
         <SectionHeader title="Preferences" />
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
           {TOGGLES.map((t) => (
             <View key={t.key} style={styles.row}>
               <View style={styles.rowText}>
-                <Text style={styles.label}>
+                <Text style={[styles.label, { color: theme.text.primary }]}>
                   {t.key === "darkMode" ? `${t.label}: ${mode === "dark" ? "Dark" : "Light"}` : t.label}
                 </Text>
-                <Text style={styles.desc}>{t.description}</Text>
+                <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t.description}</Text>
               </View>
               <Switch
                 value={t.key === "darkMode" ? mode === "dark" : (settings[t.key] ?? false)}
                 onValueChange={() => toggle(t.key)}
-                trackColor={{ false: "#2d2d2d", true: "#30a8dc" }}
-                thumbColor="#e5e5e5"
+                trackColor={{ false: theme.border.default, true: theme.border.brand }}
+                thumbColor={theme.text.primary}
                 accessibilityRole="switch"
                 accessibilityLabel={
                   t.key === "darkMode" ? `Theme mode ${mode === "dark" ? "Dark" : "Light"}` : t.label
@@ -74,18 +76,18 @@ export default function SettingsScreen() {
 
       <View style={styles.section}>
         <SectionHeader title="Organization" />
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Org ID</Text>
-            <Text style={styles.infoValue}>org_zencoder_001</Text>
+            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Org ID</Text>
+            <Text style={[styles.infoValue, { color: theme.text.primary }]}>org_zencoder_001</Text>
           </View>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Plan</Text>
-            <Text style={styles.infoValue}>Enterprise</Text>
+            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Plan</Text>
+            <Text style={[styles.infoValue, { color: theme.text.primary }]}>Enterprise</Text>
           </View>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Seats</Text>
-            <Text style={styles.infoValue}>100 purchased</Text>
+            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Seats</Text>
+            <Text style={[styles.infoValue, { color: theme.text.primary }]}>100 purchased</Text>
           </View>
         </View>
       </View>
@@ -93,11 +95,11 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <SectionHeader title="Danger Zone" />
         <Pressable
-          style={styles.dangerBtn}
+          style={[styles.dangerBtn, { borderColor: theme.state.error }]}
           accessibilityRole="button"
           accessibilityLabel="Clear all cached data"
         >
-          <Text style={styles.dangerText}>Clear Cache</Text>
+          <Text style={[styles.dangerText, { color: theme.state.error }]}>Clear Cache</Text>
         </Pressable>
       </View>
     </ScreenWrapper>
@@ -109,10 +111,8 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   card: {
-    backgroundColor: "#1a1a1a",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#242424",
     padding: spacing[4],
     gap: spacing[4],
   },
@@ -122,24 +122,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   rowText: { flex: 1, marginRight: spacing[4] },
-  label: { fontSize: 14, fontWeight: "500", color: "#e5e5e5" },
-  desc: { fontSize: 12, color: "#8a8a8a", marginTop: 2 },
+  label: { fontSize: 14, fontWeight: "500" },
+  desc: { fontSize: 12, marginTop: 2 },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 4,
   },
-  infoLabel: { fontSize: 13, color: "#8a8a8a" },
-  infoValue: { fontSize: 13, color: "#e5e5e5" },
+  infoLabel: { fontSize: 13 },
+  infoValue: { fontSize: 13 },
   dangerBtn: {
     backgroundColor: "rgba(239, 68, 68, 0.1)",
     borderWidth: 1,
-    borderColor: "#ef4444",
     borderRadius: 8,
     padding: spacing[3],
     alignItems: "center",
     minHeight: 44,
     justifyContent: "center",
   },
-  dangerText: { color: "#ef4444", fontWeight: "600", fontSize: 14 },
+  dangerText: { fontWeight: "600", fontSize: 14 },
 });

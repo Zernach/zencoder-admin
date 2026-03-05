@@ -1,7 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { DataTable, type ColumnDef, type DataTableProps } from "./DataTable";
 import { DataList } from "./DataList";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
+import { useWindowDimensions } from "react-native";
 
 interface ResponsiveTableProps<T> extends DataTableProps<T> {
   renderListItem?: (row: T) => React.ReactNode;
@@ -9,13 +12,15 @@ interface ResponsiveTableProps<T> extends DataTableProps<T> {
 }
 
 function DefaultListItem<T>({ item }: { item: T }) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const entries = Object.entries(item as Record<string, unknown>).slice(0, 4);
   return (
-    <View style={listStyles.card}>
+    <View style={[listStyles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
       {entries.map(([key, val]) => (
         <View key={key} style={listStyles.row}>
-          <Text style={listStyles.label}>{key}</Text>
-          <Text style={listStyles.value}>{String(val ?? "")}</Text>
+          <Text style={[listStyles.label, { color: theme.text.tertiary }]}>{key}</Text>
+          <Text style={[listStyles.value, { color: theme.text.primary }]}>{String(val ?? "")}</Text>
         </View>
       ))}
     </View>
@@ -54,12 +59,10 @@ export function ResponsiveTable<T>({
 
 const listStyles = StyleSheet.create({
   card: {
-    backgroundColor: "#1a1a1a",
     borderRadius: 8,
     padding: 12,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: "#242424",
   },
   row: {
     flexDirection: "row",
@@ -68,10 +71,8 @@ const listStyles = StyleSheet.create({
   },
   label: {
     fontSize: 11,
-    color: "#8a8a8a",
   },
   value: {
     fontSize: 12,
-    color: "#e5e5e5",
   },
 });

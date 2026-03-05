@@ -8,6 +8,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { motion } from "@/theme/motion";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface ChartCardProps {
   title: string;
@@ -26,6 +28,8 @@ export function ChartCard({
   onRetry,
   children,
 }: ChartCardProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const borderColor = useSharedValue(0);
 
   const onHoverIn = useCallback(() => {
@@ -49,12 +53,12 @@ export function ChartCard({
   const hoverStyle = useAnimatedStyle(() => ({
     borderColor:
       borderColor.value > 0.5
-        ? "rgba(48, 168, 220, 0.2)"
-        : "#242424",
+        ? theme.bg.brandSubtle
+        : theme.border.subtle,
     backgroundColor:
       borderColor.value > 0.5
-        ? "#1e1e1e"
-        : "#1a1a1a",
+        ? theme.bg.surfaceHover
+        : theme.bg.surface,
   }));
 
   const viewProps = Platform.OS === "web"
@@ -64,8 +68,8 @@ export function ChartCard({
   return (
     <Animated.View style={[styles.card, hoverStyle]} {...viewProps}>
       <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
-        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+        <Text style={[styles.title, { color: theme.text.primary }]}>{title}</Text>
+        {subtitle && <Text style={[styles.subtitle, { color: theme.text.secondary }]}>{subtitle}</Text>}
       </View>
       {loading ? (
         <LoadingSkeleton variant="chart" />
@@ -80,9 +84,7 @@ export function ChartCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#1a1a1a",
     borderWidth: 1,
-    borderColor: "#242424",
     borderRadius: 10,
     padding: 16,
   },
@@ -92,11 +94,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#e5e5e5",
   },
   subtitle: {
     fontSize: 12,
-    color: "#a3a3a3",
     marginTop: 2,
   },
 });

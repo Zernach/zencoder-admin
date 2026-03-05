@@ -4,6 +4,8 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
 import { LoadingSkeleton, EmptyState } from "@/components/dashboard";
 import { SortableHeader } from "./SortableHeader";
 import type { SortDirection } from "@/features/analytics/types";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 type SortableValue = string | number | boolean | Date | null | undefined;
 
@@ -79,6 +81,8 @@ export function DataTable<T>({
   emptyMessage,
   keyExtractor,
 }: DataTableProps<T>) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const [internalSort, setInternalSort] = useState<{
     sortBy?: string;
     sortDirection: SortDirection;
@@ -144,7 +148,7 @@ export function DataTable<T>({
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <View>
         {/* Header */}
-        <View style={styles.headerRow}>
+        <View style={[styles.headerRow, { backgroundColor: theme.bg.surfaceElevated }]}>
           {columns.map((col) => (
             <View
               key={col.key}
@@ -165,7 +169,7 @@ export function DataTable<T>({
                   onPress={() => handleSortPress(col.key)}
                 />
               ) : (
-                <Text style={styles.headerText}>{col.header}</Text>
+                <Text style={[styles.headerText, { color: theme.text.secondary }]}>{col.header}</Text>
               )}
             </View>
           ))}
@@ -177,7 +181,7 @@ export function DataTable<T>({
             <View
               style={[
                 styles.bodyRow,
-                rowIdx % 2 === 1 && styles.stripe,
+                rowIdx % 2 === 1 && { backgroundColor: `${theme.bg.surface}80` },
               ]}
             >
               {columns.map((col) => (
@@ -195,7 +199,7 @@ export function DataTable<T>({
                   {col.render ? (
                     col.render(row)
                   ) : (
-                    <Text style={styles.bodyText}>
+                    <Text style={[styles.bodyText, { color: theme.text.primary }]}>
                       {String((row as Record<string, unknown>)[col.key] ?? "")}
                     </Text>
                   )}
@@ -231,7 +235,6 @@ export function DataTable<T>({
 const styles = StyleSheet.create({
   headerRow: {
     flexDirection: "row",
-    backgroundColor: "#262626",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 6,
@@ -243,9 +246,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     minHeight: 44,
     alignItems: "center",
-  },
-  stripe: {
-    backgroundColor: "rgba(26, 26, 26, 0.5)",
   },
   cell: {
     paddingHorizontal: 8,
@@ -264,10 +264,8 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#a3a3a3",
   },
   bodyText: {
     fontSize: 12,
-    color: "#e5e5e5",
   },
 });

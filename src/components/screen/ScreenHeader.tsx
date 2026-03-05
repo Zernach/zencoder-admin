@@ -2,22 +2,20 @@ import React from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import type { ReactNode } from "react";
 import ReduxLoadingSpinner from "./ReduxLoadingSpinner";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 export interface HeaderProps {
   title: string;
   subtitle?: string;
-  /** Redux loading key — shows spinner when state.loading[key] is true */
+  /** Redux loading key -- shows spinner when state.loading[key] is true */
   isLoadingReduxKey?: string;
-  /** Direct loading boolean — shows spinner when true */
+  /** Direct loading boolean -- shows spinner when true */
   isLoading?: boolean;
   /** Element rendered on the right side of the header row */
   rightComponent?: ReactNode;
 }
 
-/**
- * Reusable header component for screens.
- * Shows a spinner when isLoading is true or when the Redux loading key is active.
- */
 function ScreenHeader({
   title,
   subtitle,
@@ -25,10 +23,13 @@ function ScreenHeader({
   isLoading,
   rightComponent,
 }: HeaderProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+
   return (
     <View style={styles.container}>
       <View style={styles.titleRow}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, { color: theme.text.primary }]}>{title}</Text>
         {isLoadingReduxKey != null && (
           <ReduxLoadingSpinner
             reduxKey={isLoadingReduxKey}
@@ -39,13 +40,13 @@ function ScreenHeader({
         {isLoading && isLoadingReduxKey == null && (
           <ActivityIndicator
             size="small"
-            color="#30a8dc"
+            color={theme.border.brand}
             style={styles.spinner}
             accessibilityLabel="Loading"
           />
         )}
       </View>
-      {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+      {subtitle && <Text style={[styles.subtitle, { color: theme.text.secondary }]}>{subtitle}</Text>}
       {rightComponent != null && (
         <View style={styles.right}>{rightComponent}</View>
       )}
@@ -67,12 +68,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#e5e5e5",
     letterSpacing: -0.2,
   },
   subtitle: {
     fontSize: 14,
-    color: "#a3a3a3",
   },
   right: {
     marginTop: 4,

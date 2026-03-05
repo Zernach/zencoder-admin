@@ -11,6 +11,8 @@ import {
   Info,
 } from "lucide-react-native";
 import type { RunStatus, Severity } from "@/features/analytics/types";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface StatusConfigEntry { color: string; Icon: React.ElementType; label: string; }
 
@@ -20,21 +22,24 @@ interface StatusBadgeProps {
   severity?: Severity;
 }
 
-const STATUS_CONFIG: Record<RunStatus, StatusConfigEntry> = {
-  succeeded: { color: "#22c55e", Icon: CheckCircle, label: "Success" },
-  failed: { color: "#ef4444", Icon: XCircle, label: "Failed" },
-  running: { color: "#38bdf8", Icon: Play, label: "Running" },
-  queued: { color: "#a3a3a3", Icon: Clock, label: "Queued" },
-  canceled: { color: "#8a8a8a", Icon: Slash, label: "Canceled" },
-};
-
-const SEVERITY_CONFIG: Record<Severity, StatusConfigEntry> = {
-  HIGH: { color: "#ef4444", Icon: AlertTriangle, label: "HIGH" },
-  MEDIUM: { color: "#f59e0b", Icon: AlertCircle, label: "MEDIUM" },
-  LOW: { color: "#a3a3a3", Icon: Info, label: "LOW" },
-};
-
 export function StatusBadge({ variant, status, severity }: StatusBadgeProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+
+  const STATUS_CONFIG: Record<RunStatus, StatusConfigEntry> = {
+    succeeded: { color: theme.state.success, Icon: CheckCircle, label: "Success" },
+    failed: { color: theme.state.error, Icon: XCircle, label: "Failed" },
+    running: { color: theme.state.info, Icon: Play, label: "Running" },
+    queued: { color: theme.text.secondary, Icon: Clock, label: "Queued" },
+    canceled: { color: theme.text.tertiary, Icon: Slash, label: "Canceled" },
+  };
+
+  const SEVERITY_CONFIG: Record<Severity, StatusConfigEntry> = {
+    HIGH: { color: theme.state.error, Icon: AlertTriangle, label: "HIGH" },
+    MEDIUM: { color: theme.state.warning, Icon: AlertCircle, label: "MEDIUM" },
+    LOW: { color: theme.text.secondary, Icon: Info, label: "LOW" },
+  };
+
   const config =
     variant === "run-status" && status
       ? STATUS_CONFIG[status]

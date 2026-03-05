@@ -10,8 +10,9 @@ import {
   formatPercent,
 } from "@/features/analytics/utils/formatters";
 import { typography } from "@/theme/typography";
-import { semanticThemes } from "@/theme/themes";
 import { DATA_PALETTE } from "./palette";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface ProviderCostChartProps {
   data: ProviderCostRow[];
@@ -30,6 +31,8 @@ export function ProviderCostChart({
   totalCostUsd,
   height = 180,
 }: ProviderCostChartProps) {
+  const { mode } = useThemeMode();
+  const textColors = semanticThemes[mode].text;
   const sorted = [...data].sort((a, b) => b.totalCostUsd - a.totalCostUsd);
   const chartData = sorted.map((row) => ({ key: row.provider, value: row.totalCostUsd }));
   const total = chartData.reduce((sum, row) => sum + row.value, 0) || 1;
@@ -43,7 +46,6 @@ export function ProviderCostChart({
     .innerRadius(innerRadius)
     .outerRadius(radius);
   const arcs = pieGen(chartData);
-  const textColors = semanticThemes.dark.text;
 
   return (
     <View style={styles.container}>

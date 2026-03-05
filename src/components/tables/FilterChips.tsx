@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
 import { X } from "lucide-react-native";
 import type { FilterChip } from "@/features/analytics/types";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface FilterChipsProps {
   chips: FilterChip[];
@@ -9,6 +11,9 @@ interface FilterChipsProps {
 }
 
 export function FilterChips({ chips, onClearAll }: FilterChipsProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+
   if (chips.length === 0) return null;
 
   return (
@@ -19,15 +24,15 @@ export function FilterChips({ chips, onClearAll }: FilterChipsProps) {
       contentContainerStyle={styles.container}
     >
       {chips.map((chip) => (
-        <View key={chip.key} style={styles.chip}>
-          <Text style={styles.chipText}>{chip.label}</Text>
+        <View key={chip.key} style={[styles.chip, { backgroundColor: theme.bg.surfaceElevated, borderColor: theme.border.default }]}>
+          <Text style={[styles.chipText, { color: theme.text.primary }]}>{chip.label}</Text>
           <Pressable
             onPress={chip.onRemove}
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={`Remove ${chip.label} filter`}
           >
-            <X size={12} color="#a3a3a3" />
+            <X size={12} color={theme.text.secondary} />
           </Pressable>
         </View>
       ))}
@@ -38,7 +43,7 @@ export function FilterChips({ chips, onClearAll }: FilterChipsProps) {
           accessibilityRole="button"
           accessibilityLabel="Clear all filters"
         >
-          <Text style={styles.clearAllText}>Clear All</Text>
+          <Text style={[styles.clearAllText, { color: theme.border.brand }]}>Clear All</Text>
         </Pressable>
       )}
     </ScrollView>
@@ -61,13 +66,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 6,
-    backgroundColor: "#262626",
     borderWidth: 1,
-    borderColor: "#2d2d2d",
   },
   chipText: {
     fontSize: 12,
-    color: "#e5e5e5",
   },
   clearAll: {
     paddingHorizontal: 10,
@@ -76,7 +78,6 @@ const styles = StyleSheet.create({
   },
   clearAllText: {
     fontSize: 12,
-    color: "#30a8dc",
     fontWeight: "500",
   },
 });

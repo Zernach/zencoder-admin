@@ -17,6 +17,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { useRouter, usePathname } from "expo-router";
 import { SidebarNavItem } from "./SidebarNavItem";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 const NAV_ITEMS = [
   { icon: Home, label: "Home", route: "/(dashboard)/dashboard" },
@@ -34,6 +36,8 @@ interface SidebarProps {
 export function Sidebar({ expanded, onToggle }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const sidebarWidth = useSharedValue(expanded ? 264 : 76);
 
   useEffect(() => {
@@ -57,12 +61,17 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
     width: sidebarWidth.value,
   }));
 
+  const isDark = mode === "dark";
+  const brandImage = isDark
+    ? require("../../assets/images/zencoder-text-dark-bg.png")
+    : require("../../assets/images/zencoder-text-dark-bg.png");
+
   return (
-    <Animated.View style={[styles.sidebar, animatedStyle]}>
+    <Animated.View style={[styles.sidebar, { backgroundColor: theme.bg.canvas, borderRightColor: theme.border.default }, animatedStyle]}>
       <View style={styles.header}>
         {expanded && (
           <Image
-            source={require("../../assets/images/zencoder-text-dark-bg.png")}
+            source={brandImage}
             style={styles.brandImage}
             resizeMode="contain"
             accessibilityIgnoresInvertColors
@@ -75,9 +84,9 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
           accessibilityLabel={expanded ? "Collapse sidebar" : "Expand sidebar"}
         >
           {expanded ? (
-            <PanelLeftClose size={18} color="#a3a3a3" />
+            <PanelLeftClose size={18} color={theme.text.secondary} />
           ) : (
-            <PanelLeftOpen size={18} color="#a3a3a3" />
+            <PanelLeftOpen size={18} color={theme.text.secondary} />
           )}
         </Pressable>
       </View>
@@ -100,9 +109,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
 
 const styles = StyleSheet.create({
   sidebar: {
-    backgroundColor: "#0a0a0a",
     borderRightWidth: 1,
-    borderRightColor: "#2d2d2d",
     paddingVertical: 16,
     overflow: "hidden",
   },

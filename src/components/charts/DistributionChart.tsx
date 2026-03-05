@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { bin } from "d3-array";
 import { DATA_PALETTE } from "./palette";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface DistributionChartProps {
   data: number[];
@@ -18,6 +20,9 @@ export function DistributionChart({
   height = 200,
   color = DATA_PALETTE[0],
 }: DistributionChartProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+
   if (data.length === 0) return null;
 
   const histogram = bin().thresholds(binCount)(data);
@@ -34,7 +39,7 @@ export function DistributionChart({
           return (
             <View key={i} style={styles.barCol}>
               <View style={styles.barWrapper}>
-                <Text style={styles.countLabel}>{b.length}</Text>
+                <Text style={[styles.countLabel, { color: theme.text.tertiary }]}>{b.length}</Text>
                 <View
                   style={[
                     styles.bar,
@@ -45,14 +50,14 @@ export function DistributionChart({
                   ]}
                 />
               </View>
-              <Text style={styles.binLabel} numberOfLines={1}>
+              <Text style={[styles.binLabel, { color: theme.text.tertiary }]} numberOfLines={1}>
                 {label}
               </Text>
             </View>
           );
         })}
       </View>
-      {xLabel && <Text style={styles.xLabel}>{xLabel}</Text>}
+      {xLabel && <Text style={[styles.xLabel, { color: theme.text.tertiary }]}>{xLabel}</Text>}
     </View>
   );
 }
@@ -84,17 +89,14 @@ const styles = StyleSheet.create({
   },
   countLabel: {
     fontSize: 9,
-    color: "#8a8a8a",
     marginBottom: 2,
   },
   binLabel: {
     fontSize: 8,
-    color: "#8a8a8a",
     marginTop: 2,
   },
   xLabel: {
     fontSize: 10,
-    color: "#8a8a8a",
     textAlign: "center",
     marginTop: 4,
   },

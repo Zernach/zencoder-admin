@@ -2,6 +2,8 @@ import React from "react";
 import Svg, { Path } from "react-native-svg";
 import { scaleLinear } from "d3-scale";
 import { line, curveMonotoneX } from "d3-shape";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface SparkLineProps {
   data: number[];
@@ -12,10 +14,14 @@ interface SparkLineProps {
 
 export function SparkLine({
   data,
-  color = "#30a8dc",
+  color,
   width = 80,
   height = 24,
 }: SparkLineProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const resolvedColor = color ?? theme.data.seriesPrimary;
+
   if (data.length < 2) return null;
 
   const padding = 2;
@@ -37,7 +43,7 @@ export function SparkLine({
 
   return (
     <Svg width={width} height={height}>
-      <Path d={pathD} fill="none" stroke={color} strokeWidth={1.5} />
+      <Path d={pathD} fill="none" stroke={resolvedColor} strokeWidth={1.5} />
     </Svg>
   );
 }

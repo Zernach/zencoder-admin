@@ -4,6 +4,8 @@ import { ChevronDown, X, Filter } from "lucide-react-native";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import { useAppDependencies } from "@/core/di/AppDependencies";
 import type { ModelProvider, RunStatus, Option, FilterChip } from "@/features/analytics/types";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 const PROVIDER_OPTIONS: Option<ModelProvider>[] = [
   { label: "Codex", value: "codex" },
@@ -35,6 +37,8 @@ interface FilterBarProps {
 }
 
 export function FilterBar({ visibleFilters }: FilterBarProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const {
     filters,
     setTeamFilter,
@@ -165,7 +169,7 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.filterGroup}
         >
-          <Filter size={14} color="#8a8a8a" style={styles.filterIcon} />
+          <Filter size={14} color={theme.text.tertiary} style={styles.filterIcon} />
           {filterConfigs.map((config) => {
             if (!showFilter(config.category)) return null;
             const count = config.selected.length;
@@ -173,7 +177,11 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
             return (
               <Pressable
                 key={config.category}
-                style={[styles.filterButton, isActive && styles.filterButtonActive]}
+                style={[
+                  styles.filterButton,
+                  { backgroundColor: theme.bg.surface, borderColor: theme.border.default },
+                  isActive && { borderColor: theme.border.brand, backgroundColor: theme.bg.brandSubtle },
+                ]}
                 onPress={() =>
                   setOpenDropdown((prev) =>
                     prev === config.category ? null : config.category,
@@ -185,14 +193,15 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
                 <Text
                   style={[
                     styles.filterButtonText,
-                    isActive && styles.filterButtonTextActive,
+                    { color: theme.text.tertiary },
+                    isActive && { color: theme.text.brand },
                   ]}
                 >
                   {count > 0
                     ? `${config.pluralLabel} (${count})`
                     : config.singularLabel}
                 </Text>
-                <ChevronDown size={12} color="#8a8a8a" />
+                <ChevronDown size={12} color={theme.text.tertiary} />
               </Pressable>
             );
           })}
@@ -207,16 +216,16 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
           contentContainerStyle={styles.chipsRow}
         >
           {activeChips.map((chip) => (
-            <View key={chip.key} style={styles.chip}>
-              <Text style={styles.chipText}>{chip.label}</Text>
+            <View key={chip.key} style={[styles.chip, { backgroundColor: theme.bg.surfaceElevated, borderColor: theme.border.default }]}>
+              <Text style={[styles.chipText, { color: theme.text.primary }]}>{chip.label}</Text>
               <Pressable onPress={chip.onRemove} hitSlop={8}>
-                <X size={12} color="#a3a3a3" />
+                <X size={12} color={theme.text.secondary} />
               </Pressable>
             </View>
           ))}
           {activeFilterCount > 0 && (
             <Pressable onPress={clearAll} style={styles.clearAllButton}>
-              <Text style={styles.clearAllText}>Clear All</Text>
+              <Text style={[styles.clearAllText, { color: theme.border.brand }]}>Clear All</Text>
             </Pressable>
           )}
         </ScrollView>
@@ -231,13 +240,13 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
           onRequestClose={() => setOpenDropdown(null)}
         >
           <Pressable style={styles.modalOverlay} onPress={() => setOpenDropdown(null)}>
-            <View style={styles.dropdownPanel}>
-              <View style={styles.dropdownHeader}>
-                <Text style={styles.dropdownTitle}>
+            <View style={[styles.dropdownPanel, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }]}>
+              <View style={[styles.dropdownHeader, { borderBottomColor: theme.border.default }]}>
+                <Text style={[styles.dropdownTitle, { color: theme.text.primary }]}>
                   {openConfig.singularLabel}
                 </Text>
                 <Pressable onPress={() => setOpenDropdown(null)} hitSlop={8}>
-                  <X size={16} color="#a3a3a3" />
+                  <X size={16} color={theme.text.secondary} />
                 </Pressable>
               </View>
               <ScrollView style={styles.optionsList} bounces={false}>
@@ -248,22 +257,24 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
                       key={opt.value}
                       style={[
                         styles.optionRow,
-                        isSelected && styles.optionRowSelected,
+                        isSelected && { backgroundColor: theme.bg.brandSubtle },
                       ]}
                       onPress={() => openConfig.onToggle(opt.value)}
                     >
                       <View
                         style={[
                           styles.checkbox,
-                          isSelected && styles.checkboxSelected,
+                          { borderColor: theme.border.strong },
+                          isSelected && { borderColor: theme.border.brand, backgroundColor: theme.border.brand },
                         ]}
                       >
-                        {isSelected && <Text style={styles.checkmark}>✓</Text>}
+                        {isSelected && <Text style={[styles.checkmark, { color: theme.text.onBrand }]}>&#10003;</Text>}
                       </View>
                       <Text
                         style={[
                           styles.optionLabel,
-                          isSelected && styles.optionLabelSelected,
+                          { color: theme.text.secondary },
+                          isSelected && { color: theme.text.primary },
                         ]}
                       >
                         {opt.label}
@@ -303,20 +314,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 6,
-    backgroundColor: "#1a1a1a",
     borderWidth: 1,
-    borderColor: "#2d2d2d",
-  },
-  filterButtonActive: {
-    borderColor: "#30a8dc",
-    backgroundColor: "rgba(48, 168, 220, 0.1)",
   },
   filterButtonText: {
     fontSize: 12,
-    color: "#8a8a8a",
-  },
-  filterButtonTextActive: {
-    color: "#67c4ea",
   },
   chipsRow: {
     flexDirection: "row",
@@ -330,13 +331,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
-    backgroundColor: "#262626",
     borderWidth: 1,
-    borderColor: "#2d2d2d",
   },
   chipText: {
     fontSize: 11,
-    color: "#e5e5e5",
   },
   clearAllButton: {
     paddingHorizontal: 8,
@@ -345,7 +343,6 @@ const styles = StyleSheet.create({
   },
   clearAllText: {
     fontSize: 11,
-    color: "#30a8dc",
     fontWeight: "500",
   },
   modalOverlay: {
@@ -357,10 +354,8 @@ const styles = StyleSheet.create({
   dropdownPanel: {
     width: 300,
     maxHeight: 400,
-    backgroundColor: "#1a1a1a",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#2d2d2d",
     overflow: "hidden",
   },
   dropdownHeader: {
@@ -370,12 +365,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#2d2d2d",
   },
   dropdownTitle: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#e5e5e5",
   },
   optionsList: {
     maxHeight: 340,
@@ -387,32 +380,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
-  optionRowSelected: {
-    backgroundColor: "rgba(48, 168, 220, 0.08)",
-  },
   checkbox: {
     width: 18,
     height: 18,
     borderRadius: 4,
     borderWidth: 1.5,
-    borderColor: "#3a3a3a",
     alignItems: "center",
     justifyContent: "center",
   },
-  checkboxSelected: {
-    borderColor: "#30a8dc",
-    backgroundColor: "#30a8dc",
-  },
   checkmark: {
     fontSize: 11,
-    color: "#ffffff",
     fontWeight: "700",
   },
   optionLabel: {
     fontSize: 13,
-    color: "#a3a3a3",
-  },
-  optionLabelSelected: {
-    color: "#e5e5e5",
   },
 });

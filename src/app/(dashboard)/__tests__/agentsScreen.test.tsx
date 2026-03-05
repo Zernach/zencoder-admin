@@ -79,13 +79,13 @@ jest.mock("@/components/tables", () => {
         ))}
       </View>
     ),
-    cellText: StyleSheet.create({
+    cellText: () => StyleSheet.create({
       primary: { color: "#e5e5e5", fontSize: 12 },
       secondary: { color: "#a3a3a3", fontSize: 12 },
       brand: { color: "#67c4ea", fontSize: 12 },
     }),
     getSuccessRateColor: () => "#22c55e",
-    chartColors: { success: "#22c55e", warning: "#f59e0b", error: "#ef4444" },
+    chartColors: () => ({ success: "#22c55e", warning: "#f59e0b", error: "#ef4444" }),
   };
 });
 

@@ -8,6 +8,8 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface LoadingSkeletonProps {
   variant: "kpi" | "chart" | "table" | "text";
@@ -19,10 +21,12 @@ function SkeletonBlock({
   width,
   height,
   reducedMotion,
+  blockColor,
 }: {
   width: number | string;
   height: number;
   reducedMotion: boolean;
+  blockColor: string;
 }) {
   const opacity = useSharedValue(reducedMotion ? 0.6 : 0.4);
 
@@ -44,7 +48,7 @@ function SkeletonBlock({
     <Animated.View
       style={[
         styles.block,
-        { width: width as number, height },
+        { width: width as number, height, backgroundColor: blockColor },
         animatedStyle,
       ]}
     />
@@ -56,37 +60,41 @@ export function LoadingSkeleton({
   rows = 5,
 }: LoadingSkeletonProps) {
   const reducedMotion = useReducedMotion();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const blockColor = theme.bg.surfaceElevated;
+  const surfaceColor = theme.bg.surface;
 
   switch (variant) {
     case "kpi":
       return (
-        <View style={styles.kpiContainer}>
-          <SkeletonBlock width="60%" height={12} reducedMotion={reducedMotion} />
-          <SkeletonBlock width="40%" height={28} reducedMotion={reducedMotion} />
-          <SkeletonBlock width="30%" height={12} reducedMotion={reducedMotion} />
+        <View style={[styles.kpiContainer, { backgroundColor: surfaceColor }]}>
+          <SkeletonBlock width="60%" height={12} reducedMotion={reducedMotion} blockColor={blockColor} />
+          <SkeletonBlock width="40%" height={28} reducedMotion={reducedMotion} blockColor={blockColor} />
+          <SkeletonBlock width="30%" height={12} reducedMotion={reducedMotion} blockColor={blockColor} />
         </View>
       );
     case "chart":
       return (
-        <View style={styles.chartContainer}>
-          <SkeletonBlock width="100%" height={200} reducedMotion={reducedMotion} />
+        <View style={[styles.chartContainer, { backgroundColor: surfaceColor }]}>
+          <SkeletonBlock width="100%" height={200} reducedMotion={reducedMotion} blockColor={blockColor} />
         </View>
       );
     case "table":
       return (
         <View style={styles.tableContainer}>
-          <SkeletonBlock width="100%" height={32} reducedMotion={reducedMotion} />
+          <SkeletonBlock width="100%" height={32} reducedMotion={reducedMotion} blockColor={blockColor} />
           {Array.from({ length: rows }).map((_, i) => (
-            <SkeletonBlock key={i} width="100%" height={40} reducedMotion={reducedMotion} />
+            <SkeletonBlock key={i} width="100%" height={40} reducedMotion={reducedMotion} blockColor={blockColor} />
           ))}
         </View>
       );
     case "text":
       return (
         <View style={styles.textContainer}>
-          <SkeletonBlock width="90%" height={14} reducedMotion={reducedMotion} />
-          <SkeletonBlock width="75%" height={14} reducedMotion={reducedMotion} />
-          <SkeletonBlock width="60%" height={14} reducedMotion={reducedMotion} />
+          <SkeletonBlock width="90%" height={14} reducedMotion={reducedMotion} blockColor={blockColor} />
+          <SkeletonBlock width="75%" height={14} reducedMotion={reducedMotion} blockColor={blockColor} />
+          <SkeletonBlock width="60%" height={14} reducedMotion={reducedMotion} blockColor={blockColor} />
         </View>
       );
   }
@@ -94,11 +102,9 @@ export function LoadingSkeleton({
 
 const styles = StyleSheet.create({
   block: {
-    backgroundColor: "#262626",
     borderRadius: 6,
   },
   kpiContainer: {
-    backgroundColor: "#1a1a1a",
     borderRadius: 10,
     padding: 16,
     minHeight: 132,
@@ -106,7 +112,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   chartContainer: {
-    backgroundColor: "#1a1a1a",
     borderRadius: 10,
     padding: 16,
   },

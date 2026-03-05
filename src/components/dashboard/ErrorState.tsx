@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { AlertTriangle } from "lucide-react-native";
+import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 interface ErrorStateProps {
   message?: string;
@@ -11,17 +13,20 @@ export function ErrorState({
   message = "Something went wrong. Please try again.",
   onRetry,
 }: ErrorStateProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+
   return (
     <View style={styles.container}>
-      <AlertTriangle size={32} color="#ef4444" />
-      <Text style={styles.message}>{message}</Text>
+      <AlertTriangle size={32} color={theme.state.error} />
+      <Text style={[styles.message, { color: theme.text.secondary }]}>{message}</Text>
       <Pressable
         onPress={onRetry}
-        style={styles.button}
+        style={[styles.button, { backgroundColor: theme.border.brand }]}
         accessibilityRole="button"
         accessibilityLabel="Retry"
       >
-        <Text style={styles.buttonText}>Retry</Text>
+        <Text style={[styles.buttonText, { color: theme.text.onBrand }]}>Retry</Text>
       </Pressable>
     </View>
   );
@@ -37,11 +42,9 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: 14,
-    color: "#a3a3a3",
     textAlign: "center",
   },
   button: {
-    backgroundColor: "#30a8dc",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
@@ -51,7 +54,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: {
-    color: "#00131c",
     fontSize: 14,
     fontWeight: "600",
   },

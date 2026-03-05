@@ -1,7 +1,7 @@
 /** @type {import('jest').Config} */
 module.exports = {
   preset: "jest-expo",
-  setupFilesAfterEnv: ["@testing-library/jest-native/extend-expect"],
+  setupFilesAfterEnv: ["@testing-library/jest-native/extend-expect", "<rootDir>/src/testing/jestSetup.ts"],
   moduleNameMapper: { "^@/(.*)$": "<rootDir>/src/$1" },
   testPathIgnorePatterns: ["/node_modules/", "/e2e/", "/\\.claude/"],
   transformIgnorePatterns: [
