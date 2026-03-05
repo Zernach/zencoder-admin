@@ -49,6 +49,17 @@ jest.mock("@/components/search", () => ({
   SearchAutocompletePanel: () => null,
 }));
 
+const mockPush = jest.fn();
+jest.mock("expo-router", () => ({
+  useRouter: () => ({ push: mockPush }),
+  usePathname: () => "/dashboard",
+}));
+
+jest.mock("@/features/search/navigation", () => ({
+  resolveTabContextFromPath: (p: string) => p.replace("/", "") || "dashboard",
+  buildEntityRoute: (tab: string, entityType: string, id: string) => `/${tab}/${entityType}/${id}`,
+}));
+
 function renderTopBar() {
   const store = configureStore({
     reducer: {

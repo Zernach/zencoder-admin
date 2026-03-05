@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, Pressable, StyleSheet, Modal } from "react-native";
 import type { TextInput as TextInputHandle } from "react-native";
 import { Search, Clock, X } from "lucide-react-native";
+import { useRouter, usePathname } from "expo-router";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import { useSearchAutocomplete } from "@/features/analytics/hooks/useSearchAutocomplete";
@@ -10,6 +11,7 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { CustomTextInput } from "@/components/inputs";
 import { SearchAutocompletePanel } from "@/components/search";
+import { resolveTabContextFromPath, buildEntityRoute } from "@/features/search/navigation";
 
 type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
 
@@ -49,6 +51,8 @@ export function TopBar() {
   const breakpoint = useBreakpoint();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const router = useRouter();
+  const pathname = usePathname();
   const { preset, setTimeRange, searchQuery, setSearchQuery } = useDashboardFilters();
   const searchInputRef = useRef<TextInputHandle>(null);
   const [localQuery, setLocalQuery] = useState(searchQuery);
@@ -60,8 +64,11 @@ export function TopBar() {
       setLocalQuery(suggestion.title);
       setSearchQuery(suggestion.title);
       setIsPanelOpen(false);
+      const tabContext = resolveTabContextFromPath(pathname);
+      const route = buildEntityRoute(tabContext, suggestion.entityType, suggestion.id);
+      router.push(route as never);
     },
-    [setSearchQuery],
+    [setSearchQuery, pathname, router],
   );
 
   const autocomplete = useSearchAutocomplete(handleSuggestionSelect);
