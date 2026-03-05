@@ -4,6 +4,13 @@ export type RunStatus = "queued" | "running" | "succeeded" | "failed" | "cancele
 export type RunFailureCategory =
   | "timeout" | "tool_error" | "model_error"
   | "policy_block" | "infra_error" | "unknown";
+export type Severity = "HIGH" | "MEDIUM" | "LOW";
+export type DeltaPolarity = "positive-good" | "negative-good";
+export type SortDirection = "asc" | "desc";
+
+// ─── Shared UI Primitives ───────────────────────────────
+export interface Option<T = string> { label: string; value: T; }
+export interface FilterChip { key: string; label: string; onRemove: () => void; }
 
 // ─── Filter & Time ──────────────────────────────────────
 export interface TimeRange { fromIso: string; toIso: string; }
@@ -128,7 +135,7 @@ export interface PolicyChangeEvent {
 export interface PolicyViolationRow {
   id: string; timestampIso: string;
   agentId: string; agentName: string;
-  reason: string; severity: "HIGH" | "MEDIUM" | "LOW";
+  reason: string; severity: Severity;
 }
 
 export interface SecurityEventRow {

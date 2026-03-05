@@ -1,11 +1,12 @@
 import React from "react";
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
+import type { SortDirection } from "@/features/analytics/types";
 
 interface SortableHeaderProps {
   label: string;
   active: boolean;
-  direction: "asc" | "desc";
+  direction: SortDirection;
   onPress: () => void;
 }
 

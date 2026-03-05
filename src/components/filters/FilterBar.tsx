@@ -3,15 +3,15 @@ import { View, Text, Pressable, ScrollView, StyleSheet, Modal } from "react-nati
 import { ChevronDown, X, Filter } from "lucide-react-native";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import { useAppDependencies } from "@/core/di/AppDependencies";
-import type { ModelProvider, RunStatus } from "@/features/analytics/types";
+import type { ModelProvider, RunStatus, Option, FilterChip } from "@/features/analytics/types";
 
-const PROVIDER_OPTIONS: { label: string; value: ModelProvider }[] = [
+const PROVIDER_OPTIONS: Option<ModelProvider>[] = [
   { label: "Codex", value: "codex" },
   { label: "Claude", value: "claude" },
   { label: "Other", value: "other" },
 ];
 
-const STATUS_OPTIONS: { label: string; value: RunStatus }[] = [
+const STATUS_OPTIONS: Option<RunStatus>[] = [
   { label: "Succeeded", value: "succeeded" },
   { label: "Failed", value: "failed" },
   { label: "Running", value: "running" },
@@ -21,8 +21,16 @@ const STATUS_OPTIONS: { label: string; value: RunStatus }[] = [
 
 type FilterCategory = "team" | "project" | "provider" | "status";
 
+interface FilterCategoryConfig {
+  category: FilterCategory;
+  singularLabel: string;
+  pluralLabel: string;
+  options: Option[];
+  selected: string[];
+  onToggle: (value: string) => void;
+}
+
 interface FilterBarProps {
-  /** Which filter categories to show. Defaults to all. */
   visibleFilters?: FilterCategory[];
 }
 
@@ -42,12 +50,12 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
 
   const showFilter = useCallback(
     (cat: FilterCategory) => !visibleFilters || visibleFilters.includes(cat),
-    [visibleFilters]
+    [visibleFilters],
   );
 
   const teamOptions = useMemo(
     () => seedData.teams.map((t) => ({ label: t.name, value: t.id })),
-    [seedData.teams]
+    [seedData.teams],
   );
 
   const projectOptions = useMemo(
@@ -55,324 +63,139 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
       seedData.projects
         .slice(0, 20)
         .map((p) => ({ label: p.name, value: p.id })),
-    [seedData.projects]
+    [seedData.projects],
   );
 
-  // Build active filter chip data
-  const activeChips = useMemo(() => {
-    const chips: { key: string; label: string; onRemove: () => void }[] = [];
-    if (filters.teamIds?.length) {
-      for (const tid of filters.teamIds) {
-        const team = seedData.teams.find((t) => t.id === tid);
-        chips.push({
-          key: `team-${tid}`,
-          label: team?.name ?? tid,
-          onRemove: () => {
-            const next = filters.teamIds?.filter((id) => id !== tid);
-            setTeamFilter(next?.length ? next : undefined);
-          },
-        });
-      }
-    }
-    if (filters.projectIds?.length) {
-      for (const pid of filters.projectIds) {
-        const proj = seedData.projects.find((p) => p.id === pid);
-        chips.push({
-          key: `proj-${pid}`,
-          label: proj?.name ?? pid,
-          onRemove: () => {
-            const next = filters.projectIds?.filter((id) => id !== pid);
-            setProjectFilter(next?.length ? next : undefined);
-          },
-        });
-      }
-    }
-    if (filters.providers?.length) {
-      for (const prov of filters.providers) {
-        chips.push({
-          key: `prov-${prov}`,
-          label: PROVIDER_OPTIONS.find((o) => o.value === prov)?.label ?? prov,
-          onRemove: () => {
-            const next = filters.providers?.filter((p) => p !== prov);
-            setProviderFilter(next?.length ? next : undefined);
-          },
-        });
-      }
-    }
-    if (filters.statuses?.length) {
-      for (const st of filters.statuses) {
-        chips.push({
-          key: `status-${st}`,
-          label: STATUS_OPTIONS.find((o) => o.value === st)?.label ?? st,
-          onRemove: () => {
-            const next = filters.statuses?.filter((s) => s !== st);
-            setStatusFilter(next?.length ? next : undefined);
-          },
-        });
-      }
-    }
-    return chips;
-  }, [filters, seedData, setTeamFilter, setProjectFilter, setProviderFilter, setStatusFilter]);
-
-  const handleToggleItem = useCallback(
+  const toggleArrayValue = useCallback(
     (
-      category: FilterCategory,
       value: string,
       currentValues: string[] | undefined,
-      setter: (vals: string[] | undefined) => void
+      setter: (vals: string[] | undefined) => void,
     ) => {
       const current = currentValues ?? [];
-      const isSelected = current.includes(value);
-      const next = isSelected
+      const next = current.includes(value)
         ? current.filter((v) => v !== value)
         : [...current, value];
       setter(next.length ? next : undefined);
     },
-    []
+    [],
   );
 
-  const renderDropdownContent = useCallback(() => {
-    if (!openDropdown) return null;
-
-    let options: { label: string; value: string }[] = [];
-    let selected: string[] = [];
-    let onToggle: (value: string) => void = () => {};
-
-    switch (openDropdown) {
-      case "team":
-        options = teamOptions;
-        selected = filters.teamIds ?? [];
-        onToggle = (v) =>
-          handleToggleItem("team", v, filters.teamIds, setTeamFilter);
-        break;
-      case "project":
-        options = projectOptions;
-        selected = filters.projectIds ?? [];
-        onToggle = (v) =>
-          handleToggleItem("project", v, filters.projectIds, setProjectFilter);
-        break;
-      case "provider":
-        options = PROVIDER_OPTIONS;
-        selected = filters.providers ?? [];
-        onToggle = (v) =>
-          handleToggleItem(
-            "provider",
+  const filterConfigs: FilterCategoryConfig[] = useMemo(
+    () => [
+      {
+        category: "team",
+        singularLabel: "Team",
+        pluralLabel: "Teams",
+        options: teamOptions,
+        selected: filters.teamIds ?? [],
+        onToggle: (v) => toggleArrayValue(v, filters.teamIds, setTeamFilter),
+      },
+      {
+        category: "project",
+        singularLabel: "Project",
+        pluralLabel: "Projects",
+        options: projectOptions,
+        selected: filters.projectIds ?? [],
+        onToggle: (v) => toggleArrayValue(v, filters.projectIds, setProjectFilter),
+      },
+      {
+        category: "provider",
+        singularLabel: "Provider",
+        pluralLabel: "Providers",
+        options: PROVIDER_OPTIONS,
+        selected: filters.providers ?? [],
+        onToggle: (v) =>
+          toggleArrayValue(
             v,
             filters.providers,
-            setProviderFilter as (vals: string[] | undefined) => void
-          );
-        break;
-      case "status":
-        options = STATUS_OPTIONS;
-        selected = filters.statuses ?? [];
-        onToggle = (v) =>
-          handleToggleItem(
-            "status",
+            setProviderFilter as (vals: string[] | undefined) => void,
+          ),
+      },
+      {
+        category: "status",
+        singularLabel: "Status",
+        pluralLabel: "Statuses",
+        options: STATUS_OPTIONS,
+        selected: filters.statuses ?? [],
+        onToggle: (v) =>
+          toggleArrayValue(
             v,
             filters.statuses,
-            setStatusFilter as (vals: string[] | undefined) => void
-          );
-        break;
-    }
-
-    return (
-      <Modal
-        transparent
-        animationType="fade"
-        visible
-        onRequestClose={() => setOpenDropdown(null)}
-      >
-        <Pressable style={styles.modalOverlay} onPress={() => setOpenDropdown(null)}>
-          <View style={styles.dropdownPanel}>
-            <View style={styles.dropdownHeader}>
-              <Text style={styles.dropdownTitle}>
-                {openDropdown.charAt(0).toUpperCase() + openDropdown.slice(1)}
-              </Text>
-              <Pressable onPress={() => setOpenDropdown(null)} hitSlop={8}>
-                <X size={16} color="#a3a3a3" />
-              </Pressable>
-            </View>
-            <ScrollView style={styles.optionsList} bounces={false}>
-              {options.map((opt) => {
-                const isSelected = selected.includes(opt.value);
-                return (
-                  <Pressable
-                    key={opt.value}
-                    style={[
-                      styles.optionRow,
-                      isSelected && styles.optionRowSelected,
-                    ]}
-                    onPress={() => onToggle(opt.value)}
-                  >
-                    <View
-                      style={[
-                        styles.checkbox,
-                        isSelected && styles.checkboxSelected,
-                      ]}
-                    >
-                      {isSelected && <Text style={styles.checkmark}>✓</Text>}
-                    </View>
-                    <Text
-                      style={[
-                        styles.optionLabel,
-                        isSelected && styles.optionLabelSelected,
-                      ]}
-                    >
-                      {opt.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </Pressable>
-      </Modal>
-    );
-  }, [
-    openDropdown,
-    teamOptions,
-    projectOptions,
-    filters,
-    handleToggleItem,
-    setTeamFilter,
-    setProjectFilter,
-    setProviderFilter,
-    setStatusFilter,
-  ]);
-
-  const filterButtonLabel = useCallback(
-    (category: FilterCategory): string => {
-      switch (category) {
-        case "team": {
-          const count = filters.teamIds?.length ?? 0;
-          return count ? `Teams (${count})` : "Team";
-        }
-        case "project": {
-          const count = filters.projectIds?.length ?? 0;
-          return count ? `Projects (${count})` : "Project";
-        }
-        case "provider": {
-          const count = filters.providers?.length ?? 0;
-          return count ? `Providers (${count})` : "Provider";
-        }
-        case "status": {
-          const count = filters.statuses?.length ?? 0;
-          return count ? `Statuses (${count})` : "Status";
-        }
-      }
-    },
-    [filters]
+            setStatusFilter as (vals: string[] | undefined) => void,
+          ),
+      },
+    ],
+    [
+      teamOptions,
+      projectOptions,
+      filters,
+      toggleArrayValue,
+      setTeamFilter,
+      setProjectFilter,
+      setProviderFilter,
+      setStatusFilter,
+    ],
   );
+
+  const activeChips = useMemo(() => {
+    const chips: FilterChip[] = [];
+    for (const config of filterConfigs) {
+      if (!showFilter(config.category)) continue;
+      for (const selectedValue of config.selected) {
+        const option = config.options.find((o) => o.value === selectedValue);
+        chips.push({
+          key: `${config.category}-${selectedValue}`,
+          label: option?.label ?? selectedValue,
+          onRemove: () => config.onToggle(selectedValue),
+        });
+      }
+    }
+    return chips;
+  }, [filterConfigs, showFilter]);
+
+  const openConfig = filterConfigs.find((c) => c.category === openDropdown);
 
   return (
     <View style={styles.container}>
       {/* Row 1: Filter dropdowns */}
       <View style={styles.topRow}>
-        {/* Filter Dropdowns */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.filterGroup}
         >
           <Filter size={14} color="#8a8a8a" style={styles.filterIcon} />
-          {showFilter("team") && (
-            <Pressable
-              style={[
-                styles.filterButton,
-                (filters.teamIds?.length ?? 0) > 0 && styles.filterButtonActive,
-              ]}
-              onPress={() =>
-                setOpenDropdown((prev) => (prev === "team" ? null : "team"))
-              }
-              accessibilityRole="button"
-              accessibilityLabel="Filter by team"
-            >
-              <Text
-                style={[
-                  styles.filterButtonText,
-                  (filters.teamIds?.length ?? 0) > 0 && styles.filterButtonTextActive,
-                ]}
+          {filterConfigs.map((config) => {
+            if (!showFilter(config.category)) return null;
+            const count = config.selected.length;
+            const isActive = count > 0;
+            return (
+              <Pressable
+                key={config.category}
+                style={[styles.filterButton, isActive && styles.filterButtonActive]}
+                onPress={() =>
+                  setOpenDropdown((prev) =>
+                    prev === config.category ? null : config.category,
+                  )
+                }
+                accessibilityRole="button"
+                accessibilityLabel={`Filter by ${config.singularLabel.toLowerCase()}`}
               >
-                {filterButtonLabel("team")}
-              </Text>
-              <ChevronDown size={12} color="#8a8a8a" />
-            </Pressable>
-          )}
-          {showFilter("project") && (
-            <Pressable
-              style={[
-                styles.filterButton,
-                (filters.projectIds?.length ?? 0) > 0 && styles.filterButtonActive,
-              ]}
-              onPress={() =>
-                setOpenDropdown((prev) =>
-                  prev === "project" ? null : "project"
-                )
-              }
-              accessibilityRole="button"
-              accessibilityLabel="Filter by project"
-            >
-              <Text
-                style={[
-                  styles.filterButtonText,
-                  (filters.projectIds?.length ?? 0) > 0 && styles.filterButtonTextActive,
-                ]}
-              >
-                {filterButtonLabel("project")}
-              </Text>
-              <ChevronDown size={12} color="#8a8a8a" />
-            </Pressable>
-          )}
-          {showFilter("provider") && (
-            <Pressable
-              style={[
-                styles.filterButton,
-                (filters.providers?.length ?? 0) > 0 && styles.filterButtonActive,
-              ]}
-              onPress={() =>
-                setOpenDropdown((prev) =>
-                  prev === "provider" ? null : "provider"
-                )
-              }
-              accessibilityRole="button"
-              accessibilityLabel="Filter by provider"
-            >
-              <Text
-                style={[
-                  styles.filterButtonText,
-                  (filters.providers?.length ?? 0) > 0 && styles.filterButtonTextActive,
-                ]}
-              >
-                {filterButtonLabel("provider")}
-              </Text>
-              <ChevronDown size={12} color="#8a8a8a" />
-            </Pressable>
-          )}
-          {showFilter("status") && (
-            <Pressable
-              style={[
-                styles.filterButton,
-                (filters.statuses?.length ?? 0) > 0 && styles.filterButtonActive,
-              ]}
-              onPress={() =>
-                setOpenDropdown((prev) =>
-                  prev === "status" ? null : "status"
-                )
-              }
-              accessibilityRole="button"
-              accessibilityLabel="Filter by status"
-            >
-              <Text
-                style={[
-                  styles.filterButtonText,
-                  (filters.statuses?.length ?? 0) > 0 && styles.filterButtonTextActive,
-                ]}
-              >
-                {filterButtonLabel("status")}
-              </Text>
-              <ChevronDown size={12} color="#8a8a8a" />
-            </Pressable>
-          )}
+                <Text
+                  style={[
+                    styles.filterButtonText,
+                    isActive && styles.filterButtonTextActive,
+                  ]}
+                >
+                  {count > 0
+                    ? `${config.pluralLabel} (${count})`
+                    : config.singularLabel}
+                </Text>
+                <ChevronDown size={12} color="#8a8a8a" />
+              </Pressable>
+            );
+          })}
         </ScrollView>
       </View>
 
@@ -400,7 +223,59 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
       )}
 
       {/* Dropdown Modal */}
-      {renderDropdownContent()}
+      {openConfig && (
+        <Modal
+          transparent
+          animationType="fade"
+          visible
+          onRequestClose={() => setOpenDropdown(null)}
+        >
+          <Pressable style={styles.modalOverlay} onPress={() => setOpenDropdown(null)}>
+            <View style={styles.dropdownPanel}>
+              <View style={styles.dropdownHeader}>
+                <Text style={styles.dropdownTitle}>
+                  {openConfig.singularLabel}
+                </Text>
+                <Pressable onPress={() => setOpenDropdown(null)} hitSlop={8}>
+                  <X size={16} color="#a3a3a3" />
+                </Pressable>
+              </View>
+              <ScrollView style={styles.optionsList} bounces={false}>
+                {openConfig.options.map((opt) => {
+                  const isSelected = openConfig.selected.includes(opt.value);
+                  return (
+                    <Pressable
+                      key={opt.value}
+                      style={[
+                        styles.optionRow,
+                        isSelected && styles.optionRowSelected,
+                      ]}
+                      onPress={() => openConfig.onToggle(opt.value)}
+                    >
+                      <View
+                        style={[
+                          styles.checkbox,
+                          isSelected && styles.checkboxSelected,
+                        ]}
+                      >
+                        {isSelected && <Text style={styles.checkmark}>✓</Text>}
+                      </View>
+                      <Text
+                        style={[
+                          styles.optionLabel,
+                          isSelected && styles.optionLabelSelected,
+                        ]}
+                      >
+                        {opt.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          </Pressable>
+        </Modal>
+      )}
     </View>
   );
 }
@@ -473,7 +348,6 @@ const styles = StyleSheet.create({
     color: "#30a8dc",
     fontWeight: "500",
   },
-  // Modal styles
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",

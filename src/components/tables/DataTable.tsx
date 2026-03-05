@@ -2,8 +2,8 @@ import React from "react";
 import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
 import { LoadingSkeleton, EmptyState } from "@/components/dashboard";
 import { SortableHeader } from "./SortableHeader";
+import type { SortDirection } from "@/features/analytics/types";
 
-type SortDirection = "asc" | "desc";
 type SortableValue = string | number | boolean | Date | null | undefined;
 
 interface ColumnDef<T> {

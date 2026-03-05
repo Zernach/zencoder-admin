@@ -1,12 +1,7 @@
 import React from "react";
 import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
 import { X } from "lucide-react-native";
-
-interface FilterChip {
-  key: string;
-  label: string;
-  onRemove: () => void;
-}
+import type { FilterChip } from "@/features/analytics/types";
 
 interface FilterChipsProps {
   chips: FilterChip[];

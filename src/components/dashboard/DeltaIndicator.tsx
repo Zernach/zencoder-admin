@@ -2,10 +2,11 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ArrowUp, ArrowDown } from "lucide-react-native";
 import { formatDelta } from "@/features/analytics/utils/formatters";
+import type { DeltaPolarity } from "@/features/analytics/types";
 
 interface DeltaIndicatorProps {
   value: number;
-  polarity?: "positive-good" | "negative-good";
+  polarity?: DeltaPolarity;
 }
 
 export function DeltaIndicator({

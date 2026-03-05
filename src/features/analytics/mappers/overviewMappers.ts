@@ -1,11 +1,11 @@
-import type { OverviewResponse, UsageResponse, OutcomesResponse, TimeSeriesPoint, RunAnomaly } from "../types";
+import type { OverviewResponse, UsageResponse, OutcomesResponse, TimeSeriesPoint, RunAnomaly, DeltaPolarity } from "../types";
 import { formatCurrency, formatPercent, formatCompactNumber } from "../utils/formatters";
 
 interface KpiCardData {
   title: string;
   value: string;
   delta?: number;
-  deltaPolarity?: "positive-good" | "negative-good";
+  deltaPolarity?: DeltaPolarity;
   caption?: string;
   route?: string;
 }

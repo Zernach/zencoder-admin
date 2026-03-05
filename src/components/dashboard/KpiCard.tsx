@@ -9,13 +9,14 @@ import Animated, {
 import { DeltaIndicator } from "./DeltaIndicator";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { motion } from "@/theme/motion";
+import type { DeltaPolarity } from "@/features/analytics/types";
 
 interface KpiCardProps {
   title: string;
   value: string;
   valueColor?: string;
   delta?: number;
-  deltaPolarity?: "positive-good" | "negative-good";
+  deltaPolarity?: DeltaPolarity;
   caption?: string;
   period?: string;
   icon?: React.ReactNode;

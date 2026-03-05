@@ -10,18 +10,17 @@ import {
   AlertCircle,
   Info,
 } from "lucide-react-native";
-import type { RunStatus } from "@/features/analytics/types";
+import type { RunStatus, Severity } from "@/features/analytics/types";
+
+interface StatusConfigEntry { color: string; Icon: React.ElementType; label: string; }
 
 interface StatusBadgeProps {
   variant: "run-status" | "severity";
   status?: RunStatus;
-  severity?: "HIGH" | "MEDIUM" | "LOW";
+  severity?: Severity;
 }
 
-const STATUS_CONFIG: Record<
-  RunStatus,
-  { color: string; Icon: React.ElementType; label: string }
-> = {
+const STATUS_CONFIG: Record<RunStatus, StatusConfigEntry> = {
   succeeded: { color: "#22c55e", Icon: CheckCircle, label: "Success" },
   failed: { color: "#ef4444", Icon: XCircle, label: "Failed" },
   running: { color: "#38bdf8", Icon: Play, label: "Running" },
@@ -29,10 +28,7 @@ const STATUS_CONFIG: Record<
   canceled: { color: "#8a8a8a", Icon: Slash, label: "Canceled" },
 };
 
-const SEVERITY_CONFIG: Record<
-  "HIGH" | "MEDIUM" | "LOW",
-  { color: string; Icon: React.ElementType; label: string }
-> = {
+const SEVERITY_CONFIG: Record<Severity, StatusConfigEntry> = {
   HIGH: { color: "#ef4444", Icon: AlertTriangle, label: "HIGH" },
   MEDIUM: { color: "#f59e0b", Icon: AlertCircle, label: "MEDIUM" },
   LOW: { color: "#a3a3a3", Icon: Info, label: "LOW" },

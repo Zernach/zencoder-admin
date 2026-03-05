@@ -16,17 +16,19 @@ interface CardGridProps {
   gap?: number;
 }
 
+interface StaggerChildProps {
+  index: number;
+  reducedMotion: boolean;
+  children: React.ReactNode;
+  style: Record<string, unknown>;
+}
+
 function StaggerChild({
   index,
   reducedMotion,
   children,
   style,
-}: {
-  index: number;
-  reducedMotion: boolean;
-  children: React.ReactNode;
-  style: Record<string, unknown>;
-}) {
+}: StaggerChildProps) {
   const opacity = useSharedValue(reducedMotion ? 1 : 0);
   const translateY = useSharedValue(reducedMotion ? 0 : 12);
 
