@@ -2,8 +2,16 @@ function clampPercent(v: number): number {
   return Math.min(100, Math.max(0, v));
 }
 
-function round2(v: number): number {
+export function round1(v: number): number {
+  return Math.round(v * 10) / 10;
+}
+
+export function round2(v: number): number {
   return Math.round(v * 100) / 100;
+}
+
+export function round4(v: number): number {
+  return Math.round(v * 10000) / 10000;
 }
 
 export function calcSeatAdoptionRate(activeSeats: number, purchased: number): number {

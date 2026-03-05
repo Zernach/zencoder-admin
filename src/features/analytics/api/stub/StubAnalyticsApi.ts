@@ -22,12 +22,17 @@ import type {
   LiveAgentSession,
   SeatUserUsageRow,
 } from "@/features/analytics/types";
+import { round2, round4 } from "../../utils/metricFormulas";
+
+// ─── Stub Configuration ──────────────────────────────────
 
 interface StubConfig {
   latencyMinMs?: number;
   latencyMaxMs?: number;
   debugFailureRate?: number;
 }
+
+// ─── Generic Helpers ─────────────────────────────────────
 
 function percentile(sorted: number[], p: number): number {
   if (sorted.length === 0) return 0;
@@ -43,6 +48,61 @@ function hashString(input: string): number {
   return h;
 }
 
+function groupBy<T>(items: T[], keyFn: (item: T) => string): Map<string, T[]> {
+  const map = new Map<string, T[]>();
+  for (const item of items) {
+    const key = keyFn(item);
+    const arr = map.get(key);
+    if (arr) arr.push(item);
+    else map.set(key, [item]);
+  }
+  return map;
+}
+
+function countBy<T>(items: T[], keyFn: (item: T) => string | undefined): Map<string, number> {
+  const map = new Map<string, number>();
+  for (const item of items) {
+    const key = keyFn(item);
+    if (key != null) {
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+  }
+  return map;
+}
+
+function sumField(runs: RunListRow[], field: "costUsd" | "durationMs" | "totalTokens"): number {
+  return runs.reduce((s, r) => s + r[field], 0);
+}
+
+function filterByTimeRange<T extends { timestampIso: string }>(
+  items: T[],
+  from: string,
+  to: string,
+): T[] {
+  return items.filter((item) => item.timestampIso >= from && item.timestampIso <= to);
+}
+
+function sortByTimestampDesc<T extends { id: string; timestampIso: string }>(items: T[]): T[] {
+  return [...items].sort((a, b) => {
+    const cmp = b.timestampIso.localeCompare(a.timestampIso);
+    return cmp !== 0 ? cmp : a.id.localeCompare(b.id);
+  });
+}
+
+function safeRate(numerator: number, denominator: number): number {
+  return denominator > 0 ? numerator / denominator : 0;
+}
+
+function countSucceeded(runs: RunListRow[]): number {
+  return runs.filter((r) => r.status === "succeeded").length;
+}
+
+function countFailed(runs: RunListRow[]): number {
+  return runs.filter((r) => r.status === "failed").length;
+}
+
+// ─── Constants ───────────────────────────────────────────
+
 const LIVE_TASKS = [
   "Analyzing repository changes",
   "Generating implementation plan",
@@ -53,6 +113,8 @@ const LIVE_TASKS = [
   "Validating pull request changes",
   "Summarizing runtime findings",
 ] as const;
+
+// ─── Stub Implementation ─────────────────────────────────
 
 export class StubAnalyticsApi implements IAnalyticsApi {
   private seed: SeedData;
@@ -67,54 +129,38 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     this.failureRate = config.debugFailureRate ?? 0;
   }
 
+  // ── Network simulation ─────────────────────────────────
+
   private async simulate(): Promise<void> {
     if (this.failureRate > 0 && Math.random() < this.failureRate) {
       throw new Error("StubAnalyticsApi: simulated failure");
     }
-    const ms =
-      this.latencyMin +
-      Math.random() * (this.latencyMax - this.latencyMin);
+    const ms = this.latencyMin + Math.random() * (this.latencyMax - this.latencyMin);
     await new Promise((r) => setTimeout(r, ms));
   }
+
+  // ── Shared data helpers ────────────────────────────────
 
   private filterRuns(filters: AnalyticsFilters): RunListRow[] {
     return this.seed.runs.filter((run) => {
       if (run.startedAtIso < filters.timeRange.fromIso) return false;
       if (run.startedAtIso > filters.timeRange.toIso) return false;
-      if (filters.teamIds?.length && !filters.teamIds.includes(run.teamId))
-        return false;
-      if (filters.userIds?.length && !filters.userIds.includes(run.userId))
-        return false;
-      if (
-        filters.projectIds?.length &&
-        !filters.projectIds.includes(run.projectId)
-      )
-        return false;
-      if (
-        filters.providers?.length &&
-        !filters.providers.includes(run.provider)
-      )
-        return false;
-      if (filters.modelIds?.length && !filters.modelIds.includes(run.modelId))
-        return false;
-      if (filters.statuses?.length && !filters.statuses.includes(run.status))
-        return false;
+      if (filters.teamIds?.length && !filters.teamIds.includes(run.teamId)) return false;
+      if (filters.userIds?.length && !filters.userIds.includes(run.userId)) return false;
+      if (filters.projectIds?.length && !filters.projectIds.includes(run.projectId)) return false;
+      if (filters.providers?.length && !filters.providers.includes(run.provider)) return false;
+      if (filters.modelIds?.length && !filters.modelIds.includes(run.modelId)) return false;
+      if (filters.statuses?.length && !filters.statuses.includes(run.status)) return false;
       return true;
     });
   }
 
   private bucketByDay(
     runs: RunListRow[],
-    valueFn: (dayRuns: RunListRow[]) => number
+    valueFn: (dayRuns: RunListRow[]) => number,
   ): TimeSeriesPoint[] {
-    const map = new Map<string, RunListRow[]>();
-    for (const run of runs) {
-      const day = run.startedAtIso.slice(0, 10);
-      const arr = map.get(day);
-      if (arr) arr.push(run);
-      else map.set(day, [run]);
-    }
-    return Array.from(map.entries())
+    const dayGroups = groupBy(runs, (r) => r.startedAtIso.slice(0, 10));
+    return Array.from(dayGroups.entries())
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([day, dayRuns]) => ({
         tsIso: `${day}T00:00:00.000Z`,
@@ -122,7 +168,6 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       }));
   }
 
-  /** Compute previous period filters for delta comparisons */
   private previousPeriodFilters(filters: AnalyticsFilters): AnalyticsFilters {
     const fromMs = new Date(filters.timeRange.fromIso).getTime();
     const toMs = new Date(filters.timeRange.toIso).getTime();
@@ -136,46 +181,114 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     };
   }
 
-  /** Percentage change: ((current - prev) / prev) * 100, or 0 if prev=0 */
   private pctChange(current: number, previous: number): number {
     if (previous === 0) return current > 0 ? 100 : 0;
     return Math.round(((current - previous) / previous) * 1000) / 10;
   }
 
+  private costTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
+    return this.bucketByDay(runs, (d) => round2(sumField(d, "costUsd")));
+  }
+
+  private reliabilityTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
+    return this.bucketByDay(runs, (d) => safeRate(countSucceeded(d), d.length));
+  }
+
+  // ── Shared breakdown builders ──────────────────────────
+
+  private buildAgentBreakdown(runs: RunListRow[]): AgentBreakdownRow[] {
+    const runsByAgent = groupBy(runs, (r) => r.agentId);
+    return this.seed.agents
+      .map((agent) => {
+        const agentRuns = runsByAgent.get(agent.id) ?? [];
+        if (agentRuns.length === 0) return null;
+        const project = this.seed.projects.find((p) => p.id === agent.projectId);
+        return {
+          agentId: agent.id,
+          agentName: agent.name,
+          projectName: project?.name ?? agent.projectId,
+          totalRuns: agentRuns.length,
+          successRate: safeRate(countSucceeded(agentRuns), agentRuns.length),
+          avgDurationMs: Math.round(sumField(agentRuns, "durationMs") / agentRuns.length),
+          totalCostUsd: round2(sumField(agentRuns, "costUsd")),
+        };
+      })
+      .filter((row): row is AgentBreakdownRow => row !== null)
+      .sort((a, b) => b.totalRuns - a.totalRuns);
+  }
+
+  private buildProjectBreakdown(runs: RunListRow[]): ProjectBreakdownRow[] {
+    const runsByProject = groupBy(runs, (r) => r.projectId);
+    const agentsByProject = new Map<string, Set<string>>();
+    for (const run of runs) {
+      const set = agentsByProject.get(run.projectId) ?? new Set();
+      set.add(run.agentId);
+      agentsByProject.set(run.projectId, set);
+    }
+
+    return this.seed.projects
+      .map((project) => {
+        const projRuns = runsByProject.get(project.id) ?? [];
+        if (projRuns.length === 0) return null;
+        const projCost = sumField(projRuns, "costUsd");
+        const team = this.seed.teams.find((t) => t.id === project.teamId);
+        return {
+          projectId: project.id,
+          projectName: project.name,
+          teamName: team?.name ?? project.teamId,
+          totalRuns: projRuns.length,
+          successRate: safeRate(countSucceeded(projRuns), projRuns.length),
+          totalCostUsd: round2(projCost),
+          avgCostPerRunUsd: round4(projCost / projRuns.length),
+          agentCount: agentsByProject.get(project.id)?.size ?? 0,
+        };
+      })
+      .filter((row): row is ProjectBreakdownRow => row !== null)
+      .sort((a, b) => b.totalRuns - a.totalRuns);
+  }
+
+  private buildFailureCategoryBreakdown(runs: RunListRow[]): KeyValueMetric[] {
+    const counts = countBy(runs, (r) => r.failureCategory);
+    return Array.from(counts.entries()).map(([key, value]) => ({ key, value }));
+  }
+
+  private computePeakConcurrency(runs: RunListRow[]): number {
+    const minuteCounts = countBy(runs, (r) => r.startedAtIso.slice(0, 16));
+    return Math.max(0, ...minuteCounts.values());
+  }
+
+  // ── API Methods ────────────────────────────────────────
+
   async getOverview(filters: AnalyticsFilters): Promise<OverviewResponse> {
     await this.simulate();
     const runs = this.filterRuns(filters);
     const total = runs.length || 1;
-    const succeeded = runs.filter((r) => r.status === "succeeded").length;
-    const totalCost = runs.reduce((s, r) => s + r.costUsd, 0);
+    const succeeded = countSucceeded(runs);
+    const totalCost = sumField(runs, "costUsd");
     const codexCount = runs.filter((r) => r.provider === "codex").length;
     const claudeCount = runs.filter((r) => r.provider === "claude").length;
 
     const uniqueUsers = new Set(runs.map((r) => r.userId)).size;
-    const seatAdoptionRate = this.seed.users.length
-      ? uniqueUsers / this.seed.users.length
-      : 0;
+    const seatAdoptionRate = safeRate(uniqueUsers, this.seed.users.length);
 
-    const violations = this.seed.policyViolations.filter(
-      (v) =>
-        v.timestampIso >= filters.timeRange.fromIso &&
-        v.timestampIso <= filters.timeRange.toIso
+    const violations = filterByTimeRange(
+      this.seed.policyViolations,
+      filters.timeRange.fromIso,
+      filters.timeRange.toIso,
     );
 
-    // Compute previous-period KPIs for delta calculations
+    // Previous-period KPIs for delta calculations
     const prevFilters = this.previousPeriodFilters(filters);
     const prevRuns = this.filterRuns(prevFilters);
     const prevTotal = prevRuns.length || 1;
-    const prevSucceeded = prevRuns.filter((r) => r.status === "succeeded").length;
-    const prevTotalCost = prevRuns.reduce((s, r) => s + r.costUsd, 0);
+    const prevSucceeded = countSucceeded(prevRuns);
+    const prevTotalCost = sumField(prevRuns, "costUsd");
     const prevUniqueUsers = new Set(prevRuns.map((r) => r.userId)).size;
-    const prevSeatAdoption = this.seed.users.length
-      ? prevUniqueUsers / this.seed.users.length
-      : 0;
-    const prevViolations = this.seed.policyViolations.filter(
-      (v) =>
-        v.timestampIso >= prevFilters.timeRange.fromIso &&
-        v.timestampIso <= prevFilters.timeRange.toIso
+    const prevSeatAdoption = safeRate(prevUniqueUsers, this.seed.users.length);
+    const prevViolations = filterByTimeRange(
+      this.seed.policyViolations,
+      prevFilters.timeRange.fromIso,
+      prevFilters.timeRange.toIso,
     );
 
     const deltas: OverviewDeltas = {
@@ -217,16 +330,14 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       kpis: {
         seatAdoptionRate,
         runSuccessRate: succeeded / total,
-        totalCostUsd: Math.round(totalCost * 100) / 100,
+        totalCostUsd: round2(totalCost),
         providerShareCodex: codexCount / total,
         providerShareClaude: claudeCount / total,
         policyViolationCount: violations.length,
       },
       deltas,
       runsTrend: this.bucketByDay(runs, (d) => d.length),
-      costTrend: this.bucketByDay(runs, (d) =>
-        Math.round(d.reduce((s, r) => s + r.costUsd, 0) * 100) / 100
-      ),
+      costTrend: this.costTrendFromRuns(runs),
       anomalies,
     };
   }
@@ -238,21 +349,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const d7 = new Date(toDate.getTime() - 7 * 86_400_000).toISOString();
     const d30 = new Date(toDate.getTime() - 30 * 86_400_000).toISOString();
 
-    const usersLast7d = new Set(
-      runs.filter((r) => r.startedAtIso >= d7).map((r) => r.userId)
-    );
-    const usersLast30d = new Set(
-      runs.filter((r) => r.startedAtIso >= d30).map((r) => r.userId)
-    );
-    const seatAdoptionRate = this.seed.users.length
-      ? usersLast30d.size / this.seed.users.length
-      : 0;
+    const usersLast7d = new Set(runs.filter((r) => r.startedAtIso >= d7).map((r) => r.userId));
+    const usersLast30d = new Set(runs.filter((r) => r.startedAtIso >= d30).map((r) => r.userId));
+    const seatAdoptionRate = safeRate(usersLast30d.size, this.seed.users.length);
 
     // Runs per user distribution
-    const userRunCounts = new Map<string, number>();
-    for (const run of runs) {
-      userRunCounts.set(run.userId, (userRunCounts.get(run.userId) ?? 0) + 1);
-    }
+    const userRunCounts = countBy(runs, (r) => r.userId);
     const buckets: Record<string, number> = {
       "1-10": 0,
       "11-50": 0,
@@ -267,28 +369,20 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       else if (count <= 500) buckets["101-500"]!++;
       else buckets["500+"]!++;
     }
-    const runsPerUserDistribution: KeyValueMetric[] = Object.entries(
-      buckets
-    ).map(([key, value]) => ({ key, value }));
+    const runsPerUserDistribution: KeyValueMetric[] = Object.entries(buckets).map(
+      ([key, value]) => ({ key, value }),
+    );
 
     // Breakdown by team
-    const teamMap = new Map<string, RunListRow[]>();
-    for (const run of runs) {
-      const arr = teamMap.get(run.teamId);
-      if (arr) arr.push(run);
-      else teamMap.set(run.teamId, [run]);
-    }
+    const runsByTeam = groupBy(runs, (r) => r.teamId);
     const breakdownByTeam = this.seed.teams.map((team) => {
-      const teamRuns = teamMap.get(team.id) ?? [];
-      const succeeded = teamRuns.filter(
-        (r) => r.status === "succeeded"
-      ).length;
+      const teamRuns = runsByTeam.get(team.id) ?? [];
       return {
         teamId: team.id,
         teamName: team.name,
         activeUsers: new Set(teamRuns.map((r) => r.userId)).size,
         runsStarted: teamRuns.length,
-        runSuccessRate: teamRuns.length ? succeeded / teamRuns.length : 0,
+        runSuccessRate: safeRate(countSucceeded(teamRuns), teamRuns.length),
       };
     });
 
@@ -297,10 +391,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       mau: usersLast30d.size,
       activeSeats30d: usersLast30d.size,
       seatAdoptionRate,
-      activeUsersTrend: this.bucketByDay(
-        runs,
-        (d) => new Set(d.map((r) => r.userId)).size
-      ),
+      activeUsersTrend: this.bucketByDay(runs, (d) => new Set(d.map((r) => r.userId)).size),
       runsPerUserDistribution,
       breakdownByTeam,
     };
@@ -313,28 +404,19 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
     const prsCreated = succeeded.filter((r) => r.prCreated).length;
     const prsMerged = succeeded.filter((r) => r.prMerged).length;
-    const prMergeRate = prsCreated ? prsMerged / prsCreated : 0;
+    const prMergeRate = safeRate(prsMerged, prsCreated);
 
-    const withTests = succeeded.filter(
-      (r) => r.testsExecuted != null && r.testsExecuted > 0
-    );
+    const withTests = succeeded.filter((r) => r.testsExecuted != null && r.testsExecuted > 0);
     const testsPassRate = withTests.length
-      ? withTests.reduce(
-          (s, r) => s + (r.testsPassed ?? 0) / (r.testsExecuted ?? 1),
-          0
-        ) / withTests.length
+      ? withTests.reduce((s, r) => s + (r.testsPassed ?? 0) / (r.testsExecuted ?? 1), 0) /
+        withTests.length
       : 0;
 
     const codeAcceptanceRate = prMergeRate;
     const reworkRate = Math.max(0, 1 - codeAcceptanceRate) * 0.3;
 
     // Leaderboard: top 5 teams by PRs merged
-    const teamMerges = new Map<string, number>();
-    for (const run of succeeded) {
-      if (run.prMerged) {
-        teamMerges.set(run.teamId, (teamMerges.get(run.teamId) ?? 0) + 1);
-      }
-    }
+    const teamMerges = countBy(succeeded, (r) => (r.prMerged ? r.teamId : undefined));
     const leaderboard = Array.from(teamMerges.entries())
       .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
@@ -342,22 +424,19 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         const team = this.seed.teams.find((t) => t.id === teamId);
         const teamSucceeded = succeeded.filter((r) => r.teamId === teamId);
         const teamWithTests = teamSucceeded.filter(
-          (r) => r.testsExecuted != null && r.testsExecuted > 0
+          (r) => r.testsExecuted != null && r.testsExecuted > 0,
         );
+        const teamPrsCreated = teamSucceeded.filter((r) => r.prCreated).length;
         return {
           key: team?.name ?? teamId,
           prsMerged: merged,
           testsPassRate: teamWithTests.length
             ? teamWithTests.reduce(
-                (s, r) =>
-                  s + (r.testsPassed ?? 0) / (r.testsExecuted ?? 1),
-                0
+                (s, r) => s + (r.testsPassed ?? 0) / (r.testsExecuted ?? 1),
+                0,
               ) / teamWithTests.length
             : 0,
-          codeAcceptanceRate: teamSucceeded.filter((r) => r.prCreated).length
-            ? merged /
-              teamSucceeded.filter((r) => r.prCreated).length
-            : 0,
+          codeAcceptanceRate: safeRate(merged, teamPrsCreated),
         };
       });
 
@@ -369,10 +448,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       testsPassRate,
       codeAcceptanceRate,
       reworkRate,
-      outcomesTrend: this.bucketByDay(
-        succeeded,
-        (d) => d.filter((r) => r.prMerged).length
-      ),
+      outcomesTrend: this.bucketByDay(succeeded, (d) => d.filter((r) => r.prMerged).length),
       leaderboard,
     };
   }
@@ -380,27 +456,21 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   async getCost(filters: AnalyticsFilters): Promise<CostResponse> {
     await this.simulate();
     const runs = this.filterRuns(filters);
-    const totalCost = runs.reduce((s, r) => s + r.costUsd, 0);
-    const succeeded = runs.filter((r) => r.status === "succeeded");
+    const totalCost = sumField(runs, "costUsd");
+    const succeededCount = countSucceeded(runs);
 
     // Breakdown by project
-    const projMap = new Map<string, RunListRow[]>();
-    for (const run of runs) {
-      const arr = projMap.get(run.projectId);
-      if (arr) arr.push(run);
-      else projMap.set(run.projectId, [run]);
-    }
-    const costBreakdown = Array.from(projMap.entries())
+    const runsByProject = groupBy(runs, (r) => r.projectId);
+    const costBreakdown = Array.from(runsByProject.entries())
       .map(([projId, projRuns]) => {
-        const projCost = projRuns.reduce((s, r) => s + r.costUsd, 0);
+        const projCost = sumField(projRuns, "costUsd");
         const proj = this.seed.projects.find((p) => p.id === projId);
         return {
           key: proj?.name ?? projId,
-          totalCostUsd: Math.round(projCost * 100) / 100,
+          totalCostUsd: round2(projCost),
           runsStarted: projRuns.length,
-          averageCostPerRunUsd:
-            Math.round((projCost / (projRuns.length || 1)) * 10000) / 10000,
-          percentOfTotal: totalCost ? projCost / totalCost : 0,
+          averageCostPerRunUsd: round4(projCost / (projRuns.length || 1)),
+          percentOfTotal: safeRate(projCost, totalCost),
         };
       })
       .sort((a, b) => b.totalCostUsd - a.totalCostUsd);
@@ -420,10 +490,10 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         const entry = providerMap.get(provider)!;
         return {
           provider,
-          totalCostUsd: Math.round(entry.cost * 100) / 100,
+          totalCostUsd: round2(entry.cost),
           runCount: entry.count,
           totalTokens: entry.tokens,
-          percentOfTotal: totalCost ? entry.cost / totalCost : 0,
+          percentOfTotal: safeRate(entry.cost, totalCost),
         };
       });
 
@@ -434,135 +504,57 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const forecastMonthEndUsd = dailySpend * 30;
 
     return {
-      totalCostUsd: Math.round(totalCost * 100) / 100,
-      averageCostPerRunUsd:
-        Math.round((totalCost / (runs.length || 1)) * 10000) / 10000,
-      costPerSuccessfulRunUsd:
-        Math.round((totalCost / (succeeded.length || 1)) * 10000) / 10000,
-      costTrend: this.bucketByDay(runs, (d) =>
-        Math.round(d.reduce((s, r) => s + r.costUsd, 0) * 100) / 100
-      ),
+      totalCostUsd: round2(totalCost),
+      averageCostPerRunUsd: round4(totalCost / (runs.length || 1)),
+      costPerSuccessfulRunUsd: round4(totalCost / (succeededCount || 1)),
+      costTrend: this.costTrendFromRuns(runs),
       costBreakdown,
       providerBreakdown,
       budget: {
         budgetUsd,
-        spentUsd: Math.round(totalCost * 100) / 100,
-        remainingUsd: Math.round((budgetUsd - totalCost) * 100) / 100,
-        forecastMonthEndUsd: Math.round(forecastMonthEndUsd * 100) / 100,
+        spentUsd: round2(totalCost),
+        remainingUsd: round2(budgetUsd - totalCost),
+        forecastMonthEndUsd: round2(forecastMonthEndUsd),
       },
     };
   }
 
-  async getReliability(
-    filters: AnalyticsFilters
-  ): Promise<ReliabilityResponse> {
+  async getReliability(filters: AnalyticsFilters): Promise<ReliabilityResponse> {
     await this.simulate();
     const runs = this.filterRuns(filters);
     const total = runs.length || 1;
-    const succeeded = runs.filter((r) => r.status === "succeeded").length;
-    const failed = runs.filter((r) => r.status === "failed").length;
 
     const durations = runs.map((r) => r.durationMs).sort((a, b) => a - b);
     const queueWaits = runs.map((r) => r.queueWaitMs).sort((a, b) => a - b);
 
-    // Failure category breakdown
-    const catMap = new Map<string, number>();
-    for (const run of runs) {
-      if (run.failureCategory) {
-        catMap.set(
-          run.failureCategory,
-          (catMap.get(run.failureCategory) ?? 0) + 1
-        );
-      }
-    }
-    const failureCategoryBreakdown: KeyValueMetric[] = Array.from(
-      catMap.entries()
-    ).map(([key, value]) => ({ key, value }));
-
-    // Peak concurrency: approximate from runs per minute
-    const minuteMap = new Map<string, number>();
-    for (const run of runs) {
-      const min = run.startedAtIso.slice(0, 16);
-      minuteMap.set(min, (minuteMap.get(min) ?? 0) + 1);
-    }
-    const peakConcurrency = Math.max(0, ...minuteMap.values());
-
-    // Agent breakdown
-    const agentRunMap = new Map<string, RunListRow[]>();
-    for (const run of runs) {
-      const arr = agentRunMap.get(run.agentId);
-      if (arr) arr.push(run);
-      else agentRunMap.set(run.agentId, [run]);
-    }
-    const agentBreakdown: AgentBreakdownRow[] = this.seed.agents
-      .map((agent) => {
-        const agentRuns = agentRunMap.get(agent.id) ?? [];
-        if (agentRuns.length === 0) return null;
-        const agentSucceeded = agentRuns.filter((r) => r.status === "succeeded").length;
-        const project = this.seed.projects.find((p) => p.id === agent.projectId);
-        return {
-          agentId: agent.id,
-          agentName: agent.name,
-          projectName: project?.name ?? agent.projectId,
-          totalRuns: agentRuns.length,
-          successRate: agentRuns.length ? agentSucceeded / agentRuns.length : 0,
-          avgDurationMs: Math.round(
-            agentRuns.reduce((s, r) => s + r.durationMs, 0) / agentRuns.length
-          ),
-          totalCostUsd: Math.round(
-            agentRuns.reduce((s, r) => s + r.costUsd, 0) * 100
-          ) / 100,
-        };
-      })
-      .filter((row): row is AgentBreakdownRow => row !== null)
-      .sort((a, b) => b.totalRuns - a.totalRuns);
-
     return {
-      runSuccessRate: succeeded / total,
-      errorRate: failed / total,
+      runSuccessRate: countSucceeded(runs) / total,
+      errorRate: countFailed(runs) / total,
       p50RunDurationMs: percentile(durations, 50),
       p95RunDurationMs: percentile(durations, 95),
       p95QueueWaitMs: percentile(queueWaits, 95),
-      peakConcurrency,
-      failureCategoryBreakdown,
-      reliabilityTrend: this.bucketByDay(runs, (d) => {
-        const s = d.filter((r) => r.status === "succeeded").length;
-        return d.length ? s / d.length : 0;
-      }),
-      agentBreakdown,
+      peakConcurrency: this.computePeakConcurrency(runs),
+      failureCategoryBreakdown: this.buildFailureCategoryBreakdown(runs),
+      reliabilityTrend: this.reliabilityTrendFromRuns(runs),
+      agentBreakdown: this.buildAgentBreakdown(runs),
     };
   }
 
-  async getGovernance(
-    filters: AnalyticsFilters
-  ): Promise<GovernanceResponse> {
+  async getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse> {
     await this.simulate();
     const runs = this.filterRuns(filters);
+    const { fromIso, toIso } = filters.timeRange;
 
-    const violations = this.seed.policyViolations.filter(
-      (v) =>
-        v.timestampIso >= filters.timeRange.fromIso &&
-        v.timestampIso <= filters.timeRange.toIso
-    );
-    const secEvents = this.seed.securityEvents.filter(
-      (e) =>
-        e.timestampIso >= filters.timeRange.fromIso &&
-        e.timestampIso <= filters.timeRange.toIso
-    );
-    const changes = this.seed.policyChanges.filter(
-      (c) =>
-        c.timestampIso >= filters.timeRange.fromIso &&
-        c.timestampIso <= filters.timeRange.toIso
-    );
+    const violations = filterByTimeRange(this.seed.policyViolations, fromIso, toIso);
+    const secEvents = filterByTimeRange(this.seed.securityEvents, fromIso, toIso);
+    const changes = filterByTimeRange(this.seed.policyChanges, fromIso, toIso);
 
     // Violations by team (via agentId -> projectId -> teamId)
     const teamViolMap = new Map<string, number>();
     for (const v of violations) {
       const agent = this.seed.agents.find((a) => a.id === v.agentId);
       if (agent) {
-        const project = this.seed.projects.find(
-          (p) => p.id === agent.projectId
-        );
+        const project = this.seed.projects.find((p) => p.id === agent.projectId);
         if (project) {
           const team = this.seed.teams.find((t) => t.id === project.teamId);
           const name = team?.name ?? project.teamId;
@@ -570,16 +562,20 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         }
       }
     }
-    const violationsByTeam: KeyValueMetric[] = Array.from(
-      teamViolMap.entries()
-    ).map(([key, value]) => ({ key, value }));
+    const violationsByTeam: KeyValueMetric[] = Array.from(teamViolMap.entries()).map(
+      ([key, value]) => ({ key, value }),
+    );
 
     const blockedNetworkAttempts = violations.filter((v) =>
-      v.reason.toLowerCase().includes("unauthorized")
+      v.reason.toLowerCase().includes("unauthorized"),
     ).length;
 
+    // Seat user usage
     const teamNameById = new Map(this.seed.teams.map((team) => [team.id, team.name]));
-    const userUsageMap = new Map<string, { runsCount: number; totalTokens: number; totalCostUsd: number }>();
+    const userUsageMap = new Map<
+      string,
+      { runsCount: number; totalTokens: number; totalCostUsd: number }
+    >();
     for (const run of runs) {
       const usage = userUsageMap.get(run.userId) ?? {
         runsCount: 0,
@@ -602,7 +598,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
           teamName: teamNameById.get(user.teamId) ?? user.teamId,
           runsCount: usage.runsCount,
           totalTokens: usage.totalTokens,
-          totalCostUsd: Math.round(usage.totalCostUsd * 100) / 100,
+          totalCostUsd: round2(usage.totalCostUsd),
         };
       })
       .filter((row): row is SeatUserUsageRow => row !== null)
@@ -615,31 +611,14 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
     return {
       policyViolationCount: violations.length,
-      policyViolationRate: runs.length
-        ? violations.length / runs.length
-        : 0,
+      policyViolationRate: safeRate(violations.length, runs.length),
       blockedNetworkAttempts,
       auditEventsCount: changes.length + violations.length,
       violationsByTeam,
-      recentViolations: violations
-        .sort((a, b) => {
-          const cmp = b.timestampIso.localeCompare(a.timestampIso);
-          return cmp !== 0 ? cmp : a.id.localeCompare(b.id);
-        })
-        .slice(0, 20),
-      securityEvents: secEvents
-        .sort((a, b) => {
-          const cmp = b.timestampIso.localeCompare(a.timestampIso);
-          return cmp !== 0 ? cmp : a.id.localeCompare(b.id);
-        })
-        .slice(0, 20),
+      recentViolations: sortByTimestampDesc(violations).slice(0, 20),
+      securityEvents: sortByTimestampDesc(secEvents).slice(0, 20),
       complianceItems: this.seed.complianceItems,
-      policyChanges: changes
-        .sort((a, b) => {
-          const cmp = b.timestampIso.localeCompare(a.timestampIso);
-          return cmp !== 0 ? cmp : a.id.localeCompare(b.id);
-        })
-        .slice(0, 20),
+      policyChanges: sortByTimestampDesc(changes).slice(0, 20),
       seatUserUsage,
     };
   }
@@ -648,94 +627,13 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     await this.simulate();
     const runs = this.filterRuns(filters);
     const total = runs.length || 1;
-    const succeeded = runs.filter((r) => r.status === "succeeded").length;
-    const failed = runs.filter((r) => r.status === "failed").length;
-    const totalCost = runs.reduce((s, r) => s + r.costUsd, 0);
+    const succeeded = countSucceeded(runs);
+    const totalCost = sumField(runs, "costUsd");
 
     const durations = runs.map((r) => r.durationMs).sort((a, b) => a - b);
     const queueWaits = runs.map((r) => r.queueWaitMs).sort((a, b) => a - b);
 
-    // Failure category breakdown
-    const catMap = new Map<string, number>();
-    for (const run of runs) {
-      if (run.failureCategory) {
-        catMap.set(run.failureCategory, (catMap.get(run.failureCategory) ?? 0) + 1);
-      }
-    }
-    const failureCategoryBreakdown: KeyValueMetric[] = Array.from(catMap.entries()).map(
-      ([key, value]) => ({ key, value })
-    );
-
-    // Peak concurrency
-    const minuteMap = new Map<string, number>();
-    for (const run of runs) {
-      const min = run.startedAtIso.slice(0, 16);
-      minuteMap.set(min, (minuteMap.get(min) ?? 0) + 1);
-    }
-    const peakConcurrency = Math.max(0, ...minuteMap.values());
-
-    // Agent breakdown
-    const agentRunMap = new Map<string, RunListRow[]>();
-    for (const run of runs) {
-      const arr = agentRunMap.get(run.agentId);
-      if (arr) arr.push(run);
-      else agentRunMap.set(run.agentId, [run]);
-    }
-    const agentBreakdown: AgentBreakdownRow[] = this.seed.agents
-      .map((agent) => {
-        const agentRuns = agentRunMap.get(agent.id) ?? [];
-        if (agentRuns.length === 0) return null;
-        const agentSucceeded = agentRuns.filter((r) => r.status === "succeeded").length;
-        const project = this.seed.projects.find((p) => p.id === agent.projectId);
-        return {
-          agentId: agent.id,
-          agentName: agent.name,
-          projectName: project?.name ?? agent.projectId,
-          totalRuns: agentRuns.length,
-          successRate: agentRuns.length ? agentSucceeded / agentRuns.length : 0,
-          avgDurationMs: Math.round(
-            agentRuns.reduce((s, r) => s + r.durationMs, 0) / agentRuns.length
-          ),
-          totalCostUsd: Math.round(agentRuns.reduce((s, r) => s + r.costUsd, 0) * 100) / 100,
-        };
-      })
-      .filter((row): row is AgentBreakdownRow => row !== null)
-      .sort((a, b) => b.totalRuns - a.totalRuns);
-
-    // Project breakdown
-    const projRunMap = new Map<string, RunListRow[]>();
-    for (const run of runs) {
-      const arr = projRunMap.get(run.projectId);
-      if (arr) arr.push(run);
-      else projRunMap.set(run.projectId, [run]);
-    }
-    const projAgentCount = new Map<string, Set<string>>();
-    for (const run of runs) {
-      const set = projAgentCount.get(run.projectId) ?? new Set();
-      set.add(run.agentId);
-      projAgentCount.set(run.projectId, set);
-    }
-    const projectBreakdown: ProjectBreakdownRow[] = this.seed.projects
-      .map((project) => {
-        const projRuns = projRunMap.get(project.id) ?? [];
-        if (projRuns.length === 0) return null;
-        const projSucceeded = projRuns.filter((r) => r.status === "succeeded").length;
-        const projCost = projRuns.reduce((s, r) => s + r.costUsd, 0);
-        const team = this.seed.teams.find((t) => t.id === project.teamId);
-        return {
-          projectId: project.id,
-          projectName: project.name,
-          teamName: team?.name ?? project.teamId,
-          totalRuns: projRuns.length,
-          successRate: projRuns.length ? projSucceeded / projRuns.length : 0,
-          totalCostUsd: Math.round(projCost * 100) / 100,
-          avgCostPerRunUsd: Math.round((projCost / projRuns.length) * 10000) / 10000,
-          agentCount: projAgentCount.get(project.id)?.size ?? 0,
-        };
-      })
-      .filter((row): row is ProjectBreakdownRow => row !== null)
-      .sort((a, b) => b.totalRuns - a.totalRuns);
-    const activeProjects = projectBreakdown.length;
+    const projectBreakdown = this.buildProjectBreakdown(runs);
 
     // Recent runs (latest 25)
     const recentRuns = [...runs]
@@ -744,49 +642,48 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
     return {
       runSuccessRate: succeeded / total,
-      errorRate: failed / total,
+      errorRate: countFailed(runs) / total,
       p50RunDurationMs: percentile(durations, 50),
       p95RunDurationMs: percentile(durations, 95),
       p95QueueWaitMs: percentile(queueWaits, 95),
-      peakConcurrency,
-      failureCategoryBreakdown,
-      reliabilityTrend: this.bucketByDay(runs, (d) => {
-        const s = d.filter((r) => r.status === "succeeded").length;
-        return d.length ? s / d.length : 0;
-      }),
-      agentBreakdown,
+      peakConcurrency: this.computePeakConcurrency(runs),
+      failureCategoryBreakdown: this.buildFailureCategoryBreakdown(runs),
+      reliabilityTrend: this.reliabilityTrendFromRuns(runs),
+      agentBreakdown: this.buildAgentBreakdown(runs),
       totalProjects: this.seed.projects.length,
-      activeProjects,
+      activeProjects: projectBreakdown.length,
       totalRuns: runs.length,
-      overallSuccessRate: runs.length ? succeeded / runs.length : 0,
-      totalCostUsd: Math.round(totalCost * 100) / 100,
+      overallSuccessRate: safeRate(succeeded, runs.length),
+      totalCostUsd: round2(totalCost),
       projectBreakdown,
       recentRuns,
     };
   }
 
-  async getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse> {
+  async getLiveAgentSessions(
+    filters: AnalyticsFilters,
+  ): Promise<LiveAgentSessionsResponse> {
     await this.simulate();
     const filteredRuns = this.filterRuns({ ...filters, statuses: ["queued", "running"] });
     const orgWideActive = this.seed.runs.filter(
-      (run) => run.status === "queued" || run.status === "running"
+      (run) => run.status === "queued" || run.status === "running",
     );
     const sourcePool = filteredRuns.length > 0 ? filteredRuns : orgWideActive;
     const safePool = sourcePool.length > 0 ? sourcePool : this.seed.runs;
     if (safePool.length === 0) {
-      return {
-        activeSessions: [],
-        lastUpdatedIso: new Date().toISOString(),
-      };
+      return { activeSessions: [], lastUpdatedIso: new Date().toISOString() };
     }
+
+    const findEntity = <T extends { id: string }>(list: T[], id: string): T | undefined =>
+      list.find((item) => item.id === id);
 
     const baseSessions: LiveAgentSession[] = safePool
       .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
       .slice(0, 10)
       .map((run) => {
-        const agent = this.seed.agents.find((item) => item.id === run.agentId);
-        const project = this.seed.projects.find((item) => item.id === run.projectId);
-        const user = this.seed.users.find((item) => item.id === run.userId);
+        const agent = findEntity(this.seed.agents, run.agentId);
+        const project = findEntity(this.seed.projects, run.projectId);
+        const user = findEntity(this.seed.users, run.userId);
         const taskIndex = hashString(run.id + run.agentId) % LIVE_TASKS.length;
 
         return {
@@ -809,9 +706,9 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const syntheticSessions: LiveAgentSession[] = Array.from({ length: syntheticCount }).map(
       (_, index) => {
         const run = safePool[(window + index) % safePool.length] ?? fallbackRun;
-        const agent = this.seed.agents.find((item) => item.id === run.agentId) ?? this.seed.agents[0]!;
-        const project = this.seed.projects.find((item) => item.id === run.projectId) ?? this.seed.projects[0]!;
-        const user = this.seed.users.find((item) => item.id === run.userId) ?? this.seed.users[0]!;
+        const agent = findEntity(this.seed.agents, run.agentId) ?? this.seed.agents[0]!;
+        const project = findEntity(this.seed.projects, run.projectId) ?? this.seed.projects[0]!;
+        const user = findEntity(this.seed.users, run.userId) ?? this.seed.users[0]!;
         const taskIndex = (window + index) % LIVE_TASKS.length;
         const startedAgoMs = 40_000 + index * 55_000 + ((window + index) % 5) * 10_000;
 
@@ -826,7 +723,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
           startedAtIso: new Date(nowMs - startedAgoMs).toISOString(),
           currentTask: LIVE_TASKS[taskIndex]!,
         };
-      }
+      },
     );
 
     const sessionsById = new Map<string, LiveAgentSession>();
@@ -837,10 +734,6 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
       .slice(0, 18);
 
-    return {
-      activeSessions: sessions,
-      lastUpdatedIso: new Date().toISOString(),
-    };
+    return { activeSessions: sessions, lastUpdatedIso: new Date().toISOString() };
   }
-
 }

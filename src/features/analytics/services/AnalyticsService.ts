@@ -11,14 +11,7 @@ import type {
   AgentsHubResponse,
   LiveAgentSessionsResponse,
 } from "@/features/analytics/types";
-
-function round2(v: number): number {
-  return Math.round(v * 100) / 100;
-}
-
-function round1(v: number): number {
-  return Math.round(v * 10) / 10;
-}
+import { round1, round2 } from "../utils/metricFormulas";
 
 export class AnalyticsService implements IAnalyticsService {
   constructor(private api: IAnalyticsApi) {}
