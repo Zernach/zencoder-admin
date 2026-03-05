@@ -15,8 +15,6 @@ import type {
   SeedData,
   RunAnomaly,
   KeyValueMetric,
-  AgentBreakdownRow,
-  ProjectBreakdownRow,
   ProviderCostRow,
   ModelProvider,
   LiveAgentSession,
@@ -36,6 +34,12 @@ import {
   countFailed,
   LIVE_TASKS,
 } from "./helpers";
+import {
+  buildAgentBreakdown,
+  buildProjectBreakdown,
+  buildFailureCategoryBreakdown,
+  computePeakConcurrency,
+} from "./builders";
 
 // ─── Stub Configuration ──────────────────────────────────
 
@@ -123,69 +127,6 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   private reliabilityTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
     return this.bucketByDay(runs, (d) => safeRate(countSucceeded(d), d.length));
-  }
-
-  // ── Shared breakdown builders ──────────────────────────
-
-  private buildAgentBreakdown(runs: RunListRow[]): AgentBreakdownRow[] {
-    const runsByAgent = groupBy(runs, (r) => r.agentId);
-    return this.seed.agents
-      .map((agent) => {
-        const agentRuns = runsByAgent.get(agent.id) ?? [];
-        if (agentRuns.length === 0) return null;
-        const project = this.seed.projects.find((p) => p.id === agent.projectId);
-        return {
-          agentId: agent.id,
-          agentName: agent.name,
-          projectName: project?.name ?? agent.projectId,
-          totalRuns: agentRuns.length,
-          successRate: safeRate(countSucceeded(agentRuns), agentRuns.length),
-          avgDurationMs: Math.round(sumField(agentRuns, "durationMs") / agentRuns.length),
-          totalCostUsd: round2(sumField(agentRuns, "costUsd")),
-        };
-      })
-      .filter((row): row is AgentBreakdownRow => row !== null)
-      .sort((a, b) => b.totalRuns - a.totalRuns);
-  }
-
-  private buildProjectBreakdown(runs: RunListRow[]): ProjectBreakdownRow[] {
-    const runsByProject = groupBy(runs, (r) => r.projectId);
-    const agentsByProject = new Map<string, Set<string>>();
-    for (const run of runs) {
-      const set = agentsByProject.get(run.projectId) ?? new Set();
-      set.add(run.agentId);
-      agentsByProject.set(run.projectId, set);
-    }
-
-    return this.seed.projects
-      .map((project) => {
-        const projRuns = runsByProject.get(project.id) ?? [];
-        if (projRuns.length === 0) return null;
-        const projCost = sumField(projRuns, "costUsd");
-        const team = this.seed.teams.find((t) => t.id === project.teamId);
-        return {
-          projectId: project.id,
-          projectName: project.name,
-          teamName: team?.name ?? project.teamId,
-          totalRuns: projRuns.length,
-          successRate: safeRate(countSucceeded(projRuns), projRuns.length),
-          totalCostUsd: round2(projCost),
-          avgCostPerRunUsd: round4(projCost / projRuns.length),
-          agentCount: agentsByProject.get(project.id)?.size ?? 0,
-        };
-      })
-      .filter((row): row is ProjectBreakdownRow => row !== null)
-      .sort((a, b) => b.totalRuns - a.totalRuns);
-  }
-
-  private buildFailureCategoryBreakdown(runs: RunListRow[]): KeyValueMetric[] {
-    const counts = countBy(runs, (r) => r.failureCategory);
-    return Array.from(counts.entries()).map(([key, value]) => ({ key, value }));
-  }
-
-  private computePeakConcurrency(runs: RunListRow[]): number {
-    const minuteCounts = countBy(runs, (r) => r.startedAtIso.slice(0, 16));
-    return Math.max(0, ...minuteCounts.values());
   }
 
   // ── API Methods ────────────────────────────────────────
@@ -464,10 +405,10 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       p50RunDurationMs: percentile(durations, 50),
       p95RunDurationMs: percentile(durations, 95),
       p95QueueWaitMs: percentile(queueWaits, 95),
-      peakConcurrency: this.computePeakConcurrency(runs),
-      failureCategoryBreakdown: this.buildFailureCategoryBreakdown(runs),
+      peakConcurrency: computePeakConcurrency(runs),
+      failureCategoryBreakdown: buildFailureCategoryBreakdown(runs),
       reliabilityTrend: this.reliabilityTrendFromRuns(runs),
-      agentBreakdown: this.buildAgentBreakdown(runs),
+      agentBreakdown: buildAgentBreakdown(runs, this.seed.agents, this.seed.projects),
     };
   }
 
@@ -564,7 +505,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const durations = runs.map((r) => r.durationMs).sort((a, b) => a - b);
     const queueWaits = runs.map((r) => r.queueWaitMs).sort((a, b) => a - b);
 
-    const projectBreakdown = this.buildProjectBreakdown(runs);
+    const projectBreakdown = buildProjectBreakdown(runs, this.seed.projects, this.seed.teams);
 
     // Recent runs (latest 25)
     const recentRuns = [...runs]
@@ -577,10 +518,10 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       p50RunDurationMs: percentile(durations, 50),
       p95RunDurationMs: percentile(durations, 95),
       p95QueueWaitMs: percentile(queueWaits, 95),
-      peakConcurrency: this.computePeakConcurrency(runs),
-      failureCategoryBreakdown: this.buildFailureCategoryBreakdown(runs),
+      peakConcurrency: computePeakConcurrency(runs),
+      failureCategoryBreakdown: buildFailureCategoryBreakdown(runs),
       reliabilityTrend: this.reliabilityTrendFromRuns(runs),
-      agentBreakdown: this.buildAgentBreakdown(runs),
+      agentBreakdown: buildAgentBreakdown(runs, this.seed.agents, this.seed.projects),
       totalProjects: this.seed.projects.length,
       activeProjects: projectBreakdown.length,
       totalRuns: runs.length,
