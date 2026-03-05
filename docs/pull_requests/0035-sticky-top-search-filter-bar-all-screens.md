@@ -66,6 +66,7 @@ Optional: apply to Settings route as well if `showFilterBar` remains enabled glo
 - Controls do not move when user scrolls main content.
 - Exactly one filter bar is rendered per route.
 - Existing filter interactions still update shared Redux filter state and trigger refetch.
+- TopBar typing behavior is isolated from active-screen filtering; filtering by search text does not happen until explicit suggestion selection in the search PR sequence.
 
 ## Test Plan
 
