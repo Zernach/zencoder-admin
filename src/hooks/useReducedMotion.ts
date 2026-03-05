@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { AccessibilityInfo, Platform } from "react-native";
+import { AccessibilityInfo } from "react-native";
+import { isWeb } from "@/constants/platform";
 
 export function useReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
-    if (Platform.OS === "web") {
+    if (isWeb) {
       if (typeof window !== "undefined" && window.matchMedia) {
         const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
         setReduced(mq.matches);

@@ -3,7 +3,7 @@ import { View, StatusBar, StyleSheet } from "react-native";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { usePathname } from "expo-router";
+import type { Edge } from "react-native-safe-area-context";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -39,7 +39,6 @@ interface ScreenWrapperProps {
  * then renders TopBar, ScreenHeader, and children.
  */
 function ScreenWrapper({ headerProps, children, style, showFilterBar = true }: ScreenWrapperProps) {
-  const pathname = usePathname();
   const bp = useBreakpoint();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -52,6 +51,7 @@ function ScreenWrapper({ headerProps, children, style, showFilterBar = true }: S
       : bp === "tablet"
         ? layout.appHorizontalPadding.tablet
         : layout.appHorizontalPadding.mobile;
+  const safeAreaEdges: readonly Edge[] = bp === "mobile" ? ["top"] : ["top", "bottom"];
 
   useEffect(() => {
     if (reducedMotion || bp === "mobile") return;
@@ -65,7 +65,7 @@ function ScreenWrapper({ headerProps, children, style, showFilterBar = true }: S
       duration: motion.base,
       easing: Easing.out(Easing.ease),
     });
-  }, [pathname, reducedMotion, bp, opacity, translateY]);
+  }, [reducedMotion, bp, opacity, translateY]);
 
   const contentStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -73,7 +73,7 @@ function ScreenWrapper({ headerProps, children, style, showFilterBar = true }: S
   }));
 
   return (
-    <SafeAreaView edges={["top", "bottom"]} style={[styles.container, { backgroundColor: theme.bg.canvas }, style]}>
+    <SafeAreaView edges={safeAreaEdges} style={[styles.container, { backgroundColor: theme.bg.canvas }, style]}>
       <StatusBar barStyle={mode === "dark" ? "light-content" : "dark-content"} backgroundColor={theme.bg.canvas} />
       <TopBar />
       {headerProps && (

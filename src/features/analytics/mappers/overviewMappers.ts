@@ -1,5 +1,6 @@
 import type { OverviewResponse, UsageResponse, OutcomesResponse, TimeSeriesPoint, RunAnomaly, DeltaPolarity } from "../types";
 import { formatCurrency, formatPercent, formatCompactNumber } from "../utils/formatters";
+import { ROUTES } from "@/constants/routes";
 
 interface KpiCardData {
   title: string;
@@ -7,7 +8,7 @@ interface KpiCardData {
   delta?: number;
   deltaPolarity?: DeltaPolarity;
   caption?: string;
-  route?: string;
+  route?: ROUTES;
 }
 
 export interface OverviewViewModel {
@@ -34,8 +35,8 @@ export function mapOverviewToViewModel(
     adoptionKpis: [
       { title: "Seat Adoption", value: formatPercent(k.seatAdoptionRate * 100), delta: d.seatAdoptionRate, caption: "Active seats" },
       { title: "Success Rate", value: formatPercent(k.runSuccessRate * 100), delta: d.runSuccessRate, caption: "All runs" },
-      { title: "Total Cost", value: formatCurrency(k.totalCostUsd), delta: d.totalCostUsd, caption: "Period total", route: "/(dashboard)/costs" },
-      { title: "Violations", value: formatCompactNumber(k.policyViolationCount), delta: d.policyViolationCount, deltaPolarity: "negative-good", caption: "Policy blocks", route: "/(dashboard)/governance" },
+      { title: "Total Cost", value: formatCurrency(k.totalCostUsd), delta: d.totalCostUsd, caption: "Period total", route: ROUTES.COSTS },
+      { title: "Violations", value: formatCompactNumber(k.policyViolationCount), delta: d.policyViolationCount, deltaPolarity: "negative-good", caption: "Policy blocks", route: ROUTES.GOVERNANCE },
     ],
     reliabilityKpis: [
       { title: "Success Rate", value: formatPercent(k.runSuccessRate * 100), delta: d.runSuccessRate },

@@ -10,11 +10,12 @@ import type { LucideIcon } from "lucide-react-native";
 import { motion } from "@/theme/motion";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import type { ROUTES } from "@/constants/routes";
 
 interface SidebarNavItemProps {
   icon: LucideIcon;
   label: string;
-  route: string;
+  route: ROUTES;
   badge?: number;
   active: boolean;
   expanded: boolean;

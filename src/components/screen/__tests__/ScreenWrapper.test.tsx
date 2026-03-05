@@ -1,9 +1,12 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
 import { Text } from "react-native";
+import { ROUTES } from "@/constants/routes";
+
+const mockDashboardPathname = ROUTES.DASHBOARD;
 
 jest.mock("expo-router", () => ({
-  usePathname: () => "/dashboard",
+  usePathname: () => mockDashboardPathname,
 }));
 
 jest.mock("react-native-safe-area-context", () => {

@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { View, Image, Text, Pressable, StyleSheet, Platform } from "react-native";
+import React, { useCallback, useEffect } from "react";
+import { View, Image, Text, Pressable, StyleSheet } from "react-native";
 import {
   Home,
   Bot,
@@ -9,6 +9,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react-native";
+import type { LucideIcon } from "lucide-react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -19,18 +20,24 @@ import { useRouter, usePathname } from "expo-router";
 import { SidebarNavItem } from "./SidebarNavItem";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { isWeb } from "@/constants/platform";
+import { ROUTES } from "@/constants/routes";
 
-const NAV_ITEMS = [
-  { icon: Home, label: "Home", route: "/(dashboard)/dashboard" },
-  { icon: Bot, label: "Agents", route: "/(dashboard)/agents" },
-  { icon: DollarSign, label: "Costs", route: "/(dashboard)/costs" },
-  { icon: Shield, label: "Governance", route: "/(dashboard)/governance" },
-  { icon: Settings, label: "Settings", route: "/(dashboard)/settings" },
-] as const;
+const NAV_ITEMS: { icon: LucideIcon; label: string; route: ROUTES }[] = [
+  { icon: Home, label: "Home", route: ROUTES.DASHBOARD },
+  { icon: Bot, label: "Agents", route: ROUTES.AGENTS },
+  { icon: DollarSign, label: "Costs", route: ROUTES.COSTS },
+  { icon: Shield, label: "Governance", route: ROUTES.GOVERNANCE },
+  { icon: Settings, label: "Settings", route: ROUTES.SETTINGS },
+];
 
 interface SidebarProps {
   expanded: boolean;
   onToggle: () => void;
+}
+
+function isSidebarRouteActive(pathname: string, route: ROUTES): boolean {
+  return pathname === route || pathname.startsWith(`${route}/`);
 }
 
 export function Sidebar({ expanded, onToggle }: SidebarProps) {
@@ -39,6 +46,13 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const sidebarWidth = useSharedValue(expanded ? 264 : 76);
+  const handleNavigate = useCallback(
+    (route: ROUTES) => {
+      if (isSidebarRouteActive(pathname, route)) return;
+      router.navigate(route as never);
+    },
+    [pathname, router],
+  );
 
   useEffect(() => {
     sidebarWidth.value = withTiming(expanded ? 264 : 76, {
@@ -48,7 +62,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
   }, [expanded, sidebarWidth]);
 
   useEffect(() => {
-    if (Platform.OS !== "web") return;
+    if (!isWeb) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "[") onToggle();
       if (e.key === "]") onToggle();
@@ -106,9 +120,9 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
             icon={item.icon}
             label={item.label}
             route={item.route}
-            active={pathname.includes(item.route.replace("/(dashboard)", ""))}
+            active={isSidebarRouteActive(pathname, item.route)}
             expanded={expanded}
-            onPress={() => router.push(item.route as never)}
+            onPress={() => handleNavigate(item.route)}
           />
         ))}
       </View>
@@ -139,6 +153,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    paddingHorizontal: 10,
   },
   brandIcon: {
     width: 28,

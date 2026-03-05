@@ -7,7 +7,7 @@ import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilt
 import type { TimeRangePreset } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
-import { AppTextInput } from "@/components/inputs";
+import { CustomTextInput } from "@/components/inputs";
 
 type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
 
@@ -111,8 +111,10 @@ export function TopBar() {
           ]}
         >
           <Search size={14} color={hasQuery ? theme.border.brand : theme.text.tertiary} />
-          <AppTextInput
+          <CustomTextInput
             ref={searchInputRef}
+            containerStyle={styles.searchInputWrapper}
+            showInputContainer={false}
             style={styles.searchInput}
             placeholder="Search agents, projects, runs..."
             value={localQuery}
@@ -242,6 +244,9 @@ const styles = StyleSheet.create({
     fontSize: CONTROL_TEXT_SIZE,
     lineHeight: CONTROL_TEXT_LINE_HEIGHT,
     paddingVertical: 0,
+  },
+  searchInputWrapper: {
+    flex: 1,
   },
   clearButton: {
     padding: 2,

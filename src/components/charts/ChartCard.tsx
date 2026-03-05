@@ -1,13 +1,6 @@
-import React, { useState, useCallback } from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
-import { motion } from "@/theme/motion";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 
@@ -30,43 +23,17 @@ export function ChartCard({
 }: ChartCardProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
-  const borderColor = useSharedValue(0);
-
-  const onHoverIn = useCallback(() => {
-    if (Platform.OS === "web") {
-      borderColor.value = withTiming(1, {
-        duration: motion.fast,
-        easing: Easing.out(Easing.ease),
-      });
-    }
-  }, [borderColor]);
-
-  const onHoverOut = useCallback(() => {
-    if (Platform.OS === "web") {
-      borderColor.value = withTiming(0, {
-        duration: motion.fast,
-        easing: Easing.out(Easing.ease),
-      });
-    }
-  }, [borderColor]);
-
-  const hoverStyle = useAnimatedStyle(() => ({
-    borderColor:
-      borderColor.value > 0.5
-        ? theme.bg.brandSubtle
-        : theme.border.subtle,
-    backgroundColor:
-      borderColor.value > 0.5
-        ? theme.bg.surfaceHover
-        : theme.bg.surface,
-  }));
-
-  const viewProps = Platform.OS === "web"
-    ? { onMouseEnter: onHoverIn, onMouseLeave: onHoverOut }
-    : {};
 
   return (
-    <Animated.View style={[styles.card, hoverStyle]} {...viewProps}>
+    <View
+      style={[
+        styles.card,
+        {
+          borderColor: theme.border.subtle,
+          backgroundColor: theme.bg.surface,
+        },
+      ]}
+    >
       <View style={styles.header}>
         <Text style={[styles.title, { color: theme.text.primary }]}>{title}</Text>
         {subtitle && <Text style={[styles.subtitle, { color: theme.text.secondary }]}>{subtitle}</Text>}
@@ -78,7 +45,7 @@ export function ChartCard({
       ) : (
         children
       )}
-    </Animated.View>
+    </View>
   );
 }
 

@@ -1,3 +1,2 @@
-export * from "./AppTextInput";
+export * from "./CustomTextInput";
 export * from "./textInputDefaults";
-

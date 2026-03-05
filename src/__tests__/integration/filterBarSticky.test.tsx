@@ -7,10 +7,13 @@ import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDash
 import { useCostDashboard } from "@/features/analytics/hooks/useCostDashboard";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
 import { createTestWrapper } from "@/testing/testUtils";
+import { ROUTES } from "@/constants/routes";
+
+const mockDashboardPathname = ROUTES.DASHBOARD;
 
 // Mock navigation / safe area / reanimated for ScreenWrapper render tests
 jest.mock("expo-router", () => ({
-  usePathname: () => "/dashboard",
+  usePathname: () => mockDashboardPathname,
 }));
 
 jest.mock("react-native-safe-area-context", () => {
