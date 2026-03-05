@@ -1,4 +1,5 @@
-import React from "react";
+import { forwardRef, useCallback } from "react";
+import type { MutableRefObject } from "react";
 import { TextInput as NativeTextInput, StyleSheet } from "react-native";
 import type { TextInput as NativeTextInputHandle, TextInputProps } from "react-native";
 import { semanticThemes } from "@/theme";
@@ -6,16 +7,16 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { GLOBAL_TEXT_INPUT_PROPS_BY_THEME } from "./textInputDefaults";
 
 export interface AppTextInputProps extends TextInputProps {
-  textValueRef?: React.MutableRefObject<string>;
+  textValueRef?: MutableRefObject<string>;
 }
 
-export const AppTextInput = React.forwardRef<NativeTextInputHandle, AppTextInputProps>(
+export const AppTextInput = forwardRef<NativeTextInputHandle, AppTextInputProps>(
   ({ style, onChangeText, textValueRef, ...props }, forwardedRef) => {
     const { mode } = useThemeMode();
     const theme = semanticThemes[mode];
     const managedProps = GLOBAL_TEXT_INPUT_PROPS_BY_THEME[mode];
 
-    const handleChangeText = React.useCallback(
+    const handleChangeText = useCallback(
       (nextValue: string) => {
         if (textValueRef) {
           textValueRef.current = nextValue;

@@ -1,4 +1,5 @@
-import React from "react";
+import { useCallback, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
 import { LoadingSkeleton, EmptyState } from "@/components/dashboard";
 import { SortableHeader } from "./SortableHeader";
@@ -12,7 +13,7 @@ interface ColumnDef<T> {
   width?: number | string;
   sortable?: boolean;
   align?: "left" | "center" | "right";
-  render?: (row: T) => React.ReactNode;
+  render?: (row: T) => ReactNode;
   sortAccessor?: (row: T) => SortableValue;
 }
 
@@ -78,7 +79,7 @@ export function DataTable<T>({
   emptyMessage,
   keyExtractor,
 }: DataTableProps<T>) {
-  const [internalSort, setInternalSort] = React.useState<{
+  const [internalSort, setInternalSort] = useState<{
     sortBy?: string;
     sortDirection: SortDirection;
   }>({
@@ -89,7 +90,7 @@ export function DataTable<T>({
   const activeSortBy = onSort ? sortBy : internalSort.sortBy;
   const activeSortDirection = onSort ? sortDirection : internalSort.sortDirection;
 
-  const sortedData = React.useMemo(() => {
+  const sortedData = useMemo(() => {
     if (!activeSortBy) return data;
 
     const activeColumn = columns.find((column) => column.key === activeSortBy);
@@ -114,7 +115,7 @@ export function DataTable<T>({
       .map((entry) => entry.row);
   }, [activeSortBy, activeSortDirection, columns, data]);
 
-  const handleSortPress = React.useCallback(
+  const handleSortPress = useCallback(
     (key: string) => {
       if (onSort) {
         onSort(key);

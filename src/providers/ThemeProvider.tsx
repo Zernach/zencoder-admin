@@ -1,4 +1,5 @@
-import React from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { TamaguiProvider, Theme } from "@tamagui/core";
 import config from "../../tamagui.config";
 
@@ -10,21 +11,21 @@ interface ThemeContextValue {
   toggleMode: () => void;
 }
 
-const ThemeModeContext = React.createContext<ThemeContextValue | null>(null);
+const ThemeModeContext = createContext<ThemeContextValue | null>(null);
 
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
   defaultTheme?: AppThemeMode;
 }
 
 export function ThemeProvider({ children, defaultTheme = "dark" }: Props) {
-  const [mode, setMode] = React.useState<AppThemeMode>(defaultTheme);
+  const [mode, setMode] = useState<AppThemeMode>(defaultTheme);
 
-  const toggleMode = React.useCallback(() => {
+  const toggleMode = useCallback(() => {
     setMode((currentMode) => (currentMode === "dark" ? "light" : "dark"));
   }, []);
 
-  const contextValue = React.useMemo<ThemeContextValue>(
+  const contextValue = useMemo<ThemeContextValue>(
     () => ({
       mode,
       setMode,
@@ -43,7 +44,7 @@ export function ThemeProvider({ children, defaultTheme = "dark" }: Props) {
 }
 
 export function useThemeMode(): ThemeContextValue {
-  const context = React.useContext(ThemeModeContext);
+  const context = useContext(ThemeModeContext);
 
   if (context === null) {
     throw new Error("useThemeMode must be used within ThemeProvider");

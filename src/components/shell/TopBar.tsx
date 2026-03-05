@@ -1,4 +1,4 @@
-import React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, Pressable, StyleSheet, Modal } from "react-native";
 import type { TextInput as TextInputHandle } from "react-native";
 import { Search, Clock, X } from "lucide-react-native";
@@ -47,17 +47,17 @@ export function TopBar() {
   const breakpoint = useBreakpoint();
   const { mode } = useThemeMode();
   const { preset, setTimeRange, searchQuery, setSearchQuery } = useDashboardFilters();
-  const searchInputRef = React.useRef<TextInputHandle>(null);
-  const [localQuery, setLocalQuery] = React.useState(searchQuery);
-  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = React.useState(false);
+  const searchInputRef = useRef<TextInputHandle>(null);
+  const [localQuery, setLocalQuery] = useState(searchQuery);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = useState(false);
 
   // Sync local state when Redux changes externally (e.g. clearAll)
-  React.useEffect(() => {
+  useEffect(() => {
     setLocalQuery(searchQuery);
   }, [searchQuery]);
 
-  const handleSearchChange = React.useCallback(
+  const handleSearchChange = useCallback(
     (text: string) => {
       setLocalQuery(text);
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -66,30 +66,30 @@ export function TopBar() {
     [setSearchQuery],
   );
 
-  const handleClearSearch = React.useCallback(() => {
+  const handleClearSearch = useCallback(() => {
     setLocalQuery("");
     setSearchQuery("");
     searchInputRef.current?.focus();
   }, [setSearchQuery]);
 
   // Cleanup debounce on unmount
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, []);
 
-  const openTimeRangeOverlay = React.useCallback(
+  const openTimeRangeOverlay = useCallback(
     () => setTimeRangeOverlayVisible(true),
     [],
   );
 
-  const closeTimeRangeOverlay = React.useCallback(
+  const closeTimeRangeOverlay = useCallback(
     () => setTimeRangeOverlayVisible(false),
     [],
   );
 
-  const handleSelectTimeRange = React.useCallback(
+  const handleSelectTimeRange = useCallback(
     (nextPreset: SelectableTimeRangePreset) => {
       setTimeRange(nextPreset);
       setTimeRangeOverlayVisible(false);

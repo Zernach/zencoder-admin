@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import Svg, { Path, Line, Text as SvgText } from "react-native-svg";
 import { scaleTime, scaleLinear } from "d3-scale";
@@ -27,7 +27,7 @@ export function TrendChart({
   height = 200,
   showGrid = true,
 }: TrendChartProps) {
-  const [containerWidth, setContainerWidth] = React.useState(300);
+  const [containerWidth, setContainerWidth] = useState(300);
 
   if (data.length === 0) return null;
 

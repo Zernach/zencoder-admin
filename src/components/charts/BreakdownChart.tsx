@@ -1,4 +1,4 @@
-import React from "react";
+import { useCallback, useMemo, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import type { KeyValueMetric } from "@/features/analytics/types";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
@@ -20,22 +20,22 @@ export function BreakdownChart({
   showValues = true,
   truncateLabels = true,
 }: BreakdownChartProps) {
-  const [measuredLabelWidth, setMeasuredLabelWidth] = React.useState<number>(0);
-  const [measuredRowHeight, setMeasuredRowHeight] = React.useState<number>(0);
+  const [measuredLabelWidth, setMeasuredLabelWidth] = useState<number>(0);
+  const [measuredRowHeight, setMeasuredRowHeight] = useState<number>(0);
   const sorted = [...data].sort((a, b) => b.value - a.value);
   const maxVal = Math.max(...sorted.map((d) => d.value), 1);
-  const longestLabel = React.useMemo(
+  const longestLabel = useMemo(
     () => sorted.reduce((longest, item) => (item.key.length > longest.length ? item.key : longest), ""),
     [sorted]
   );
 
-  const handleLongestLabelLayout = React.useCallback((width: number): void => {
+  const handleLongestLabelLayout = useCallback((width: number): void => {
     if (width > measuredLabelWidth) {
       setMeasuredLabelWidth(width);
     }
   }, [measuredLabelWidth]);
 
-  const handleRowHeightLayout = React.useCallback((height: number): void => {
+  const handleRowHeightLayout = useCallback((height: number): void => {
     if (height > measuredRowHeight) {
       setMeasuredRowHeight(height);
     }
