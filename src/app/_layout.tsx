@@ -12,7 +12,7 @@ if (!isWeb) {
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    Inter: require("@tamagui/font-inter/otf/Inter-Regular.otf"),
+    Inter: require("../assets/fonts/Inter-Regular.otf"),
   });
 
   if (!fontsLoaded) {
