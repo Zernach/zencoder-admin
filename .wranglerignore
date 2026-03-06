@@ -1,0 +1,8 @@
+# Keep this file intentionally minimal.
+#
+# For `wrangler pages deploy ./dist`, Wrangler falls back to `.gitignore`
+# when `.wranglerignore` is missing. Our `.gitignore` excludes `node_modules`,
+# which incorrectly drops Expo-exported web assets under:
+#   dist/assets/node_modules/*
+#
+# Having this file prevents that fallback so all files in `dist/` are uploaded.
