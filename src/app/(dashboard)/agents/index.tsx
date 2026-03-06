@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
-import { View, Text, ScrollView } from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { View, Text, ScrollView, Pressable, Modal, StyleSheet } from "react-native";
+import { X } from "lucide-react-native";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart } from "@/components/charts";
@@ -8,7 +9,10 @@ import { formatPercent, formatDuration, formatCurrency, formatCompactNumber } fr
 import type { AgentBreakdownRow, ProjectBreakdownRow, RunListRow } from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
+import { useCreateProject } from "@/features/analytics/hooks/useCreateProject";
+import { CreateProjectForm } from "@/features/analytics/components/CreateProjectForm";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { semanticThemes } from "@/theme/themes";
 
 const styles = sectionStyles;
 
@@ -18,9 +22,21 @@ const RUN_SEARCH_KEYS: (keyof RunListRow)[] = ["id", "status", "provider"];
 
 export default function AgentsScreen() {
   const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const ct = cellText(mode);
   const cc = chartColors(mode);
   const { data, loading, error, refetch } = useAgentsHub();
+  const { create: createProject, loading: createProjectLoading, error: createProjectError } = useCreateProject();
+  const [showCreateProject, setShowCreateProject] = useState(false);
+
+  const handleCreateProject = useCallback(
+    async (values: { name: string; teamId: string }) => {
+      await createProject(values);
+      setShowCreateProject(false);
+      refetch();
+    },
+    [createProject, refetch],
+  );
   const filteredAgents = useSearchFilter(data?.agentBreakdown ?? [], AGENT_SEARCH_KEYS);
   const filteredProjects = useSearchFilter(data?.projectBreakdown ?? [], PROJECT_SEARCH_KEYS);
   const filteredRuns = useSearchFilter(data?.recentRuns ?? [], RUN_SEARCH_KEYS);
@@ -121,7 +137,17 @@ export default function AgentsScreen() {
 
       {data && (
         <View style={styles.section}>
-          <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} of ${data.totalProjects} projects active`} />
+          <View style={localStyles.sectionRow}>
+            <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} of ${data.totalProjects} projects active`} />
+            <Pressable
+              onPress={() => setShowCreateProject(true)}
+              style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
+              accessibilityRole="button"
+              accessibilityLabel="Create Project"
+            >
+              <Text style={[localStyles.createButtonText, { color: theme.text.onBrand }]}>+ Create Project</Text>
+            </Pressable>
+          </View>
           <CardGrid columns={3}>
             <KpiCard title="Active Projects" value={formatCompactNumber(data.activeProjects)} caption={`of ${data.totalProjects} total`} />
             <KpiCard title="Success Rate" value={formatPercent(data.overallSuccessRate * 100)} />
@@ -145,6 +171,69 @@ export default function AgentsScreen() {
           />
         </View>
       )}
+      <Modal
+        transparent
+        visible={showCreateProject}
+        animationType="fade"
+        onRequestClose={() => setShowCreateProject(false)}
+      >
+        <View style={[localStyles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
+          <Pressable
+            style={StyleSheet.absoluteFillObject}
+            onPress={() => setShowCreateProject(false)}
+            accessibilityRole="button"
+            accessibilityLabel="Close create project form"
+          />
+          <View style={[localStyles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
+            <View style={localStyles.modalHeader}>
+              <Pressable
+                onPress={() => setShowCreateProject(false)}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Close"
+              >
+                <X size={16} color={theme.text.secondary} />
+              </Pressable>
+            </View>
+            <CreateProjectForm onSubmit={handleCreateProject} loading={createProjectLoading} error={createProjectError} />
+          </View>
+        </View>
+      </Modal>
     </ScreenWrapper>
   );
 }
+
+const localStyles = StyleSheet.create({
+  sectionRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  createButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  createButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  modalPanel: {
+    width: 400,
+    maxWidth: "100%",
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 16,
+    gap: 12,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+});

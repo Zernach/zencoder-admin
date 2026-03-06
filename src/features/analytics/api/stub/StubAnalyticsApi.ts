@@ -77,6 +77,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   private failureRate: number;
   private createdViolations: PolicyViolationRow[] = [];
   private createdUsers: Array<{ id: string; name: string; email: string; teamId: string }> = [];
+  private createdProjects: Array<{ id: string; name: string; teamId: string }> = [];
 
   constructor(seedData: SeedData, config: StubConfig = {}) {
     this.seed = seedData;
@@ -902,9 +903,21 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async createProject(request: CreateProjectRequest): Promise<CreateProjectResponse> {
     await this.simulate();
+
+    // Reject duplicate project name within same team
+    const allProjects = [...this.seed.projects, ...this.createdProjects];
+    const duplicate = allProjects.find(
+      (p) => p.name === request.name && p.teamId === request.teamId,
+    );
+    if (duplicate) {
+      throw new Error(`A project named "${request.name}" already exists in this team`);
+    }
+
     const id = this.nextId("proj");
+    const project = { id, name: request.name, teamId: request.teamId };
+    this.createdProjects.push(project);
     return {
-      project: { id, name: request.name, teamId: request.teamId },
+      project,
       createdAtIso: new Date().toISOString(),
     };
   }

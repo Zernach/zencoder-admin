@@ -12,6 +12,31 @@ jest.mock("@/hooks/useSearchFilter", () => ({
   useSearchFilter: <T,>(data: T[]) => data,
 }));
 
+jest.mock("@/features/analytics/hooks/useCreateProject", () => ({
+  useCreateProject: () => ({
+    create: jest.fn().mockResolvedValue({ project: { id: "proj_1" } }),
+    loading: false,
+    error: undefined,
+    lastResult: undefined,
+  }),
+}));
+
+jest.mock("lucide-react-native", () => {
+  const React = require("react");
+  const { Text } = require("react-native");
+  return {
+    X: () => <Text>X</Text>,
+  };
+});
+
+jest.mock("@/features/analytics/components/CreateProjectForm", () => {
+  const React = require("react");
+  const { Text } = require("react-native");
+  return {
+    CreateProjectForm: () => <Text>CreateProjectForm</Text>,
+  };
+});
+
 jest.mock("@/components/screen", () => {
   const React = require("react");
   const { View } = require("react-native");
