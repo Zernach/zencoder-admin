@@ -21,6 +21,15 @@ jest.mock("@/features/analytics/hooks/useCreateComplianceViolationRule", () => (
   }),
 }));
 
+jest.mock("@/features/analytics/hooks/useCreateHuman", () => ({
+  useCreateHuman: () => ({
+    create: jest.fn().mockResolvedValue({ user: { id: "u_1" } }),
+    loading: false,
+    error: undefined,
+    lastResult: undefined,
+  }),
+}));
+
 jest.mock("lucide-react-native", () => {
   const React = require("react");
   const { Text } = require("react-native");
@@ -34,6 +43,14 @@ jest.mock("@/features/analytics/components/CreateComplianceRuleForm", () => {
   const { Text } = require("react-native");
   return {
     CreateComplianceRuleForm: () => <Text>CreateComplianceRuleForm</Text>,
+  };
+});
+
+jest.mock("@/features/analytics/components/CreateHumanForm", () => {
+  const React = require("react");
+  const { Text } = require("react-native");
+  return {
+    CreateHumanForm: () => <Text>CreateHumanForm</Text>,
   };
 });
 

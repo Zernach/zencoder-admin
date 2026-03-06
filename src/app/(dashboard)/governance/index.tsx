@@ -3,7 +3,9 @@ import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
 import { X } from "lucide-react-native";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
 import { useCreateComplianceViolationRule } from "@/features/analytics/hooks/useCreateComplianceViolationRule";
+import { useCreateHuman } from "@/features/analytics/hooks/useCreateHuman";
 import { CreateComplianceRuleForm } from "@/features/analytics/components/CreateComplianceRuleForm";
+import { CreateHumanForm } from "@/features/analytics/components/CreateHumanForm";
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText } from "@/components/tables";
@@ -32,7 +34,9 @@ export default function GovernanceScreen() {
   const ct = cellText(mode);
   const { data, loading, error, refetch } = useGovernanceDashboard();
   const { create: createRule, loading: createLoading } = useCreateComplianceViolationRule();
+  const { create: createHuman, loading: createHumanLoading, error: createHumanError } = useCreateHuman();
   const [showCreateRule, setShowCreateRule] = useState(false);
+  const [showCreateSeat, setShowCreateSeat] = useState(false);
 
   const handleCreateRule = useCallback(
     async (values: { name: string; description: string; severity: "HIGH" | "MEDIUM" | "LOW" }) => {
@@ -41,6 +45,15 @@ export default function GovernanceScreen() {
       refetch();
     },
     [createRule, refetch],
+  );
+
+  const handleCreateSeat = useCallback(
+    async (values: { name: string; email: string; teamId: string }) => {
+      await createHuman(values);
+      setShowCreateSeat(false);
+      refetch();
+    },
+    [createHuman, refetch],
   );
 
   const filteredViolations = useSearchFilter(data?.recentViolations ?? [], VIOLATION_SEARCH_KEYS);
@@ -156,10 +169,20 @@ export default function GovernanceScreen() {
 
       {data && (
         <View style={sectionStyles.section}>
-          <SectionHeader
-            title="Seat User Oversight"
-            subtitle="Full names of active seat users and AI usage by account seat"
-          />
+          <View style={localStyles.sectionRow}>
+            <SectionHeader
+              title="Seat User Oversight"
+              subtitle="Full names of active seat users and AI usage by account seat"
+            />
+            <Pressable
+              onPress={() => setShowCreateSeat(true)}
+              style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
+              accessibilityRole="button"
+              accessibilityLabel="Add Seat"
+            >
+              <Text style={[localStyles.createButtonText, { color: theme.text.onBrand }]}>+ Add Seat</Text>
+            </Pressable>
+          </View>
           <View style={localStyles.seatUsageSummary}>
             <Text style={[localStyles.summaryText, { color: theme.text.secondary }]}>
               Most AI usage: {mostActiveSeatUser ? `${mostActiveSeatUser.fullName} (${formatCompactNumber(mostActiveSeatUser.runsCount)} runs)` : "No active seat usage"}
@@ -254,6 +277,34 @@ export default function GovernanceScreen() {
               </Pressable>
             </View>
             <CreateComplianceRuleForm onSubmit={handleCreateRule} loading={createLoading} />
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        transparent
+        visible={showCreateSeat}
+        animationType="fade"
+        onRequestClose={() => setShowCreateSeat(false)}
+      >
+        <View style={[localStyles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
+          <Pressable
+            style={StyleSheet.absoluteFillObject}
+            onPress={() => setShowCreateSeat(false)}
+            accessibilityRole="button"
+            accessibilityLabel="Close add seat form"
+          />
+          <View style={[localStyles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
+            <View style={localStyles.modalHeader}>
+              <Pressable
+                onPress={() => setShowCreateSeat(false)}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Close"
+              >
+                <X size={16} color={theme.text.secondary} />
+              </Pressable>
+            </View>
+            <CreateHumanForm onSubmit={handleCreateSeat} loading={createHumanLoading} error={createHumanError} />
           </View>
         </View>
       </Modal>

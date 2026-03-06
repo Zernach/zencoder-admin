@@ -76,6 +76,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   private latencyMax: number;
   private failureRate: number;
   private createdViolations: PolicyViolationRow[] = [];
+  private createdUsers: Array<{ id: string; name: string; email: string; teamId: string }> = [];
 
   constructor(seedData: SeedData, config: StubConfig = {}) {
     this.seed = seedData;
@@ -483,9 +484,10 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       userUsageMap.set(run.userId, usage);
     }
 
+    const allUsers = [...this.seed.users, ...this.createdUsers];
     const seatUserUsage: SeatUserUsageRow[] = Array.from(userUsageMap.entries())
       .map(([userId, usage]) => {
-        const user = this.seed.users.find((seedUser) => seedUser.id === userId);
+        const user = allUsers.find((u) => u.id === userId);
         if (!user) return null;
         return {
           userId,
@@ -496,13 +498,28 @@ export class StubAnalyticsApi implements IAnalyticsApi {
           totalCostUsd: round2(usage.totalCostUsd),
         };
       })
-      .filter((row): row is SeatUserUsageRow => row !== null)
-      .sort((a, b) => {
-        if (b.runsCount !== a.runsCount) return b.runsCount - a.runsCount;
-        if (b.totalTokens !== a.totalTokens) return b.totalTokens - a.totalTokens;
-        if (b.totalCostUsd !== a.totalCostUsd) return b.totalCostUsd - a.totalCostUsd;
-        return a.fullName.localeCompare(b.fullName);
-      });
+      .filter((row): row is SeatUserUsageRow => row !== null);
+
+    // Include created users with no runs (0 usage)
+    for (const created of this.createdUsers) {
+      if (!seatUserUsage.some((s) => s.userId === created.id)) {
+        seatUserUsage.push({
+          userId: created.id,
+          fullName: created.name,
+          teamName: teamNameById.get(created.teamId) ?? created.teamId,
+          runsCount: 0,
+          totalTokens: 0,
+          totalCostUsd: 0,
+        });
+      }
+    }
+
+    seatUserUsage.sort((a, b) => {
+      if (b.runsCount !== a.runsCount) return b.runsCount - a.runsCount;
+      if (b.totalTokens !== a.totalTokens) return b.totalTokens - a.totalTokens;
+      if (b.totalCostUsd !== a.totalCostUsd) return b.totalCostUsd - a.totalCostUsd;
+      return a.fullName.localeCompare(b.fullName);
+    });
 
     return {
       policyViolationCount: violations.length,
@@ -864,9 +881,21 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async createSeat(request: CreateSeatRequest): Promise<CreateSeatResponse> {
     await this.simulate();
+
+    // Reject duplicate email
+    const allEmails = [
+      ...this.seed.users.map((u) => u.email),
+      ...this.createdUsers.map((u) => u.email),
+    ];
+    if (allEmails.includes(request.email)) {
+      throw new Error(`A user with email "${request.email}" already exists`);
+    }
+
     const id = this.nextId("user");
+    const user = { id, name: request.name, email: request.email, teamId: request.teamId };
+    this.createdUsers.push(user);
     return {
-      user: { id, name: request.name, email: request.email, teamId: request.teamId },
+      user,
       createdAtIso: new Date().toISOString(),
     };
   }
