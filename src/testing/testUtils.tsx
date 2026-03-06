@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider as ReduxProvider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { filtersSlice } from "@/store/slices/filtersSlice";
+import { loadingSlice } from "@/store/slices/loadingSlice";
+import { sidebarSlice } from "@/store/slices/sidebarSlice";
 import { AppDependenciesProvider } from "@/core/di/AppDependencies";
 import { StubAnalyticsApi } from "@/features/analytics/api/stub/StubAnalyticsApi";
 import { AnalyticsService } from "@/features/analytics/services/AnalyticsService";
@@ -36,7 +38,11 @@ export function createTestApi(options?: { failureRate?: number }) {
 
 export function createTestStore() {
   return configureStore({
-    reducer: { filters: filtersSlice.reducer },
+    reducer: {
+      filters: filtersSlice.reducer,
+      loading: loadingSlice.reducer,
+      sidebar: sidebarSlice.reducer,
+    },
   });
 }
 

@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-interface SidebarState {
+export interface SidebarState {
   expanded: boolean;
 }
 
@@ -22,3 +22,7 @@ export const sidebarSlice = createSlice({
 });
 
 export const { toggleSidebar, setSidebarExpanded } = sidebarSlice.actions;
+
+export const selectSidebarExpanded = (state: {
+  sidebar: SidebarState;
+}): boolean => state.sidebar.expanded;

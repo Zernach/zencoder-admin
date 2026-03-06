@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { setSidebarExpanded, toggleSidebar } from "@/store/slices/sidebarSlice";
+import { setSidebarExpanded, toggleSidebar, selectSidebarExpanded } from "@/store/slices/sidebarSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { Sidebar } from "./Sidebar";
@@ -15,7 +15,7 @@ interface DashboardShellProps {
 export function DashboardShell({ children }: DashboardShellProps) {
   const bp = useBreakpoint();
   const dispatch = useAppDispatch();
-  const expanded = useAppSelector((state) => state.sidebar.expanded);
+  const expanded = useAppSelector(selectSidebarExpanded);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const isMobile = bp === "mobile";
