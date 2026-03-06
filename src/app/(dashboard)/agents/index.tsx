@@ -13,6 +13,7 @@ import { useCreateProject } from "@/features/analytics/hooks/useCreateProject";
 import { CreateProjectForm } from "@/features/analytics/components/CreateProjectForm";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { useSectionScroll } from "@/hooks/useSectionScroll";
 
 const styles = sectionStyles;
 
@@ -26,6 +27,7 @@ export default function AgentsScreen() {
   const ct = cellText(mode);
   const cc = chartColors(mode);
   const { data, loading, error, refetch } = useAgentsHub();
+  const { registerSection } = useSectionScroll();
   const { create: createProject, loading: createProjectLoading, error: createProjectError } = useCreateProject();
   const [showCreateProject, setShowCreateProject] = useState(false);
 
@@ -84,7 +86,7 @@ export default function AgentsScreen() {
         isLoading: loading,
       }}
     >
-      <View nativeID="reliability" style={styles.section}>
+      <View ref={(r) => registerSection("reliability", r)} nativeID="reliability" style={styles.section}>
         <SectionHeader title="Reliability" />
         {loading ? (
           <CardGrid columns={4}>
@@ -125,7 +127,7 @@ export default function AgentsScreen() {
       </View>
 
       {data && (
-        <View nativeID="agent-performance" style={styles.section}>
+        <View ref={(r) => registerSection("agent-performance", r)} nativeID="agent-performance" style={styles.section}>
           <SectionHeader title="Agent Performance" subtitle={`${filteredAgents.length} agents with activity`} />
           <DataTable
             columns={agentCols}
@@ -136,7 +138,7 @@ export default function AgentsScreen() {
       )}
 
       {data && (
-        <View nativeID="project-breakdown" style={styles.section}>
+        <View ref={(r) => registerSection("project-breakdown", r)} nativeID="project-breakdown" style={styles.section}>
           <View style={localStyles.sectionRow}>
             <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} of ${data.totalProjects} projects active`} />
             <Pressable
@@ -162,7 +164,7 @@ export default function AgentsScreen() {
       )}
 
       {data && filteredRuns.length > 0 && (
-        <View nativeID="recent-runs" style={styles.section}>
+        <View ref={(r) => registerSection("recent-runs", r)} nativeID="recent-runs" style={styles.section}>
           <SectionHeader title="Recent Runs" subtitle={`Latest ${filteredRuns.length} runs`} />
           <DataTable
             columns={recentRunCols}

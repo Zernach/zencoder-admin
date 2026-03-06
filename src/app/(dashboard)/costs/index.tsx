@@ -9,6 +9,7 @@ import type { CostBreakdownRow } from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { useSectionScroll } from "@/hooks/useSectionScroll";
 
 const styles = sectionStyles;
 
@@ -18,6 +19,7 @@ export default function CostAnalyticsScreen() {
   const { mode } = useThemeMode();
   const cc = chartColors(mode);
   const { data, loading, error, refetch } = useCostDashboard();
+  const { registerSection } = useSectionScroll();
   const filteredCostBreakdown = useSearchFilter(data?.costBreakdown ?? [], COST_BREAKDOWN_SEARCH_KEYS);
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
@@ -34,7 +36,7 @@ export default function CostAnalyticsScreen() {
         isLoading: loading,
       }}
     >
-      <View nativeID="cost-summary" style={styles.section}>
+      <View ref={(r) => registerSection("cost-summary", r)} nativeID="cost-summary" style={styles.section}>
         <SectionHeader title="Cost Summary" />
         {loading ? (
           <CardGrid columns={4}>
@@ -72,7 +74,7 @@ export default function CostAnalyticsScreen() {
       </View>
 
       {data && (
-        <View nativeID="cost-by-provider" style={styles.section}>
+        <View ref={(r) => registerSection("cost-by-provider", r)} nativeID="cost-by-provider" style={styles.section}>
           <SectionHeader title="Cost by Provider" />
           <ChartCard
             title="Provider Cost Breakdown"
@@ -87,7 +89,7 @@ export default function CostAnalyticsScreen() {
       )}
 
       {data && (
-        <View nativeID="budget-forecast" style={styles.section}>
+        <View ref={(r) => registerSection("budget-forecast", r)} nativeID="budget-forecast" style={styles.section}>
           <SectionHeader title="Budget Forecast" />
           <CardGrid columns={3}>
             <KpiCard title="Budget" value={formatCurrency(data.budget.budgetUsd)} />
@@ -98,7 +100,7 @@ export default function CostAnalyticsScreen() {
       )}
 
       {data && (
-        <View nativeID="project-breakdown" style={styles.section}>
+        <View ref={(r) => registerSection("project-breakdown", r)} nativeID="project-breakdown" style={styles.section}>
           <SectionHeader title="Project Breakdown" />
           <BreakdownChart data={filteredCostBreakdown.slice(0, 10).map(r => ({ key: r.key, value: r.totalCostUsd }))} variant="horizontal-bar" height={300} truncateLabels={false} />
         </View>

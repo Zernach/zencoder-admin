@@ -16,6 +16,7 @@ import { useSearchFilter } from "@/hooks/useSearchFilter";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
+import { useSectionScroll } from "@/hooks/useSectionScroll";
 
 const VIOLATION_SEARCH_KEYS: (keyof PolicyViolationRow)[] = ["agentName", "reason", "severity"];
 const SECURITY_SEARCH_KEYS: (keyof SecurityEventRow)[] = ["type", "description"];
@@ -33,6 +34,7 @@ export default function GovernanceScreen() {
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
   const { data, loading, error, refetch } = useGovernanceDashboard();
+  const { registerSection } = useSectionScroll();
   const { create: createRule, loading: createLoading } = useCreateComplianceViolationRule();
   const { create: createHuman, loading: createHumanLoading, error: createHumanError } = useCreateHuman();
   const [showCreateRule, setShowCreateRule] = useState(false);
@@ -122,7 +124,7 @@ export default function GovernanceScreen() {
         isLoading: loading,
       }}
     >
-      <View nativeID="overview" style={sectionStyles.section}>
+      <View ref={(r) => registerSection("overview", r)} nativeID="overview" style={sectionStyles.section}>
         <SectionHeader title="Overview" />
         {loading ? (
           <CardGrid columns={4}>
@@ -151,7 +153,7 @@ export default function GovernanceScreen() {
       </View>
 
       {data && (
-        <View nativeID="compliance-status" style={sectionStyles.section}>
+        <View ref={(r) => registerSection("compliance-status", r)} nativeID="compliance-status" style={sectionStyles.section}>
           <SectionHeader title="Compliance Status" />
           <CardGrid columns={3}>
             {data.complianceItems.map((item: ComplianceItem) => (
@@ -168,7 +170,7 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View nativeID="seat-user-oversight" style={sectionStyles.section}>
+        <View ref={(r) => registerSection("seat-user-oversight", r)} nativeID="seat-user-oversight" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
             <SectionHeader
               title="Seat User Oversight"
@@ -211,7 +213,7 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View nativeID="recent-violations" style={sectionStyles.section}>
+        <View ref={(r) => registerSection("recent-violations", r)} nativeID="recent-violations" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
             <SectionHeader title="Recent Violations" />
             <Pressable
@@ -243,7 +245,7 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View nativeID="policy-changes" style={sectionStyles.section}>
+        <View ref={(r) => registerSection("policy-changes", r)} nativeID="policy-changes" style={sectionStyles.section}>
           <SectionHeader title="Policy Changes" subtitle="Audit trail of policy modifications" />
           <DataTable
             columns={policyChangeCols}

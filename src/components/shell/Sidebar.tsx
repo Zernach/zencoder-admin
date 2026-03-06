@@ -18,6 +18,7 @@ import { isWeb } from "@/constants/platform";
 import { ROUTES } from "@/constants/routes";
 import { TOP_NAV_ITEMS, hasSubsections, getSubsections } from "@/constants/navigation";
 import { SidebarSubsectionItem } from "./SidebarSubsectionItem";
+import { useSectionScroll } from "@/hooks/useSectionScroll";
 
 interface SidebarProps {
   expanded: boolean;
@@ -33,6 +34,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const { scrollToSection } = useSectionScroll();
   const sidebarWidth = useSharedValue(expanded ? 264 : 76);
   const handleNavigate = useCallback(
     (route: ROUTES) => {
@@ -120,10 +122,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
                     <SidebarSubsectionItem
                       key={sub.id}
                       label={sub.label}
-                      onPress={() => {
-                        // Scroll-to-section: dispatch a custom event or use nativeID lookup
-                        // For now, no-op — section anchoring is handled via nativeID on screens
-                      }}
+                      onPress={() => scrollToSection(sub.id)}
                     />
                   ))}
                 </View>

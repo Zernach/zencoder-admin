@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { setSidebarExpanded, toggleSidebar, selectSidebarExpanded } from "@/store/slices/sidebarSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { SectionScrollProvider } from "@/hooks/useSectionScroll";
 import { Sidebar } from "./Sidebar";
 import { BottomTabs } from "./BottomTabs";
 
@@ -26,18 +27,20 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }, [bp, dispatch]);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.bg.canvas }]}>
-      {!isMobile && (
-        <Sidebar
-          expanded={expanded}
-          onToggle={() => dispatch(toggleSidebar())}
-        />
-      )}
-      <View style={styles.main}>
-        {children}
-        {isMobile && <BottomTabs />}
+    <SectionScrollProvider>
+      <View style={[styles.container, { backgroundColor: theme.bg.canvas }]}>
+        {!isMobile && (
+          <Sidebar
+            expanded={expanded}
+            onToggle={() => dispatch(toggleSidebar())}
+          />
+        )}
+        <View style={styles.main}>
+          {children}
+          {isMobile && <BottomTabs />}
+        </View>
       </View>
-    </View>
+    </SectionScrollProvider>
   );
 }
 
