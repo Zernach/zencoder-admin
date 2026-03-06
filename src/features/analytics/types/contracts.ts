@@ -330,6 +330,51 @@ export interface RunDetailResponse {
   userName: string;
 }
 
+// ─── Create Entity Contracts ────────────────────────────
+export interface CreateComplianceRuleRequest {
+  name: string;
+  description: string;
+  severity: Severity;
+}
+
+export interface CreateComplianceRuleResponse {
+  id: string;
+  name: string;
+  description: string;
+  severity: Severity;
+  createdAtIso: string;
+}
+
+export interface CreateSeatRequest {
+  name: string;
+  email: string;
+  teamId: string;
+}
+
+export interface CreateSeatResponse {
+  user: User;
+  createdAtIso: string;
+}
+
+export interface CreateProjectRequest {
+  name: string;
+  teamId: string;
+}
+
+export interface CreateProjectResponse {
+  project: Project;
+  createdAtIso: string;
+}
+
+export interface CreateTeamRequest {
+  name: string;
+}
+
+export interface CreateTeamResponse {
+  team: Team;
+  createdAtIso: string;
+}
+
 // ─── Seed Data Container ────────────────────────────────
 export interface SeedData {
   teams: Team[]; users: User[]; projects: Project[]; agents: Agent[];

@@ -17,6 +17,14 @@ import type {
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
+  CreateComplianceRuleRequest,
+  CreateComplianceRuleResponse,
+  CreateSeatRequest,
+  CreateSeatResponse,
+  CreateProjectRequest,
+  CreateProjectResponse,
+  CreateTeamRequest,
+  CreateTeamResponse,
 } from "@/features/analytics/types";
 import { round1, round2 } from "../utils/metricFormulas";
 
@@ -124,5 +132,21 @@ export class AnalyticsService implements IAnalyticsService {
 
   async getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse> {
     return this.api.getRunDetail(orgId, runId);
+  }
+
+  async createComplianceRule(request: CreateComplianceRuleRequest): Promise<CreateComplianceRuleResponse> {
+    return this.api.createComplianceRule(request);
+  }
+
+  async createSeat(request: CreateSeatRequest): Promise<CreateSeatResponse> {
+    return this.api.createSeat(request);
+  }
+
+  async createProject(request: CreateProjectRequest): Promise<CreateProjectResponse> {
+    return this.api.createProject(request);
+  }
+
+  async createTeam(request: CreateTeamRequest): Promise<CreateTeamResponse> {
+    return this.api.createTeam(request);
   }
 }

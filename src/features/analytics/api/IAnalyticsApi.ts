@@ -15,6 +15,14 @@ import type {
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
+  CreateComplianceRuleRequest,
+  CreateComplianceRuleResponse,
+  CreateSeatRequest,
+  CreateSeatResponse,
+  CreateProjectRequest,
+  CreateProjectResponse,
+  CreateTeamRequest,
+  CreateTeamResponse,
 } from "@/features/analytics/types";
 
 export interface IAnalyticsApi {
@@ -32,4 +40,8 @@ export interface IAnalyticsApi {
   getTeamDetail(orgId: string, teamId: string): Promise<TeamDetailResponse>;
   getHumanDetail(orgId: string, humanId: string): Promise<HumanDetailResponse>;
   getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse>;
+  createComplianceRule(request: CreateComplianceRuleRequest): Promise<CreateComplianceRuleResponse>;
+  createSeat(request: CreateSeatRequest): Promise<CreateSeatResponse>;
+  createProject(request: CreateProjectRequest): Promise<CreateProjectResponse>;
+  createTeam(request: CreateTeamRequest): Promise<CreateTeamResponse>;
 }

@@ -29,6 +29,14 @@ import type {
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
+  CreateComplianceRuleRequest,
+  CreateComplianceRuleResponse,
+  CreateSeatRequest,
+  CreateSeatResponse,
+  CreateProjectRequest,
+  CreateProjectResponse,
+  CreateTeamRequest,
+  CreateTeamResponse,
 } from "@/features/analytics/types";
 import { round2, round4 } from "../../utils/metricFormulas";
 import {
@@ -808,6 +816,48 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       projectName: project?.name ?? run.projectId,
       teamName: team?.name ?? "Unknown",
       userName: user?.name ?? run.userId,
+    };
+  }
+
+  private nextId(prefix: string): string {
+    return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  async createComplianceRule(request: CreateComplianceRuleRequest): Promise<CreateComplianceRuleResponse> {
+    await this.simulate();
+    return {
+      id: this.nextId("rule"),
+      name: request.name,
+      description: request.description,
+      severity: request.severity,
+      createdAtIso: new Date().toISOString(),
+    };
+  }
+
+  async createSeat(request: CreateSeatRequest): Promise<CreateSeatResponse> {
+    await this.simulate();
+    const id = this.nextId("user");
+    return {
+      user: { id, name: request.name, email: request.email, teamId: request.teamId },
+      createdAtIso: new Date().toISOString(),
+    };
+  }
+
+  async createProject(request: CreateProjectRequest): Promise<CreateProjectResponse> {
+    await this.simulate();
+    const id = this.nextId("proj");
+    return {
+      project: { id, name: request.name, teamId: request.teamId },
+      createdAtIso: new Date().toISOString(),
+    };
+  }
+
+  async createTeam(request: CreateTeamRequest): Promise<CreateTeamResponse> {
+    await this.simulate();
+    const id = this.nextId("team");
+    return {
+      team: { id, name: request.name },
+      createdAtIso: new Date().toISOString(),
     };
   }
 }

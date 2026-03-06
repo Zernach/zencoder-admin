@@ -205,6 +205,10 @@ describe("delegation via mock", () => {
       getTeamDetail: jest.fn(),
       getHumanDetail: jest.fn(),
       getRunDetail: jest.fn(),
+      createComplianceRule: jest.fn(),
+      createSeat: jest.fn(),
+      createProject: jest.fn(),
+      createTeam: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -254,6 +258,10 @@ describe("delegation via mock", () => {
       getTeamDetail: jest.fn(),
       getHumanDetail: jest.fn(),
       getRunDetail: jest.fn(),
+      createComplianceRule: jest.fn(),
+      createSeat: jest.fn(),
+      createProject: jest.fn(),
+      createTeam: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -299,6 +307,10 @@ describe("getSearchSuggestions", () => {
       getTeamDetail: jest.fn(),
       getHumanDetail: jest.fn(),
       getRunDetail: jest.fn(),
+      createComplianceRule: jest.fn(),
+      createSeat: jest.fn(),
+      createProject: jest.fn(),
+      createTeam: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
