@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import { View, Text, Switch, Pressable, StyleSheet } from "react-native";
+import React, { useCallback, useState } from "react";
+import { View, Text, Switch, Pressable, Modal, StyleSheet } from "react-native";
+import { X } from "lucide-react-native";
 import { SectionHeader } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
+import { useCreateTeam } from "@/features/analytics/hooks/useCreateTeam";
+import { CreateTeamForm } from "@/features/analytics/components/CreateTeamForm";
 import { spacing } from "@/theme/tokens";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -22,11 +25,21 @@ const TOGGLES: SettingToggle[] = [
 export default function SettingsScreen() {
   const { mode, setMode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const { create: createTeam, loading: createTeamLoading, error: createTeamError } = useCreateTeam();
+  const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [settings, setSettings] = useState<Record<string, boolean>>({
     emailNotifs: true,
     slackInteg: false,
     autoRefresh: true,
   });
+
+  const handleCreateTeam = useCallback(
+    async (values: { name: string }) => {
+      await createTeam(values);
+      setShowCreateTeam(false);
+    },
+    [createTeam],
+  );
 
   const toggle = (key: string) => {
     if (key === "darkMode") {
@@ -75,7 +88,17 @@ export default function SettingsScreen() {
       </View>
 
       <View style={styles.section}>
-        <SectionHeader title="Organization" />
+        <View style={styles.sectionRow}>
+          <SectionHeader title="Organization" />
+          <Pressable
+            onPress={() => setShowCreateTeam(true)}
+            style={[styles.createButton, { backgroundColor: theme.border.brand }]}
+            accessibilityRole="button"
+            accessibilityLabel="Create Team"
+          >
+            <Text style={[styles.createButtonText, { color: theme.text.onBrand }]}>+ Create Team</Text>
+          </Pressable>
+        </View>
         <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Org ID</Text>
@@ -102,6 +125,34 @@ export default function SettingsScreen() {
           <Text style={[styles.dangerText, { color: theme.state.error }]}>Clear Cache</Text>
         </Pressable>
       </View>
+      <Modal
+        transparent
+        visible={showCreateTeam}
+        animationType="fade"
+        onRequestClose={() => setShowCreateTeam(false)}
+      >
+        <View style={[styles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
+          <Pressable
+            style={StyleSheet.absoluteFillObject}
+            onPress={() => setShowCreateTeam(false)}
+            accessibilityRole="button"
+            accessibilityLabel="Close create team form"
+          />
+          <View style={[styles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
+            <View style={styles.modalHeader}>
+              <Pressable
+                onPress={() => setShowCreateTeam(false)}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Close"
+              >
+                <X size={16} color={theme.text.secondary} />
+              </Pressable>
+            </View>
+            <CreateTeamForm onSubmit={handleCreateTeam} loading={createTeamLoading} error={createTeamError} />
+          </View>
+        </View>
+      </Modal>
     </ScreenWrapper>
   );
 }
@@ -140,4 +191,36 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   dangerText: { fontWeight: "600", fontSize: 14 },
+  sectionRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  createButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  createButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  modalPanel: {
+    width: 400,
+    maxWidth: "100%",
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 16,
+    gap: 12,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
 });

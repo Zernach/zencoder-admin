@@ -78,6 +78,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   private createdViolations: PolicyViolationRow[] = [];
   private createdUsers: Array<{ id: string; name: string; email: string; teamId: string }> = [];
   private createdProjects: Array<{ id: string; name: string; teamId: string }> = [];
+  private createdTeams: Array<{ id: string; name: string }> = [];
 
   constructor(seedData: SeedData, config: StubConfig = {}) {
     this.seed = seedData;
@@ -924,9 +925,18 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async createTeam(request: CreateTeamRequest): Promise<CreateTeamResponse> {
     await this.simulate();
+
+    // Reject duplicate team name
+    const allTeams = [...this.seed.teams, ...this.createdTeams];
+    if (allTeams.some((t) => t.name === request.name)) {
+      throw new Error(`A team named "${request.name}" already exists`);
+    }
+
     const id = this.nextId("team");
+    const team = { id, name: request.name };
+    this.createdTeams.push(team);
     return {
-      team: { id, name: request.name },
+      team,
       createdAtIso: new Date().toISOString(),
     };
   }
