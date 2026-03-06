@@ -2,7 +2,6 @@ import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider as ReduxProvider } from "react-redux";
 import { ThemeProvider } from "./ThemeProvider";
-import { QueryProvider } from "./QueryProvider";
 import { AppDependenciesProvider } from "@/core/di";
 import { store } from "@/store";
 
@@ -11,9 +10,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     <SafeAreaProvider>
       <ThemeProvider>
         <ReduxProvider store={store}>
-          <QueryProvider>
-            <AppDependenciesProvider>{children}</AppDependenciesProvider>
-          </QueryProvider>
+          <AppDependenciesProvider>{children}</AppDependenciesProvider>
         </ReduxProvider>
       </ThemeProvider>
     </SafeAreaProvider>
