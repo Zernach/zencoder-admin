@@ -5,6 +5,7 @@ import type { SeedData } from "@/features/analytics/types";
 import { StubAnalyticsApi } from "@/features/analytics/api";
 import { AnalyticsService } from "@/features/analytics/services";
 import { generateSeedData } from "@/features/analytics/fixtures";
+import { initializeService } from "@/store/api/serviceRegistry";
 
 interface AppDeps {
   analyticsApi: IAnalyticsApi;
@@ -29,6 +30,7 @@ export function AppDependenciesProvider({
     });
     const service =
       overrides?.analyticsService ?? new AnalyticsService(api);
+    initializeService(service);
     return { analyticsApi: api, analyticsService: service, seedData };
   }, [overrides]);
   return <Ctx.Provider value={deps}>{children}</Ctx.Provider>;
