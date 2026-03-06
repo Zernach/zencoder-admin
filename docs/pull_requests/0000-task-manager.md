@@ -51,15 +51,15 @@
 | ✅ | [0043](./0043-entity-screens-per-tab-stack-route-wrappers.md) | Entity Screens in Every Tab Stack (Route Wrappers + Shared Views) | Screens |
 | ✅ | [0044](./0044-search-autocomplete-and-entity-navigation-test-plan.md) | Search Autocomplete + Entity Navigation Test Coverage | Testing |
 | ✅ | [0045](./0045-create-entity-form-foundation-hooks-and-contracts.md) | Create Entity Form Foundations (Hooks, Components, Shared Contracts) | Foundation |
-| 📝 | [0046](./0046-create-compliance-violation-rule.md) | Create Compliance Violation Rule Flow | Governance |
-| 📝 | [0047](./0047-create-seat-human.md) | Create Seat/Human Flow | Governance |
-| 📝 | [0048](./0048-create-project.md) | Create Project Flow | Projects |
-| 📝 | [0049](./0049-create-team.md) | Create Team Flow | Teams |
-| 📝 | [0050](./0050-create-entity-workflows-test-coverage.md) | Create Entity Workflows Test Coverage | Testing |
-| 📝 | [0051](./0051-sidebar-subsection-contracts-and-shared-constants.md) | Sidebar Subsection Contracts and Shared Constants | Foundation |
-| 📝 | [0052](./0052-sidebar-subsections-for-agents-costs-governance.md) | Sidebar Subsections for Agents, Costs, and Governance | Components |
-| 📝 | [0053](./0053-sidebar-subsection-navigation-test-coverage.md) | Sidebar Subsection Navigation Test Coverage | Testing |
+| ✅ | [0046](./0046-create-compliance-violation-rule.md) | Create Compliance Violation Rule Flow | Governance |
+| ✅ | [0047](./0047-create-seat-human.md) | Create Seat/Human Flow | Governance |
+| ✅ | [0048](./0048-create-project.md) | Create Project Flow | Projects |
+| ✅ | [0049](./0049-create-team.md) | Create Team Flow | Teams |
+| ✅ | [0050](./0050-create-entity-workflows-test-coverage.md) | Create Entity Workflows Test Coverage | Testing |
+| ✅ | [0051](./0051-sidebar-subsection-contracts-and-shared-constants.md) | Sidebar Subsection Contracts and Shared Constants | Foundation |
+| ✅ | [0052](./0052-sidebar-subsections-for-agents-costs-governance.md) | Sidebar Subsections for Agents, Costs, and Governance | Components |
+| ✅ | [0053](./0053-sidebar-subsection-navigation-test-coverage.md) | Sidebar Subsection Navigation Test Coverage | Testing |
 
 ---
 
-**Progress: 45 / 53**
+**Progress: 53 / 53**
