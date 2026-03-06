@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, Text, StyleSheet } from "react-native";
+import { Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 
@@ -13,7 +14,7 @@ export function SidebarSubsectionItem({ label, onPress }: SidebarSubsectionItemP
   const theme = semanticThemes[mode];
 
   return (
-    <Pressable
+    <CustomButton
       onPress={onPress}
       style={styles.item}
       accessibilityRole="button"
@@ -22,7 +23,7 @@ export function SidebarSubsectionItem({ label, onPress }: SidebarSubsectionItemP
       <Text style={[styles.label, { color: theme.text.tertiary }]} numberOfLines={1}>
         {label}
       </Text>
-    </Pressable>
+    </CustomButton>
   );
 }
 

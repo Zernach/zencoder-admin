@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, Switch, Pressable, Modal, StyleSheet } from "react-native";
+import { View, Text, Switch, Modal, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import { X } from "lucide-react-native";
 import { SectionHeader } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
@@ -90,14 +91,14 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <View style={styles.sectionRow}>
           <SectionHeader title="Organization" />
-          <Pressable
+          <CustomButton
             onPress={() => setShowCreateTeam(true)}
             style={[styles.createButton, { backgroundColor: theme.border.brand }]}
             accessibilityRole="button"
             accessibilityLabel="Create Team"
           >
             <Text style={[styles.createButtonText, { color: theme.text.onBrand }]}>+ Create Team</Text>
-          </Pressable>
+          </CustomButton>
         </View>
         <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
           <View style={styles.infoRow}>
@@ -117,13 +118,13 @@ export default function SettingsScreen() {
 
       <View style={styles.section}>
         <SectionHeader title="Danger Zone" />
-        <Pressable
+        <CustomButton
           style={[styles.dangerBtn, { borderColor: theme.state.error, backgroundColor: theme.state.error + "1A" }]}
           accessibilityRole="button"
           accessibilityLabel="Clear all cached data"
         >
           <Text style={[styles.dangerText, { color: theme.state.error }]}>Clear Cache</Text>
-        </Pressable>
+        </CustomButton>
       </View>
       <Modal
         transparent
@@ -132,7 +133,7 @@ export default function SettingsScreen() {
         onRequestClose={() => setShowCreateTeam(false)}
       >
         <View style={[styles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
-          <Pressable
+          <CustomButton
             style={StyleSheet.absoluteFillObject}
             onPress={() => setShowCreateTeam(false)}
             accessibilityRole="button"
@@ -140,14 +141,14 @@ export default function SettingsScreen() {
           />
           <View style={[styles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
             <View style={styles.modalHeader}>
-              <Pressable
+              <CustomButton
                 onPress={() => setShowCreateTeam(false)}
                 hitSlop={8}
                 accessibilityRole="button"
                 accessibilityLabel="Close"
               >
                 <X size={16} color={theme.text.secondary} />
-              </Pressable>
+              </CustomButton>
             </View>
             <CreateTeamForm onSubmit={handleCreateTeam} loading={createTeamLoading} error={createTeamError} />
           </View>

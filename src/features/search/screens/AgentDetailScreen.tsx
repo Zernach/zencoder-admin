@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useAgentDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
+import { CustomList } from "@/components/lists";
 import { ScreenWrapper } from "@/components/screen";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -22,7 +23,7 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
 
   return (
     <ScreenWrapper headerProps={{ title: data.agent.name }}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+      <CustomList scrollViewProps={{ style: styles.scroll, contentContainerStyle: styles.content }}>
         <Text style={[styles.heading, { color: theme.text.primary }]}>{data.agent.name}</Text>
         <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
           {data.projectName} · {data.teamName}
@@ -40,7 +41,7 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
             <Text style={[styles.runStatus, { color: theme.text.secondary }]}>{run.status}</Text>
           </View>
         ))}
-      </ScrollView>
+      </CustomList>
     </ScreenWrapper>
   );
 }

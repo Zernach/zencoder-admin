@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from "react";
-import { View, Image, Text, Pressable, StyleSheet } from "react-native";
+import { View, Image, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -90,7 +91,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
             </View>
           )
         )}
-        <Pressable
+        <CustomButton
           onPress={onToggle}
           style={styles.toggleBtn}
           accessibilityRole="button"
@@ -101,7 +102,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
           ) : (
             <PanelLeftOpen size={18} color={theme.text.secondary} />
           )}
-        </Pressable>
+        </CustomButton>
       </View>
       <View style={styles.nav}>
         {TOP_NAV_ITEMS.map((item) => {

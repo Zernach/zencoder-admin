@@ -15,7 +15,7 @@ describe("Sidebar Subsection Navigation — contract", () => {
   });
 
   it("costs subsections have matching nativeID anchors defined", () => {
-    const expectedIds = ["cost-summary", "cost-by-provider", "budget-forecast", "project-breakdown"];
+    const expectedIds = ["cost-summary", "cost-by-provider", "budget-forecast", "costs-project-breakdown"];
     const costSubs = SUBSECTIONS[ROUTES.COSTS];
     expect(costSubs.map((s) => s.id)).toEqual(expectedIds);
   });

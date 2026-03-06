@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { View, Text, Pressable, ScrollView, StyleSheet, Modal } from "react-native";
+import { View, Text, StyleSheet, Modal } from "react-native";
+import { CustomButton } from "@/components/buttons";
+import { CustomList } from "@/components/lists";
 import { ChevronDown, X, Filter } from "lucide-react-native";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import { useAppDependencies } from "@/core/di/AppDependencies";
@@ -164,10 +166,12 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
     <View style={styles.container}>
       {/* Row 1: Filter dropdowns */}
       <View style={styles.topRow}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterGroup}
+        <CustomList
+          scrollViewProps={{
+            horizontal: true,
+            showsHorizontalScrollIndicator: false,
+            contentContainerStyle: styles.filterGroup,
+          }}
         >
           <Filter size={14} color={theme.text.tertiary} style={styles.filterIcon} />
           {filterConfigs.map((config) => {
@@ -175,7 +179,7 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
             const count = config.selected.length;
             const isActive = count > 0;
             return (
-              <Pressable
+              <CustomButton
                 key={config.category}
                 style={[
                   styles.filterButton,
@@ -202,33 +206,35 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
                     : config.singularLabel}
                 </Text>
                 <ChevronDown size={12} color={theme.text.tertiary} />
-              </Pressable>
+              </CustomButton>
             );
           })}
-        </ScrollView>
+        </CustomList>
       </View>
 
       {/* Row 2: Active filter chips */}
       {activeChips.length > 0 && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipsRow}
+        <CustomList
+          scrollViewProps={{
+            horizontal: true,
+            showsHorizontalScrollIndicator: false,
+            contentContainerStyle: styles.chipsRow,
+          }}
         >
           {activeChips.map((chip) => (
             <View key={chip.key} style={[styles.chip, { backgroundColor: theme.bg.surfaceElevated, borderColor: theme.border.default }]}>
               <Text style={[styles.chipText, { color: theme.text.primary }]}>{chip.label}</Text>
-              <Pressable onPress={chip.onRemove} hitSlop={8}>
+              <CustomButton onPress={chip.onRemove} hitSlop={8}>
                 <X size={12} color={theme.text.secondary} />
-              </Pressable>
+              </CustomButton>
             </View>
           ))}
           {activeFilterCount > 0 && (
-            <Pressable onPress={clearAll} style={styles.clearAllButton}>
+            <CustomButton onPress={clearAll} style={styles.clearAllButton}>
               <Text style={[styles.clearAllText, { color: theme.border.brand }]}>Clear All</Text>
-            </Pressable>
+            </CustomButton>
           )}
-        </ScrollView>
+        </CustomList>
       )}
 
       {/* Dropdown Modal */}
@@ -239,21 +245,21 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
           visible
           onRequestClose={() => setOpenDropdown(null)}
         >
-          <Pressable style={[styles.modalOverlay, { backgroundColor: theme.bg.overlay }]} onPress={() => setOpenDropdown(null)}>
+          <CustomButton style={[styles.modalOverlay, { backgroundColor: theme.bg.overlay }]} onPress={() => setOpenDropdown(null)}>
             <View style={[styles.dropdownPanel, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }]}>
               <View style={[styles.dropdownHeader, { borderBottomColor: theme.border.default }]}>
                 <Text style={[styles.dropdownTitle, { color: theme.text.primary }]}>
                   {openConfig.singularLabel}
                 </Text>
-                <Pressable onPress={() => setOpenDropdown(null)} hitSlop={8}>
+                <CustomButton onPress={() => setOpenDropdown(null)} hitSlop={8}>
                   <X size={16} color={theme.text.secondary} />
-                </Pressable>
+                </CustomButton>
               </View>
-              <ScrollView style={styles.optionsList} bounces={false}>
+              <CustomList scrollViewProps={{ style: styles.optionsList, bounces: false }}>
                 {openConfig.options.map((opt) => {
                   const isSelected = openConfig.selected.includes(opt.value);
                   return (
-                    <Pressable
+                    <CustomButton
                       key={opt.value}
                       style={[
                         styles.optionRow,
@@ -279,12 +285,12 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
                       >
                         {opt.label}
                       </Text>
-                    </Pressable>
+                    </CustomButton>
                   );
                 })}
-              </ScrollView>
+              </CustomList>
             </View>
-          </Pressable>
+          </CustomButton>
         </Modal>
       )}
     </View>

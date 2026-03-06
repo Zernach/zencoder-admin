@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useHumanDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
+import { CustomList } from "@/components/lists";
 import { ScreenWrapper } from "@/components/screen";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -22,7 +23,7 @@ export function HumanDetailScreen({ humanId }: HumanDetailScreenProps) {
 
   return (
     <ScreenWrapper headerProps={{ title: data.user.name }}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+      <CustomList scrollViewProps={{ style: styles.scroll, contentContainerStyle: styles.content }}>
         <Text style={[styles.heading, { color: theme.text.primary }]}>{data.user.name}</Text>
         <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
           {data.user.email} · {data.teamName}
@@ -39,7 +40,7 @@ export function HumanDetailScreen({ humanId }: HumanDetailScreenProps) {
             <Text style={[styles.runStatus, { color: theme.text.secondary }]}>{run.status}</Text>
           </View>
         ))}
-      </ScrollView>
+      </CustomList>
     </ScreenWrapper>
   );
 }

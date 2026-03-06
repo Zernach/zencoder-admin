@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { View, Text, Pressable, StyleSheet, Modal } from "react-native";
+import { View, Text, StyleSheet, Modal } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import type { TextInput as TextInputHandle } from "react-native";
 import { Search, Clock, X } from "lucide-react-native";
 import { useRouter, usePathname } from "expo-router";
@@ -45,7 +46,7 @@ const PRESET_SHORT_LABELS: Record<TimeRangePreset, string> = {
 const CONTROL_HORIZONTAL_PADDING = 12;
 const CONTROL_VERTICAL_PADDING = 8;
 const CONTROL_TEXT_SIZE = 13;
-const CONTROL_TEXT_LINE_HEIGHT = 18;
+const CONTROL_TEXT_LINE_HEIGHT = 20;
 
 export function TopBar() {
   const breakpoint = useBreakpoint();
@@ -142,7 +143,7 @@ export function TopBar() {
             accessibilityHint="Filter dashboard data by keyword"
           />
           {hasQuery && (
-            <Pressable
+            <CustomButton
               onPress={handleClearSearch}
               hitSlop={8}
               accessibilityRole="button"
@@ -150,7 +151,7 @@ export function TopBar() {
               style={styles.clearButton}
             >
               <X size={14} color={theme.icon.secondary} />
-            </Pressable>
+            </CustomButton>
           )}
           <SearchAutocompletePanel
             suggestions={autocomplete.suggestions}
@@ -163,7 +164,7 @@ export function TopBar() {
         </View>
       </View>
       <View style={styles.right}>
-        <Pressable
+        <CustomButton
           style={[styles.presetBtn, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }]}
           accessibilityRole="button"
           accessibilityLabel="Open time range selector"
@@ -171,7 +172,7 @@ export function TopBar() {
         >
           <Clock size={14} color={theme.text.secondary} />
           <Text style={[styles.presetText, { color: theme.text.secondary }]}>{presetButtonLabel}</Text>
-        </Pressable>
+        </CustomButton>
       </View>
       <Modal
         transparent
@@ -180,7 +181,7 @@ export function TopBar() {
         onRequestClose={closeTimeRangeOverlay}
       >
         <View style={[styles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
-          <Pressable
+          <CustomButton
             style={StyleSheet.absoluteFillObject}
             onPress={closeTimeRangeOverlay}
             accessibilityRole="button"
@@ -189,20 +190,20 @@ export function TopBar() {
           <View style={[styles.overlayPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
             <View style={styles.overlayHeader}>
               <Text style={[styles.overlayTitle, { color: theme.text.primary }]}>Select Time Range</Text>
-              <Pressable
+              <CustomButton
                 onPress={closeTimeRangeOverlay}
                 hitSlop={8}
                 accessibilityRole="button"
                 accessibilityLabel="Close overlay"
               >
                 <X size={16} color={theme.text.secondary} />
-              </Pressable>
+              </CustomButton>
             </View>
             <View style={styles.overlayOptions}>
               {TIME_PRESET_OPTIONS.map((option) => {
                 const isSelected = preset === option.value;
                 return (
-                  <Pressable
+                  <CustomButton
                     key={option.value}
                     style={[
                       styles.overlayOptionButton,
@@ -223,7 +224,7 @@ export function TopBar() {
                     >
                       {option.label}
                     </Text>
-                  </Pressable>
+                  </CustomButton>
                 );
               })}
             </View>
@@ -280,6 +281,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: CONTROL_TEXT_SIZE,
     lineHeight: CONTROL_TEXT_LINE_HEIGHT,
+    minHeight: CONTROL_TEXT_LINE_HEIGHT,
     paddingVertical: 0,
   },
   searchInputWrapper: {

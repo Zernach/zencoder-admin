@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
+import { View, Text, Modal, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import { X } from "lucide-react-native";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
 import { useCreateComplianceViolationRule } from "@/features/analytics/hooks/useCreateComplianceViolationRule";
@@ -17,6 +18,7 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
+import { keyExtractors } from "@/constants";
 
 const VIOLATION_SEARCH_KEYS: (keyof PolicyViolationRow)[] = ["agentName", "reason", "severity"];
 const SECURITY_SEARCH_KEYS: (keyof SecurityEventRow)[] = ["type", "description"];
@@ -176,14 +178,14 @@ export default function GovernanceScreen() {
               title="Seat User Oversight"
               subtitle="Full names of active seat users and AI usage by account seat"
             />
-            <Pressable
+            <CustomButton
               onPress={() => setShowCreateSeat(true)}
               style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
               accessibilityRole="button"
               accessibilityLabel="Add Seat"
             >
               <Text style={[localStyles.createButtonText, { color: theme.text.onBrand }]}>+ Add Seat</Text>
-            </Pressable>
+            </CustomButton>
           </View>
           <View style={localStyles.seatUsageSummary}>
             <Text style={[localStyles.summaryText, { color: theme.text.secondary }]}>
@@ -207,7 +209,7 @@ export default function GovernanceScreen() {
             columns={seatUsageCols}
             data={filteredSeatUsers}
             emptyMessage="No seat usage data for the selected time range."
-            keyExtractor={(row) => row.userId}
+            keyExtractor={keyExtractors.byUserId}
           />
         </View>
       )}
@@ -216,19 +218,19 @@ export default function GovernanceScreen() {
         <View ref={(r) => registerSection("recent-violations", r)} nativeID="recent-violations" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
             <SectionHeader title="Recent Violations" />
-            <Pressable
+            <CustomButton
               onPress={() => setShowCreateRule(true)}
               style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
               accessibilityRole="button"
               accessibilityLabel="Create Compliance Rule"
             >
               <Text style={[localStyles.createButtonText, { color: theme.text.onBrand }]}>+ Create Rule</Text>
-            </Pressable>
+            </CustomButton>
           </View>
           <DataTable
             columns={violationCols}
             data={filteredViolations}
-            keyExtractor={(row) => row.id}
+            keyExtractor={keyExtractors.byId}
           />
         </View>
       )}
@@ -239,7 +241,7 @@ export default function GovernanceScreen() {
           <DataTable
             columns={securityCols}
             data={filteredSecurityEvents}
-            keyExtractor={(row) => row.id}
+            keyExtractor={keyExtractors.byId}
           />
         </View>
       )}
@@ -250,7 +252,7 @@ export default function GovernanceScreen() {
           <DataTable
             columns={policyChangeCols}
             data={filteredPolicyChanges}
-            keyExtractor={(row) => row.id}
+            keyExtractor={keyExtractors.byId}
           />
         </View>
       )}
@@ -261,7 +263,7 @@ export default function GovernanceScreen() {
         onRequestClose={() => setShowCreateRule(false)}
       >
         <View style={[localStyles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
-          <Pressable
+          <CustomButton
             style={StyleSheet.absoluteFillObject}
             onPress={() => setShowCreateRule(false)}
             accessibilityRole="button"
@@ -269,14 +271,14 @@ export default function GovernanceScreen() {
           />
           <View style={[localStyles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
             <View style={localStyles.modalHeader}>
-              <Pressable
+              <CustomButton
                 onPress={() => setShowCreateRule(false)}
                 hitSlop={8}
                 accessibilityRole="button"
                 accessibilityLabel="Close"
               >
                 <X size={16} color={theme.text.secondary} />
-              </Pressable>
+              </CustomButton>
             </View>
             <CreateComplianceRuleForm onSubmit={handleCreateRule} loading={createLoading} />
           </View>
@@ -289,7 +291,7 @@ export default function GovernanceScreen() {
         onRequestClose={() => setShowCreateSeat(false)}
       >
         <View style={[localStyles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
-          <Pressable
+          <CustomButton
             style={StyleSheet.absoluteFillObject}
             onPress={() => setShowCreateSeat(false)}
             accessibilityRole="button"
@@ -297,14 +299,14 @@ export default function GovernanceScreen() {
           />
           <View style={[localStyles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
             <View style={localStyles.modalHeader}>
-              <Pressable
+              <CustomButton
                 onPress={() => setShowCreateSeat(false)}
                 hitSlop={8}
                 accessibilityRole="button"
                 accessibilityLabel="Close"
               >
                 <X size={16} color={theme.text.secondary} />
-              </Pressable>
+              </CustomButton>
             </View>
             <CreateHumanForm onSubmit={handleCreateSeat} loading={createHumanLoading} error={createHumanError} />
           </View>

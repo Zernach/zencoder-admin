@@ -1,8 +1,7 @@
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated as RNAnimated,
   Easing,
-  FlatList,
   StyleSheet,
   Text,
   View,
@@ -24,6 +23,8 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { radius, spacing } from "@/theme/tokens";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes, type SemanticTheme } from "@/theme/themes";
+import { keyExtractors } from "@/constants";
+import { CustomList } from "@/components/lists";
 import { ErrorState } from "./ErrorState";
 import { SectionHeader } from "./SectionHeader";
 
@@ -483,16 +484,23 @@ export function LiveAssistantsSection({
 
   const columns = useMemo(() => chunkSessions(cards, ROWS_PER_COLUMN), [cards]);
 
-  const renderColumn = ({ item }: ListRenderItemInfo<SessionColumn>) => {
-    return (
-      <View style={styles.column}>
-        {item.rows.map((card) => (
-          <LiveAssistantCard key={card.session.sessionId} card={card} reducedMotion={reducedMotion} theme={theme} />
-        ))}
-        {item.rows.length < ROWS_PER_COLUMN ? <View style={styles.cardSpacer} /> : null}
-      </View>
-    );
-  };
+  const renderColumn = useCallback(
+    ({ item }: ListRenderItemInfo<SessionColumn>) => {
+      return (
+        <View style={styles.column}>
+          {item.rows.map((card) => (
+            <LiveAssistantCard key={card.session.sessionId} card={card} reducedMotion={reducedMotion} theme={theme} />
+          ))}
+          {item.rows.length < ROWS_PER_COLUMN ? <View style={styles.cardSpacer} /> : null}
+        </View>
+      );
+    },
+    [reducedMotion, theme],
+  );
+  const renderColumnSeparator = useCallback(
+    () => <View style={styles.columnGap} />,
+    [],
+  );
 
   return (
     <View style={styles.section}>
@@ -512,14 +520,16 @@ export function LiveAssistantsSection({
       ) : columns.length === 0 ? (
         <EmptyLiveState theme={theme} />
       ) : (
-        <FlatList
-          horizontal
-          data={columns}
-          renderItem={renderColumn}
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={() => <View style={styles.columnGap} />}
+        <CustomList
+          flatListProps={{
+            horizontal: true,
+            data: columns,
+            renderItem: renderColumn,
+            keyExtractor: keyExtractors.byId,
+            showsHorizontalScrollIndicator: false,
+            contentContainerStyle: styles.listContent,
+            ItemSeparatorComponent: renderColumnSeparator,
+          }}
         />
       )}
     </View>
@@ -618,13 +628,41 @@ const styles = StyleSheet.create({
   },
   metaRow: {
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "space-between",
-    gap: spacing[2],
   },
   elapsedTime: {
     fontSize: 11,
+    fontVariant: ["tabular-nums"],
+  },
+  emptyState: {
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderRadius: radius.md,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[5],
+    gap: spacing[1],
+    alignItems: "center",
+  },
+  emptyTitle: {
+    fontSize: 14,
     fontWeight: "600",
+  },
+  emptySubtitle: {
+    fontSize: 12,
+    textAlign: "center",
+    lineHeight: 18,
+    maxWidth: 320,
+  },
+  placeholderWrap: {
+    flexDirection: "row",
+    gap: spacing[3],
+  },
+  placeholderCard: {
+    width: 240,
+    minHeight: 108,
+    borderRadius: radius.md,
+    borderWidth: 1,
   },
   indicatorWrap: {
     width: INDICATOR_SIZE,
@@ -634,31 +672,9 @@ const styles = StyleSheet.create({
   },
   checkWrap: {
     position: "absolute",
+    width: INDICATOR_SIZE,
+    height: INDICATOR_SIZE,
     alignItems: "center",
     justifyContent: "center",
-  },
-  placeholderWrap: {
-    flexDirection: "row",
-    gap: spacing[3],
-  },
-  placeholderCard: {
-    width: 180,
-    height: 108,
-    borderRadius: radius.md,
-    borderWidth: 1,
-  },
-  emptyState: {
-    borderRadius: radius.md,
-    borderWidth: 1,
-    padding: spacing[4],
-    gap: spacing[2],
-  },
-  emptyTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  emptySubtitle: {
-    fontSize: 12,
-    lineHeight: 18,
   },
 });

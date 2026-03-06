@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
-import { Pressable } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+import { CustomButton } from "@/components/buttons";
 import { LoadingSkeleton, EmptyState } from "@/components/dashboard";
+import { CustomList } from "@/components/lists";
 
 interface DataListProps<T> {
   data: T[];
@@ -22,24 +22,28 @@ export function DataList<T>({
   loading,
   emptyMessage,
   keyExtractor,
-  estimatedItemSize = 72,
+  estimatedItemSize: _estimatedItemSize = 72,
 }: DataListProps<T>) {
-  const renderFlashItem = useCallback(
+  const renderListItem = useCallback(
     ({ item }: { item: T }) => {
       const content = renderItem(item);
       if (onItemPress) {
         return (
-          <Pressable
+          <CustomButton
             onPress={() => onItemPress(item)}
             accessibilityRole="button"
           >
             {content}
-          </Pressable>
+          </CustomButton>
         );
       }
       return <>{content}</>;
     },
     [renderItem, onItemPress]
+  );
+  const extractKey = useCallback(
+    (item: T) => keyExtractor(item),
+    [keyExtractor],
   );
 
   if (loading) return <LoadingSkeleton variant="table" rows={5} />;
@@ -47,10 +51,12 @@ export function DataList<T>({
     return <EmptyState message={emptyMessage ?? "No data available."} />;
 
   return (
-    <FlashList
-      data={data}
-      renderItem={renderFlashItem}
-      keyExtractor={keyExtractor}
+    <CustomList
+      flatListProps={{
+        data,
+        renderItem: renderListItem,
+        keyExtractor: extractKey,
+      }}
     />
   );
 }

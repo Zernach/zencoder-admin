@@ -1,4 +1,5 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import type { SearchSuggestion, SearchSuggestionGroup } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -16,7 +17,7 @@ export function SearchSuggestionSection({ group, onSelect }: SearchSuggestionSec
     <View style={styles.section} accessibilityRole="list">
       <Text style={[styles.sectionTitle, { color: theme.text.tertiary }]}>{group.label}</Text>
       {group.suggestions.map((suggestion) => (
-        <Pressable
+        <CustomButton
           key={suggestion.id}
           style={({ pressed }) => [
             styles.row,
@@ -34,7 +35,7 @@ export function SearchSuggestionSection({ group, onSelect }: SearchSuggestionSec
               {suggestion.subtitle}
             </Text>
           ) : null}
-        </Pressable>
+        </CustomButton>
       ))}
     </View>
   );

@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { formatNumber } from "@/features/analytics/utils/formatters";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -35,7 +36,7 @@ export function PaginationControls({
         {formatNumber(total)}
       </Text>
       <View style={styles.buttons}>
-        <Pressable
+        <CustomButton
           onPress={() => hasPrev && onPageChange(page - 1)}
           disabled={!hasPrev}
           style={[styles.button, { backgroundColor: theme.bg.surfaceElevated }, !hasPrev && styles.disabled]}
@@ -43,11 +44,11 @@ export function PaginationControls({
           accessibilityLabel="Previous page"
         >
           <ChevronLeft size={16} color={hasPrev ? theme.text.primary : theme.text.tertiary} />
-        </Pressable>
+        </CustomButton>
         <Text style={[styles.pageNum, { color: theme.text.primary }]}>
           {page} / {totalPages}
         </Text>
-        <Pressable
+        <CustomButton
           onPress={() => hasNext && onPageChange(page + 1)}
           disabled={!hasNext}
           style={[styles.button, { backgroundColor: theme.bg.surfaceElevated }, !hasNext && styles.disabled]}
@@ -55,7 +56,7 @@ export function PaginationControls({
           accessibilityLabel="Next page"
         >
           <ChevronRight size={16} color={hasNext ? theme.text.primary : theme.text.tertiary} />
-        </Pressable>
+        </CustomButton>
       </View>
     </View>
   );

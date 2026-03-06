@@ -1,5 +1,7 @@
 import React from "react";
-import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
+import { CustomList } from "@/components/lists";
 import { X } from "lucide-react-native";
 import type { FilterChip } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -17,36 +19,38 @@ export function FilterChips({ chips, onClearAll }: FilterChipsProps) {
   if (chips.length === 0) return null;
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.scroll}
-      contentContainerStyle={styles.container}
+    <CustomList
+      scrollViewProps={{
+        horizontal: true,
+        showsHorizontalScrollIndicator: false,
+        style: styles.scroll,
+        contentContainerStyle: styles.container,
+      }}
     >
       {chips.map((chip) => (
         <View key={chip.key} style={[styles.chip, { backgroundColor: theme.bg.surfaceElevated, borderColor: theme.border.default }]}>
           <Text style={[styles.chipText, { color: theme.text.primary }]}>{chip.label}</Text>
-          <Pressable
+          <CustomButton
             onPress={chip.onRemove}
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={`Remove ${chip.label} filter`}
           >
             <X size={12} color={theme.text.secondary} />
-          </Pressable>
+          </CustomButton>
         </View>
       ))}
       {onClearAll && (
-        <Pressable
+        <CustomButton
           onPress={onClearAll}
           style={styles.clearAll}
           accessibilityRole="button"
           accessibilityLabel="Clear all filters"
         >
           <Text style={[styles.clearAllText, { color: theme.border.brand }]}>Clear All</Text>
-        </Pressable>
+        </CustomButton>
       )}
-    </ScrollView>
+    </CustomList>
   );
 }
 

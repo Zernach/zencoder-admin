@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { DataTable, type ColumnDef, type DataTableProps } from "./DataTable";
 import { DataList } from "./DataList";
@@ -36,15 +36,17 @@ export function ResponsiveTable<T>({
 }: ResponsiveTableProps<T>) {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+  const renderDefaultListItem = useCallback(
+    (item: T) => <DefaultListItem item={item} />,
+    [],
+  );
+  const renderResolvedListItem = renderListItem ?? renderDefaultListItem;
 
   if (isMobile) {
     return (
       <DataList
         data={tableProps.data}
-        renderItem={
-          renderListItem ??
-          ((item: T) => <DefaultListItem item={item} />)
-        }
+        renderItem={renderResolvedListItem}
         onItemPress={tableProps.onRowPress}
         loading={tableProps.loading}
         emptyMessage={tableProps.emptyMessage}

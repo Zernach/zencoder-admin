@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import { LoadingSkeleton, EmptyState } from "@/components/dashboard";
+import { CustomList } from "@/components/lists";
 import { SortableHeader } from "./SortableHeader";
 import type { SortDirection } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -145,7 +147,9 @@ export function DataTable<T>({
     return <EmptyState message={emptyMessage ?? "No data available."} />;
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    <CustomList
+      scrollViewProps={{ horizontal: true, showsHorizontalScrollIndicator: false }}
+    >
       <View>
         {/* Header */}
         <View style={[styles.headerRow, { backgroundColor: theme.bg.surfaceElevated }]}>
@@ -210,7 +214,7 @@ export function DataTable<T>({
 
           if (onRowPress) {
             return (
-              <Pressable
+              <CustomButton
                 key={rowKey}
                 onPress={() => onRowPress(row)}
                 accessibilityRole="button"
@@ -218,7 +222,7 @@ export function DataTable<T>({
                 testID="table-row"
               >
                 {rowContent}
-              </Pressable>
+              </CustomButton>
             );
           }
           return (
@@ -228,7 +232,7 @@ export function DataTable<T>({
           );
         })}
       </View>
-    </ScrollView>
+    </CustomList>
   );
 }
 

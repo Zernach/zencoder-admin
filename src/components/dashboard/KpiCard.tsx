@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -104,14 +105,14 @@ export function KpiCard({
 
   if (onPress) {
     return (
-      <Pressable
+      <CustomButton
         onPress={onPress}
         accessibilityRole="button"
         accessibilityLabel={`${title}: ${value}`}
         style={({ pressed }) => [pressed && styles.pressed]}
       >
         {content}
-      </Pressable>
+      </CustomButton>
     );
   }
 

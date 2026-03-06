@@ -1,4 +1,6 @@
-import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
+import { CustomList } from "@/components/lists";
 import type { SearchSuggestionsResponse, SearchSuggestion } from "@/features/analytics/types";
 import { SearchSuggestionSection } from "./SearchSuggestionSection";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -31,7 +33,7 @@ export function SearchAutocompletePanel({
 
   return (
     <>
-      <Pressable
+      <CustomButton
         style={styles.backdrop}
         onPress={onDismiss}
         accessibilityRole="button"
@@ -48,10 +50,12 @@ export function SearchAutocompletePanel({
         accessibilityRole="list"
         accessibilityLabel="Search suggestions"
       >
-        <ScrollView
-          style={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
+        <CustomList
+          scrollViewProps={{
+            style: styles.scroll,
+            keyboardShouldPersistTaps: "handled",
+            showsVerticalScrollIndicator: false,
+          }}
         >
           {loading && !hasGroups && (
             <Text style={[styles.stateText, { color: theme.text.secondary }]}>Searching...</Text>
@@ -66,7 +70,7 @@ export function SearchAutocompletePanel({
             suggestions.groups.map((group) => (
               <SearchSuggestionSection key={group.entityType} group={group} onSelect={onSelect} />
             ))}
-        </ScrollView>
+        </CustomList>
       </View>
     </>
   );

@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
+import { CustomList, type CustomListRef } from "@/components/lists";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -17,21 +18,24 @@ export function ContentViewport({ children }: ContentViewportProps) {
   const padding =
     bp === "desktop" ? 24 : bp === "tablet" ? 16 : 12;
 
-  const scrollRef = useCallback(
-    (ref: ScrollView | null) => {
-      registerScrollView(ref);
-    },
-    [registerScrollView],
-  );
+  const scrollRef = useCallback((ref: CustomListRef | null) => {
+    if (ref && typeof ref.scrollTo === "function") {
+      registerScrollView(ref as { scrollTo: (options: { x?: number; y?: number; animated?: boolean }) => void });
+      return;
+    }
+    registerScrollView(null);
+  }, [registerScrollView]);
 
   return (
-    <ScrollView
+    <CustomList
       ref={scrollRef}
-      style={[styles.container, { backgroundColor: theme.bg.canvas }]}
-      contentContainerStyle={[styles.content, { padding }]}
+      scrollViewProps={{
+        style: [styles.container, { backgroundColor: theme.bg.canvas }],
+        contentContainerStyle: [styles.content, { padding }],
+      }}
     >
       {children}
-    </ScrollView>
+    </CustomList>
   );
 }
 

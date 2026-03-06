@@ -1,8 +1,10 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useCallback } from "react";
+import { View, Text, StyleSheet, type ListRenderItemInfo } from "react-native";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
+import { CustomList } from "@/components/lists";
 import { CustomTextInput } from "@/components/inputs";
+import { keyExtractors } from "@/constants";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { borderWidth, fontSizes, radius, spacing } from "@/theme/tokens";
@@ -42,6 +44,20 @@ export function InputForm({
 }: InputFormProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<InputFormItem>) => {
+      if (item.type === "custom") {
+        return <>{item.element}</>;
+      }
+
+      return <CustomTextInput {...item.inputProps} />;
+    },
+    [],
+  );
+  const renderItemSeparator = useCallback(
+    () => <View style={styles.itemSeparator} />,
+    [],
+  );
 
   return (
     <View
@@ -62,13 +78,16 @@ export function InputForm({
           <Text style={[styles.errorText, { color: theme.state.error }]}>{errorMessage}</Text>
         </View>
       ) : null}
-      {items.map((item) => {
-        if (item.type === "custom") {
-          return <React.Fragment key={item.key}>{item.element}</React.Fragment>;
-        }
-
-        return <CustomTextInput key={item.key} {...item.inputProps} />;
-      })}
+      <CustomList
+        flatListProps={{
+          data: items,
+          renderItem,
+          keyExtractor: keyExtractors.byKey,
+          scrollEnabled: false,
+          showsVerticalScrollIndicator: false,
+          ItemSeparatorComponent: renderItemSeparator,
+        }}
+      />
       {footer}
     </View>
   );
@@ -100,5 +119,8 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
     lineHeight: 18,
     textAlign: "center",
+  },
+  itemSeparator: {
+    height: spacing[3],
   },
 });

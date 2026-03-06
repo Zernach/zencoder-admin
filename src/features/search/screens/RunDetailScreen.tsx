@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useRunDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
+import { CustomList } from "@/components/lists";
 import { ScreenWrapper } from "@/components/screen";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -24,7 +25,7 @@ export function RunDetailScreen({ runId }: RunDetailScreenProps) {
 
   return (
     <ScreenWrapper headerProps={{ title: `Run ${run.id}` }}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+      <CustomList scrollViewProps={{ style: styles.scroll, contentContainerStyle: styles.content }}>
         <Text style={[styles.heading, { color: theme.text.primary }]}>Run {run.id}</Text>
         <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
           {data.agentName} · {data.projectName} · {data.teamName}
@@ -50,7 +51,7 @@ export function RunDetailScreen({ runId }: RunDetailScreenProps) {
             <Text style={[styles.detailValue, { color: theme.text.primary }]}>{run.completedAtIso}</Text>
           </View>
         )}
-      </ScrollView>
+      </CustomList>
     </ScreenWrapper>
   );
 }

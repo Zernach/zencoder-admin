@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useTeamDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
+import { CustomList } from "@/components/lists";
 import { ScreenWrapper } from "@/components/screen";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -22,7 +23,7 @@ export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
 
   return (
     <ScreenWrapper headerProps={{ title: data.team.name }}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+      <CustomList scrollViewProps={{ style: styles.scroll, contentContainerStyle: styles.content }}>
         <Text style={[styles.heading, { color: theme.text.primary }]}>{data.team.name}</Text>
         <View style={styles.statsRow}>
           <StatItem label="Members" value={String(data.memberCount)} theme={theme} />
@@ -41,7 +42,7 @@ export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
         {data.projects.map((project) => (
           <Text key={project.id} style={[styles.listItem, { color: theme.text.primary }]}>{project.name}</Text>
         ))}
-      </ScrollView>
+      </CustomList>
     </ScreenWrapper>
   );
 }

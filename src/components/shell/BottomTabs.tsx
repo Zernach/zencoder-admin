@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { useRouter, usePathname } from "expo-router";
+import { View, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
+import { useNavigation, usePathname, useRouter } from "expo-router";
+import type { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { TabActions } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { isAndroid } from "@/constants/platform";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { ROUTES } from "@/constants/routes";
@@ -12,15 +14,37 @@ function isTabRouteActive(pathname: string, route: ROUTES): boolean {
   return pathname === route || pathname.startsWith(`${route}/`);
 }
 
+function toTabRouteName(route: ROUTES): string {
+  return route.replace(/^\//, "");
+}
+
+function findTabNavigator(
+  navigation: NavigationProp<ParamListBase>,
+  routeName: string,
+): NavigationProp<ParamListBase> | null {
+  let current: NavigationProp<ParamListBase> | undefined = navigation;
+
+  while (current) {
+    const state = current.getState();
+    if (state.type === "tab" && state.routeNames.includes(routeName)) {
+      return current;
+    }
+
+    current = current.getParent();
+  }
+
+  return null;
+}
+
 export function BottomTabs() {
   const router = useRouter();
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
   const pathname = usePathname();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    if (!isAndroid) return;
     for (const tab of TOP_NAV_ITEMS) {
       router.prefetch(tab.route as never);
     }
@@ -29,9 +53,17 @@ export function BottomTabs() {
   const handleTabPress = useCallback(
     (route: ROUTES, active: boolean) => {
       if (active) return;
+      const routeName = toTabRouteName(route);
+      const tabNavigation = findTabNavigator(navigation, routeName);
+
+      if (tabNavigation) {
+        tabNavigation.dispatch(TabActions.jumpTo(routeName));
+        return;
+      }
+
       router.navigate(route as never);
     },
-    [router],
+    [navigation, router],
   );
 
   return (
@@ -50,7 +82,7 @@ export function BottomTabs() {
         const active = isTabRouteActive(pathname, tab.route);
         const Icon = tab.icon;
         return (
-          <Pressable
+          <CustomButton
             key={tab.route}
             onPress={() => handleTabPress(tab.route, active)}
             disabled={active}
@@ -64,7 +96,7 @@ export function BottomTabs() {
               {tab.label}
             </Text>
             {active && <View style={[styles.indicator, { backgroundColor: theme.border.brand }]} />}
-          </Pressable>
+          </CustomButton>
         );
       })}
     </View>

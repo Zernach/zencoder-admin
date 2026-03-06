@@ -44,7 +44,7 @@ export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
     { id: "cost-summary", label: "Cost Summary" },
     { id: "cost-by-provider", label: "Cost by Provider" },
     { id: "budget-forecast", label: "Budget Forecast" },
-    { id: "project-breakdown", label: "Project Breakdown" },
+    { id: "costs-project-breakdown", label: "Project Breakdown" },
   ],
   [ROUTES.GOVERNANCE]: [
     { id: "overview", label: "Overview" },

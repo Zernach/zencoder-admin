@@ -6,6 +6,7 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme";
 import { borderWidth, fontSizes, radius, spacing } from "@/theme/tokens";
 import { GLOBAL_TEXT_INPUT_PROPS_BY_THEME } from "./textInputDefaults";
+import { isWeb } from "@/constants";
 
 export interface CustomTextInputProps extends Omit<TextInputProps, "style"> {
   label?: string;
@@ -37,6 +38,7 @@ export const CustomTextInput = forwardRef<NativeTextInputHandle, CustomTextInput
     const theme = semanticThemes[mode];
     const managedProps = GLOBAL_TEXT_INPUT_PROPS_BY_THEME[mode];
     const hasError = Boolean(error && error.trim().length > 0);
+    const webFocusOutlineReset = isWeb ? styles.webFocusOutlineReset : undefined;
 
     const handleChangeText = useCallback(
       (nextValue: string) => {
@@ -55,7 +57,7 @@ export const CustomTextInput = forwardRef<NativeTextInputHandle, CustomTextInput
         {...props}
         onChangeText={handleChangeText}
         placeholderTextColor={placeholderTextColor ?? managedProps.placeholderTextColor}
-        style={[styles.input, { color: theme.text.primary }, style]}
+        style={[styles.input, webFocusOutlineReset, { color: theme.text.primary }, style]}
       />
     );
 
@@ -106,6 +108,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     minHeight: 20,
     paddingVertical: 0,
+  },
+  webFocusOutlineReset: {
+    outlineColor: "transparent",
+    outlineStyle: "solid",
+    outlineWidth: 0,
   },
   errorText: {
     fontSize: fontSizes.sm,

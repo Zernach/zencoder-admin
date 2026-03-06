@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import { AlertTriangle } from "lucide-react-native";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -20,14 +21,14 @@ export function ErrorState({
     <View style={styles.container}>
       <AlertTriangle size={32} color={theme.state.error} />
       <Text style={[styles.message, { color: theme.text.secondary }]}>{message}</Text>
-      <Pressable
+      <CustomButton
         onPress={onRetry}
         style={[styles.button, { backgroundColor: theme.border.brand }]}
         accessibilityRole="button"
         accessibilityLabel="Retry"
       >
         <Text style={[styles.buttonText, { color: theme.text.onBrand }]}>Retry</Text>
-      </Pressable>
+      </CustomButton>
     </View>
   );
 }

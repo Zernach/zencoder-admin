@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import { InputForm } from "@/components/forms";
 import type { InputFormItem } from "@/components/forms";
 import { useFormFields } from "@/hooks/useFormFields";
@@ -93,7 +94,7 @@ export function CreateComplianceRuleForm({ onSubmit, loading }: CreateCompliance
       title="Create Compliance Rule"
       items={items}
       footer={
-        <Pressable
+        <CustomButton
           onPress={onPressSubmit}
           style={[styles.submitButton, { backgroundColor: theme.border.brand }]}
           accessibilityRole="button"
@@ -103,7 +104,7 @@ export function CreateComplianceRuleForm({ onSubmit, loading }: CreateCompliance
           <Text style={[styles.submitText, { color: theme.text.onBrand }]}>
             {loading ? "Creating..." : "Create Rule"}
           </Text>
-        </Pressable>
+        </CustomButton>
       }
     />
   );

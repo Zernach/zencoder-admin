@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
 import type { SortDirection } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -23,7 +24,7 @@ export function SortableHeader({
   const Icon = direction === "asc" ? ChevronUp : ChevronDown;
 
   return (
-    <Pressable
+    <CustomButton
       onPress={onPress}
       style={styles.container}
       accessibilityRole="button"
@@ -36,7 +37,7 @@ export function SortableHeader({
           <Icon size={12} color={theme.text.primary} />
         </View>
       )}
-    </Pressable>
+    </CustomButton>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { Pressable, Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -52,7 +53,7 @@ export function SidebarNavItem({
   }));
 
   return (
-    <Pressable
+    <CustomButton
       onPress={onPress}
       style={[styles.item, active && { backgroundColor: theme.bg.brandSubtle }]}
       accessibilityRole="button"
@@ -76,7 +77,7 @@ export function SidebarNavItem({
           <Text style={[styles.badgeText, { color: theme.text.onBrand }]}>{badge}</Text>
         </View>
       )}
-    </Pressable>
+    </CustomButton>
   );
 }
 

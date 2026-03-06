@@ -29,7 +29,9 @@ function ScreenHeader({
   return (
     <View style={styles.container}>
       <View style={styles.titleRow}>
-        <Text style={[styles.title, { color: theme.text.primary }]}>{title}</Text>
+        <Text style={[styles.title, { color: theme.text.primary }]} numberOfLines={1}>
+          {title}
+        </Text>
         {isLoadingReduxKey != null && (
           <ReduxLoadingSpinner
             reduxKey={isLoadingReduxKey}
@@ -46,7 +48,11 @@ function ScreenHeader({
           />
         )}
       </View>
-      {subtitle && <Text style={[styles.subtitle, { color: theme.text.secondary }]}>{subtitle}</Text>}
+      {subtitle && (
+        <Text style={[styles.subtitle, { color: theme.text.secondary }]} numberOfLines={1} ellipsizeMode="tail">
+          {subtitle}
+        </Text>
+      )}
       {rightComponent != null && (
         <View style={styles.right}>{rightComponent}</View>
       )}
@@ -59,6 +65,7 @@ export default ScreenHeader;
 const styles = StyleSheet.create({
   container: {
     gap: 4,
+    minHeight: 48,
   },
   titleRow: {
     flexDirection: "row",
@@ -72,6 +79,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
+    lineHeight: 20,
   },
   right: {
     marginTop: 4,

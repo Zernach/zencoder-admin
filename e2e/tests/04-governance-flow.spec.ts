@@ -34,7 +34,7 @@ test.describe("Governance", () => {
     await navigateTo(page, "Governance");
     await waitForPageLoad(page);
 
-    await expect(page.locator("[data-testid='sticky-filter-bar']")).toBeVisible({
+    await expect(page.locator("[data-testid='sticky-filter-bar']:visible").first()).toBeVisible({
       timeout: 10_000,
     });
   });

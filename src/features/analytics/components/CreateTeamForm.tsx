@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
-import { Text, Pressable, StyleSheet } from "react-native";
+import { Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import { InputForm } from "@/components/forms";
 import type { InputFormItem } from "@/components/forms";
 import { useFormFields } from "@/hooks/useFormFields";
@@ -63,7 +64,7 @@ export function CreateTeamForm({ onSubmit, loading, error }: CreateTeamFormProps
       footer={
         <>
           {error ? <Text style={[styles.errorText, { color: theme.state.error }]}>{error}</Text> : null}
-          <Pressable
+          <CustomButton
             onPress={onPressSubmit}
             style={[styles.submitButton, { backgroundColor: theme.border.brand }]}
             accessibilityRole="button"
@@ -73,7 +74,7 @@ export function CreateTeamForm({ onSubmit, loading, error }: CreateTeamFormProps
             <Text style={[styles.submitText, { color: theme.text.onBrand }]}>
               {loading ? "Creating..." : "Create Team"}
             </Text>
-          </Pressable>
+          </CustomButton>
         </>
       }
     />

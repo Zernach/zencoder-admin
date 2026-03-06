@@ -1,5 +1,6 @@
 export { STACKS, ROUTES } from "./routes";
-export { isWeb, isAndroid, isIOS } from "./platform";
+export { isWeb, isAndroid, isIos, isIos as isIOS } from "./platform";
+export { keyExtractors, createKeyExtractor, type KeyExtractor } from "./keyExtractors";
 export {
   TOP_NAV_ITEMS,
   SUBSECTIONS,

@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
 import { Inbox } from "lucide-react-native";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -32,14 +33,14 @@ export function EmptyState({
         </View>
       )}
       {onClearFilters && (
-        <Pressable
+        <CustomButton
           onPress={onClearFilters}
           style={[styles.button, { backgroundColor: theme.border.brand }]}
           accessibilityRole="button"
           accessibilityLabel="Clear Filters"
         >
           <Text style={[styles.buttonText, { color: theme.text.onBrand }]}>Clear Filters</Text>
-        </Pressable>
+        </CustomButton>
       )}
     </View>
   );

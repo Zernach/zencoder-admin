@@ -9,8 +9,8 @@ test.describe("Agents Hub", () => {
     await navigateTo(page, "Agents");
     await waitForPageLoad(page);
 
-    // Verify agents page loaded (Project Breakdown is unique to agents page)
-    await expect(page.getByText("Project Breakdown", { exact: true })).toBeVisible({
+    // Verify agents page loaded by checking the actual section container.
+    await expect(page.locator("#project-breakdown")).toBeVisible({
       timeout: 10_000,
     });
   });
@@ -22,7 +22,7 @@ test.describe("Agents Hub", () => {
     await navigateTo(page, "Agents");
     await waitForPageLoad(page);
 
-    await expect(page.locator("text=Project Breakdown")).toBeVisible({
+    await expect(page.locator("#project-breakdown")).toContainText("Project Breakdown", {
       timeout: 10_000,
     });
   });
@@ -34,7 +34,7 @@ test.describe("Agents Hub", () => {
     await navigateTo(page, "Agents");
     await waitForPageLoad(page);
 
-    await expect(page.locator("text=Recent Runs")).toBeVisible({
+    await expect(page.locator("#recent-runs")).toContainText("Recent Runs", {
       timeout: 10_000,
     });
   });

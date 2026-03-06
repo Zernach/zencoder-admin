@@ -1,13 +1,20 @@
 import React, { createContext, useContext, useRef, useCallback } from "react";
-import type { ScrollView } from "react-native";
 import { findNodeHandle, UIManager } from "react-native";
 import { isWeb } from "@/constants/platform";
+
+interface ScrollableViewRef {
+  scrollTo: (options: { x?: number; y?: number; animated?: boolean }) => void;
+}
+
+interface ScrollableSectionRef {
+  scrollIntoView?: (options?: ScrollIntoViewOptions) => void;
+}
 
 interface SectionScrollContextValue {
   /** Scroll the active viewport to the section with the given ID. */
   scrollToSection: (sectionId: string) => void;
   /** Called by ContentViewport to register the active ScrollView. */
-  registerScrollView: (ref: ScrollView | null) => void;
+  registerScrollView: (ref: ScrollableViewRef | null) => void;
   /** Called by screens to register a section View ref for native scroll targeting. */
   registerSection: (sectionId: string, ref: unknown) => void;
 }
@@ -19,10 +26,10 @@ const SectionScrollContext = createContext<SectionScrollContextValue>({
 });
 
 export function SectionScrollProvider({ children }: { children: React.ReactNode }) {
-  const scrollViewRef = useRef<ScrollView | null>(null);
+  const scrollViewRef = useRef<ScrollableViewRef | null>(null);
   const sectionRefs = useRef<Map<string, unknown>>(new Map());
 
-  const registerScrollView = useCallback((ref: ScrollView | null) => {
+  const registerScrollView = useCallback((ref: ScrollableViewRef | null) => {
     scrollViewRef.current = ref;
   }, []);
 
@@ -36,6 +43,12 @@ export function SectionScrollProvider({ children }: { children: React.ReactNode 
 
   const scrollToSection = useCallback((sectionId: string) => {
     if (isWeb) {
+      const sectionRef = sectionRefs.current.get(sectionId) as ScrollableSectionRef | undefined;
+      if (sectionRef?.scrollIntoView) {
+        sectionRef.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+
       const el = document.getElementById(sectionId);
       el?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
@@ -47,7 +60,7 @@ export function SectionScrollProvider({ children }: { children: React.ReactNode 
     if (!sectionRef || !sv) return;
 
     const sectionNode = findNodeHandle(sectionRef as React.Component);
-    const scrollNode = findNodeHandle(sv);
+    const scrollNode = findNodeHandle(sv as unknown as React.Component);
     if (sectionNode == null || scrollNode == null) return;
 
     UIManager.measureLayout(

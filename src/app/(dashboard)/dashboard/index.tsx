@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
 import { useLiveAgentSessions } from "@/features/analytics/hooks/useLiveAgentSessions";
@@ -15,6 +15,7 @@ import {
 import { ChartCard, TrendChart } from "@/components/charts";
 import { chartColors } from "@/components/tables";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
+import { CustomList } from "@/components/lists";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import type { LiveAgentSession } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -98,10 +99,12 @@ export default function OverviewDashboardScreen() {
       {/* Section 2 -- Trends */}
       <View style={styles.section}>
         <SectionHeader title="Trends" />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chartRow}
+        <CustomList
+          scrollViewProps={{
+            horizontal: true,
+            showsHorizontalScrollIndicator: false,
+            contentContainerStyle: styles.chartRow,
+          }}
         >
           <ChartCard title="Runs Over Time" loading={loading}>
             {data && (
@@ -122,7 +125,7 @@ export default function OverviewDashboardScreen() {
               />
             )}
           </ChartCard>
-        </ScrollView>
+        </CustomList>
       </View>
 
       {/* Section 3 -- Usage & Adoption */}

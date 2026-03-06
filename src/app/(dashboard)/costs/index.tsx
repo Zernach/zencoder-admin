@@ -1,9 +1,10 @@
 import React from "react";
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
 import { useCostDashboard } from "@/features/analytics/hooks/useCostDashboard";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart, DonutChart, ProviderCostChart } from "@/components/charts";
 import { chartColors } from "@/components/tables";
+import { CustomList } from "@/components/lists";
 import { formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
 import type { CostBreakdownRow } from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
@@ -53,10 +54,12 @@ export default function CostAnalyticsScreen() {
               <KpiCard title="Budget Remaining" value={formatCurrency(data.budget.remainingUsd)} caption={`of ${formatCurrency(data.budget.budgetUsd)}`} />
             </CardGrid>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.chartRow}
+            <CustomList
+              scrollViewProps={{
+                horizontal: true,
+                showsHorizontalScrollIndicator: false,
+                contentContainerStyle: styles.chartRow,
+              }}
             >
               <ChartCard title="Cost per Day">
                 <TrendChart data={data.costTrend} variant="area" color={cc.success} />
@@ -68,7 +71,7 @@ export default function CostAnalyticsScreen() {
                   centerValue={formatCurrency(data.totalCostUsd)}
                 />
               </ChartCard>
-            </ScrollView>
+            </CustomList>
           </>
         ) : null}
       </View>
@@ -100,7 +103,7 @@ export default function CostAnalyticsScreen() {
       )}
 
       {data && (
-        <View ref={(r) => registerSection("project-breakdown", r)} nativeID="project-breakdown" style={styles.section}>
+        <View ref={(r) => registerSection("costs-project-breakdown", r)} nativeID="costs-project-breakdown" style={styles.section}>
           <SectionHeader title="Project Breakdown" />
           <BreakdownChart data={filteredCostBreakdown.slice(0, 10).map(r => ({ key: r.key, value: r.totalCostUsd }))} variant="horizontal-bar" height={300} truncateLabels={false} />
         </View>

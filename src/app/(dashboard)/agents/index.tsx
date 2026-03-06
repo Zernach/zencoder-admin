@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { View, Text, ScrollView, Pressable, Modal, StyleSheet } from "react-native";
+import { View, Text, Modal, StyleSheet } from "react-native";
+import { CustomButton } from "@/components/buttons";
+import { CustomList } from "@/components/lists";
 import { X } from "lucide-react-native";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
@@ -14,6 +16,7 @@ import { CreateProjectForm } from "@/features/analytics/components/CreateProject
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
+import { keyExtractors } from "@/constants";
 
 const styles = sectionStyles;
 
@@ -106,10 +109,12 @@ export default function AgentsScreen() {
               <KpiCard title="P95 Queue Wait" value={formatDuration(data.p95QueueWaitMs)} caption="Queue wait time" />
               <KpiCard title="Peak Concurrency" value={formatCompactNumber(data.peakConcurrency)} caption="Max concurrent runs/min" />
             </CardGrid>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.chartRow}
+            <CustomList
+              scrollViewProps={{
+                horizontal: true,
+                showsHorizontalScrollIndicator: false,
+                contentContainerStyle: styles.chartRow,
+              }}
             >
               <ChartCard title="Reliability Trend">
                 <TrendChart data={data.reliabilityTrend} variant="line" color={cc.success} />
@@ -121,7 +126,7 @@ export default function AgentsScreen() {
                   truncateLabels={false}
                 />
               </ChartCard>
-            </ScrollView>
+            </CustomList>
           </>
         ) : null}
       </View>
@@ -132,7 +137,7 @@ export default function AgentsScreen() {
           <DataTable
             columns={agentCols}
             data={filteredAgents}
-            keyExtractor={(row) => row.agentId}
+            keyExtractor={keyExtractors.byAgentId}
           />
         </View>
       )}
@@ -141,14 +146,14 @@ export default function AgentsScreen() {
         <View ref={(r) => registerSection("project-breakdown", r)} nativeID="project-breakdown" style={styles.section}>
           <View style={localStyles.sectionRow}>
             <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} of ${data.totalProjects} projects active`} />
-            <Pressable
+            <CustomButton
               onPress={() => setShowCreateProject(true)}
               style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
               accessibilityRole="button"
               accessibilityLabel="Create Project"
             >
               <Text style={[localStyles.createButtonText, { color: theme.text.onBrand }]}>+ Create Project</Text>
-            </Pressable>
+            </CustomButton>
           </View>
           <CardGrid columns={3}>
             <KpiCard title="Active Projects" value={formatCompactNumber(data.activeProjects)} caption={`of ${data.totalProjects} total`} />
@@ -158,7 +163,7 @@ export default function AgentsScreen() {
           <DataTable
             columns={projectCols}
             data={filteredProjects}
-            keyExtractor={(row) => row.projectId}
+            keyExtractor={keyExtractors.byProjectId}
           />
         </View>
       )}
@@ -169,7 +174,7 @@ export default function AgentsScreen() {
           <DataTable
             columns={recentRunCols}
             data={filteredRuns}
-            keyExtractor={(row) => row.id}
+            keyExtractor={keyExtractors.byId}
           />
         </View>
       )}
@@ -180,7 +185,7 @@ export default function AgentsScreen() {
         onRequestClose={() => setShowCreateProject(false)}
       >
         <View style={[localStyles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
-          <Pressable
+          <CustomButton
             style={StyleSheet.absoluteFillObject}
             onPress={() => setShowCreateProject(false)}
             accessibilityRole="button"
@@ -188,14 +193,14 @@ export default function AgentsScreen() {
           />
           <View style={[localStyles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
             <View style={localStyles.modalHeader}>
-              <Pressable
+              <CustomButton
                 onPress={() => setShowCreateProject(false)}
                 hitSlop={8}
                 accessibilityRole="button"
                 accessibilityLabel="Close"
               >
                 <X size={16} color={theme.text.secondary} />
-              </Pressable>
+              </CustomButton>
             </View>
             <CreateProjectForm onSubmit={handleCreateProject} loading={createProjectLoading} error={createProjectError} />
           </View>
