@@ -12,6 +12,31 @@ jest.mock("@/hooks/useSearchFilter", () => ({
   useSearchFilter: <T,>(data: T[]) => data,
 }));
 
+jest.mock("@/features/analytics/hooks/useCreateComplianceViolationRule", () => ({
+  useCreateComplianceViolationRule: () => ({
+    create: jest.fn().mockResolvedValue({ id: "rule_1" }),
+    loading: false,
+    error: undefined,
+    lastResult: undefined,
+  }),
+}));
+
+jest.mock("lucide-react-native", () => {
+  const React = require("react");
+  const { Text } = require("react-native");
+  return {
+    X: (props: Record<string, unknown>) => <Text>X</Text>,
+  };
+});
+
+jest.mock("@/features/analytics/components/CreateComplianceRuleForm", () => {
+  const React = require("react");
+  const { Text } = require("react-native");
+  return {
+    CreateComplianceRuleForm: () => <Text>CreateComplianceRuleForm</Text>,
+  };
+});
+
 jest.mock("@/providers/ThemeProvider", () => ({
   useThemeMode: () => ({ mode: "dark" }),
 }));

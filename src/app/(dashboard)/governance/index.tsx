@@ -1,6 +1,9 @@
-import React, { useMemo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
+import { X } from "lucide-react-native";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
+import { useCreateComplianceViolationRule } from "@/features/analytics/hooks/useCreateComplianceViolationRule";
+import { CreateComplianceRuleForm } from "@/features/analytics/components/CreateComplianceRuleForm";
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText } from "@/components/tables";
@@ -28,6 +31,17 @@ export default function GovernanceScreen() {
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
   const { data, loading, error, refetch } = useGovernanceDashboard();
+  const { create: createRule, loading: createLoading } = useCreateComplianceViolationRule();
+  const [showCreateRule, setShowCreateRule] = useState(false);
+
+  const handleCreateRule = useCallback(
+    async (values: { name: string; description: string; severity: "HIGH" | "MEDIUM" | "LOW" }) => {
+      await createRule(values);
+      setShowCreateRule(false);
+      refetch();
+    },
+    [createRule, refetch],
+  );
 
   const filteredViolations = useSearchFilter(data?.recentViolations ?? [], VIOLATION_SEARCH_KEYS);
   const filteredSecurityEvents = useSearchFilter(data?.securityEvents ?? [], SECURITY_SEARCH_KEYS);
@@ -175,7 +189,17 @@ export default function GovernanceScreen() {
 
       {data && (
         <View style={sectionStyles.section}>
-          <SectionHeader title="Recent Violations" />
+          <View style={localStyles.sectionRow}>
+            <SectionHeader title="Recent Violations" />
+            <Pressable
+              onPress={() => setShowCreateRule(true)}
+              style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
+              accessibilityRole="button"
+              accessibilityLabel="Create Compliance Rule"
+            >
+              <Text style={[localStyles.createButtonText, { color: theme.text.onBrand }]}>+ Create Rule</Text>
+            </Pressable>
+          </View>
           <DataTable
             columns={violationCols}
             data={filteredViolations}
@@ -205,6 +229,34 @@ export default function GovernanceScreen() {
           />
         </View>
       )}
+      <Modal
+        transparent
+        visible={showCreateRule}
+        animationType="fade"
+        onRequestClose={() => setShowCreateRule(false)}
+      >
+        <View style={[localStyles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
+          <Pressable
+            style={StyleSheet.absoluteFillObject}
+            onPress={() => setShowCreateRule(false)}
+            accessibilityRole="button"
+            accessibilityLabel="Close create rule form"
+          />
+          <View style={[localStyles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
+            <View style={localStyles.modalHeader}>
+              <Pressable
+                onPress={() => setShowCreateRule(false)}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Close"
+              >
+                <X size={16} color={theme.text.secondary} />
+              </Pressable>
+            </View>
+            <CreateComplianceRuleForm onSubmit={handleCreateRule} loading={createLoading} />
+          </View>
+        </View>
+      </Modal>
     </ScreenWrapper>
   );
 }
@@ -215,5 +267,37 @@ const localStyles = StyleSheet.create({
   },
   summaryText: {
     fontSize: 12,
+  },
+  sectionRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  createButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  createButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  modalPanel: {
+    width: 400,
+    maxWidth: "100%",
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 16,
+    gap: 12,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
 });

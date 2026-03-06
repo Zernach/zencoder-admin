@@ -37,6 +37,7 @@ import type {
   CreateProjectResponse,
   CreateTeamRequest,
   CreateTeamResponse,
+  PolicyViolationRow,
 } from "@/features/analytics/types";
 import { round2, round4 } from "../../utils/metricFormulas";
 import {
@@ -74,6 +75,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   private latencyMin: number;
   private latencyMax: number;
   private failureRate: number;
+  private createdViolations: PolicyViolationRow[] = [];
 
   constructor(seedData: SeedData, config: StubConfig = {}) {
     this.seed = seedData;
@@ -435,7 +437,10 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const runs = this.filterRuns(filters);
     const { fromIso, toIso } = filters.timeRange;
 
-    const violations = filterByTimeRange(this.seed.policyViolations, fromIso, toIso);
+    const violations = [
+      ...filterByTimeRange(this.seed.policyViolations, fromIso, toIso),
+      ...filterByTimeRange(this.createdViolations, fromIso, toIso),
+    ];
     const secEvents = filterByTimeRange(this.seed.securityEvents, fromIso, toIso);
     const changes = filterByTimeRange(this.seed.policyChanges, fromIso, toIso);
 
@@ -825,12 +830,35 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async createComplianceRule(request: CreateComplianceRuleRequest): Promise<CreateComplianceRuleResponse> {
     await this.simulate();
+    const ruleId = this.nextId("rule");
+    const createdAtIso = new Date().toISOString();
+
+    // Evaluate existing runs — generate synthetic violations for runs that
+    // "break" this new rule. We match deterministically: pick up to 3 recent
+    // failed runs as simulated violators.
+    const failedRuns = this.seed.runs
+      .filter((r) => r.status === "failed")
+      .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
+      .slice(0, 3);
+
+    for (const run of failedRuns) {
+      const agent = this.seed.agents.find((a) => a.id === run.agentId);
+      this.createdViolations.push({
+        id: `${ruleId}_viol_${run.id}`,
+        timestampIso: run.startedAtIso,
+        agentId: run.agentId,
+        agentName: agent?.name ?? run.agentId,
+        reason: `Rule "${request.name}": ${request.description}`,
+        severity: request.severity,
+      });
+    }
+
     return {
-      id: this.nextId("rule"),
+      id: ruleId,
       name: request.name,
       description: request.description,
       severity: request.severity,
-      createdAtIso: new Date().toISOString(),
+      createdAtIso,
     };
   }
 
