@@ -236,18 +236,24 @@ export function TopBar() {
 
 const styles = StyleSheet.create({
   container: {
+    position: "relative",
     height: 56,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
     borderBottomWidth: 1,
+    overflow: "visible",
+    zIndex: 200,
+    elevation: 200,
   },
   left: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
     flex: 1,
+    overflow: "visible",
+    zIndex: 201,
   },
   right: {
     flexDirection: "row",
@@ -256,6 +262,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   searchContainer: {
+    position: "relative",
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
@@ -265,7 +272,9 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: 400,
     borderWidth: 1,
-    zIndex: 100,
+    overflow: "visible",
+    zIndex: 202,
+    elevation: 202,
   },
   searchInput: {
     flex: 1,

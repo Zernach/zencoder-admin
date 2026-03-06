@@ -1,0 +1,7 @@
+For this React Native web/mobile app, Redux is our primary source of truth for data infrastructure, stubbed api interactions, state management, etc.
+
+Comb the codebase in search of ways to improve our redux implementation.
+
+We want reusability, maintainability, extensible classes, smart code.
+
+We are investing heavily into redux for its performance and reliability.

@@ -59,7 +59,8 @@
 | ✅ | [0051](./0051-sidebar-subsection-contracts-and-shared-constants.md) | Sidebar Subsection Contracts and Shared Constants | Foundation |
 | ✅ | [0052](./0052-sidebar-subsections-for-agents-costs-governance.md) | Sidebar Subsections for Agents, Costs, and Governance | Components |
 | ✅ | [0053](./0053-sidebar-subsection-navigation-test-coverage.md) | Sidebar Subsection Navigation Test Coverage | Testing |
+| 🟡 | [0054](./0054-sidebar-subsection-onpress-scroll-behavior.md) | Sidebar Subsection onPress Scroll Behavior | Components |
 
 ---
 
-**Progress: 53 / 53**
+**Progress: 53 / 54**
