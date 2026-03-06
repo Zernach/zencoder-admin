@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAppDependencies } from "@/core/di";
+import { useGetSearchSuggestionsQuery } from "@/store/api";
 import type {
   SearchSuggestionsResponse,
   SearchSuggestion,
@@ -22,75 +22,63 @@ interface UseSearchAutocompleteResult {
 export function useSearchAutocomplete(
   onSelect?: (suggestion: SearchSuggestion) => void,
 ): UseSearchAutocompleteResult {
-  const { analyticsService } = useAppDependencies();
   const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<SearchSuggestionsResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>();
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedSuggestion, setSelectedSuggestion] = useState<SearchSuggestion | null>(null);
+  const [dismissed, setDismissed] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const requestIdRef = useRef(0);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (query.trim().length < MIN_QUERY_LENGTH) {
-      setSuggestions(null);
-      setLoading(false);
-      setError(undefined);
+      setDebouncedQuery("");
       return;
     }
 
-    setLoading(true);
-    const currentRequestId = ++requestIdRef.current;
-
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const result = await analyticsService.getSearchSuggestions({ query: query.trim() });
-        if (currentRequestId === requestIdRef.current) {
-          setSuggestions(result);
-          setError(undefined);
-        }
-      } catch (err) {
-        if (currentRequestId === requestIdRef.current) {
-          setError(err instanceof Error ? err.message : "Search failed");
-          setSuggestions(null);
-        }
-      } finally {
-        if (currentRequestId === requestIdRef.current) {
-          setLoading(false);
-        }
-      }
+    debounceRef.current = setTimeout(() => {
+      setDebouncedQuery(query.trim());
     }, DEBOUNCE_MS);
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [query, analyticsService]);
+  }, [query]);
+
+  const shouldSkip = debouncedQuery.length < MIN_QUERY_LENGTH || dismissed;
+
+  const { data, isLoading, error } = useGetSearchSuggestionsQuery(
+    { query: debouncedQuery },
+    { skip: shouldSkip },
+  );
 
   const clear = useCallback(() => {
     setQuery("");
-    setSuggestions(null);
-    setLoading(false);
-    setError(undefined);
+    setDebouncedQuery("");
     setSelectedSuggestion(null);
+    setDismissed(false);
   }, []);
 
   const selectSuggestion = useCallback(
     (suggestion: SearchSuggestion) => {
       setSelectedSuggestion(suggestion);
-      setSuggestions(null);
+      setDismissed(true);
       onSelect?.(suggestion);
     },
     [onSelect],
   );
 
+  const handleSetQuery = useCallback((q: string) => {
+    setQuery(q);
+    setDismissed(false);
+  }, []);
+
   return {
-    suggestions,
-    loading,
-    error,
+    suggestions: shouldSkip ? null : (data ?? null),
+    loading: shouldSkip ? false : isLoading,
+    error: error ? String(error) : undefined,
     query,
-    setQuery,
+    setQuery: handleSetQuery,
     clear,
     selectSuggestion,
     selectedSuggestion,

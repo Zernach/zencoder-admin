@@ -1,10 +1,11 @@
 import React from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider as ReduxProvider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { filtersSlice } from "@/store/slices/filtersSlice";
 import { loadingSlice } from "@/store/slices/loadingSlice";
 import { sidebarSlice } from "@/store/slices/sidebarSlice";
+import { analyticsApi } from "@/store/api/analyticsApi";
+import { initializeService } from "@/store/api/serviceRegistry";
 import { AppDependenciesProvider } from "@/core/di/AppDependencies";
 import { StubAnalyticsApi } from "@/features/analytics/api/stub/StubAnalyticsApi";
 import { AnalyticsService } from "@/features/analytics/services/AnalyticsService";
@@ -42,19 +43,10 @@ export function createTestStore() {
       filters: filtersSlice.reducer,
       loading: loadingSlice.reducer,
       sidebar: sidebarSlice.reducer,
+      [analyticsApi.reducerPath]: analyticsApi.reducer,
     },
-  });
-}
-
-export function createTestQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        gcTime: 0,
-        staleTime: 0,
-      },
-    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(analyticsApi.middleware),
   });
 }
 
@@ -74,7 +66,9 @@ export function createTestWrapper(overrides?: {
   });
   const service = new AnalyticsService(api);
   const store = createTestStore();
-  const queryClient = createTestQueryClient();
+
+  // Initialize service registry for RTK Query endpoints
+  initializeService(service);
 
   // Set time range to match seed data (derived from runs so tests pass regardless of current date)
   store.dispatch(filtersSlice.actions.setCustomTimeRange(timeRangeFromRuns(seedData.runs)));
@@ -82,16 +76,14 @@ export function createTestWrapper(overrides?: {
   function TestWrapper({ children }: TestWrapperProps) {
     return (
       <ReduxProvider store={store}>
-        <QueryClientProvider client={queryClient}>
-          <AppDependenciesProvider
-            overrides={{ analyticsApi: api, analyticsService: service }}
-          >
-            {children}
-          </AppDependenciesProvider>
-        </QueryClientProvider>
+        <AppDependenciesProvider
+          overrides={{ analyticsApi: api, analyticsService: service }}
+        >
+          {children}
+        </AppDependenciesProvider>
       </ReduxProvider>
     );
   }
 
-  return { wrapper: TestWrapper, store, queryClient, api, service };
+  return { wrapper: TestWrapper, store, api, service };
 }

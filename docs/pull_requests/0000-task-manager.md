@@ -61,10 +61,10 @@
 | ✅ | [0053](./0053-sidebar-subsection-navigation-test-coverage.md) | Sidebar Subsection Navigation Test Coverage | Testing |
 | 🟡 | [0054](./0054-sidebar-subsection-onpress-scroll-behavior.md) | Sidebar Subsection onPress Scroll Behavior | Components |
 | ✅ | [0055](./0055-redux-store-hardening.md) | Redux Store Hardening — Remove Saga, Typed Selectors, Clean Config | Redux |
-| ❌ | [0056](./0056-rtk-query-api-slice.md) | RTK Query API Slice — Service Registry & All Endpoints | Redux |
+| ✅ | [0056](./0056-rtk-query-api-slice.md) | RTK Query API Slice — Service Registry & All Endpoints | Redux |
 | ❌ | [0057](./0057-migrate-hooks-to-rtk-query.md) | Migrate All Data Hooks to RTK Query | Redux |
 | ❌ | [0058](./0058-remove-react-query-update-tests.md) | Remove React Query — Update Providers & Test Infrastructure | Redux |
 
 ---
 
-**Progress: 54 / 58**
+**Progress: 55 / 58**

@@ -1,5 +1,5 @@
-import { useCallback, useState } from "react";
-import { useAppDependencies } from "@/core/di";
+import { useCallback } from "react";
+import { useCreateTeamMutation } from "@/store/api";
 import type { CreateTeamRequest, CreateTeamResponse } from "@/features/analytics/types";
 
 interface UseCreateTeamReturn {
@@ -10,29 +10,20 @@ interface UseCreateTeamReturn {
 }
 
 export function useCreateTeam(): UseCreateTeamReturn {
-  const { analyticsService } = useAppDependencies();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [lastResult, setLastResult] = useState<CreateTeamResponse | undefined>(undefined);
+  const [trigger, state] = useCreateTeamMutation();
 
   const create = useCallback(
     async (request: CreateTeamRequest): Promise<CreateTeamResponse> => {
-      setLoading(true);
-      setError(undefined);
-      try {
-        const result = await analyticsService.createTeam(request);
-        setLastResult(result);
-        return result;
-      } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to create team";
-        setError(message);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
+      const result = await trigger(request).unwrap();
+      return result;
     },
-    [analyticsService],
+    [trigger],
   );
 
-  return { create, loading, error, lastResult };
+  return {
+    create,
+    loading: state.isLoading,
+    error: state.error ? String(state.error) : undefined,
+    lastResult: state.data,
+  };
 }

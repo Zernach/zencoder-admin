@@ -1,17 +1,17 @@
-import { useDashboardQuery } from "./useDashboardQuery";
+import { useGetLiveAgentSessionsQuery } from "@/store/api";
+import { useDashboardFilters } from "./useDashboardFilters";
 
 export function useLiveAgentSessions() {
-  const { data, loading, error, refetch } = useDashboardQuery(
-    "liveAgentSessions",
-    (s, f) => s.getLiveAgentSessions(f),
-    { refetchInterval: 4_000, refetchIntervalInBackground: true, staleTime: 1_000 },
-  );
+  const { filters } = useDashboardFilters();
+  const { data, isLoading, error, refetch } = useGetLiveAgentSessionsQuery(filters, {
+    pollingInterval: 4_000,
+  });
 
   return {
     data: data?.activeSessions ?? [],
     lastUpdatedIso: data?.lastUpdatedIso,
-    loading,
-    error,
+    loading: isLoading,
+    error: error ? String(error) : undefined,
     refetch,
   };
 }

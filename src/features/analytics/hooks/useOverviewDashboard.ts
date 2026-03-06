@@ -1,29 +1,14 @@
 import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useAppDependencies } from "@/core/di";
+import { useGetOverviewQuery, useGetUsageQuery, useGetOutcomesQuery } from "@/store/api";
 import { useDashboardFilters } from "./useDashboardFilters";
-import { useQueryKeyFactory } from "./useQueryKeyFactory";
 import { mapOverviewToViewModel } from "../mappers/overviewMappers";
 
 export function useOverviewDashboard() {
-  const { analyticsService } = useAppDependencies();
-  const queryKeys = useQueryKeyFactory();
   const { filters } = useDashboardFilters();
 
-  const overviewQuery = useQuery({
-    queryKey: queryKeys.overview,
-    queryFn: () => analyticsService.getOverview(filters),
-  });
-
-  const usageQuery = useQuery({
-    queryKey: queryKeys.usage,
-    queryFn: () => analyticsService.getUsage(filters),
-  });
-
-  const outcomesQuery = useQuery({
-    queryKey: queryKeys.outcomes,
-    queryFn: () => analyticsService.getOutcomes(filters),
-  });
+  const overviewQuery = useGetOverviewQuery(filters);
+  const usageQuery = useGetUsageQuery(filters);
+  const outcomesQuery = useGetOutcomesQuery(filters);
 
   const data = useMemo(
     () =>
@@ -36,7 +21,7 @@ export function useOverviewDashboard() {
   return {
     data,
     loading: overviewQuery.isLoading,
-    error: overviewQuery.error instanceof Error ? overviewQuery.error.message : undefined,
+    error: overviewQuery.error ? String(overviewQuery.error) : undefined,
     refetch: overviewQuery.refetch,
   };
 }
