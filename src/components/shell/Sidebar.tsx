@@ -1,15 +1,9 @@
 import React, { useCallback, useEffect } from "react";
 import { View, Image, Text, Pressable, StyleSheet } from "react-native";
 import {
-  Home,
-  Bot,
-  DollarSign,
-  Shield,
-  Settings,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react-native";
-import type { LucideIcon } from "lucide-react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -22,14 +16,7 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { isWeb } from "@/constants/platform";
 import { ROUTES } from "@/constants/routes";
-
-const NAV_ITEMS: { icon: LucideIcon; label: string; route: ROUTES }[] = [
-  { icon: Home, label: "Home", route: ROUTES.DASHBOARD },
-  { icon: Bot, label: "Agents", route: ROUTES.AGENTS },
-  { icon: DollarSign, label: "Costs", route: ROUTES.COSTS },
-  { icon: Shield, label: "Governance", route: ROUTES.GOVERNANCE },
-  { icon: Settings, label: "Settings", route: ROUTES.SETTINGS },
-];
+import { TOP_TOP_NAV_ITEMS } from "@/constants/navigation";
 
 interface SidebarProps {
   expanded: boolean;
@@ -114,7 +101,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
         </Pressable>
       </View>
       <View style={styles.nav}>
-        {NAV_ITEMS.map((item) => (
+        {TOP_NAV_ITEMS.map((item) => (
           <SidebarNavItem
             key={item.route}
             icon={item.icon}

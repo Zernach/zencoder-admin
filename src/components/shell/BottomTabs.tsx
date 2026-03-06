@@ -1,27 +1,12 @@
 import React, { useCallback, useEffect } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import {
-  Home,
-  Bot,
-  DollarSign,
-  Shield,
-  Settings,
-} from "lucide-react-native";
 import { useRouter, usePathname } from "expo-router";
-import type { LucideIcon } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { isAndroid } from "@/constants/platform";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { ROUTES } from "@/constants/routes";
-
-const TABS: { icon: LucideIcon; label: string; route: ROUTES }[] = [
-  { icon: Home, label: "Home", route: ROUTES.DASHBOARD },
-  { icon: Bot, label: "Agents", route: ROUTES.AGENTS },
-  { icon: DollarSign, label: "Costs", route: ROUTES.COSTS },
-  { icon: Shield, label: "Governance", route: ROUTES.GOVERNANCE },
-  { icon: Settings, label: "Settings", route: ROUTES.SETTINGS },
-];
+import { TOP_NAV_ITEMS } from "@/constants/navigation";
 
 function isTabRouteActive(pathname: string, route: ROUTES): boolean {
   return pathname === route || pathname.startsWith(`${route}/`);
@@ -36,7 +21,7 @@ export function BottomTabs() {
 
   useEffect(() => {
     if (!isAndroid) return;
-    for (const tab of TABS) {
+    for (const tab of TOP_NAV_ITEMS) {
       router.prefetch(tab.route as never);
     }
   }, [router]);
@@ -61,7 +46,7 @@ export function BottomTabs() {
         },
       ]}
     >
-      {TABS.map((tab) => {
+      {TOP_NAV_ITEMS.map((tab) => {
         const active = isTabRouteActive(pathname, tab.route);
         const Icon = tab.icon;
         return (
