@@ -16,7 +16,8 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { isWeb } from "@/constants/platform";
 import { ROUTES } from "@/constants/routes";
-import { TOP_TOP_NAV_ITEMS } from "@/constants/navigation";
+import { TOP_NAV_ITEMS, hasSubsections, getSubsections } from "@/constants/navigation";
+import { SidebarSubsectionItem } from "./SidebarSubsectionItem";
 
 interface SidebarProps {
   expanded: boolean;
@@ -101,17 +102,35 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
         </Pressable>
       </View>
       <View style={styles.nav}>
-        {TOP_NAV_ITEMS.map((item) => (
-          <SidebarNavItem
-            key={item.route}
-            icon={item.icon}
-            label={item.label}
-            route={item.route}
-            active={isSidebarRouteActive(pathname, item.route)}
-            expanded={expanded}
-            onPress={() => handleNavigate(item.route)}
-          />
-        ))}
+        {TOP_NAV_ITEMS.map((item) => {
+          const active = isSidebarRouteActive(pathname, item.route);
+          return (
+            <React.Fragment key={item.route}>
+              <SidebarNavItem
+                icon={item.icon}
+                label={item.label}
+                route={item.route}
+                active={active}
+                expanded={expanded}
+                onPress={() => handleNavigate(item.route)}
+              />
+              {active && expanded && hasSubsections(item.route) && (
+                <View accessibilityRole="list" accessibilityLabel={`${item.label} subsections`}>
+                  {getSubsections(item.route).map((sub) => (
+                    <SidebarSubsectionItem
+                      key={sub.id}
+                      label={sub.label}
+                      onPress={() => {
+                        // Scroll-to-section: dispatch a custom event or use nativeID lookup
+                        // For now, no-op — section anchoring is handled via nativeID on screens
+                      }}
+                    />
+                  ))}
+                </View>
+              )}
+            </React.Fragment>
+          );
+        })}
       </View>
     </Animated.View>
   );

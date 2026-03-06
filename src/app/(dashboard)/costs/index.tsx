@@ -34,7 +34,7 @@ export default function CostAnalyticsScreen() {
         isLoading: loading,
       }}
     >
-      <View style={styles.section}>
+      <View nativeID="cost-summary" style={styles.section}>
         <SectionHeader title="Cost Summary" />
         {loading ? (
           <CardGrid columns={4}>
@@ -72,7 +72,7 @@ export default function CostAnalyticsScreen() {
       </View>
 
       {data && (
-        <View style={styles.section}>
+        <View nativeID="cost-by-provider" style={styles.section}>
           <SectionHeader title="Cost by Provider" />
           <ChartCard
             title="Provider Cost Breakdown"
@@ -87,7 +87,7 @@ export default function CostAnalyticsScreen() {
       )}
 
       {data && (
-        <View style={styles.section}>
+        <View nativeID="budget-forecast" style={styles.section}>
           <SectionHeader title="Budget Forecast" />
           <CardGrid columns={3}>
             <KpiCard title="Budget" value={formatCurrency(data.budget.budgetUsd)} />
@@ -98,7 +98,7 @@ export default function CostAnalyticsScreen() {
       )}
 
       {data && (
-        <View style={styles.section}>
+        <View nativeID="project-breakdown" style={styles.section}>
           <SectionHeader title="Project Breakdown" />
           <BreakdownChart data={filteredCostBreakdown.slice(0, 10).map(r => ({ key: r.key, value: r.totalCostUsd }))} variant="horizontal-bar" height={300} truncateLabels={false} />
         </View>

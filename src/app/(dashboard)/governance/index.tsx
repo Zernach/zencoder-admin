@@ -122,7 +122,7 @@ export default function GovernanceScreen() {
         isLoading: loading,
       }}
     >
-      <View style={sectionStyles.section}>
+      <View nativeID="overview" style={sectionStyles.section}>
         <SectionHeader title="Overview" />
         {loading ? (
           <CardGrid columns={4}>
@@ -151,7 +151,7 @@ export default function GovernanceScreen() {
       </View>
 
       {data && (
-        <View style={sectionStyles.section}>
+        <View nativeID="compliance-status" style={sectionStyles.section}>
           <SectionHeader title="Compliance Status" />
           <CardGrid columns={3}>
             {data.complianceItems.map((item: ComplianceItem) => (
@@ -168,7 +168,7 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View style={sectionStyles.section}>
+        <View nativeID="seat-user-oversight" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
             <SectionHeader
               title="Seat User Oversight"
@@ -211,7 +211,7 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View style={sectionStyles.section}>
+        <View nativeID="recent-violations" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
             <SectionHeader title="Recent Violations" />
             <Pressable
@@ -243,7 +243,7 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View style={sectionStyles.section}>
+        <View nativeID="policy-changes" style={sectionStyles.section}>
           <SectionHeader title="Policy Changes" subtitle="Audit trail of policy modifications" />
           <DataTable
             columns={policyChangeCols}

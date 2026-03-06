@@ -84,7 +84,7 @@ export default function AgentsScreen() {
         isLoading: loading,
       }}
     >
-      <View style={styles.section}>
+      <View nativeID="reliability" style={styles.section}>
         <SectionHeader title="Reliability" />
         {loading ? (
           <CardGrid columns={4}>
@@ -125,7 +125,7 @@ export default function AgentsScreen() {
       </View>
 
       {data && (
-        <View style={styles.section}>
+        <View nativeID="agent-performance" style={styles.section}>
           <SectionHeader title="Agent Performance" subtitle={`${filteredAgents.length} agents with activity`} />
           <DataTable
             columns={agentCols}
@@ -136,7 +136,7 @@ export default function AgentsScreen() {
       )}
 
       {data && (
-        <View style={styles.section}>
+        <View nativeID="project-breakdown" style={styles.section}>
           <View style={localStyles.sectionRow}>
             <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} of ${data.totalProjects} projects active`} />
             <Pressable
@@ -162,7 +162,7 @@ export default function AgentsScreen() {
       )}
 
       {data && filteredRuns.length > 0 && (
-        <View style={styles.section}>
+        <View nativeID="recent-runs" style={styles.section}>
           <SectionHeader title="Recent Runs" subtitle={`Latest ${filteredRuns.length} runs`} />
           <DataTable
             columns={recentRunCols}
