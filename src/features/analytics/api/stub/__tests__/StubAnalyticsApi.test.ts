@@ -95,6 +95,22 @@ describe("getOutcomes", () => {
     expect(res.outcomesTrend.length).toBeGreaterThan(0);
     expect(res.leaderboard.length).toBeGreaterThan(0);
   });
+
+  it("outcomes trend generally increases over time", async () => {
+    const res = await api.getOutcomes(defaultFilters);
+    const trend = res.outcomesTrend;
+    expect(trend.length).toBeGreaterThan(14);
+
+    const midpoint = Math.floor(trend.length / 2);
+    const firstHalf = trend.slice(0, midpoint);
+    const secondHalf = trend.slice(midpoint);
+
+    const avg = (points: { value: number }[]): number =>
+      points.reduce((sum, point) => sum + point.value, 0) / points.length;
+
+    expect(avg(secondHalf)).toBeGreaterThan(avg(firstHalf));
+    expect(trend[trend.length - 1]!.value).toBeGreaterThanOrEqual(trend[0]!.value);
+  });
 });
 
 describe("getCost", () => {

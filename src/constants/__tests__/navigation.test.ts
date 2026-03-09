@@ -57,14 +57,15 @@ describe("SUBSECTIONS", () => {
     ]);
   });
 
-  it("governance has 5 subsections", () => {
+  it("governance has 6 subsections", () => {
     const items = SUBSECTIONS[ROUTES.GOVERNANCE];
-    expect(items.length).toBe(5);
+    expect(items.length).toBe(6);
     expect(items.map((i) => i.label)).toEqual([
       "Overview",
       "Compliance Status",
       "Seat User Oversight",
       "Recent Violations",
+      "Security Events",
       "Policy Changes",
     ]);
   });
@@ -84,7 +85,7 @@ describe("SUBSECTIONS", () => {
 describe("getSubsections", () => {
   it("returns subsections for a given route", () => {
     const items = getSubsections(ROUTES.GOVERNANCE);
-    expect(items.length).toBe(5);
+    expect(items.length).toBe(6);
     expect(items[0]!.id).toBe("overview");
   });
 });

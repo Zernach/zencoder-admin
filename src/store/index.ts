@@ -13,8 +13,13 @@ export {
   toggleSidebar,
   setSidebarExpanded,
   selectSidebarExpanded,
+  navigationHistorySlice,
+  setCurrentSegments,
+  selectCurrentSegments,
+  selectPreviousSegments,
+  selectMostRecentTab,
 } from "./slices";
-export type { LoadingState, SidebarState } from "./slices";
+export type { LoadingState, SidebarState, NavigationHistoryState } from "./slices";
 export {
   analyticsApi,
   useGetOverviewQuery,

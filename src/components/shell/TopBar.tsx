@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Modal } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import type { TextInput as TextInputHandle } from "react-native";
 import { Search, Clock, X } from "lucide-react-native";
-import { useRouter, usePathname } from "expo-router";
+import { useRouter } from "expo-router";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import { useSearchAutocomplete } from "@/features/analytics/hooks/useSearchAutocomplete";
@@ -12,7 +12,9 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { CustomTextInput } from "@/components/inputs";
 import { SearchAutocompletePanel } from "@/components/search";
-import { resolveTabContextFromPath, buildEntityRoute } from "@/features/search/navigation";
+import { buildEntityRoute } from "@/constants/routes";
+import { isIos } from "@/constants";
+import { useAppSelector, selectMostRecentTab } from "@/store";
 
 type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
 
@@ -44,16 +46,16 @@ const PRESET_SHORT_LABELS: Record<TimeRangePreset, string> = {
 };
 
 const CONTROL_HORIZONTAL_PADDING = 12;
-const CONTROL_VERTICAL_PADDING = 8;
 const CONTROL_TEXT_SIZE = 13;
 const CONTROL_TEXT_LINE_HEIGHT = 20;
+const CONTROL_HEIGHT = 36;
 
 export function TopBar() {
   const breakpoint = useBreakpoint();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const router = useRouter();
-  const pathname = usePathname();
+  const mostRecentTab = useAppSelector(selectMostRecentTab);
   const { preset, setTimeRange, searchQuery, setSearchQuery } = useDashboardFilters();
   const searchInputRef = useRef<TextInputHandle>(null);
   const [localQuery, setLocalQuery] = useState(searchQuery);
@@ -65,11 +67,12 @@ export function TopBar() {
       setLocalQuery(suggestion.title);
       setSearchQuery(suggestion.title);
       setIsPanelOpen(false);
-      const tabContext = resolveTabContextFromPath(pathname);
-      const route = buildEntityRoute(tabContext, suggestion.entityType, suggestion.id);
-      router.push(route as never);
+      const route = buildEntityRoute(mostRecentTab, suggestion.entityType, suggestion.id);
+      setTimeout(() => {
+        router.push(route as never);
+      }, 0);
     },
-    [setSearchQuery, pathname, router],
+    [setSearchQuery, mostRecentTab, router],
   );
 
   const autocomplete = useSearchAutocomplete(handleSuggestionSelect);
@@ -135,7 +138,7 @@ export function TopBar() {
             ref={searchInputRef}
             containerStyle={styles.searchInputWrapper}
             showInputContainer={false}
-            style={styles.searchInput}
+            style={[styles.searchInput, isIos ? styles.searchInputIos : undefined]}
             placeholder="Search agents, projects, runs..."
             value={localQuery}
             onChangeText={handleSearchChange}
@@ -171,7 +174,12 @@ export function TopBar() {
           onPress={openTimeRangeOverlay}
         >
           <Clock size={14} color={theme.text.secondary} />
-          <Text style={[styles.presetText, { color: theme.text.secondary }]}>{presetButtonLabel}</Text>
+          <Text
+            allowFontScaling={false}
+            style={[styles.presetText, { color: theme.text.secondary }]}
+          >
+            {presetButtonLabel}
+          </Text>
         </CustomButton>
       </View>
       <Modal
@@ -267,9 +275,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    height: CONTROL_HEIGHT,
     borderRadius: 8,
     paddingHorizontal: CONTROL_HORIZONTAL_PADDING,
-    paddingVertical: CONTROL_VERTICAL_PADDING,
+    paddingVertical: 0,
     flex: 1,
     maxWidth: 400,
     borderWidth: 1,
@@ -281,11 +290,22 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: CONTROL_TEXT_SIZE,
     lineHeight: CONTROL_TEXT_LINE_HEIGHT,
-    minHeight: CONTROL_TEXT_LINE_HEIGHT,
+    height: CONTROL_TEXT_LINE_HEIGHT,
+    minHeight: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
     paddingVertical: 0,
+    paddingHorizontal: 0,
+    marginVertical: 0,
+  },
+  searchInputIos: {
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   searchInputWrapper: {
     flex: 1,
+    minHeight: 0,
+    justifyContent: "center",
   },
   clearButton: {
     padding: 2,
@@ -294,8 +314,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    height: CONTROL_HEIGHT,
     paddingHorizontal: CONTROL_HORIZONTAL_PADDING,
-    paddingVertical: CONTROL_VERTICAL_PADDING,
+    paddingVertical: 0,
     borderRadius: 6,
     borderWidth: 1,
   },

@@ -9,7 +9,6 @@ import { semanticThemes } from "@/theme/themes";
 
 interface AgentDetailScreenProps {
   agentId: string;
-  originTab: string;
 }
 
 export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {

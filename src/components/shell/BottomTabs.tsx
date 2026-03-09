@@ -7,20 +7,12 @@ import { TabActions } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
-import { ROUTES } from "@/constants/routes";
+import { isRouteActive, TABS, type TabRoute } from "@/constants/routes";
 import { TOP_NAV_ITEMS } from "@/constants/navigation";
-
-function isTabRouteActive(pathname: string, route: ROUTES): boolean {
-  return pathname === route || pathname.startsWith(`${route}/`);
-}
-
-function toTabRouteName(route: ROUTES): string {
-  return route.replace(/^\//, "");
-}
 
 function findTabNavigator(
   navigation: NavigationProp<ParamListBase>,
-  routeName: string,
+  routeName: TABS,
 ): NavigationProp<ParamListBase> | null {
   let current: NavigationProp<ParamListBase> | undefined = navigation;
 
@@ -51,13 +43,12 @@ export function BottomTabs() {
   }, [router]);
 
   const handleTabPress = useCallback(
-    (route: ROUTES, active: boolean) => {
+    (tab: TABS, route: TabRoute, active: boolean) => {
       if (active) return;
-      const routeName = toTabRouteName(route);
-      const tabNavigation = findTabNavigator(navigation, routeName);
+      const tabNavigation = findTabNavigator(navigation, tab);
 
       if (tabNavigation) {
-        tabNavigation.dispatch(TabActions.jumpTo(routeName));
+        tabNavigation.dispatch(TabActions.jumpTo(tab));
         return;
       }
 
@@ -79,12 +70,12 @@ export function BottomTabs() {
       ]}
     >
       {TOP_NAV_ITEMS.map((tab) => {
-        const active = isTabRouteActive(pathname, tab.route);
+        const active = isRouteActive(pathname, tab.route);
         const Icon = tab.icon;
         return (
           <CustomButton
             key={tab.route}
-            onPress={() => handleTabPress(tab.route, active)}
+            onPress={() => handleTabPress(tab.tab, tab.route, active)}
             disabled={active}
             style={styles.tab}
             accessibilityRole="tab"

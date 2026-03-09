@@ -24,6 +24,7 @@ import { radius, spacing } from "@/theme/tokens";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes, type SemanticTheme } from "@/theme/themes";
 import { keyExtractors } from "@/constants";
+import { isWeb } from "@/constants/platform";
 import { CustomList } from "@/components/lists";
 import { ErrorState } from "./ErrorState";
 import { SectionHeader } from "./SectionHeader";
@@ -148,7 +149,7 @@ function LiveBadge({ reducedMotion, theme }: { reducedMotion: boolean; theme: Th
         toValue: 1,
         duration: 1200,
         easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
+        useNativeDriver: !isWeb,
       })
     );
     animation.start();

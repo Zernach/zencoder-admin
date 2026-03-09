@@ -1,14 +1,13 @@
-import { buildEntityRoute, resolveTabContextFromPath } from "@/features/search/navigation";
+import { buildEntityRoute, resolveTabFromPathname, TAB_ORDER, TABS } from "@/constants/routes";
 import type { SearchEntityType } from "@/features/analytics/types";
-import type { SearchTabContext } from "@/features/search/navigation";
 
 describe("search entity navigation integration", () => {
-  const tabs: SearchTabContext[] = ["dashboard", "agents", "costs", "governance", "settings"];
+  const tabs = [...TAB_ORDER];
   const entities: SearchEntityType[] = ["agent", "project", "team", "human", "run"];
 
   it("every tab resolves correctly from its path", () => {
     for (const tab of tabs) {
-      expect(resolveTabContextFromPath(`/${tab}`)).toBe(tab);
+      expect(resolveTabFromPathname(`/${tab}`)).toBe(tab);
     }
   });
 
@@ -16,7 +15,7 @@ describe("search entity navigation integration", () => {
     for (const tab of tabs) {
       for (const entity of entities) {
         const path = `/${tab}/${entity}/some-id`;
-        expect(resolveTabContextFromPath(path)).toBe(tab);
+        expect(resolveTabFromPathname(path)).toBe(tab);
       }
     }
   });
@@ -35,15 +34,15 @@ describe("search entity navigation integration", () => {
 
   it("typing without selection does not produce route changes", () => {
     // This test validates the architectural invariant:
-    // resolveTabContextFromPath and buildEntityRoute are only called
+    // resolveTabFromPathname and buildEntityRoute are only called
     // on explicit selection, not during typing. Here we verify the
     // functions don't have side effects and are pure.
-    const ctx1 = resolveTabContextFromPath("/dashboard");
-    const ctx2 = resolveTabContextFromPath("/dashboard");
+    const ctx1 = resolveTabFromPathname("/dashboard");
+    const ctx2 = resolveTabFromPathname("/dashboard");
     expect(ctx1).toBe(ctx2);
 
-    const route1 = buildEntityRoute("dashboard", "agent", "a1");
-    const route2 = buildEntityRoute("dashboard", "agent", "a1");
+    const route1 = buildEntityRoute(TABS.DASHBOARD, "agent", "a1");
+    const route2 = buildEntityRoute(TABS.DASHBOARD, "agent", "a1");
     expect(route1).toBe(route2);
   });
 });

@@ -121,7 +121,7 @@ export default function GovernanceScreen() {
   return (
     <ScreenWrapper
       headerProps={{
-        title: "Governance & Compliance",
+        title: "Governance",
         subtitle,
         isLoading: loading,
       }}
@@ -174,10 +174,12 @@ export default function GovernanceScreen() {
       {data && (
         <View ref={(r) => registerSection("seat-user-oversight", r)} nativeID="seat-user-oversight" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
-            <SectionHeader
-              title="Seat User Oversight"
-              subtitle="Full names of active seat users and AI usage by account seat"
-            />
+            <View style={localStyles.sectionHeaderWrap}>
+              <SectionHeader
+                title="Seat User Oversight"
+                subtitle="Full names of active seat users and AI usage by account seat"
+              />
+            </View>
             <CustomButton
               onPress={() => setShowCreateSeat(true)}
               style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
@@ -217,7 +219,9 @@ export default function GovernanceScreen() {
       {data && (
         <View ref={(r) => registerSection("recent-violations", r)} nativeID="recent-violations" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
-            <SectionHeader title="Recent Violations" />
+            <View style={localStyles.sectionHeaderWrap}>
+              <SectionHeader title="Recent Violations" />
+            </View>
             <CustomButton
               onPress={() => setShowCreateRule(true)}
               style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
@@ -236,7 +240,7 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View style={sectionStyles.section}>
+        <View ref={(r) => registerSection("security-events", r)} nativeID="security-events" style={sectionStyles.section}>
           <SectionHeader title="Security Events" />
           <DataTable
             columns={securityCols}
@@ -325,13 +329,21 @@ const localStyles = StyleSheet.create({
   },
   sectionRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    gap: spacing[2],
+  },
+  sectionHeaderWrap: {
+    flex: 1,
+    minWidth: 0,
   },
   createButton: {
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 6,
+    marginLeft: "auto",
+    flexShrink: 0,
+    maxWidth: "100%",
   },
   createButtonText: {
     fontSize: 13,

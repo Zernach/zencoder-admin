@@ -15,6 +15,7 @@ import { useCreateProject } from "@/features/analytics/hooks/useCreateProject";
 import { CreateProjectForm } from "@/features/analytics/components/CreateProjectForm";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing } from "@/theme/tokens";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { keyExtractors } from "@/constants";
 
@@ -145,7 +146,9 @@ export default function AgentsScreen() {
       {data && (
         <View ref={(r) => registerSection("project-breakdown", r)} nativeID="project-breakdown" style={styles.section}>
           <View style={localStyles.sectionRow}>
-            <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} of ${data.totalProjects} projects active`} />
+            <View style={localStyles.sectionHeaderWrap}>
+              <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} of ${data.totalProjects} projects active`} />
+            </View>
             <CustomButton
               onPress={() => setShowCreateProject(true)}
               style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
@@ -213,13 +216,21 @@ export default function AgentsScreen() {
 const localStyles = StyleSheet.create({
   sectionRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    gap: spacing[2],
+  },
+  sectionHeaderWrap: {
+    flex: 1,
+    minWidth: 0,
   },
   createButton: {
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 6,
+    marginLeft: "auto",
+    flexShrink: 0,
+    maxWidth: "100%",
   },
   createButtonText: {
     fontSize: 13,

@@ -9,7 +9,6 @@ import { semanticThemes } from "@/theme/themes";
 
 interface TeamDetailScreenProps {
   teamId: string;
-  originTab: string;
 }
 
 export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {

@@ -3,5 +3,5 @@ import { ProjectDetailScreen } from "@/features/search/screens";
 
 export default function ProjectDetailRoute() {
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
-  return <ProjectDetailScreen projectId={projectId ?? ""} originTab="settings" />;
+  return <ProjectDetailScreen projectId={projectId ?? ""} />;
 }

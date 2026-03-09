@@ -9,7 +9,6 @@ import { semanticThemes } from "@/theme/themes";
 
 interface ProjectDetailScreenProps {
   projectId: string;
-  originTab: string;
 }
 
 export function ProjectDetailScreen({ projectId }: ProjectDetailScreenProps) {

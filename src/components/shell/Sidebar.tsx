@@ -16,7 +16,7 @@ import { SidebarNavItem } from "./SidebarNavItem";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { isWeb } from "@/constants/platform";
-import { ROUTES } from "@/constants/routes";
+import { isRouteActive, type TabRoute } from "@/constants/routes";
 import { TOP_NAV_ITEMS, hasSubsections, getSubsections } from "@/constants/navigation";
 import { SidebarSubsectionItem } from "./SidebarSubsectionItem";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
@@ -24,10 +24,6 @@ import { useSectionScroll } from "@/hooks/useSectionScroll";
 interface SidebarProps {
   expanded: boolean;
   onToggle: () => void;
-}
-
-function isSidebarRouteActive(pathname: string, route: ROUTES): boolean {
-  return pathname === route || pathname.startsWith(`${route}/`);
 }
 
 export function Sidebar({ expanded, onToggle }: SidebarProps) {
@@ -38,8 +34,8 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
   const { scrollToSection } = useSectionScroll();
   const sidebarWidth = useSharedValue(expanded ? 264 : 76);
   const handleNavigate = useCallback(
-    (route: ROUTES) => {
-      if (isSidebarRouteActive(pathname, route)) return;
+    (route: TabRoute) => {
+      if (isRouteActive(pathname, route)) return;
       router.navigate(route as never);
     },
     [pathname, router],
@@ -106,7 +102,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
       </View>
       <View style={styles.nav}>
         {TOP_NAV_ITEMS.map((item) => {
-          const active = isSidebarRouteActive(pathname, item.route);
+          const active = isRouteActive(pathname, item.route);
           return (
             <React.Fragment key={item.route}>
               <SidebarNavItem

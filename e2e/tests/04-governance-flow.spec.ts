@@ -9,8 +9,8 @@ test.describe("Governance", () => {
     await navigateTo(page, "Governance");
     await waitForPageLoad(page);
 
-    // Verify governance page loaded (page title is unique)
-    await expect(page.getByText("Governance & Compliance", { exact: true })).toBeVisible({
+    // Verify governance page loaded (overview section, not sidebar subsection)
+    await expect(page.locator("#overview").getByText("Overview")).toBeVisible({
       timeout: 10_000,
     });
   });

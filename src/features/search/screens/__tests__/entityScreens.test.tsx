@@ -129,32 +129,32 @@ jest.mock("@/features/search/hooks", () => ({
 
 describe("Entity detail screens", () => {
   it("AgentDetailScreen renders agent data", () => {
-    const { getByText } = render(<AgentDetailScreen agentId="a1" originTab="dashboard" />);
+    const { getByText } = render(<AgentDetailScreen agentId="a1" />);
     expect(getByText("Test Agent")).toBeTruthy();
     expect(getByText("42")).toBeTruthy();
     expect(getByText("$123.45")).toBeTruthy();
   });
 
   it("ProjectDetailScreen renders project data", () => {
-    const { getByText } = render(<ProjectDetailScreen projectId="p1" originTab="dashboard" />);
+    const { getByText } = render(<ProjectDetailScreen projectId="p1" />);
     expect(getByText("Test Project")).toBeTruthy();
     expect(getByText("3")).toBeTruthy(); // agentCount
   });
 
   it("TeamDetailScreen renders team data", () => {
-    const { getByText } = render(<TeamDetailScreen teamId="t1" originTab="dashboard" />);
+    const { getByText } = render(<TeamDetailScreen teamId="t1" />);
     expect(getByText("Test Team")).toBeTruthy();
     expect(getByText("5")).toBeTruthy(); // memberCount
   });
 
   it("HumanDetailScreen renders human data", () => {
-    const { getByText } = render(<HumanDetailScreen humanId="u1" originTab="dashboard" />);
+    const { getByText } = render(<HumanDetailScreen humanId="u1" />);
     expect(getByText("Jane Doe")).toBeTruthy();
     expect(getByText("$75.50")).toBeTruthy();
   });
 
   it("RunDetailScreen renders run data", () => {
-    const { getByText } = render(<RunDetailScreen runId="r1" originTab="dashboard" />);
+    const { getByText } = render(<RunDetailScreen runId="r1" />);
     expect(getByText("Run r1")).toBeTruthy();
     expect(getByText("succeeded")).toBeTruthy();
   });

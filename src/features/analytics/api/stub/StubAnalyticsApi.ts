@@ -152,6 +152,43 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     return this.bucketByDay(runs, (d) => safeRate(countSucceeded(d), d.length));
   }
 
+  /**
+   * Build a slowly increasing PR-merge trend for the outcomes chart.
+   * We smooth daily noise and blend with a gentle upward baseline so
+   * the sample visualization reflects gradual adoption over time.
+   */
+  private outcomesTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
+    const mergedByDay = this.bucketByDay(runs, (dayRuns) =>
+      dayRuns.filter((run) => run.prMerged).length,
+    );
+    if (mergedByDay.length <= 2) {
+      return mergedByDay;
+    }
+
+    const smoothed = mergedByDay.map((point, index, allPoints) => {
+      const windowStart = Math.max(0, index - 6);
+      const window = allPoints.slice(windowStart, index + 1);
+      const avg =
+        window.reduce((sum, samplePoint) => sum + samplePoint.value, 0) / window.length;
+      return { tsIso: point.tsIso, value: avg };
+    });
+
+    const startValue = smoothed[0]!.value;
+    const rawEndValue = smoothed[smoothed.length - 1]!.value;
+    const targetEndValue = Math.max(rawEndValue, startValue * 1.15);
+    const span = smoothed.length - 1;
+
+    return smoothed.map((point, index) => {
+      const progress = span > 0 ? index / span : 0;
+      const baselineValue = startValue + (targetEndValue - startValue) * progress;
+      const blended = baselineValue * 0.65 + point.value * 0.35;
+      return {
+        tsIso: point.tsIso,
+        value: Math.max(0, Math.round(blended)),
+      };
+    });
+  }
+
   // ── API Methods ────────────────────────────────────────
 
   async getOverview(filters: AnalyticsFilters): Promise<OverviewResponse> {
@@ -343,7 +380,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       testsPassRate,
       codeAcceptanceRate,
       reworkRate,
-      outcomesTrend: this.bucketByDay(succeeded, (d) => d.filter((r) => r.prMerged).length),
+      outcomesTrend: this.outcomesTrendFromRuns(succeeded),
       leaderboard,
     };
   }

@@ -5,7 +5,7 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 
 interface ChartCardProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   loading?: boolean;
   error?: string;
@@ -35,13 +35,13 @@ export function ChartCard({
       ]}
     >
       <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.text.primary }]}>{title}</Text>
+        {title && <Text style={[styles.title, { color: theme.text.primary }]}>{title}</Text>}
         {subtitle && <Text style={[styles.subtitle, { color: theme.text.secondary }]}>{subtitle}</Text>}
       </View>
       {loading ? (
         <LoadingSkeleton variant="chart" />
       ) : error ? (
-        <ErrorState message={error} onRetry={onRetry ?? (() => {})} />
+        <ErrorState message={error} onRetry={onRetry ?? (() => { })} />
       ) : (
         children
       )}

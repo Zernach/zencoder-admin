@@ -3,5 +3,5 @@ import { HumanDetailScreen } from "@/features/search/screens";
 
 export default function HumanDetailRoute() {
   const { humanId } = useLocalSearchParams<{ humanId: string }>();
-  return <HumanDetailScreen humanId={humanId ?? ""} originTab="costs" />;
+  return <HumanDetailScreen humanId={humanId ?? ""} />;
 }

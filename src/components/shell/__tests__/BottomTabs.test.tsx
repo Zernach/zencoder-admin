@@ -1,7 +1,7 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import { BottomTabs } from "../BottomTabs";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES, TAB_ORDER, TABS } from "@/constants/routes";
 import { TabActions } from "@react-navigation/native";
 
 const mockNavigate = jest.fn();
@@ -44,7 +44,7 @@ describe("BottomTabs", () => {
     mockGetParent.mockReturnValue(undefined);
     mockGetState.mockReturnValue({
       type: "tab",
-      routeNames: ["dashboard", "agents", "costs", "governance", "settings"],
+      routeNames: [...TAB_ORDER],
     });
   });
 
@@ -55,7 +55,7 @@ describe("BottomTabs", () => {
     fireEvent.press(getByLabelText("Agents"));
 
     expect(mockDispatch).toHaveBeenCalledTimes(1);
-    expect(mockDispatch).toHaveBeenCalledWith(TabActions.jumpTo("agents"));
+    expect(mockDispatch).toHaveBeenCalledWith(TabActions.jumpTo(TABS.AGENTS));
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 

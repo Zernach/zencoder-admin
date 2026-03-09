@@ -113,6 +113,7 @@ describe("Sidebar — subsection rendering", () => {
       "Compliance Status",
       "Seat User Oversight",
       "Recent Violations",
+      "Security Events",
       "Policy Changes",
     ];
     for (const label of expectedLabels) {

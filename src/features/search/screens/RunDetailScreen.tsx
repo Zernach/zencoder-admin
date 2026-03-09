@@ -9,7 +9,6 @@ import { semanticThemes } from "@/theme/themes";
 
 interface RunDetailScreenProps {
   runId: string;
-  originTab: string;
 }
 
 export function RunDetailScreen({ runId }: RunDetailScreenProps) {

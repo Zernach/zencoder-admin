@@ -3,5 +3,5 @@ import { TeamDetailScreen } from "@/features/search/screens";
 
 export default function TeamDetailRoute() {
   const { teamId } = useLocalSearchParams<{ teamId: string }>();
-  return <TeamDetailScreen teamId={teamId ?? ""} originTab="costs" />;
+  return <TeamDetailScreen teamId={teamId ?? ""} />;
 }

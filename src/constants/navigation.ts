@@ -6,23 +6,30 @@ import {
   Settings,
 } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
-import { ROUTES } from "./routes";
+import { ROUTES, TABS, TAB_ORDER, getRouteForTab, type TabRoute } from "./routes";
 
 // ─── Top-Level Navigation ───────────────────────────────
 
 export interface NavItem {
   icon: LucideIcon;
   label: string;
-  route: ROUTES;
+  route: TabRoute;
+  tab: TABS;
 }
 
-export const TOP_NAV_ITEMS: NavItem[] = [
-  { icon: Home, label: "Home", route: ROUTES.DASHBOARD },
-  { icon: Bot, label: "Agents", route: ROUTES.AGENTS },
-  { icon: DollarSign, label: "Costs", route: ROUTES.COSTS },
-  { icon: Shield, label: "Governance", route: ROUTES.GOVERNANCE },
-  { icon: Settings, label: "Settings", route: ROUTES.SETTINGS },
-];
+const TOP_NAV_METADATA: Record<TABS, Pick<NavItem, "icon" | "label">> = {
+  [TABS.DASHBOARD]: { icon: Home, label: "Home" },
+  [TABS.AGENTS]: { icon: Bot, label: "Agents" },
+  [TABS.COSTS]: { icon: DollarSign, label: "Costs" },
+  [TABS.GOVERNANCE]: { icon: Shield, label: "Governance" },
+  [TABS.SETTINGS]: { icon: Settings, label: "Settings" },
+};
+
+export const TOP_NAV_ITEMS: NavItem[] = TAB_ORDER.map((tab) => ({
+  tab,
+  route: getRouteForTab(tab),
+  ...TOP_NAV_METADATA[tab],
+}));
 
 // ─── Sidebar Subsections ────────────────────────────────
 
@@ -51,6 +58,7 @@ export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
     { id: "compliance-status", label: "Compliance Status" },
     { id: "seat-user-oversight", label: "Seat User Oversight" },
     { id: "recent-violations", label: "Recent Violations" },
+    { id: "security-events", label: "Security Events" },
     { id: "policy-changes", label: "Policy Changes" },
   ],
 };

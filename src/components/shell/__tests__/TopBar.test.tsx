@@ -4,6 +4,7 @@ import { render, fireEvent } from "@testing-library/react-native";
 import { Provider } from "react-redux";
 import { filtersSlice } from "@/store/slices/filtersSlice";
 import { sidebarSlice } from "@/store/slices/sidebarSlice";
+import { navigationHistorySlice } from "@/store/slices/navigationHistorySlice";
 import { TopBar } from "../TopBar";
 
 let mockBreakpoint: "mobile" | "tablet" | "desktop" = "desktop";
@@ -52,12 +53,6 @@ jest.mock("@/components/search", () => ({
 const mockPush = jest.fn();
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
-  usePathname: () => "/dashboard",
-}));
-
-jest.mock("@/features/search/navigation", () => ({
-  resolveTabContextFromPath: (p: string) => p.replace("/", "") || "dashboard",
-  buildEntityRoute: (tab: string, entityType: string, id: string) => `/${tab}/${entityType}/${id}`,
 }));
 
 function renderTopBar() {
@@ -65,6 +60,7 @@ function renderTopBar() {
     reducer: {
       filters: filtersSlice.reducer,
       sidebar: sidebarSlice.reducer,
+      navigationHistory: navigationHistorySlice.reducer,
     },
   });
 

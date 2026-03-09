@@ -9,7 +9,6 @@ import { semanticThemes } from "@/theme/themes";
 
 interface HumanDetailScreenProps {
   humanId: string;
-  originTab: string;
 }
 
 export function HumanDetailScreen({ humanId }: HumanDetailScreenProps) {

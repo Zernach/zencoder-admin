@@ -39,7 +39,7 @@ Each wrapper:
 
 - Reads route params.
 - Renders shared entity screen component.
-- Passes `originTab` for breadcrumbs and back behavior.
+- Uses Redux navigation history (`mostRecentTab`) for breadcrumbs and back behavior.
 
 ## Files to Create / Update
 

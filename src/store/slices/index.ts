@@ -19,3 +19,12 @@ export {
   selectSidebarExpanded,
   type SidebarState,
 } from "./sidebarSlice";
+
+export {
+  navigationHistorySlice,
+  setCurrentSegments,
+  selectCurrentSegments,
+  selectPreviousSegments,
+  selectMostRecentTab,
+  type NavigationHistoryState,
+} from "./navigationHistorySlice";

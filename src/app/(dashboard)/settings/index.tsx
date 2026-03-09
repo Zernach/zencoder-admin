@@ -90,7 +90,9 @@ export default function SettingsScreen() {
 
       <View style={styles.section}>
         <View style={styles.sectionRow}>
-          <SectionHeader title="Organization" />
+          <View style={styles.sectionHeaderWrap}>
+            <SectionHeader title="Organization" />
+          </View>
           <CustomButton
             onPress={() => setShowCreateTeam(true)}
             style={[styles.createButton, { backgroundColor: theme.border.brand }]}
@@ -194,13 +196,21 @@ const styles = StyleSheet.create({
   dangerText: { fontWeight: "600", fontSize: 14 },
   sectionRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    gap: spacing[2],
+  },
+  sectionHeaderWrap: {
+    flex: 1,
+    minWidth: 0,
   },
   createButton: {
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 6,
+    marginLeft: "auto",
+    flexShrink: 0,
+    maxWidth: "100%",
   },
   createButtonText: {
     fontSize: 13,

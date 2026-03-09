@@ -55,13 +55,7 @@ export const borderWidth = {
 } as const;
 
 export interface ShadowToken {
-  shadowColor: string;
-  shadowOpacity: number;
-  shadowRadius: number;
-  shadowOffset: {
-    width: number;
-    height: number;
-  };
+  boxShadow: string;
   elevation: number;
 }
 
@@ -73,10 +67,7 @@ export interface ThemeShadows {
 }
 
 const transparentShadow: ShadowToken = {
-  shadowColor: "#000000",
-  shadowOpacity: 0,
-  shadowRadius: 0,
-  shadowOffset: { width: 0, height: 0 },
+  boxShadow: "0px 0px 0px rgba(0, 0, 0, 0)",
   elevation: 0
 };
 
@@ -84,48 +75,30 @@ export const shadowsByTheme: Record<ThemeName, ThemeShadows> = {
   dark: {
     none: transparentShadow,
     sm: {
-      shadowColor: "#000000",
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      shadowOffset: { width: 0, height: 1 },
+      boxShadow: "0px 1px 4px rgba(0, 0, 0, 0.2)",
       elevation: 1
     },
     md: {
-      shadowColor: "#000000",
-      shadowOpacity: 0.24,
-      shadowRadius: 14,
-      shadowOffset: { width: 0, height: 4 },
+      boxShadow: "0px 4px 14px rgba(0, 0, 0, 0.24)",
       elevation: 3
     },
     lg: {
-      shadowColor: "#000000",
-      shadowOpacity: 0.28,
-      shadowRadius: 28,
-      shadowOffset: { width: 0, height: 8 },
+      boxShadow: "0px 8px 28px rgba(0, 0, 0, 0.28)",
       elevation: 6
     }
   },
   light: {
     none: transparentShadow,
     sm: {
-      shadowColor: "#0f1720",
-      shadowOpacity: 0.08,
-      shadowRadius: 4,
-      shadowOffset: { width: 0, height: 1 },
+      boxShadow: "0px 1px 4px rgba(15, 23, 32, 0.08)",
       elevation: 1
     },
     md: {
-      shadowColor: "#0f1720",
-      shadowOpacity: 0.12,
-      shadowRadius: 14,
-      shadowOffset: { width: 0, height: 4 },
+      boxShadow: "0px 4px 14px rgba(15, 23, 32, 0.12)",
       elevation: 3
     },
     lg: {
-      shadowColor: "#0f1720",
-      shadowOpacity: 0.16,
-      shadowRadius: 28,
-      shadowOffset: { width: 0, height: 8 },
+      boxShadow: "0px 8px 28px rgba(15, 23, 32, 0.16)",
       elevation: 6
     }
   }

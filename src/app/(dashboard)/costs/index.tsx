@@ -32,7 +32,7 @@ export default function CostAnalyticsScreen() {
   return (
     <ScreenWrapper
       headerProps={{
-        title: "Cost Analytics",
+        title: "Costs",
         subtitle,
         isLoading: loading,
       }}
@@ -79,10 +79,7 @@ export default function CostAnalyticsScreen() {
       {data && (
         <View ref={(r) => registerSection("cost-by-provider", r)} nativeID="cost-by-provider" style={styles.section}>
           <SectionHeader title="Cost by Provider" />
-          <ChartCard
-            title="Provider Cost Breakdown"
-            subtitle="Cost share, run volume, and efficiency by provider"
-          >
+          <ChartCard>
             <ProviderCostChart
               data={data.providerBreakdown}
               totalCostUsd={data.totalCostUsd}
