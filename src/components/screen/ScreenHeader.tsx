@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    lineHeight: 20,
   },
   right: {
     marginTop: 4,

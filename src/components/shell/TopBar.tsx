@@ -47,7 +47,6 @@ const PRESET_SHORT_LABELS: Record<TimeRangePreset, string> = {
 
 const CONTROL_HORIZONTAL_PADDING = 12;
 const CONTROL_TEXT_SIZE = 13;
-const CONTROL_TEXT_LINE_HEIGHT = 20;
 const CONTROL_HEIGHT = 36;
 
 export function TopBar() {
@@ -289,8 +288,6 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: CONTROL_TEXT_SIZE,
-    lineHeight: CONTROL_TEXT_LINE_HEIGHT,
-    height: CONTROL_TEXT_LINE_HEIGHT,
     minHeight: 0,
     paddingTop: 0,
     paddingBottom: 0,
@@ -322,7 +319,6 @@ const styles = StyleSheet.create({
   },
   presetText: {
     fontSize: CONTROL_TEXT_SIZE,
-    lineHeight: CONTROL_TEXT_LINE_HEIGHT,
   },
   modalOverlay: {
     flex: 1,

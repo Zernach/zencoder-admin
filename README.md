@@ -110,6 +110,19 @@ src/
 | **Testing** | Jest, React Native Testing Library, Playwright, MSW |
 | **Deploy** | Cloudflare Pages (via Wrangler) |
 
+## ⚙️ AI Coding Techniques
+
+In general, we are following the `0000-task-manager.md` to catalogue the list of `pull_requests` files to show most of the work that I completed for this app.
+
+The following command will run the `0.txt` file in the `loops` directory, which refers to the task manager, and uses Claude + Ralph plugin to run prompt loops over the content in the text file.
+
+```sh
+npm run ralph -- -p 0
+```
+
+To create another Ralph loop, simply create a new text file in the `loops` directory, and then run the above command with the number of the text file that you created.
+
+
 ## ⚙️ License
 
 Private — all rights reserved.

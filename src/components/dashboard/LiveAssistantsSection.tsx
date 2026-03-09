@@ -652,7 +652,6 @@ const styles = StyleSheet.create({
   emptySubtitle: {
     fontSize: 12,
     textAlign: "center",
-    lineHeight: 18,
     maxWidth: 320,
   },
   placeholderWrap: {

@@ -107,7 +107,6 @@ const styles = StyleSheet.create({
   },
   formSubtitle: {
     fontSize: fontSizes.sm,
-    lineHeight: 18,
   },
   errorBanner: {
     borderWidth: borderWidth.hairline,
@@ -117,7 +116,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: fontSizes.sm,
-    lineHeight: 18,
     textAlign: "center",
   },
   itemSeparator: {

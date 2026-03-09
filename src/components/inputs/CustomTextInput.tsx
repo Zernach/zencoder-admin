@@ -105,8 +105,6 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: fontSizes.md,
-    lineHeight: 20,
-    minHeight: 20,
     paddingVertical: 0,
   },
   webFocusOutlineReset: {
@@ -116,6 +114,5 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: fontSizes.sm,
-    lineHeight: 16,
   },
 });

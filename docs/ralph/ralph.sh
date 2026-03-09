@@ -28,7 +28,8 @@ done
 get_ralph_prompt() {
   local loop_file="$SCRIPT_DIR/loops/$1.txt"
   if [[ ! -f "$loop_file" ]]; then
-    echo "Unknown prompt ID: $1. Valid IDs: 1–5" >&2
+    local max_id=$(($(find "$SCRIPT_DIR/loops" -maxdepth 1 -name '*.txt' 2>/dev/null | wc -l)))
+    echo "Unknown prompt ID: $1. Valid IDs: 1–$max_id" >&2
     exit 1
   fi
   cat "$loop_file"
