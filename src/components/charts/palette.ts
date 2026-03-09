@@ -1,5 +1,5 @@
 export const DATA_PALETTE = [
-  "#30a8dc", // accent blue
+  "#f64a00", // accent orange
   "#22c55e", // green
   "#f59e0b", // amber
   "#ef4444", // red

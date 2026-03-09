@@ -1,12 +1,7 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { View, Text, Modal, StyleSheet } from "react-native";
+import React, { useMemo } from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
-import { X } from "lucide-react-native";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
-import { useCreateComplianceViolationRule } from "@/features/analytics/hooks/useCreateComplianceViolationRule";
-import { useCreateHuman } from "@/features/analytics/hooks/useCreateHuman";
-import { CreateComplianceRuleForm } from "@/features/analytics/components/CreateComplianceRuleForm";
-import { CreateHumanForm } from "@/features/analytics/components/CreateHumanForm";
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText } from "@/components/tables";
@@ -14,11 +9,14 @@ import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import type { PolicyViolationRow, SecurityEventRow, PolicyChangeEvent, ComplianceItem, SeatUserUsageRow, KeyValueMetric } from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
+import { CreateComplianceRuleModal } from "@/features/analytics/components/CreateComplianceRuleModal";
+import { AddSeatModal } from "@/features/analytics/components/AddSeatModal";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { keyExtractors } from "@/constants";
+import { useAppDispatch, openModal, ModalName } from "@/store";
 
 const VIOLATION_SEARCH_KEYS: (keyof PolicyViolationRow)[] = ["agentName", "reason", "severity"];
 const SECURITY_SEARCH_KEYS: (keyof SecurityEventRow)[] = ["type", "description"];
@@ -37,28 +35,7 @@ export default function GovernanceScreen() {
   const ct = cellText(mode);
   const { data, loading, error, refetch } = useGovernanceDashboard();
   const { registerSection } = useSectionScroll();
-  const { create: createRule, loading: createLoading } = useCreateComplianceViolationRule();
-  const { create: createHuman, loading: createHumanLoading, error: createHumanError } = useCreateHuman();
-  const [showCreateRule, setShowCreateRule] = useState(false);
-  const [showCreateSeat, setShowCreateSeat] = useState(false);
-
-  const handleCreateRule = useCallback(
-    async (values: { name: string; description: string; severity: "HIGH" | "MEDIUM" | "LOW" }) => {
-      await createRule(values);
-      setShowCreateRule(false);
-      refetch();
-    },
-    [createRule, refetch],
-  );
-
-  const handleCreateSeat = useCallback(
-    async (values: { name: string; email: string; teamId: string }) => {
-      await createHuman(values);
-      setShowCreateSeat(false);
-      refetch();
-    },
-    [createHuman, refetch],
-  );
+  const dispatch = useAppDispatch();
 
   const filteredViolations = useSearchFilter(data?.recentViolations ?? [], VIOLATION_SEARCH_KEYS);
   const filteredSecurityEvents = useSearchFilter(data?.securityEvents ?? [], SECURITY_SEARCH_KEYS);
@@ -181,7 +158,7 @@ export default function GovernanceScreen() {
               />
             </View>
             <CustomButton
-              onPress={() => setShowCreateSeat(true)}
+              onPress={() => dispatch(openModal(ModalName.CreateSeat))}
               style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
               accessibilityRole="button"
               accessibilityLabel="Add Seat"
@@ -223,7 +200,7 @@ export default function GovernanceScreen() {
               <SectionHeader title="Recent Violations" />
             </View>
             <CustomButton
-              onPress={() => setShowCreateRule(true)}
+              onPress={() => dispatch(openModal(ModalName.CreateComplianceRule))}
               style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
               accessibilityRole="button"
               accessibilityLabel="Create Compliance Rule"
@@ -260,62 +237,8 @@ export default function GovernanceScreen() {
           />
         </View>
       )}
-      <Modal
-        transparent
-        visible={showCreateRule}
-        animationType="fade"
-        onRequestClose={() => setShowCreateRule(false)}
-      >
-        <View style={[localStyles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
-          <CustomButton
-            style={StyleSheet.absoluteFillObject}
-            onPress={() => setShowCreateRule(false)}
-            accessibilityRole="button"
-            accessibilityLabel="Close create rule form"
-          />
-          <View style={[localStyles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
-            <View style={localStyles.modalHeader}>
-              <CustomButton
-                onPress={() => setShowCreateRule(false)}
-                hitSlop={8}
-                accessibilityRole="button"
-                accessibilityLabel="Close"
-              >
-                <X size={16} color={theme.text.secondary} />
-              </CustomButton>
-            </View>
-            <CreateComplianceRuleForm onSubmit={handleCreateRule} loading={createLoading} />
-          </View>
-        </View>
-      </Modal>
-      <Modal
-        transparent
-        visible={showCreateSeat}
-        animationType="fade"
-        onRequestClose={() => setShowCreateSeat(false)}
-      >
-        <View style={[localStyles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
-          <CustomButton
-            style={StyleSheet.absoluteFillObject}
-            onPress={() => setShowCreateSeat(false)}
-            accessibilityRole="button"
-            accessibilityLabel="Close add seat form"
-          />
-          <View style={[localStyles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
-            <View style={localStyles.modalHeader}>
-              <CustomButton
-                onPress={() => setShowCreateSeat(false)}
-                hitSlop={8}
-                accessibilityRole="button"
-                accessibilityLabel="Close"
-              >
-                <X size={16} color={theme.text.secondary} />
-              </CustomButton>
-            </View>
-            <CreateHumanForm onSubmit={handleCreateSeat} loading={createHumanLoading} error={createHumanError} />
-          </View>
-        </View>
-      </Modal>
+      <CreateComplianceRuleModal />
+      <AddSeatModal />
     </ScreenWrapper>
   );
 }
@@ -348,23 +271,5 @@ const localStyles = StyleSheet.create({
   createButtonText: {
     fontSize: 13,
     fontWeight: "600",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  modalPanel: {
-    width: 400,
-    maxWidth: "100%",
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 16,
-    gap: 12,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
   },
 });

@@ -28,3 +28,12 @@ export {
   selectMostRecentTab,
   type NavigationHistoryState,
 } from "./navigationHistorySlice";
+
+export {
+  modalSlice,
+  openModal,
+  closeModal,
+  selectModalVisible,
+  ModalName,
+  type ModalState,
+} from "./modalSlice";

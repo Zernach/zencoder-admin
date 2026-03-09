@@ -4,6 +4,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import { filtersSlice } from "@/store/slices/filtersSlice";
 import { loadingSlice } from "@/store/slices/loadingSlice";
 import { sidebarSlice } from "@/store/slices/sidebarSlice";
+import { navigationHistorySlice } from "@/store/slices/navigationHistorySlice";
+import { modalSlice } from "@/store/slices/modalSlice";
 import { analyticsApi } from "@/store/api/analyticsApi";
 import { initializeService } from "@/store/api/serviceRegistry";
 import { AppDependenciesProvider } from "@/core/di/AppDependencies";
@@ -43,6 +45,8 @@ export function createTestStore() {
       filters: filtersSlice.reducer,
       loading: loadingSlice.reducer,
       sidebar: sidebarSlice.reducer,
+      navigationHistory: navigationHistorySlice.reducer,
+      modal: modalSlice.reducer,
       [analyticsApi.reducerPath]: analyticsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>

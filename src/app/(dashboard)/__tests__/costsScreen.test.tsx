@@ -122,9 +122,8 @@ describe("CostAnalyticsScreen", () => {
 
     const { getByText, getByTestId } = render(<CostAnalyticsScreen />);
 
-    expect(getByText("Cost by Provider")).toBeTruthy();
-    expect(getByText("Provider Cost Share")).toBeTruthy();
-    expect(getByText("Cost per Provider Token")).toBeTruthy();
+    expect(getByText("Cost per Provider")).toBeTruthy();
+    expect(getByText("Cost per Token")).toBeTruthy();
     expect(getByTestId("provider-cost-chart")).toBeTruthy();
     expect(getByTestId("provider-token-cost-bar-chart")).toBeTruthy();
   });

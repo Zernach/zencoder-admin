@@ -3,6 +3,7 @@ import { render } from "@testing-library/react-native";
 import type { AgentsHubResponse } from "@/features/analytics/types";
 
 const mockUseAgentsHub = jest.fn();
+const mockDispatch = jest.fn();
 
 jest.mock("@/features/analytics/hooks/useAgentsHub", () => ({
   useAgentsHub: () => mockUseAgentsHub(),
@@ -12,30 +13,21 @@ jest.mock("@/hooks/useSearchFilter", () => ({
   useSearchFilter: <T,>(data: T[]) => data,
 }));
 
-jest.mock("@/features/analytics/hooks/useCreateProject", () => ({
-  useCreateProject: () => ({
-    create: jest.fn().mockResolvedValue({ project: { id: "proj_1" } }),
-    loading: false,
-    error: undefined,
-    lastResult: undefined,
-  }),
+jest.mock("@/store", () => ({
+  useAppDispatch: () => mockDispatch,
+  openModal: jest.fn((name: string) => ({ type: "modal/openModal", payload: name })),
+  ModalName: {
+    CreateProject: "createProject",
+    CreateComplianceRule: "createComplianceRule",
+    CreateSeat: "createSeat",
+    CreateTeam: "createTeam",
+    SignOutNotice: "signOutNotice",
+  },
 }));
 
-jest.mock("lucide-react-native", () => {
-  const React = require("react");
-  const { Text } = require("react-native");
-  return {
-    X: () => <Text>X</Text>,
-  };
-});
-
-jest.mock("@/features/analytics/components/CreateProjectForm", () => {
-  const React = require("react");
-  const { Text } = require("react-native");
-  return {
-    CreateProjectForm: () => <Text>CreateProjectForm</Text>,
-  };
-});
+jest.mock("@/features/analytics/components/CreateProjectModal", () => ({
+  CreateProjectModal: () => null,
+}));
 
 jest.mock("@/components/screen", () => {
   const React = require("react");
@@ -107,7 +99,7 @@ jest.mock("@/components/tables", () => {
     cellText: () => StyleSheet.create({
       primary: { color: "#e5e5e5", fontSize: 12 },
       secondary: { color: "#a3a3a3", fontSize: 12 },
-      brand: { color: "#67c4ea", fontSize: 12 },
+      brand: { color: "#ff7a3d", fontSize: 12 },
     }),
     getSuccessRateColor: () => "#22c55e",
     chartColors: () => ({ success: "#22c55e", warning: "#f59e0b", error: "#ef4444" }),

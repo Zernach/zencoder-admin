@@ -26,12 +26,25 @@ export function BreakdownChart({
   const theme = semanticThemes[mode];
   const [measuredLabelWidth, setMeasuredLabelWidth] = useState<number>(0);
   const [measuredRowHeight, setMeasuredRowHeight] = useState<number>(0);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
   const sorted = [...data].sort((a, b) => b.value - a.value);
   const maxVal = Math.max(...sorted.map((d) => d.value), 1);
   const longestLabel = useMemo(
     () => sorted.reduce((longest, item) => (item.key.length > longest.length ? item.key : longest), ""),
     [sorted]
   );
+  const effectiveLabelWidth = useMemo(() => {
+    if (truncateLabels || measuredLabelWidth <= 0 || containerWidth <= 0) {
+      return measuredLabelWidth > 0 ? measuredLabelWidth : undefined;
+    }
+
+    const minTrackWidth = 56;
+    const valueWidth = showValues ? 48 : 0;
+    const gapCount = showValues ? 2 : 1;
+    const horizontalGaps = gapCount * 8;
+    const maxAllowedLabelWidth = Math.max(80, containerWidth - valueWidth - horizontalGaps - minTrackWidth);
+    return Math.min(measuredLabelWidth, maxAllowedLabelWidth);
+  }, [truncateLabels, measuredLabelWidth, containerWidth, showValues]);
 
   const handleLongestLabelLayout = useCallback((width: number): void => {
     if (width > measuredLabelWidth) {
@@ -47,7 +60,10 @@ export function BreakdownChart({
 
   if (variant === "horizontal-bar") {
     return (
-      <View style={[styles.container, { minHeight: height }]}>
+      <View
+        style={[styles.container, { minHeight: height }]}
+        onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
+      >
         {!truncateLabels && longestLabel.length > 0 ? (
           <Text
             style={[styles.hBarLabel, styles.hBarLabelFull, styles.measureLabel, { color: theme.text.secondary }]}
@@ -76,7 +92,7 @@ export function BreakdownChart({
                 styles.hBarLabel,
                 { color: theme.text.secondary },
                 !truncateLabels && styles.hBarLabelFull,
-                !truncateLabels && measuredLabelWidth > 0 ? { width: measuredLabelWidth } : null,
+                !truncateLabels && effectiveLabelWidth ? { width: effectiveLabelWidth } : null,
               ]}
               numberOfLines={truncateLabels ? 1 : undefined}
             >
@@ -159,6 +175,7 @@ const styles = StyleSheet.create({
   },
   hBarTrack: {
     flex: 1,
+    minWidth: 56,
     height: 16,
     borderRadius: 4,
     overflow: "hidden",

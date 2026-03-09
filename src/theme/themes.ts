@@ -50,21 +50,21 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
       surface: "#1a1a1a",
       surfaceElevated: "#262626",
       surfaceHover: "#2f2f2f",
-      brandSubtle: "rgba(48, 168, 220, 0.14)",
+      brandSubtle: "rgba(246, 74, 0, 0.14)",
       overlay: "rgba(0, 0, 0, 0.58)"
     },
     border: {
       default: "#2d2d2d",
       subtle: "#242424",
       strong: "#3a3a3a",
-      brand: "#30a8dc"
+      brand: "#f64a00"
     },
     text: {
       primary: "#e5e5e5",
       secondary: "#a3a3a3",
       tertiary: "#8a8a8a",
-      brand: "#67c4ea",
-      onBrand: "#00131c"
+      brand: "#ff7a3d",
+      onBrand: "#ffffff"
     },
     icon: {
       primary: "#dcdcdc",
@@ -78,8 +78,8 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
     },
     data: {
       gridLine: "#2a2a2a",
-      seriesPrimary: "#30a8dc",
-      seriesSecondary: "#7fa6b8",
+      seriesPrimary: "#f64a00",
+      seriesSecondary: "#ff8c57",
       seriesTertiary: "#a855f7"
     }
   },
@@ -90,20 +90,20 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
       surface: "#ffffff",
       surfaceElevated: "#fbfdff",
       surfaceHover: "#f3f6f9",
-      brandSubtle: "rgba(48, 168, 220, 0.12)",
+      brandSubtle: "rgba(246, 74, 0, 0.12)",
       overlay: "rgba(15, 23, 32, 0.38)"
     },
     border: {
       default: "#d7dde3",
       subtle: "#e4e8ec",
       strong: "#c5ced8",
-      brand: "#2b9fce"
+      brand: "#f64a00"
     },
     text: {
       primary: "#0f1720",
       secondary: "#435160",
       tertiary: "#6b7683",
-      brand: "#0f7ea9",
+      brand: "#d94000",
       onBrand: "#ffffff"
     },
     icon: {
@@ -118,8 +118,8 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
     },
     data: {
       gridLine: "#e3e7eb",
-      seriesPrimary: "#30a8dc",
-      seriesSecondary: "#6f8ca5",
+      seriesPrimary: "#f64a00",
+      seriesSecondary: "#ff8c57",
       seriesTertiary: "#7c3aed"
     }
   }

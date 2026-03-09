@@ -1,52 +1,58 @@
-import React, { useCallback, useState } from "react";
-import { View, Text, Switch, Modal, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
-import { X } from "lucide-react-native";
+import { CustomSwitch } from "@/components/inputs";
+import {
+  Moon,
+  Mail,
+  MessageSquare,
+  RefreshCw,
+  ShieldAlert,
+  SlidersHorizontal,
+  LogOut,
+  Trash2,
+  User,
+} from "lucide-react-native";
 import { SectionHeader } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
-import { useCreateTeam } from "@/features/analytics/hooks/useCreateTeam";
-import { CreateTeamForm } from "@/features/analytics/components/CreateTeamForm";
-import { spacing } from "@/theme/tokens";
+import { CreateTeamModal } from "@/features/analytics/components/CreateTeamModal";
+import { SignOutNoticeModal } from "@/features/analytics/components/SignOutNoticeModal";
+import { spacing, radius } from "@/theme/tokens";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { typography } from "@/theme/typography";
+import { useAppDispatch, openModal, ModalName } from "@/store";
+
+type SettingToggleKey = "darkMode" | "emailNotifs" | "slackInteg" | "autoRefresh";
+type NonThemeSettingKey = Exclude<SettingToggleKey, "darkMode">;
 
 interface SettingToggle {
   label: string;
   description: string;
-  key: string;
+  key: SettingToggleKey;
+  icon: React.ComponentType<{ size: number; color: string }>;
 }
 
 const TOGGLES: SettingToggle[] = [
-  { label: "Dark Mode", description: "Use dark theme (default)", key: "darkMode" },
-  { label: "Email Notifications", description: "Receive email alerts for anomalies", key: "emailNotifs" },
-  { label: "Slack Integration", description: "Post alerts to Slack channel", key: "slackInteg" },
-  { label: "Auto-refresh", description: "Refresh dashboard data every 30 seconds", key: "autoRefresh" },
+  { label: "Dark Mode", description: "Use dark theme (default)", key: "darkMode", icon: Moon },
+  { label: "Email Notifications", description: "Receive email alerts for anomalies", key: "emailNotifs", icon: Mail },
+  { label: "Slack Integration", description: "Post alerts to Slack channel", key: "slackInteg", icon: MessageSquare },
+  { label: "Auto-refresh", description: "Refresh dashboard data every 30 seconds", key: "autoRefresh", icon: RefreshCw },
 ];
 
-const DEMO_SIGN_OUT_MESSAGE = "This is a dashboard demo, so you are unable to sign out.";
+const INITIAL_SETTINGS: Record<NonThemeSettingKey, boolean> = {
+  emailNotifs: true,
+  slackInteg: true,
+  autoRefresh: true,
+};
 
 export default function SettingsScreen() {
   const { mode, setMode } = useThemeMode();
   const theme = semanticThemes[mode];
-  const { create: createTeam, loading: createTeamLoading, error: createTeamError } = useCreateTeam();
-  const [showCreateTeam, setShowCreateTeam] = useState(false);
-  const [showSignOutNotice, setShowSignOutNotice] = useState(false);
-  const [settings, setSettings] = useState<Record<string, boolean>>({
-    emailNotifs: true,
-    slackInteg: false,
-    autoRefresh: true,
-  });
+  const dispatch = useAppDispatch();
+  const [settings, setSettings] = useState<Record<NonThemeSettingKey, boolean>>(INITIAL_SETTINGS);
 
-  const handleCreateTeam = useCallback(
-    async (values: { name: string }) => {
-      await createTeam(values);
-      setShowCreateTeam(false);
-    },
-    [createTeam],
-  );
-
-  const toggle = (key: string) => {
+  const toggle = (key: SettingToggleKey) => {
     if (key === "darkMode") {
       setMode(mode === "dark" ? "light" : "dark");
       return;
@@ -54,6 +60,10 @@ export default function SettingsScreen() {
 
     setSettings((currentSettings) => ({ ...currentSettings, [key]: !currentSettings[key] }));
   };
+
+  const seatsPurchased = 100;
+  const seatsUsed = 73;
+  const seatPercent = Math.round((seatsUsed / seatsPurchased) * 100);
 
   return (
     <ScreenWrapper
@@ -63,42 +73,66 @@ export default function SettingsScreen() {
         subtitle: "Configure your dashboard preferences",
       }}
     >
-      <View style={styles.section}>
-        <SectionHeader title="Preferences" />
-        <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
-          {TOGGLES.map((t, i) => (
-            <View key={t.key} style={[styles.row, i > 0 && styles.rowDivider]}>
-              <View style={styles.rowText}>
-                <Text style={[styles.label, { color: theme.text.primary }]}>
-                  {t.key === "darkMode" ? `${t.label}: ${mode === "dark" ? "Dark" : "Light"}` : t.label}
-                </Text>
-                <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t.description}</Text>
-              </View>
-              <Switch
-                value={t.key === "darkMode" ? mode === "dark" : (settings[t.key] ?? false)}
-                onValueChange={() => toggle(t.key)}
-                trackColor={{ false: theme.border.default, true: theme.border.brand }}
-                thumbColor={theme.text.primary}
-                accessibilityRole="switch"
-                accessibilityLabel={
-                  t.key === "darkMode" ? `Theme mode ${mode === "dark" ? "Dark" : "Light"}` : t.label
-                }
-                accessibilityState={{
-                  checked: t.key === "darkMode" ? mode === "dark" : (settings[t.key] ?? false),
-                }}
-              />
-            </View>
-          ))}
+      {/* Profile hero card */}
+      <View style={[styles.profileCard, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
+        <View style={[styles.avatarCircle, { backgroundColor: theme.border.brand + "22" }]}>
+          <User size={28} color={theme.border.brand} />
+        </View>
+        <View style={styles.profileInfo}>
+          <Text style={[styles.profileName, { color: theme.text.primary }]}>Admin User</Text>
+          <Text style={[styles.profileEmail, { color: theme.text.secondary }]}>admin@zencoder.io</Text>
+          <View style={[styles.roleBadge, { backgroundColor: theme.border.brand + "1A" }]}>
+            <Text style={[styles.roleBadgeText, { color: theme.text.brand }]}>Owner</Text>
+          </View>
         </View>
       </View>
 
+      {/* Preferences */}
+      <View style={styles.section}>
+        <SectionHeader
+          title="Preferences"
+          subtitle="Appearance and notifications"
+          action={<SlidersHorizontal size={16} color={theme.text.tertiary} />}
+        />
+        <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
+          {TOGGLES.map((t, i) => {
+            const IconComp = t.icon;
+            const isEnabled = t.key === "darkMode" ? mode === "dark" : settings[t.key];
+            return (
+              <View key={t.key} style={[styles.row, i > 0 && styles.rowDivider]}>
+                <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
+                  <IconComp size={16} color={theme.text.secondary} />
+                </View>
+                <View style={styles.rowText}>
+                  <Text style={[styles.label, { color: theme.text.primary }]}>
+                    {t.key === "darkMode" ? `${t.label}: ${mode === "dark" ? "Dark" : "Light"}` : t.label}
+                  </Text>
+                  <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t.description}</Text>
+                </View>
+                <CustomSwitch
+                  value={isEnabled}
+                  onValueChange={() => toggle(t.key)}
+                  accessibilityLabel={
+                    t.key === "darkMode" ? `Theme mode ${mode === "dark" ? "Dark" : "Light"}` : t.label
+                  }
+                />
+              </View>
+            );
+          })}
+        </View>
+      </View>
+
+      {/* Organization */}
       <View style={styles.section}>
         <View style={styles.sectionRow}>
           <View style={styles.sectionHeaderWrap}>
-            <SectionHeader title="Organization" />
+            <SectionHeader
+              title="Organization"
+              subtitle="Team and billing details"
+            />
           </View>
           <CustomButton
-            onPress={() => setShowCreateTeam(true)}
+            onPress={() => dispatch(openModal(ModalName.CreateTeam))}
             style={[styles.createButton, { backgroundColor: theme.border.brand }]}
             accessibilityRole="button"
             accessibilityLabel="Create Team"
@@ -109,85 +143,78 @@ export default function SettingsScreen() {
         <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Org ID</Text>
-            <Text style={[styles.infoValue, { color: theme.text.primary }]}>org_zencoder_001</Text>
+            <Text style={[styles.infoValueMono, { color: theme.text.primary }]}>org_zencoder_001</Text>
           </View>
           <View style={[styles.infoRow, styles.rowDivider]}>
             <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Plan</Text>
-            <Text style={[styles.infoValue, { color: theme.text.primary }]}>Enterprise</Text>
+            <View style={[styles.planBadge, { backgroundColor: theme.state.success + "1A" }]}>
+              <Text style={[styles.planBadgeText, { color: theme.state.success }]}>Enterprise</Text>
+            </View>
           </View>
           <View style={[styles.infoRow, styles.rowDivider]}>
             <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Seats</Text>
-            <Text style={[styles.infoValue, { color: theme.text.primary }]}>100 purchased</Text>
+            <Text style={[styles.infoValue, { color: theme.text.primary }]}>{seatsUsed} / {seatsPurchased}</Text>
           </View>
+          <View style={styles.seatBarOuter}>
+            <View
+              style={[
+                styles.seatBarInner,
+                {
+                  backgroundColor: theme.border.brand,
+                  width: `${seatPercent}%`,
+                },
+              ]}
+            />
+          </View>
+          <Text style={[styles.seatCaption, { color: theme.text.tertiary }]}>
+            {seatPercent}% of seats used
+          </Text>
         </View>
       </View>
 
+      {/* Danger Zone */}
       <View style={styles.section}>
-        <SectionHeader title="Danger Zone" />
-        <View style={[styles.dangerCard, { borderColor: theme.state.error + "40" }]}>
+        <SectionHeader
+          title="Danger Zone"
+          subtitle="Irreversible and destructive actions"
+          action={<ShieldAlert size={16} color={theme.state.error} />}
+        />
+        <View
+          style={[
+            styles.dangerCard,
+            {
+              borderColor: theme.state.error + "40",
+              backgroundColor: theme.state.error + "08",
+            },
+          ]}
+        >
           <CustomButton
-            style={[styles.dangerBtn, { borderColor: theme.state.error, backgroundColor: theme.state.error + "1A" }]}
+            style={[styles.dangerBtn, { borderColor: theme.border.brand, backgroundColor: theme.bg.brandSubtle }]}
             accessibilityRole="button"
             accessibilityLabel="Clear all cached data"
           >
-            <Text style={[styles.dangerText, { color: theme.state.error }]}>Clear Cache</Text>
+            <View style={styles.btnRow}>
+              <Trash2 size={15} color={theme.border.brand} />
+              <Text style={[styles.dangerText, { color: theme.border.brand }]}>Clear Cache</Text>
+            </View>
           </CustomButton>
 
           <CustomButton
-            onPress={() => setShowSignOutNotice(true)}
+            onPress={() => dispatch(openModal(ModalName.SignOutNotice))}
             style={[styles.signOutBtn, { borderColor: theme.border.default, backgroundColor: theme.bg.surface }]}
             accessibilityRole="button"
             accessibilityLabel="Sign Out"
           >
-            <Text style={[styles.signOutText, { color: theme.text.primary }]}>Sign Out</Text>
-          </CustomButton>
-
-          {showSignOutNotice && (
-            <View style={[styles.noticeCard, { backgroundColor: theme.state.warning + "1A", borderColor: theme.state.warning + "40" }]}>
-              <Text style={[styles.noticeText, { color: theme.text.primary }]}>
-                {DEMO_SIGN_OUT_MESSAGE}
-              </Text>
-              <CustomButton
-                onPress={() => setShowSignOutNotice(false)}
-                style={[styles.dismissBtn, { borderColor: theme.border.default }]}
-                accessibilityRole="button"
-                accessibilityLabel="Dismiss sign out notice"
-              >
-                <Text style={[styles.dismissText, { color: theme.text.secondary }]}>Dismiss</Text>
-              </CustomButton>
+            <View style={styles.btnRow}>
+              <LogOut size={15} color={theme.text.primary} />
+              <Text style={[styles.signOutText, { color: theme.text.primary }]}>Sign Out</Text>
             </View>
-          )}
+          </CustomButton>
         </View>
       </View>
 
-      <Modal
-        transparent
-        visible={showCreateTeam}
-        animationType="fade"
-        onRequestClose={() => setShowCreateTeam(false)}
-      >
-        <View style={[styles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
-          <CustomButton
-            style={StyleSheet.absoluteFillObject}
-            onPress={() => setShowCreateTeam(false)}
-            accessibilityRole="button"
-            accessibilityLabel="Close create team form"
-          />
-          <View style={[styles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
-            <View style={styles.modalHeader}>
-              <CustomButton
-                onPress={() => setShowCreateTeam(false)}
-                hitSlop={8}
-                accessibilityRole="button"
-                accessibilityLabel="Close"
-              >
-                <X size={16} color={theme.text.secondary} />
-              </CustomButton>
-            </View>
-            <CreateTeamForm onSubmit={handleCreateTeam} loading={createTeamLoading} error={createTeamError} />
-          </View>
-        </View>
-      </Modal>
+      <SignOutNoticeModal />
+      <CreateTeamModal />
     </ScreenWrapper>
   );
 }
@@ -196,8 +223,50 @@ const styles = StyleSheet.create({
   section: {
     gap: spacing[3],
   },
+  profileCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    padding: spacing[5],
+    gap: spacing[4],
+  },
+  avatarCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  profileName: {
+    fontFamily: typography.sectionTitle.fontFamily,
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  profileEmail: {
+    fontFamily: typography.body.fontFamily,
+    fontSize: 13,
+  },
+  roleBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.sm,
+    marginTop: 4,
+  },
+  roleBadgeText: {
+    fontFamily: typography.label.fontFamily,
+    fontSize: 11,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
   card: {
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 1,
     padding: spacing[4],
     gap: spacing[3],
@@ -213,6 +282,14 @@ const styles = StyleSheet.create({
     borderTopColor: "rgba(128,128,128,0.15)",
     paddingTop: spacing[3],
   },
+  toggleIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: spacing[3],
+  },
   rowText: { flex: 1, marginRight: spacing[4] },
   label: {
     fontFamily: typography.tableBody.fontFamily,
@@ -227,6 +304,7 @@ const styles = StyleSheet.create({
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 6,
   },
   infoLabel: {
@@ -236,10 +314,40 @@ const styles = StyleSheet.create({
   infoValue: {
     fontFamily: typography.tableBody.fontFamily,
     fontSize: 13,
+    fontWeight: "600",
+  },
+  infoValueMono: {
+    fontFamily: typography.codeValue.fontFamily,
+    fontSize: 12,
     fontWeight: "500",
   },
+  planBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.sm,
+  },
+  planBadgeText: {
+    fontFamily: typography.label.fontFamily,
+    fontSize: 11,
+    fontWeight: "600",
+  },
+  seatBarOuter: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "rgba(128,128,128,0.15)",
+    overflow: "hidden",
+  },
+  seatBarInner: {
+    height: "100%",
+    borderRadius: 3,
+  },
+  seatCaption: {
+    fontFamily: typography.label.fontFamily,
+    fontSize: 11,
+    marginTop: -4,
+  },
   dangerCard: {
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderStyle: "dashed",
     padding: spacing[4],
@@ -263,27 +371,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   signOutText: { fontWeight: "600", fontSize: 14 },
-  noticeCard: {
-    borderRadius: 8,
-    borderWidth: 1,
-    padding: spacing[3],
-    gap: spacing[2],
-  },
-  noticeText: {
-    fontFamily: typography.label.fontFamily,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  dismissBtn: {
-    borderWidth: 1,
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    alignSelf: "flex-start",
-  },
-  dismissText: {
-    fontSize: 12,
-    fontWeight: "500",
+  btnRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   sectionRow: {
     flexDirection: "row",
@@ -298,7 +389,7 @@ const styles = StyleSheet.create({
   createButton: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 6,
+    borderRadius: radius.sm,
     marginLeft: "auto",
     flexShrink: 0,
     maxWidth: "100%",
@@ -306,23 +397,5 @@ const styles = StyleSheet.create({
   createButtonText: {
     fontSize: 13,
     fontWeight: "600",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  modalPanel: {
-    width: 400,
-    maxWidth: "100%",
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 16,
-    gap: 12,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
   },
 });

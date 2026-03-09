@@ -18,8 +18,13 @@ export {
   selectCurrentSegments,
   selectPreviousSegments,
   selectMostRecentTab,
+  modalSlice,
+  openModal,
+  closeModal,
+  selectModalVisible,
+  ModalName,
 } from "./slices";
-export type { LoadingState, SidebarState, NavigationHistoryState } from "./slices";
+export type { LoadingState, SidebarState, NavigationHistoryState, ModalState } from "./slices";
 export {
   analyticsApi,
   useGetOverviewQuery,

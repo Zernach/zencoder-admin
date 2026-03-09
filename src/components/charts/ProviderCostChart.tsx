@@ -5,7 +5,6 @@ import { arc, pie } from "d3-shape";
 import type { ProviderCostRow } from "@/features/analytics/types";
 import {
   formatCompactNumber,
-  formatCostPerToken,
   formatCurrency,
   formatPercent,
 } from "@/features/analytics/utils/formatters";
@@ -76,7 +75,6 @@ export function ProviderCostChart({
         {sorted.map((row, i) => {
           const share = (row.totalCostUsd / total) * 100;
           const avgCostPerRun = row.runCount > 0 ? row.totalCostUsd / row.runCount : 0;
-          const avgCostPerToken = row.totalTokens > 0 ? row.totalCostUsd / row.totalTokens : 0;
 
           return (
             <View key={row.provider} style={[styles.row, i > 0 ? styles.rowSpacing : null]}>
@@ -98,7 +96,7 @@ export function ProviderCostChart({
               </View>
 
               <Text style={[styles.metricLabel, { color: textColors.secondary }]}>
-                {`${formatCurrency(row.totalCostUsd)} • ${formatCompactNumber(row.runCount)} runs • ${formatCurrency(avgCostPerRun)}/run • ${formatCostPerToken(avgCostPerToken)}`}
+                {`${formatCurrency(row.totalCostUsd)} • ${formatCompactNumber(row.runCount)} runs • ${formatCurrency(avgCostPerRun)}/run`}
               </Text>
             </View>
           );

@@ -1,8 +1,7 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { View, Text, Modal, StyleSheet } from "react-native";
+import React, { useMemo } from "react";
+import { View, Text, useWindowDimensions } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists";
-import { X } from "lucide-react-native";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart } from "@/components/charts";
@@ -11,13 +10,14 @@ import { formatPercent, formatDuration, formatCurrency, formatCompactNumber } fr
 import type { AgentBreakdownRow, ProjectBreakdownRow, RunListRow } from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
-import { useCreateProject } from "@/features/analytics/hooks/useCreateProject";
-import { CreateProjectForm } from "@/features/analytics/components/CreateProjectForm";
+import { CreateProjectModal } from "@/features/analytics/components/CreateProjectModal";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { keyExtractors } from "@/constants";
+import { useAppDispatch, openModal, ModalName } from "@/store";
+import { StyleSheet } from "react-native";
 
 const styles = sectionStyles;
 
@@ -26,23 +26,16 @@ const PROJECT_SEARCH_KEYS: (keyof ProjectBreakdownRow)[] = ["projectName", "team
 const RUN_SEARCH_KEYS: (keyof RunListRow)[] = ["id", "status", "provider"];
 
 export default function AgentsScreen() {
+  const { width } = useWindowDimensions();
+  const isLargeLayout = width >= 1024;
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
   const cc = chartColors(mode);
   const { data, loading, error, refetch } = useAgentsHub();
   const { registerSection } = useSectionScroll();
-  const { create: createProject, loading: createProjectLoading, error: createProjectError } = useCreateProject();
-  const [showCreateProject, setShowCreateProject] = useState(false);
+  const dispatch = useAppDispatch();
 
-  const handleCreateProject = useCallback(
-    async (values: { name: string; teamId: string }) => {
-      await createProject(values);
-      setShowCreateProject(false);
-      refetch();
-    },
-    [createProject, refetch],
-  );
   const filteredAgents = useSearchFilter(data?.agentBreakdown ?? [], AGENT_SEARCH_KEYS);
   const filteredProjects = useSearchFilter(data?.projectBreakdown ?? [], PROJECT_SEARCH_KEYS);
   const filteredRuns = useSearchFilter(data?.recentRuns ?? [], RUN_SEARCH_KEYS);
@@ -112,15 +105,15 @@ export default function AgentsScreen() {
             </CardGrid>
             <CustomList
               scrollViewProps={{
-                horizontal: true,
+                horizontal: !isLargeLayout,
                 showsHorizontalScrollIndicator: false,
-                contentContainerStyle: styles.chartRow,
+                contentContainerStyle: [styles.chartRow, isLargeLayout && styles.chartRowFill],
               }}
             >
-              <ChartCard title="Reliability Trend">
+              <ChartCard title="Reliability Trend" style={isLargeLayout ? styles.chartCardFill : undefined}>
                 <TrendChart data={data.reliabilityTrend} variant="line" color={cc.success} />
               </ChartCard>
-              <ChartCard title="Failure Categories">
+              <ChartCard title="Failure Categories" style={isLargeLayout ? styles.chartCardFill : undefined}>
                 <BreakdownChart
                   data={data.failureCategoryBreakdown}
                   variant="horizontal-bar"
@@ -150,7 +143,7 @@ export default function AgentsScreen() {
               <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} of ${data.totalProjects} projects active`} />
             </View>
             <CustomButton
-              onPress={() => setShowCreateProject(true)}
+              onPress={() => dispatch(openModal(ModalName.CreateProject))}
               style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
               accessibilityRole="button"
               accessibilityLabel="Create Project"
@@ -181,34 +174,7 @@ export default function AgentsScreen() {
           />
         </View>
       )}
-      <Modal
-        transparent
-        visible={showCreateProject}
-        animationType="fade"
-        onRequestClose={() => setShowCreateProject(false)}
-      >
-        <View style={[localStyles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
-          <CustomButton
-            style={StyleSheet.absoluteFillObject}
-            onPress={() => setShowCreateProject(false)}
-            accessibilityRole="button"
-            accessibilityLabel="Close create project form"
-          />
-          <View style={[localStyles.modalPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
-            <View style={localStyles.modalHeader}>
-              <CustomButton
-                onPress={() => setShowCreateProject(false)}
-                hitSlop={8}
-                accessibilityRole="button"
-                accessibilityLabel="Close"
-              >
-                <X size={16} color={theme.text.secondary} />
-              </CustomButton>
-            </View>
-            <CreateProjectForm onSubmit={handleCreateProject} loading={createProjectLoading} error={createProjectError} />
-          </View>
-        </View>
-      </Modal>
+      <CreateProjectModal />
     </ScreenWrapper>
   );
 }
@@ -235,23 +201,5 @@ const localStyles = StyleSheet.create({
   createButtonText: {
     fontSize: 13,
     fontWeight: "600",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  modalPanel: {
-    width: 400,
-    maxWidth: "100%",
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 16,
-    gap: 12,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
   },
 });

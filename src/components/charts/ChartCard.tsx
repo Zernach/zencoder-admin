@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import type { StyleProp, ViewStyle } from "react-native";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -10,6 +11,7 @@ interface ChartCardProps {
   loading?: boolean;
   error?: string;
   onRetry?: () => void;
+  style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
 }
 
@@ -19,6 +21,7 @@ export function ChartCard({
   loading,
   error,
   onRetry,
+  style,
   children,
 }: ChartCardProps) {
   const { mode } = useThemeMode();
@@ -28,6 +31,7 @@ export function ChartCard({
     <View
       style={[
         styles.card,
+        style,
         {
           borderColor: theme.border.subtle,
           backgroundColor: theme.bg.surface,

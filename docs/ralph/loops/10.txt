@@ -1,0 +1,103 @@
+I need you to refactor the app so modal/form visibility is isolated behind a dedicated modal layer, preventing parent screens from re-rendering when modal visibility changes.
+
+Goal:
+Find every form-driven UI pattern in the app, such as `CreateProjectForm`, and introduce a companion modal/container layer above the form. Example:
+- `CreateProjectForm` stays a pure form component
+- create a new `CreateProjectModal` component that owns the React Native `Modal`
+- `CreateProjectModal` must read visibility state from Redux
+- screens must no longer subscribe to the Redux boolean that controls modal visibility
+- the background screen should not re-render when modal open/close state changes
+
+Architecture requirements:
+1. For every form component you find (examples: `*Form`), check whether it is rendered directly inside a screen or inline inside a `Modal`.
+2. For each matching case, create a dedicated wrapper component named like:
+   - `CreateProjectForm` -> `CreateProjectModal`
+   - `EditUserForm` -> `EditUserModal`
+   - etc.
+3. The new modal wrapper should:
+   - subscribe to Redux for `visible`
+   - subscribe to any modal-specific payload if needed
+   - render the RN `Modal`
+   - handle close actions through Redux dispatch
+   - render the underlying form inside the modal panel
+4. The form component itself should remain focused on form logic only:
+   - fields
+   - validation
+   - submit/cancel callbacks
+   - loading/error display
+5. The screen should:
+   - stop using local `useState` for modal visibility
+   - stop reading modal visibility from Redux
+   - only dispatch an action like `openCreateProjectModal()`
+   - render `<CreateProjectModal />` as a sibling layer, or rely on a mounted modal host pattern if one already exists
+6. Do not make the screen subscribe to modal visibility, because that causes unnecessary screen re-renders.
+7. Prefer `useSelector` only inside the modal wrapper, not in the screen, for modal open/close state.
+8. Reuse existing styling and behavior unless a change is required for the architecture.
+9. Preserve functionality exactly:
+   - close on backdrop
+   - close on X button
+   - close on Android back if currently supported
+   - submit behavior
+   - loading/error behavior
+   - refetch or post-submit side effects
+10. Keep naming, file placement, and patterns consistent across the app.
+
+Performance objective:
+The visibility boolean should only cause the dedicated modal component to re-render. The screen behind it should not subscribe to that boolean and should not re-render because of modal visibility changes.
+
+Implementation guidance:
+- Search the codebase for:
+  - `Modal`
+  - `useState(` with modal booleans like `show*`, `isOpen`, `visible`
+  - inline renderings of `*Form`
+  - buttons that open forms
+- Identify all cases where a form is embedded directly in a screen with modal state managed in that screen.
+- Refactor each case to the modal-wrapper pattern.
+- If there is no Redux modal slice yet, create one that supports:
+  - per-modal visibility booleans, or
+  - a centralized modal registry keyed by modal name
+- Prefer a scalable pattern rather than one-off logic.
+
+Concrete example to refactor:
+The current `AgentsScreen` holds:
+- `const [showCreateProject, setShowCreateProject] = useState(false);`
+- inline `<Modal ... visible={showCreateProject}>`
+- inline `<CreateProjectForm ... />`
+
+Refactor this so:
+- `AgentsScreen` no longer owns `showCreateProject`
+- button press dispatches an open action
+- `CreateProjectModal` reads `showCreateProject` (or equivalent) from Redux
+- `CreateProjectModal` contains the current modal UI
+- `CreateProjectForm` remains the inner form
+- submit success closes via Redux and preserves `refetch()`
+
+Important detail for submit side effects:
+If submit success currently calls screen-local logic like `refetch()`, preserve that cleanly. Choose the best pattern per case:
+- pass a stable callback into the modal if that does not reintroduce the visibility subscription problem, or
+- move the post-submit refresh into an existing data invalidation/refetch mechanism, or
+- use Redux/event-driven invalidation if already present in the app
+
+What I want from you:
+1. First, inspect the app and list every candidate form/modal pattern you found.
+2. Propose the target architecture briefly.
+3. Then implement the refactor across all matching instances.
+4. Show the diffs for each changed file.
+5. Call out any places where the pattern could not be applied cleanly.
+6. Highlight any cases where screen re-render behavior may still remain for reasons unrelated to modal visibility.
+7. Do not stop at the first example; sweep the whole app.
+
+Code quality constraints:
+- Keep TypeScript types correct
+- Avoid unnecessary abstractions
+- Do not change user-facing behavior
+- Do not introduce prop drilling just to move visibility around
+- Prefer small, composable files
+- Follow existing project conventions
+
+Success criteria:
+- All form modals use dedicated modal wrapper components
+- modal visibility comes from Redux in the wrapper layer
+- parent screens no longer subscribe to modal visibility state
+- behavior is preserved
+- implementation is consistent across the codebase

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View } from "react-native";
+import { View, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
 import { useLiveAgentSessions } from "@/features/analytics/hooks/useLiveAgentSessions";
@@ -26,6 +26,8 @@ const styles = sectionStyles;
 const SESSION_SEARCH_KEYS: (keyof LiveAgentSession)[] = ["agentName", "projectName", "userName", "currentTask"];
 
 export default function OverviewDashboardScreen() {
+  const { width } = useWindowDimensions();
+  const isLargeLayout = width >= 1024;
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const cc = chartColors(mode);
@@ -101,12 +103,12 @@ export default function OverviewDashboardScreen() {
         <SectionHeader title="Trends" />
         <CustomList
           scrollViewProps={{
-            horizontal: true,
+            horizontal: !isLargeLayout,
             showsHorizontalScrollIndicator: false,
-            contentContainerStyle: styles.chartRow,
+            contentContainerStyle: [styles.chartRow, isLargeLayout && styles.chartRowFill],
           }}
         >
-          <ChartCard title="Runs Over Time" loading={loading}>
+          <ChartCard title="Runs Over Time" loading={loading} style={isLargeLayout ? styles.chartCardFill : undefined}>
             {data && (
               <TrendChart
                 data={data.runsTrend}
@@ -115,7 +117,7 @@ export default function OverviewDashboardScreen() {
               />
             )}
           </ChartCard>
-          <ChartCard title="Cost Trend" loading={loading}>
+          <ChartCard title="Cost Trend" loading={loading} style={isLargeLayout ? styles.chartCardFill : undefined}>
             {data && (
               <TrendChart
                 data={data.costTrend}

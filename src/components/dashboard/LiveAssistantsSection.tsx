@@ -31,7 +31,7 @@ import { SectionHeader } from "./SectionHeader";
 
 const AVATAR_COLORS = [
   "#22c55e",
-  "#30a8dc",
+  "#f64a00",
   "#f59e0b",
   "#06b6d4",
   "#84cc16",

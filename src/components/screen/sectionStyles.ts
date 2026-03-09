@@ -9,4 +9,11 @@ export const sectionStyles = StyleSheet.create({
     flexDirection: "row",
     gap: spacing[4],
   },
+  chartRowFill: {
+    minWidth: "100%",
+  },
+  chartCardFill: {
+    flex: 1,
+    minWidth: 0,
+  },
 });

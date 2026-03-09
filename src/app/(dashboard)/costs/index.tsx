@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { View, useWindowDimensions } from "react-native";
 import { useCostDashboard } from "@/features/analytics/hooks/useCostDashboard";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, TrendChart, BreakdownChart, DonutChart, ProviderCostChart, ProviderTokenCostBarChart } from "@/components/charts";
@@ -17,6 +17,8 @@ const styles = sectionStyles;
 const COST_BREAKDOWN_SEARCH_KEYS: (keyof CostBreakdownRow)[] = ["key"];
 
 export default function CostAnalyticsScreen() {
+  const { width } = useWindowDimensions();
+  const isLargeLayout = width >= 1024;
   const { mode } = useThemeMode();
   const cc = chartColors(mode);
   const { data, loading, error, refetch } = useCostDashboard();
@@ -56,15 +58,15 @@ export default function CostAnalyticsScreen() {
 
             <CustomList
               scrollViewProps={{
-                horizontal: true,
+                horizontal: !isLargeLayout,
                 showsHorizontalScrollIndicator: false,
-                contentContainerStyle: styles.chartRow,
+                contentContainerStyle: [styles.chartRow, isLargeLayout && styles.chartRowFill],
               }}
             >
-              <ChartCard title="Cost per Day">
+              <ChartCard title="Cost per Day" style={isLargeLayout ? styles.chartCardFill : undefined}>
                 <TrendChart data={data.costTrend} variant="area" color={cc.success} />
               </ChartCard>
-              <ChartCard title="Cost per Project">
+              <ChartCard title="Cost per Project" style={isLargeLayout ? styles.chartCardFill : undefined}>
                 <DonutChart
                   data={data.costBreakdown.slice(0, 6).map(r => ({ key: r.key, value: r.totalCostUsd }))}
                   centerLabel="Total"
@@ -72,32 +74,27 @@ export default function CostAnalyticsScreen() {
                 />
               </ChartCard>
             </CustomList>
+
+            <CustomList
+              scrollViewProps={{
+                horizontal: true,
+                showsHorizontalScrollIndicator: false,
+                contentContainerStyle: styles.chartRow,
+              }}
+            >
+              <ChartCard title="Cost per Token">
+                <ProviderTokenCostBarChart data={data.providerBreakdown} />
+              </ChartCard>
+              <ChartCard title="Cost per Provider">
+                <ProviderCostChart
+                  data={data.providerBreakdown}
+                  totalCostUsd={data.totalCostUsd}
+                />
+              </ChartCard>
+            </CustomList>
           </>
         ) : null}
       </View>
-
-      {data && (
-        <View ref={(r) => registerSection("cost-by-provider", r)} nativeID="cost-by-provider" style={styles.section}>
-          <SectionHeader title="Cost by Provider" />
-          <CustomList
-            scrollViewProps={{
-              horizontal: true,
-              showsHorizontalScrollIndicator: false,
-              contentContainerStyle: styles.chartRow,
-            }}
-          >
-            <ChartCard title="Provider Cost Share">
-              <ProviderCostChart
-                data={data.providerBreakdown}
-                totalCostUsd={data.totalCostUsd}
-              />
-            </ChartCard>
-            <ChartCard title="Cost per Provider Token">
-              <ProviderTokenCostBarChart data={data.providerBreakdown} />
-            </ChartCard>
-          </CustomList>
-        </View>
-      )}
 
       {data && (
         <View ref={(r) => registerSection("budget-forecast", r)} nativeID="budget-forecast" style={styles.section}>

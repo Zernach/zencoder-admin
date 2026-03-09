@@ -37,17 +37,19 @@ describe("ProviderTokenCostBarChart", () => {
     expect(labels[2].props.children).toBe("Other");
   });
 
-  it("shows expected formatted labels with ten-thousandths", () => {
+  it("shows numeric values per bar and a shared axis label", () => {
     const { getByText } = render(
       <ProviderTokenCostBarChart data={providerData} />
     );
 
-    // 6500 / 500_000_000 = 0.000013 → 13 ten-thousandths
-    expect(getByText("13 ten-thousandths of a penny per token")).toBeTruthy();
-    // 4000 / 500_000_000 = 0.000008 → 8 ten-thousandths
-    expect(getByText("8 ten-thousandths of a penny per token")).toBeTruthy();
-    // 2000 / 500_000_000 = 0.000004 → 4 ten-thousandths
-    expect(getByText("4 ten-thousandths of a penny per token")).toBeTruthy();
+    // 6500 / 500_000_000 = 0.000013 → 13
+    expect(getByText("13")).toBeTruthy();
+    // 4000 / 500_000_000 = 0.000008 → 8
+    expect(getByText("8")).toBeTruthy();
+    // 2000 / 500_000_000 = 0.000004 → 4
+    expect(getByText("4")).toBeTruthy();
+    // Shared axis label appears once
+    expect(getByText("ten-thousandths of a penny per token")).toBeTruthy();
   });
 
   it("handles totalTokens = 0 without invalid numeric output", () => {
@@ -59,7 +61,8 @@ describe("ProviderTokenCostBarChart", () => {
       <ProviderTokenCostBarChart data={zeroTokenData} />
     );
 
-    expect(getByText("0 ten-thousandths of a penny per token")).toBeTruthy();
+    expect(getByText("0")).toBeTruthy();
+    expect(getByText("ten-thousandths of a penny per token")).toBeTruthy();
     expect(queryByText(/NaN/)).toBeNull();
     expect(queryByText(/Infinity/)).toBeNull();
   });
