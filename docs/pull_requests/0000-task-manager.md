@@ -64,7 +64,9 @@
 | ✅ | [0056](./0056-rtk-query-api-slice.md) | RTK Query API Slice — Service Registry & All Endpoints | Redux |
 | ✅ | [0057](./0057-migrate-hooks-to-rtk-query.md) | Migrate All Data Hooks to RTK Query | Redux |
 | ✅ | [0058](./0058-remove-react-query-update-tests.md) | Remove React Query — Update Providers & Test Infrastructure | Redux |
+| ✅ | [0059](./0059-cost-by-provider-split-pie-and-token-bar.md) | Costs: Split "Cost by Provider" into Pie + Cost per Token Bar | Screens |
+| 🟡 | [0060](./0060-settings-screen-visual-refresh-and-demo-sign-out.md) | Settings: Visual Refresh + Demo Sign Out Notice | Screens |
 
 ---
 
-**Progress: 58 / 58**
+**Progress: 59 / 60**

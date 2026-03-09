@@ -51,7 +51,8 @@ jest.mock("@/components/charts", () => {
       </View>
     ),
     DonutChart: () => <View />,
-    ProviderCostChart: () => <View />,
+    ProviderCostChart: () => <View testID="provider-cost-chart" />,
+    ProviderTokenCostBarChart: () => <View testID="provider-token-cost-bar-chart" />,
   };
 });
 
@@ -109,5 +110,22 @@ describe("CostAnalyticsScreen", () => {
     // The Project Breakdown BreakdownChart should have truncateLabels=false
     const hasFalse = truncateFlags.some((el) => el.props.children === "false");
     expect(hasFalse).toBe(true);
+  });
+
+  it("renders both Provider Cost Share pie and Cost per Provider Token bar visualizations", () => {
+    mockUseCostDashboard.mockReturnValue({
+      data: createCostData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText, getByTestId } = render(<CostAnalyticsScreen />);
+
+    expect(getByText("Cost by Provider")).toBeTruthy();
+    expect(getByText("Provider Cost Share")).toBeTruthy();
+    expect(getByText("Cost per Provider Token")).toBeTruthy();
+    expect(getByTestId("provider-cost-chart")).toBeTruthy();
+    expect(getByTestId("provider-token-cost-bar-chart")).toBeTruthy();
   });
 });

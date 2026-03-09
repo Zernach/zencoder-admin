@@ -3,6 +3,7 @@ export { TrendChart } from "./TrendChart";
 export { BreakdownChart } from "./BreakdownChart";
 export { DonutChart } from "./DonutChart";
 export { ProviderCostChart } from "./ProviderCostChart";
+export { ProviderTokenCostBarChart } from "./ProviderTokenCostBarChart";
 export { DistributionChart } from "./DistributionChart";
 export { SparkLine } from "./SparkLine";
 export { DATA_PALETTE } from "./palette";

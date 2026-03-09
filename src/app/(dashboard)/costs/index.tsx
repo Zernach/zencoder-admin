@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { useCostDashboard } from "@/features/analytics/hooks/useCostDashboard";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
-import { ChartCard, TrendChart, BreakdownChart, DonutChart, ProviderCostChart } from "@/components/charts";
+import { ChartCard, TrendChart, BreakdownChart, DonutChart, ProviderCostChart, ProviderTokenCostBarChart } from "@/components/charts";
 import { chartColors } from "@/components/tables";
 import { CustomList } from "@/components/lists";
 import { formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
@@ -79,12 +79,23 @@ export default function CostAnalyticsScreen() {
       {data && (
         <View ref={(r) => registerSection("cost-by-provider", r)} nativeID="cost-by-provider" style={styles.section}>
           <SectionHeader title="Cost by Provider" />
-          <ChartCard>
-            <ProviderCostChart
-              data={data.providerBreakdown}
-              totalCostUsd={data.totalCostUsd}
-            />
-          </ChartCard>
+          <CustomList
+            scrollViewProps={{
+              horizontal: true,
+              showsHorizontalScrollIndicator: false,
+              contentContainerStyle: styles.chartRow,
+            }}
+          >
+            <ChartCard title="Provider Cost Share">
+              <ProviderCostChart
+                data={data.providerBreakdown}
+                totalCostUsd={data.totalCostUsd}
+              />
+            </ChartCard>
+            <ChartCard title="Cost per Provider Token">
+              <ProviderTokenCostBarChart data={data.providerBreakdown} />
+            </ChartCard>
+          </CustomList>
         </View>
       )}
 
