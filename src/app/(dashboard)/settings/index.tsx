@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomSwitch } from "@/components/inputs";
@@ -7,8 +7,6 @@ import {
   Mail,
   MessageSquare,
   RefreshCw,
-  ShieldAlert,
-  SlidersHorizontal,
   LogOut,
   Trash2,
   User,
@@ -47,32 +45,53 @@ const INITIAL_SETTINGS: Record<NonThemeSettingKey, boolean> = {
 };
 
 export default function SettingsScreen() {
-  const { mode, setMode } = useThemeMode();
+  const { mode, setMode, toggleMode } = useThemeMode();
   const theme = semanticThemes[mode];
   const dispatch = useAppDispatch();
   const [settings, setSettings] = useState<Record<NonThemeSettingKey, boolean>>(INITIAL_SETTINGS);
 
-  const toggle = (key: SettingToggleKey) => {
+  const toggle = useCallback((key: SettingToggleKey) => {
     if (key === "darkMode") {
-      setMode(mode === "dark" ? "light" : "dark");
+      toggleMode();
       return;
     }
 
     setSettings((currentSettings) => ({ ...currentSettings, [key]: !currentSettings[key] }));
-  };
+  }, [toggleMode]);
+
+  // Stable per-key toggle handlers to avoid inline closures in .map()
+  const toggleHandlerCache = useRef(new Map<string, () => void>()).current;
+  const toggleRef = useRef(toggle);
+  toggleRef.current = toggle;
+  const getToggleHandler = useCallback((key: SettingToggleKey) => {
+    let handler = toggleHandlerCache.get(key);
+    if (!handler) {
+      handler = () => toggleRef.current(key);
+      toggleHandlerCache.set(key, handler);
+    }
+    return handler;
+  }, [toggleHandlerCache]);
+
+  const handleOpenCreateTeam = useCallback(
+    () => dispatch(openModal(ModalName.CreateTeam)),
+    [dispatch],
+  );
+  const handleOpenSignOut = useCallback(
+    () => dispatch(openModal(ModalName.SignOutNotice)),
+    [dispatch],
+  );
 
   const seatsPurchased = 100;
   const seatsUsed = 73;
   const seatPercent = Math.round((seatsUsed / seatsPurchased) * 100);
 
+  const headerProps = useMemo(
+    () => ({ title: "Settings" as const, subtitle: "Configure your dashboard preferences" as const }),
+    [],
+  );
+
   return (
-    <ScreenWrapper
-      showFilterBar={false}
-      headerProps={{
-        title: "Settings",
-        subtitle: "Configure your dashboard preferences",
-      }}
-    >
+    <ScreenWrapper showFilterBar={false} headerProps={headerProps}>
       {/* Profile hero card */}
       <View style={[styles.profileCard, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
         <View style={[styles.avatarCircle, { backgroundColor: theme.border.brand + "22" }]}>
@@ -92,7 +111,6 @@ export default function SettingsScreen() {
         <SectionHeader
           title="Preferences"
           subtitle="Appearance and notifications"
-          action={<SlidersHorizontal size={16} color={theme.text.tertiary} />}
         />
         <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
           {TOGGLES.map((t, i) => {
@@ -111,7 +129,7 @@ export default function SettingsScreen() {
                 </View>
                 <CustomSwitch
                   value={isEnabled}
-                  onValueChange={() => toggle(t.key)}
+                  onValueChange={getToggleHandler(t.key)}
                   accessibilityLabel={
                     t.key === "darkMode" ? `Theme mode ${mode === "dark" ? "Dark" : "Light"}` : t.label
                   }
@@ -132,12 +150,12 @@ export default function SettingsScreen() {
             />
           </View>
           <CustomButton
-            onPress={() => dispatch(openModal(ModalName.CreateTeam))}
-            style={[styles.createButton, { backgroundColor: theme.border.brand }]}
+            onPress={handleOpenCreateTeam}
+            style={[styles.createButton, { borderColor: theme.border.brand }]}
             accessibilityRole="button"
             accessibilityLabel="Create Team"
           >
-            <Text style={[styles.createButtonText, { color: theme.text.onBrand }]}>+ Create Team</Text>
+            <Text style={[styles.createButtonText, { color: theme.border.brand }]}>+ Create Team</Text>
           </CustomButton>
         </View>
         <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
@@ -147,8 +165,8 @@ export default function SettingsScreen() {
           </View>
           <View style={[styles.infoRow, styles.rowDivider]}>
             <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Plan</Text>
-            <View style={[styles.planBadge, { backgroundColor: theme.state.success + "1A" }]}>
-              <Text style={[styles.planBadgeText, { color: theme.state.success }]}>Enterprise</Text>
+            <View style={[styles.planBadge, { backgroundColor: theme.bg.brandSubtle }]}>
+              <Text style={[styles.planBadgeText, { color: theme.text.brand }]}>ENTERPRISE</Text>
             </View>
           </View>
           <View style={[styles.infoRow, styles.rowDivider]}>
@@ -177,7 +195,6 @@ export default function SettingsScreen() {
         <SectionHeader
           title="Danger Zone"
           subtitle="Irreversible and destructive actions"
-          action={<ShieldAlert size={16} color={theme.state.error} />}
         />
         <View
           style={[
@@ -200,7 +217,7 @@ export default function SettingsScreen() {
           </CustomButton>
 
           <CustomButton
-            onPress={() => dispatch(openModal(ModalName.SignOutNotice))}
+            onPress={handleOpenSignOut}
             style={[styles.signOutBtn, { borderColor: theme.border.default, backgroundColor: theme.bg.surface }]}
             accessibilityRole="button"
             accessibilityLabel="Sign Out"
@@ -387,9 +404,11 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   createButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: radius.sm,
+    borderRadius: 999,
     marginLeft: "auto",
     flexShrink: 0,
     maxWidth: "100%",

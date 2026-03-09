@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import type { StyleProp, ViewStyle } from "react-native";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+
+const NOOP = () => {};
 
 interface ChartCardProps {
   title?: string;
@@ -15,7 +17,7 @@ interface ChartCardProps {
   children: React.ReactNode;
 }
 
-export function ChartCard({
+export const ChartCard = React.memo(function ChartCard({
   title,
   subtitle,
   loading,
@@ -27,17 +29,17 @@ export function ChartCard({
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
+  const cardStyle = useMemo(() => [
+    styles.card,
+    style,
+    {
+      borderColor: theme.border.subtle,
+      backgroundColor: theme.bg.surface,
+    },
+  ], [style, theme.border.subtle, theme.bg.surface]);
+
   return (
-    <View
-      style={[
-        styles.card,
-        style,
-        {
-          borderColor: theme.border.subtle,
-          backgroundColor: theme.bg.surface,
-        },
-      ]}
-    >
+    <View style={cardStyle}>
       <View style={styles.header}>
         {title && <Text style={[styles.title, { color: theme.text.primary }]}>{title}</Text>}
         {subtitle && <Text style={[styles.subtitle, { color: theme.text.secondary }]}>{subtitle}</Text>}
@@ -45,13 +47,13 @@ export function ChartCard({
       {loading ? (
         <LoadingSkeleton variant="chart" />
       ) : error ? (
-        <ErrorState message={error} onRetry={onRetry ?? (() => { })} />
+        <ErrorState message={error} onRetry={onRetry ?? NOOP} />
       ) : (
         children
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {

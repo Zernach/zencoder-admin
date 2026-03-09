@@ -37,16 +37,21 @@ get_ralph_prompt() {
 
 RALPH_PROMPT=$(get_ralph_prompt "$PROMPT_ID")
 echo "Using prompt $PROMPT_ID: ${RALPH_PROMPT:0:60}..."
-
-start_time=$(date +%s)
-
-claude --dangerously-skip-permissions "/ralph-loop $RALPH_PROMPT"
-
-end_time=$(date +%s)
-elapsed=$((end_time - start_time))
-elapsed_m=$((elapsed / 60))
-elapsed_s=$((elapsed % 60))
+echo "Loop mode: will re-run after each completion. Ctrl+C to stop."
 echo ""
-echo "---"
-echo "Completed at: $(date)"
-echo "Time elapsed: ${elapsed_m}m ${elapsed_s}s"
+
+iteration=0
+while true; do
+  iteration=$((iteration + 1))
+  start_time=$(date +%s)
+  echo "=== Iteration $iteration @ $(date) ==="
+  claude --dangerously-skip-permissions "/ralph-loop $RALPH_PROMPT" || true
+  end_time=$(date +%s)
+  elapsed=$((end_time - start_time))
+  elapsed_m=$((elapsed / 60))
+  elapsed_s=$((elapsed % 60))
+  echo ""
+  echo "--- Iteration $iteration completed: ${elapsed_m}m ${elapsed_s}s ---"
+  echo "Re-running in 3 seconds... (Ctrl+C to stop)"
+  sleep 3
+done

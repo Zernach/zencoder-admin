@@ -9,7 +9,7 @@ interface SectionHeaderProps {
   action?: React.ReactNode;
 }
 
-export function SectionHeader({ title, subtitle, action }: SectionHeaderProps) {
+export const SectionHeader = React.memo(function SectionHeader({ title, subtitle, action }: SectionHeaderProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
@@ -22,7 +22,7 @@ export function SectionHeader({ title, subtitle, action }: SectionHeaderProps) {
       {action && <View>{action}</View>}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

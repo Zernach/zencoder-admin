@@ -10,7 +10,7 @@ import { typography } from "@/theme/typography";
 
 const DEMO_SIGN_OUT_MESSAGE = "This is a dashboard demo, so you are unable to sign out.";
 
-export function SignOutNoticeModal() {
+export const SignOutNoticeModal = React.memo(function SignOutNoticeModal() {
   const visible = useAppSelector(selectModalVisible(ModalName.SignOutNotice));
   const dispatch = useAppDispatch();
   const { mode } = useThemeMode();
@@ -57,7 +57,7 @@ export function SignOutNoticeModal() {
       </View>
     </Modal>
   );
-}
+});
 
 const styles = StyleSheet.create({
   modalOverlay: {

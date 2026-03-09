@@ -40,6 +40,24 @@ describe("getOverview", () => {
     expect(res.anomalies.length).toBe(3);
   });
 
+  it("runs and cost trends generally increase over time", async () => {
+    const res = await api.getOverview(defaultFilters);
+    const assertGenerallyIncreasing = (trend: { value: number }[]): void => {
+      expect(trend.length).toBeGreaterThan(14);
+      const midpoint = Math.floor(trend.length / 2);
+      const firstHalf = trend.slice(0, midpoint);
+      const secondHalf = trend.slice(midpoint);
+      const avg = (points: { value: number }[]): number =>
+        points.reduce((sum, point) => sum + point.value, 0) / points.length;
+
+      expect(avg(secondHalf)).toBeGreaterThan(avg(firstHalf));
+      expect(trend[trend.length - 1]!.value).toBeGreaterThanOrEqual(trend[0]!.value);
+    };
+
+    assertGenerallyIncreasing(res.runsTrend);
+    assertGenerallyIncreasing(res.costTrend);
+  });
+
   it("anomalies have valid fields", async () => {
     const res = await api.getOverview(defaultFilters);
     for (const a of res.anomalies) {
@@ -79,6 +97,23 @@ describe("getUsage", () => {
     expect(res.activeUsersTrend.length).toBeGreaterThan(0);
     expect(res.runsPerUserDistribution.length).toBeGreaterThan(0);
     expect(res.breakdownByTeam.length).toBeGreaterThan(0);
+  });
+
+  it("active users trend generally increases over time", async () => {
+    const res = await api.getUsage(defaultFilters);
+    const trend = res.activeUsersTrend;
+    expect(trend.length).toBeGreaterThan(14);
+
+    const midpoint = Math.floor(trend.length / 2);
+    const firstHalf = trend.slice(0, midpoint);
+    const secondHalf = trend.slice(midpoint);
+
+    const avg = (points: { value: number }[]): number =>
+      points.reduce((sum, point) => sum + point.value, 0) / points.length;
+
+    // Active users can plateau near total seat capacity, so allow mild flattening.
+    expect(avg(secondHalf)).toBeGreaterThanOrEqual(avg(firstHalf) - 1);
+    expect(trend[trend.length - 1]!.value).toBeGreaterThanOrEqual(trend[0]!.value - 1);
   });
 });
 
@@ -133,6 +168,30 @@ describe("getCost", () => {
       res.budget.budgetUsd - res.budget.spentUsd,
       1
     );
+  });
+
+  it("cost trend includes natural bumps/divots while trending up", async () => {
+    const res = await api.getCost(defaultFilters);
+    const trend = res.costTrend;
+    expect(trend.length).toBeGreaterThan(14);
+
+    const values = trend.map((point) => point.value);
+    const directionChanges = values.slice(2).reduce((count, value, idx) => {
+      const prevDelta = values[idx + 1]! - values[idx]!;
+      const currDelta = value - values[idx + 1]!;
+      const changedSign =
+        (prevDelta > 0 && currDelta < 0) || (prevDelta < 0 && currDelta > 0);
+      return changedSign ? count + 1 : count;
+    }, 0);
+
+    const midpoint = Math.floor(trend.length / 2);
+    const firstHalfAvg =
+      values.slice(0, midpoint).reduce((sum, value) => sum + value, 0) / midpoint;
+    const secondHalfAvg =
+      values.slice(midpoint).reduce((sum, value) => sum + value, 0) / (values.length - midpoint);
+
+    expect(directionChanges).toBeGreaterThan(3);
+    expect(secondHalfAvg).toBeGreaterThan(firstHalfAvg);
   });
 });
 

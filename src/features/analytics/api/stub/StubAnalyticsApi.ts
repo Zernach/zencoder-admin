@@ -94,6 +94,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       throw new Error("StubAnalyticsApi: simulated failure");
     }
     const ms = this.latencyMin + Math.random() * (this.latencyMax - this.latencyMin);
+    if (ms <= 0) return;
     await new Promise((r) => setTimeout(r, ms));
   }
 
@@ -144,12 +145,155 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     return Math.round(((current - previous) / previous) * 1000) / 10;
   }
 
+  /**
+   * Shape a raw daily series into a gently upward trend with realistic
+   * variance (bumps/divots) so charts feel natural in demo data.
+   */
+  private naturalUpwardTrend(
+    points: TimeSeriesPoint[],
+    options: {
+      minGrowthPct: number;
+      volatilityRatio: number;
+      baselineBlend: number;
+      round?: (value: number) => number;
+      maxValue?: number;
+    },
+  ): TimeSeriesPoint[] {
+    if (points.length <= 2) {
+      return points.map((point) => ({
+        tsIso: point.tsIso,
+        value: options.round ? options.round(point.value) : point.value,
+      }));
+    }
+
+    const smoothed = points.map((point, index, allPoints) => {
+      const windowStart = Math.max(0, index - 5);
+      const window = allPoints.slice(windowStart, index + 1);
+      const avg =
+        window.reduce((sum, samplePoint) => sum + samplePoint.value, 0) / window.length;
+      return { tsIso: point.tsIso, value: avg };
+    });
+
+    const startValue = smoothed[0]!.value;
+    const rawEndValue = smoothed[smoothed.length - 1]!.value;
+    const targetEndValue = Math.max(
+      rawEndValue,
+      startValue * (1 + options.minGrowthPct),
+      startValue + 1,
+    );
+    const span = smoothed.length - 1;
+
+    let shaped = smoothed.map((point, index) => {
+      const progress = span > 0 ? index / span : 0;
+      const baseline = startValue + (targetEndValue - startValue) * progress;
+      const amplitude = Math.max(1, baseline * options.volatilityRatio);
+
+      const longWave = Math.sin(progress * Math.PI * 3) * amplitude;
+      const shortWave = Math.sin(progress * Math.PI * 9 + 0.8) * amplitude * 0.45;
+      const bump = Math.exp(-Math.pow((progress - 0.33) / 0.13, 2)) * amplitude * 0.55;
+      const divot = -Math.exp(-Math.pow((progress - 0.7) / 0.11, 2)) * amplitude * 0.6;
+      const jitterSeed = hashString(point.tsIso) % 13;
+      const jitter = ((jitterSeed - 6) / 6) * amplitude * 0.18;
+
+      const blend = baseline * options.baselineBlend + point.value * (1 - options.baselineBlend);
+      const nextValue = blend + longWave + shortWave + bump + divot + jitter;
+      const clamped =
+        options.maxValue != null
+          ? Math.max(0, Math.min(options.maxValue, nextValue))
+          : Math.max(0, nextValue);
+      return { tsIso: point.tsIso, value: clamped };
+    });
+
+    const firstValue = shaped[0]!.value;
+    const lastValue = shaped[shaped.length - 1]!.value;
+    if (lastValue < firstValue) {
+      const uplift = firstValue - lastValue + 1;
+      shaped = shaped.map((point, index) => {
+        const progress = span > 0 ? index / span : 0;
+        const raisedValue = point.value + uplift * progress;
+        const clamped =
+          options.maxValue != null
+            ? Math.max(0, Math.min(options.maxValue, raisedValue))
+            : Math.max(0, raisedValue);
+        return { tsIso: point.tsIso, value: clamped };
+      });
+    }
+
+    const midpoint = Math.floor(shaped.length / 2);
+    const firstHalf = shaped.slice(0, midpoint);
+    const secondHalf = shaped.slice(midpoint);
+    const avg = (series: TimeSeriesPoint[]): number =>
+      series.reduce((sum, point) => sum + point.value, 0) / series.length;
+    const firstHalfAvg = avg(firstHalf);
+    const secondHalfAvg = avg(secondHalf);
+    if (secondHalfAvg <= firstHalfAvg) {
+      const uplift = firstHalfAvg - secondHalfAvg + 1;
+      shaped = shaped.map((point, index) => {
+        const progress = span > 0 ? index / span : 0;
+        const tailBias = Math.max(0, (progress - 0.45) / 0.55);
+        const raisedValue = point.value + uplift * tailBias;
+        const clamped =
+          options.maxValue != null
+            ? Math.max(0, Math.min(options.maxValue, raisedValue))
+            : Math.max(0, raisedValue);
+        return { tsIso: point.tsIso, value: clamped };
+      });
+    }
+
+    return shaped.map((point) => {
+      const clamped =
+        options.maxValue != null
+          ? Math.max(0, Math.min(options.maxValue, point.value))
+          : Math.max(0, point.value);
+      return {
+        tsIso: point.tsIso,
+        value: options.round ? options.round(clamped) : clamped,
+      };
+    });
+  }
+
   private costTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
-    return this.bucketByDay(runs, (d) => round2(sumField(d, "costUsd")));
+    const daily = this.bucketByDay(runs, (d) => sumField(d, "costUsd"));
+    return this.naturalUpwardTrend(daily, {
+      minGrowthPct: 0.2,
+      volatilityRatio: 0.12,
+      baselineBlend: 0.6,
+      round: round2,
+    });
+  }
+
+  private runsTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
+    const daily = this.bucketByDay(runs, (d) => d.length);
+    return this.naturalUpwardTrend(daily, {
+      minGrowthPct: 0.18,
+      volatilityRatio: 0.16,
+      baselineBlend: 0.58,
+      round: (value) => Math.round(value),
+    });
   }
 
   private reliabilityTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
     return this.bucketByDay(runs, (d) => safeRate(countSucceeded(d), d.length));
+  }
+
+  /**
+   * Build a gently increasing active-user trend.
+   * We smooth day-level variance and blend with a small upward baseline
+   * so the sample chart reflects gradual growth over time.
+   */
+  private activeUsersTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
+    const activeUsersByDay = this.bucketByDay(
+      runs,
+      (dayRuns) => new Set(dayRuns.map((run) => run.userId)).size,
+    );
+    const maxUsers = this.seed.users.length + this.createdUsers.length;
+    return this.naturalUpwardTrend(activeUsersByDay, {
+      minGrowthPct: 0.1,
+      volatilityRatio: 0.08,
+      baselineBlend: 0.68,
+      round: (value) => Math.round(value),
+      maxValue: maxUsers,
+    });
   }
 
   /**
@@ -268,7 +412,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         policyViolationCount: violations.length,
       },
       deltas,
-      runsTrend: this.bucketByDay(runs, (d) => d.length),
+      runsTrend: this.runsTrendFromRuns(runs),
       costTrend: this.costTrendFromRuns(runs),
       anomalies,
     };
@@ -323,7 +467,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       mau: usersLast30d.size,
       activeSeats30d: usersLast30d.size,
       seatAdoptionRate,
-      activeUsersTrend: this.bucketByDay(runs, (d) => new Set(d.map((r) => r.userId)).size),
+      activeUsersTrend: this.activeUsersTrendFromRuns(runs),
       runsPerUserDistribution,
       breakdownByTeam,
     };

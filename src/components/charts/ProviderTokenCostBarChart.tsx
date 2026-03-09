@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import type { ProviderCostRow } from "@/features/analytics/types";
 import { DATA_PALETTE } from "./palette";
@@ -26,21 +26,23 @@ function formatTenThousandths(usdPerToken: number): string {
   return Math.round(usdPerToken * 1_000_000).toLocaleString("en-US");
 }
 
-export function ProviderTokenCostBarChart({
+export const ProviderTokenCostBarChart = React.memo(function ProviderTokenCostBarChart({
   data,
   height = 180,
 }: ProviderTokenCostBarChartProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
-  const ranked = [...data]
-    .map((row) => ({
-      ...row,
-      costPerToken: computeCostPerToken(row),
-    }))
-    .sort((a, b) => b.costPerToken - a.costPerToken);
+  const { ranked, maxCost } = useMemo(() => {
+    const r = [...data]
+      .map((row) => ({
+        ...row,
+        costPerToken: computeCostPerToken(row),
+      }))
+      .sort((a, b) => b.costPerToken - a.costPerToken);
 
-  const maxCost = Math.max(...ranked.map((r) => r.costPerToken), 0);
+    return { ranked: r, maxCost: Math.max(...r.map((item) => item.costPerToken), 0) };
+  }, [data]);
 
   return (
     <View style={[styles.container, { minHeight: height }]}>
@@ -82,7 +84,7 @@ export function ProviderTokenCostBarChart({
       </Text>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

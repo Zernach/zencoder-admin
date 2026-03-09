@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect, useMemo } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import Animated, {
@@ -23,7 +23,7 @@ interface SidebarNavItemProps {
   onPress: () => void;
 }
 
-export function SidebarNavItem({
+export const SidebarNavItem = memo(function SidebarNavItem({
   icon: Icon,
   label,
   badge,
@@ -52,20 +52,34 @@ export function SidebarNavItem({
     transform: [{ translateX: labelTranslateX.value }],
   }));
 
+  const itemStyle = useMemo(
+    () => [styles.item, active && { backgroundColor: theme.bg.brandSubtle }],
+    [active, theme.bg.brandSubtle],
+  );
+  const activeBorderStyle = useMemo(
+    () => [styles.activeBorder, { backgroundColor: theme.border.brand }],
+    [theme.border.brand],
+  );
+  const iconColor = active ? theme.border.brand : theme.text.secondary;
+  const textStyle = useMemo(
+    () => [styles.label, { color: active ? theme.text.primary : theme.text.secondary }, active && styles.activeLabelWeight],
+    [active, theme.text.primary, theme.text.secondary],
+  );
+
   return (
     <CustomButton
       onPress={onPress}
-      style={[styles.item, active && { backgroundColor: theme.bg.brandSubtle }]}
+      style={itemStyle}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ selected: active }}
     >
-      {active && <View style={[styles.activeBorder, { backgroundColor: theme.border.brand }]} />}
-      <Icon size={20} color={active ? theme.border.brand : theme.text.secondary} />
+      {active && <View style={activeBorderStyle} />}
+      <Icon size={20} color={iconColor} />
       {expanded && (
         <Animated.View style={labelStyle}>
           <Text
-            style={[styles.label, { color: active ? theme.text.primary : theme.text.secondary }, active && styles.activeLabelWeight]}
+            style={textStyle}
             numberOfLines={1}
           >
             {label}
@@ -79,7 +93,7 @@ export function SidebarNavItem({
       )}
     </CustomButton>
   );
-}
+});
 
 const styles = StyleSheet.create({
   item: {

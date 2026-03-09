@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import type { KeyValueMetric } from "@/features/analytics/types";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
@@ -10,14 +10,16 @@ interface BreakdownChartProps {
   data: KeyValueMetric[];
   variant: "bar" | "horizontal-bar";
   color?: string;
+  palette?: readonly string[];
   height?: number;
   showValues?: boolean;
   truncateLabels?: boolean;
 }
 
-export function BreakdownChart({
+export const BreakdownChart = React.memo(function BreakdownChart({
   data,
   variant = "bar",
+  palette = DATA_PALETTE,
   height = 200,
   showValues = true,
   truncateLabels = true,
@@ -27,12 +29,15 @@ export function BreakdownChart({
   const [measuredLabelWidth, setMeasuredLabelWidth] = useState<number>(0);
   const [measuredRowHeight, setMeasuredRowHeight] = useState<number>(0);
   const [containerWidth, setContainerWidth] = useState<number>(0);
-  const sorted = [...data].sort((a, b) => b.value - a.value);
-  const maxVal = Math.max(...sorted.map((d) => d.value), 1);
-  const longestLabel = useMemo(
-    () => sorted.reduce((longest, item) => (item.key.length > longest.length ? item.key : longest), ""),
-    [sorted]
-  );
+
+  const { sorted, maxVal, longestLabel } = useMemo(() => {
+    const s = [...data].sort((a, b) => b.value - a.value);
+    return {
+      sorted: s,
+      maxVal: Math.max(...s.map((d) => d.value), 1),
+      longestLabel: s.reduce((longest, item) => (item.key.length > longest.length ? item.key : longest), ""),
+    };
+  }, [data]);
   const effectiveLabelWidth = useMemo(() => {
     if (truncateLabels || measuredLabelWidth <= 0 || containerWidth <= 0) {
       return measuredLabelWidth > 0 ? measuredLabelWidth : undefined;
@@ -105,7 +110,7 @@ export function BreakdownChart({
                   {
                     width: `${(item.value / maxVal) * 100}%`,
                     backgroundColor:
-                      DATA_PALETTE[i % DATA_PALETTE.length],
+                      palette[i % palette.length],
                   },
                 ]}
               />
@@ -138,7 +143,7 @@ export function BreakdownChart({
                 {
                   height: `${(item.value / maxVal) * 70}%`,
                   backgroundColor:
-                    DATA_PALETTE[i % DATA_PALETTE.length],
+                    palette[i % palette.length],
                 },
               ]}
             />
@@ -150,7 +155,7 @@ export function BreakdownChart({
       ))}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

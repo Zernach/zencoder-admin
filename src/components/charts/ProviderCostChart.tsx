@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { arc, pie } from "d3-shape";
@@ -25,26 +25,37 @@ const PROVIDER_LABELS: Record<ProviderCostRow["provider"], string> = {
   other: "Other",
 };
 
-export function ProviderCostChart({
+export const ProviderCostChart = React.memo(function ProviderCostChart({
   data,
   totalCostUsd,
   height = 180,
 }: ProviderCostChartProps) {
   const { mode } = useThemeMode();
   const textColors = semanticThemes[mode].text;
-  const sorted = [...data].sort((a, b) => b.totalCostUsd - a.totalCostUsd);
-  const chartData = sorted.map((row) => ({ key: row.provider, value: row.totalCostUsd }));
-  const total = chartData.reduce((sum, row) => sum + row.value, 0) || 1;
   const size = Math.min(height, 180);
-  const radius = size / 2 - 8;
-  const innerRadius = radius * 0.6;
-  const pieGen = pie<{ key: string; value: number }>()
-    .value((d) => d.value)
-    .sort(null);
-  const arcGen = arc<{ startAngle: number; endAngle: number }>()
-    .innerRadius(innerRadius)
-    .outerRadius(radius);
-  const arcs = pieGen(chartData);
+  const chartRadius = size / 2 - 8;
+  const innerRadius = chartRadius * 0.6;
+
+  const { sorted, arcs, arcGen, providerMetrics } = useMemo(() => {
+    const s = [...data].sort((a, b) => b.totalCostUsd - a.totalCostUsd);
+    const chartData = s.map((row) => ({ key: row.provider, value: row.totalCostUsd }));
+    const t = chartData.reduce((sum, row) => sum + row.value, 0) || 1;
+
+    const pieGen = pie<{ key: string; value: number }>()
+      .value((d) => d.value)
+      .sort(null);
+    const gen = arc<{ startAngle: number; endAngle: number }>()
+      .innerRadius(innerRadius)
+      .outerRadius(chartRadius);
+
+    // Pre-compute per-provider metrics to avoid per-render calculations
+    const metrics = s.map((row) => ({
+      share: (row.totalCostUsd / t) * 100,
+      avgCostPerRun: row.runCount > 0 ? row.totalCostUsd / row.runCount : 0,
+    }));
+
+    return { sorted: s, arcs: pieGen(chartData), arcGen: gen, providerMetrics: metrics };
+  }, [data, innerRadius, chartRadius]);
 
   return (
     <View style={styles.container}>
@@ -72,39 +83,34 @@ export function ProviderCostChart({
       </View>
 
       <View style={styles.rightColumn}>
-        {sorted.map((row, i) => {
-          const share = (row.totalCostUsd / total) * 100;
-          const avgCostPerRun = row.runCount > 0 ? row.totalCostUsd / row.runCount : 0;
-
-          return (
-            <View key={row.provider} style={[styles.row, i > 0 ? styles.rowSpacing : null]}>
-              <View style={styles.rowHeader}>
-                <View style={styles.providerNameWrap}>
-                  <View
-                    style={[
-                      styles.swatch,
-                      { backgroundColor: DATA_PALETTE[i % DATA_PALETTE.length] },
-                    ]}
-                  />
-                  <Text style={[styles.providerName, { color: textColors.primary }]}>
-                    {PROVIDER_LABELS[row.provider]}
-                  </Text>
-                </View>
-                <Text style={[styles.share, { color: textColors.secondary }]}>
-                  {formatPercent(share)}
+        {sorted.map((row, i) => (
+          <View key={row.provider} style={[styles.row, i > 0 ? styles.rowSpacing : null]}>
+            <View style={styles.rowHeader}>
+              <View style={styles.providerNameWrap}>
+                <View
+                  style={[
+                    styles.swatch,
+                    { backgroundColor: DATA_PALETTE[i % DATA_PALETTE.length] },
+                  ]}
+                />
+                <Text style={[styles.providerName, { color: textColors.primary }]}>
+                  {PROVIDER_LABELS[row.provider]}
                 </Text>
               </View>
-
-              <Text style={[styles.metricLabel, { color: textColors.secondary }]}>
-                {`${formatCurrency(row.totalCostUsd)} • ${formatCompactNumber(row.runCount)} runs • ${formatCurrency(avgCostPerRun)}/run`}
+              <Text style={[styles.share, { color: textColors.secondary }]}>
+                {formatPercent(providerMetrics[i]!.share)}
               </Text>
             </View>
-          );
-        })}
+
+            <Text style={[styles.metricLabel, { color: textColors.secondary }]}>
+              {`${formatCurrency(row.totalCostUsd)} • ${formatCompactNumber(row.runCount)} runs • ${formatCurrency(providerMetrics[i]!.avgCostPerRun)}/run`}
+            </Text>
+          </View>
+        ))}
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

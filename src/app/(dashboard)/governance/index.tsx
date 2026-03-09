@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
@@ -14,14 +14,26 @@ import { AddSeatModal } from "@/features/analytics/components/AddSeatModal";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
-import { useSectionScroll } from "@/hooks/useSectionScroll";
+import { useSectionRef } from "@/hooks/useRegisterSection";
 import { keyExtractors } from "@/constants";
 import { useAppDispatch, openModal, ModalName } from "@/store";
+
+const SKELETON_4 = Array.from({ length: 4 });
 
 const VIOLATION_SEARCH_KEYS: (keyof PolicyViolationRow)[] = ["agentName", "reason", "severity"];
 const SECURITY_SEARCH_KEYS: (keyof SecurityEventRow)[] = ["type", "description"];
 const SEAT_SEARCH_KEYS: (keyof SeatUserUsageRow)[] = ["fullName", "teamName"];
 const POLICY_CHANGE_SEARCH_KEYS: (keyof PolicyChangeEvent)[] = ["action", "target"];
+const SEAT_USAGE_CHART_PALETTE = [
+  "#0ea5e9",
+  "#22c55e",
+  "#f59e0b",
+  "#8b5cf6",
+  "#ec4899",
+  "#ef4444",
+  "#14b8a6",
+  "#6366f1",
+] as const;
 
 function getComplianceCaption(status: ComplianceItem["status"]): string {
   if (status === "compliant") return "Passing";
@@ -34,7 +46,7 @@ export default function GovernanceScreen() {
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
   const { data, loading, error, refetch } = useGovernanceDashboard();
-  const { registerSection } = useSectionScroll();
+  const refFor = useSectionRef();
   const dispatch = useAppDispatch();
 
   const filteredViolations = useSearchFilter(data?.recentViolations ?? [], VIOLATION_SEARCH_KEYS);
@@ -42,11 +54,11 @@ export default function GovernanceScreen() {
   const filteredSeatUsers = useSearchFilter(data?.seatUserUsage ?? [], SEAT_SEARCH_KEYS);
   const filteredPolicyChanges = useSearchFilter(data?.policyChanges ?? [], POLICY_CHANGE_SEARCH_KEYS);
 
-  const COMPLIANCE_STATUS_COLORS: Record<ComplianceItem["status"], string> = {
+  const COMPLIANCE_STATUS_COLORS = useMemo<Record<ComplianceItem["status"], string>>(() => ({
     compliant: theme.state.success,
     warning: theme.state.warning,
     critical: theme.state.error,
-  };
+  }), [theme.state.success, theme.state.warning, theme.state.error]);
 
   const violationCols = useMemo<ColumnDef<PolicyViolationRow>[]>(() => [
     { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
@@ -76,16 +88,13 @@ export default function GovernanceScreen() {
     { key: "target", header: "Target", width: 130 },
   ], [ct]);
 
-  if (error) return <ErrorState message={error} onRetry={refetch} />;
-
-  const subtitle = data
+  const subtitle = useMemo(() => data
     ? `${data.policyViolationCount} violations, ${data.securityEvents.length} security events`
-    : "Policy enforcement and security monitoring";
+    : "Policy enforcement and security monitoring",
+    [data],
+  );
 
-  const mostActiveSeatUser = data?.seatUserUsage[0];
-  const leastActiveSeatUser = data?.seatUserUsage.length
-    ? data.seatUserUsage[data.seatUserUsage.length - 1]
-    : undefined;
+  if (error) return <ErrorState message={error} onRetry={refetch} />;
 
   const seatUsageChartData: KeyValueMetric[] = useMemo(() => {
     if (!data?.seatUserUsage) return [];
@@ -95,19 +104,27 @@ export default function GovernanceScreen() {
     }));
   }, [data?.seatUserUsage]);
 
+  const handleOpenCreateSeat = useCallback(
+    () => dispatch(openModal(ModalName.CreateSeat)),
+    [dispatch],
+  );
+  const handleOpenCreateRule = useCallback(
+    () => dispatch(openModal(ModalName.CreateComplianceRule)),
+    [dispatch],
+  );
+
+  const headerProps = useMemo(
+    () => ({ title: "Governance", subtitle, isLoading: loading }),
+    [subtitle, loading],
+  );
+
   return (
-    <ScreenWrapper
-      headerProps={{
-        title: "Governance",
-        subtitle,
-        isLoading: loading,
-      }}
-    >
-      <View ref={(r) => registerSection("overview", r)} nativeID="overview" style={sectionStyles.section}>
+    <ScreenWrapper headerProps={headerProps}>
+      <View ref={refFor("overview")} nativeID="overview" style={sectionStyles.section}>
         <SectionHeader title="Overview" />
         {loading ? (
           <CardGrid columns={4}>
-            {Array.from({ length: 4 }).map((_, i) => (
+            {SKELETON_4.map((_, i) => (
               <LoadingSkeleton key={i} variant="kpi" />
             ))}
           </CardGrid>
@@ -132,7 +149,7 @@ export default function GovernanceScreen() {
       </View>
 
       {data && (
-        <View ref={(r) => registerSection("compliance-status", r)} nativeID="compliance-status" style={sectionStyles.section}>
+        <View ref={refFor("compliance-status")} nativeID="compliance-status" style={sectionStyles.section}>
           <SectionHeader title="Compliance Status" />
           <CardGrid columns={3}>
             {data.complianceItems.map((item: ComplianceItem) => (
@@ -149,7 +166,7 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View ref={(r) => registerSection("seat-user-oversight", r)} nativeID="seat-user-oversight" style={sectionStyles.section}>
+        <View ref={refFor("seat-user-oversight")} nativeID="seat-user-oversight" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
             <View style={localStyles.sectionHeaderWrap}>
               <SectionHeader
@@ -158,21 +175,13 @@ export default function GovernanceScreen() {
               />
             </View>
             <CustomButton
-              onPress={() => dispatch(openModal(ModalName.CreateSeat))}
-              style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
+              onPress={handleOpenCreateSeat}
+              style={[localStyles.createButton, { borderColor: theme.border.brand }]}
               accessibilityRole="button"
               accessibilityLabel="Add Seat"
             >
-              <Text style={[localStyles.createButtonText, { color: theme.text.onBrand }]}>+ Add Seat</Text>
+              <Text style={[localStyles.createButtonText, { color: theme.border.brand }]}>+ Add Seat</Text>
             </CustomButton>
-          </View>
-          <View style={localStyles.seatUsageSummary}>
-            <Text style={[localStyles.summaryText, { color: theme.text.secondary }]}>
-              Most AI usage: {mostActiveSeatUser ? `${mostActiveSeatUser.fullName} (${formatCompactNumber(mostActiveSeatUser.runsCount)} runs)` : "No active seat usage"}
-            </Text>
-            <Text style={[localStyles.summaryText, { color: theme.text.secondary }]}>
-              Least AI usage: {leastActiveSeatUser ? `${leastActiveSeatUser.fullName} (${formatCompactNumber(leastActiveSeatUser.runsCount)} runs)` : "No active seat usage"}
-            </Text>
           </View>
           <ChartCard
             title="Seat Usage by Runs"
@@ -181,6 +190,7 @@ export default function GovernanceScreen() {
             <BreakdownChart
               data={seatUsageChartData}
               variant="horizontal-bar"
+              palette={SEAT_USAGE_CHART_PALETTE}
               truncateLabels={false}
             />
           </ChartCard>
@@ -194,18 +204,18 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View ref={(r) => registerSection("recent-violations", r)} nativeID="recent-violations" style={sectionStyles.section}>
+        <View ref={refFor("recent-violations")} nativeID="recent-violations" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
             <View style={localStyles.sectionHeaderWrap}>
               <SectionHeader title="Recent Violations" />
             </View>
             <CustomButton
-              onPress={() => dispatch(openModal(ModalName.CreateComplianceRule))}
-              style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
+              onPress={handleOpenCreateRule}
+              style={[localStyles.createButton, { borderColor: theme.border.brand }]}
               accessibilityRole="button"
               accessibilityLabel="Create Compliance Rule"
             >
-              <Text style={[localStyles.createButtonText, { color: theme.text.onBrand }]}>+ Create Rule</Text>
+              <Text style={[localStyles.createButtonText, { color: theme.border.brand }]}>+ Create Rule</Text>
             </CustomButton>
           </View>
           <DataTable
@@ -217,7 +227,7 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View ref={(r) => registerSection("security-events", r)} nativeID="security-events" style={sectionStyles.section}>
+        <View ref={refFor("security-events")} nativeID="security-events" style={sectionStyles.section}>
           <SectionHeader title="Security Events" />
           <DataTable
             columns={securityCols}
@@ -228,7 +238,7 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View ref={(r) => registerSection("policy-changes", r)} nativeID="policy-changes" style={sectionStyles.section}>
+        <View ref={refFor("policy-changes")} nativeID="policy-changes" style={sectionStyles.section}>
           <SectionHeader title="Policy Changes" subtitle="Audit trail of policy modifications" />
           <DataTable
             columns={policyChangeCols}
@@ -244,12 +254,6 @@ export default function GovernanceScreen() {
 }
 
 const localStyles = StyleSheet.create({
-  seatUsageSummary: {
-    gap: spacing[1],
-  },
-  summaryText: {
-    fontSize: 12,
-  },
   sectionRow: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -261,9 +265,11 @@ const localStyles = StyleSheet.create({
     minWidth: 0,
   },
   createButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 6,
+    borderRadius: 999,
     marginLeft: "auto",
     flexShrink: 0,
     maxWidth: "100%",

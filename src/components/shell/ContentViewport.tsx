@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { StyleSheet } from "react-native";
 import { CustomList, type CustomListRef } from "@/components/lists";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
@@ -10,7 +10,7 @@ interface ContentViewportProps {
   children: React.ReactNode;
 }
 
-export function ContentViewport({ children }: ContentViewportProps) {
+export const ContentViewport = React.memo(function ContentViewport({ children }: ContentViewportProps) {
   const bp = useBreakpoint();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -26,18 +26,20 @@ export function ContentViewport({ children }: ContentViewportProps) {
     registerScrollView(null);
   }, [registerScrollView]);
 
+  const scrollViewProps = useMemo(() => ({
+    style: [styles.container, { backgroundColor: theme.bg.canvas }],
+    contentContainerStyle: [styles.content, { padding }],
+  }), [theme.bg.canvas, padding]);
+
   return (
     <CustomList
       ref={scrollRef}
-      scrollViewProps={{
-        style: [styles.container, { backgroundColor: theme.bg.canvas }],
-        contentContainerStyle: [styles.content, { padding }],
-      }}
+      scrollViewProps={scrollViewProps}
     >
       {children}
     </CustomList>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

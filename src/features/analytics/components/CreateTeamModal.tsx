@@ -8,7 +8,7 @@ import { CreateTeamForm } from "./CreateTeamForm";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 
-export function CreateTeamModal() {
+export const CreateTeamModal = React.memo(function CreateTeamModal() {
   const visible = useAppSelector(selectModalVisible(ModalName.CreateTeam));
   const dispatch = useAppDispatch();
   const { mode } = useThemeMode();
@@ -57,7 +57,7 @@ export function CreateTeamModal() {
       </View>
     </Modal>
   );
-}
+});
 
 const styles = StyleSheet.create({
   modalOverlay: {

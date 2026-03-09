@@ -6,9 +6,6 @@ export {
   selectActiveFilters,
   selectPreset,
   selectSearchQuery,
-  loadingSlice,
-  setLoading,
-  selectIsLoading,
   sidebarSlice,
   toggleSidebar,
   setSidebarExpanded,
@@ -24,7 +21,7 @@ export {
   selectModalVisible,
   ModalName,
 } from "./slices";
-export type { LoadingState, SidebarState, NavigationHistoryState, ModalState } from "./slices";
+export type { SidebarState, NavigationHistoryState, ModalState } from "./slices";
 export {
   analyticsApi,
   useGetOverviewQuery,

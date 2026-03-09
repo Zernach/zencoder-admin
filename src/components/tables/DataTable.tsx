@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import type { DimensionValue } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { LoadingSkeleton, EmptyState } from "@/components/dashboard";
@@ -14,7 +15,7 @@ type SortableValue = string | number | boolean | Date | null | undefined;
 interface ColumnDef<T> {
   key: string;
   header: string;
-  width?: number | string;
+  width?: DimensionValue;
   sortable?: boolean;
   align?: "left" | "center" | "right";
   render?: (row: T) => ReactNode;
@@ -34,6 +35,13 @@ interface DataTableProps<T> {
 }
 
 export type { ColumnDef, DataTableProps };
+
+const HORIZONTAL_SCROLL_PROPS = {
+  horizontal: true,
+  showsHorizontalScrollIndicator: false,
+  style: { width: "100%" },
+  contentContainerStyle: { minWidth: "100%", flexGrow: 1 },
+} as const;
 
 function normalizeSortValue(value: SortableValue): string | number | boolean | null {
   if (value == null) return null;
@@ -72,7 +80,79 @@ function toSortableValue(value: unknown): SortableValue {
   return String(value);
 }
 
-export function DataTable<T>({
+interface DataTableRowProps<T> {
+  row: T;
+  rowIdx: number;
+  columns: ColumnDef<T>[];
+  rowKey: string;
+  altRowBg: string;
+  bodyTextColor: string;
+  onRowPress?: (row: T) => void;
+}
+
+const DataTableRow = memo(function DataTableRow<T>({
+  row,
+  rowIdx,
+  columns,
+  rowKey,
+  altRowBg,
+  bodyTextColor,
+  onRowPress,
+}: DataTableRowProps<T>) {
+  const rowContent = (
+    <View
+      style={[
+        styles.bodyRow,
+        rowIdx % 2 === 1 && { backgroundColor: altRowBg },
+      ]}
+    >
+      {columns.map((col) => (
+        <View
+          key={col.key}
+          style={[
+            styles.cell,
+            col.width != null
+              ? { minWidth: col.width, flexGrow: 1, flexBasis: 0 }
+              : styles.flexCell,
+            col.align === "right" && styles.alignRight,
+            col.align === "center" && styles.alignCenter,
+          ]}
+        >
+          {col.render ? (
+            col.render(row)
+          ) : (
+            <Text style={[styles.bodyText, { color: bodyTextColor }]}>
+              {String((row as Record<string, unknown>)[col.key] ?? "")}
+            </Text>
+          )}
+        </View>
+      ))}
+    </View>
+  );
+
+  const handlePress = useCallback(() => onRowPress?.(row), [onRowPress, row]);
+
+  if (onRowPress) {
+    return (
+      <CustomButton
+        key={rowKey}
+        onPress={handlePress}
+        accessibilityRole="button"
+        accessibilityLabel={`Table row ${rowKey}`}
+        testID="table-row"
+      >
+        {rowContent}
+      </CustomButton>
+    );
+  }
+  return (
+    <View key={rowKey} testID="table-row">
+      {rowContent}
+    </View>
+  );
+}) as <T>(props: DataTableRowProps<T>) => ReactNode;
+
+function DataTableInner<T>({
   columns,
   data,
   sortBy,
@@ -142,24 +222,29 @@ export function DataTable<T>({
     [onSort]
   );
 
+  const altRowBg = `${theme.bg.surface}80`;
+
+  const headerRowStyle = useMemo(
+    () => [styles.headerRow, { backgroundColor: theme.bg.surfaceElevated }],
+    [theme.bg.surfaceElevated],
+  );
+
   if (loading) return <LoadingSkeleton variant="table" rows={5} />;
   if (sortedData.length === 0)
     return <EmptyState message={emptyMessage ?? "No data available."} />;
 
   return (
-    <CustomList
-      scrollViewProps={{ horizontal: true, showsHorizontalScrollIndicator: false }}
-    >
-      <View>
+    <CustomList scrollViewProps={HORIZONTAL_SCROLL_PROPS}>
+      <View style={styles.tableContent}>
         {/* Header */}
-        <View style={[styles.headerRow, { backgroundColor: theme.bg.surfaceElevated }]}>
+        <View style={headerRowStyle}>
           {columns.map((col) => (
             <View
               key={col.key}
               style={[
                 styles.cell,
                 col.width != null
-                  ? { width: col.width as number }
+                  ? { minWidth: col.width, flexGrow: 1, flexBasis: 0 }
                   : styles.flexCell,
                 col.align === "right" && styles.alignRight,
                 col.align === "center" && styles.alignCenter,
@@ -170,7 +255,8 @@ export function DataTable<T>({
                   label={col.header}
                   active={activeSortBy === col.key}
                   direction={activeSortBy === col.key ? activeSortDirection : "asc"}
-                  onPress={() => handleSortPress(col.key)}
+                  columnKey={col.key}
+                  onSort={handleSortPress}
                 />
               ) : (
                 <Text style={[styles.headerText, { color: theme.text.secondary }]}>{col.header}</Text>
@@ -179,64 +265,31 @@ export function DataTable<T>({
           ))}
         </View>
         {/* Body */}
-        {sortedData.map((row, rowIdx) => {
-          const rowKey = keyExtractor(row);
-          const rowContent = (
-            <View
-              style={[
-                styles.bodyRow,
-                rowIdx % 2 === 1 && { backgroundColor: `${theme.bg.surface}80` },
-              ]}
-            >
-              {columns.map((col) => (
-                <View
-                  key={col.key}
-                  style={[
-                    styles.cell,
-                    col.width != null
-                      ? { width: col.width as number }
-                      : styles.flexCell,
-                    col.align === "right" && styles.alignRight,
-                    col.align === "center" && styles.alignCenter,
-                  ]}
-                >
-                  {col.render ? (
-                    col.render(row)
-                  ) : (
-                    <Text style={[styles.bodyText, { color: theme.text.primary }]}>
-                      {String((row as Record<string, unknown>)[col.key] ?? "")}
-                    </Text>
-                  )}
-                </View>
-              ))}
-            </View>
-          );
-
-          if (onRowPress) {
-            return (
-              <CustomButton
-                key={rowKey}
-                onPress={() => onRowPress(row)}
-                accessibilityRole="button"
-                accessibilityLabel={`Table row ${rowKey}`}
-                testID="table-row"
-              >
-                {rowContent}
-              </CustomButton>
-            );
-          }
-          return (
-            <View key={rowKey} testID="table-row">
-              {rowContent}
-            </View>
-          );
-        })}
+        {sortedData.map((row, rowIdx) => (
+          <DataTableRow
+            key={keyExtractor(row)}
+            row={row}
+            rowIdx={rowIdx}
+            columns={columns}
+            rowKey={keyExtractor(row)}
+            altRowBg={altRowBg}
+            bodyTextColor={theme.text.primary}
+            onRowPress={onRowPress}
+          />
+        ))}
       </View>
     </CustomList>
   );
 }
 
+export const DataTable = memo(DataTableInner) as typeof DataTableInner;
+
 const styles = StyleSheet.create({
+  tableContent: {
+    minWidth: "100%",
+    width: "100%",
+    flexGrow: 1,
+  },
   headerRow: {
     flexDirection: "row",
     paddingHorizontal: 12,

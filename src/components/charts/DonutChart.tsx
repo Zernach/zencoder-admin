@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { arc, pie } from "d3-shape";
@@ -16,7 +16,7 @@ interface DonutChartProps {
   height?: number;
 }
 
-export function DonutChart({
+export const DonutChart = React.memo(function DonutChart({
   data,
   centerLabel,
   centerValue,
@@ -25,64 +25,66 @@ export function DonutChart({
   const { mode } = useThemeMode();
   const textColors = semanticThemes[mode].text;
   const size = Math.min(height, 220);
-  const radius = size / 2 - 8;
-  const innerRadius = radius * 0.6;
+  const chartRadius = size / 2 - 8;
+  const innerRadius = chartRadius * 0.6;
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
 
-  const pieGen = pie<KeyValueMetric>()
-    .value((d) => d.value)
-    .sort(null);
+  const { arcs, arcGen, segmentLabels } = useMemo(() => {
+    const pieGen = pie<KeyValueMetric>()
+      .value((d) => d.value)
+      .sort(null);
 
-  const arcGen = arc<{ startAngle: number; endAngle: number }>()
-    .innerRadius(innerRadius)
-    .outerRadius(radius);
+    const gen = arc<{ startAngle: number; endAngle: number }>()
+      .innerRadius(innerRadius)
+      .outerRadius(chartRadius);
 
-  const arcs = pieGen(data);
-  const segmentLabelTypography = typography.label;
+    const computedArcs = pieGen(data);
+
+    // Pre-compute segment label positions to avoid per-render work
+    const labels = computedArcs
+      .filter((a) => a.data.value / total > 0.05)
+      .map((a) => {
+        const centroid = gen.centroid(a);
+        return {
+          key: a.data.key,
+          pct: formatPercent((a.data.value / total) * 100),
+          left: size / 2 + centroid[0] - 18,
+          top: size / 2 + centroid[1] - typography.label.lineHeight / 2,
+        };
+      });
+
+    return { arcs: computedArcs, arcGen: gen, segmentLabels: labels };
+  }, [data, innerRadius, chartRadius, total, size]);
 
   return (
     <View style={styles.container}>
       <View style={[styles.chartFrame, { width: size, height: size }]}>
         <Svg width={size} height={size}>
-          {arcs.map((a, i) => {
-            return (
-              <React.Fragment key={a.data.key}>
-                <Path
-                  d={arcGen(a) ?? ""}
-                  fill={DATA_PALETTE[i % DATA_PALETTE.length]}
-                  transform={`translate(${size / 2},${size / 2})`}
-                />
-              </React.Fragment>
-            );
-          })}
+          {arcs.map((a, i) => (
+            <Path
+              key={a.data.key}
+              d={arcGen(a) ?? ""}
+              fill={DATA_PALETTE[i % DATA_PALETTE.length]}
+              transform={`translate(${size / 2},${size / 2})`}
+            />
+          ))}
         </Svg>
         <View style={styles.chartTextOverlay}>
-          {arcs.map((a) => {
-            if (a.data.value / total <= 0.05) {
-              return null;
-            }
-
-            const centroid = arcGen.centroid(a);
-            const pct = formatPercent((a.data.value / total) * 100);
-            const x = size / 2 + centroid[0];
-            const y = size / 2 + centroid[1];
-
-            return (
-              <Text
-                key={`pct-${a.data.key}`}
-                style={[
-                  styles.segmentLabel,
-                  {
-                    left: x - 18,
-                    top: y - segmentLabelTypography.lineHeight / 2,
-                    color: textColors.primary,
-                  },
-                ]}
-              >
-                {pct}
-              </Text>
-            );
-          })}
+          {segmentLabels.map((label) => (
+            <Text
+              key={`pct-${label.key}`}
+              style={[
+                styles.segmentLabel,
+                {
+                  left: label.left,
+                  top: label.top,
+                  color: textColors.primary,
+                },
+              ]}
+            >
+              {label.pct}
+            </Text>
+          ))}
 
           {(centerLabel || centerValue) && (
             <View style={styles.centerTextWrap}>
@@ -137,7 +139,7 @@ export function DonutChart({
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -9,7 +9,7 @@ interface SidebarSubsectionItemProps {
   onPress: () => void;
 }
 
-export function SidebarSubsectionItem({ label, onPress }: SidebarSubsectionItemProps) {
+export const SidebarSubsectionItem = memo(function SidebarSubsectionItem({ label, onPress }: SidebarSubsectionItemProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
@@ -25,7 +25,7 @@ export function SidebarSubsectionItem({ label, onPress }: SidebarSubsectionItemP
       </Text>
     </CustomButton>
   );
-}
+});
 
 const styles = StyleSheet.create({
   item: {

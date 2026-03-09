@@ -71,7 +71,7 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
       secondary: "#9b9b9b"
     },
     state: {
-      success: "#22c55e",
+      success: "#00ca51",
       warning: "#f59e0b",
       error: "#ef4444",
       info: "#38bdf8"
@@ -111,7 +111,7 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
       secondary: "#5a6877"
     },
     state: {
-      success: "#16803d",
+      success: "#00ca51",
       warning: "#a16207",
       error: "#b91c1c",
       info: "#0369a1"

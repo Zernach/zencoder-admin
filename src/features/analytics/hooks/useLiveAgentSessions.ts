@@ -4,7 +4,7 @@ import { useDashboardFilters } from "./useDashboardFilters";
 export function useLiveAgentSessions() {
   const { filters } = useDashboardFilters();
   const { data, isLoading, error, refetch } = useGetLiveAgentSessionsQuery(filters, {
-    pollingInterval: 4_000,
+    pollingInterval: process.env.NODE_ENV === "test" ? 0 : 4_000,
   });
 
   return {

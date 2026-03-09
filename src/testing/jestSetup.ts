@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { act } from "@testing-library/react-native";
 
 // Global mock for ThemeProvider so components that use useThemeMode() work in tests
 // Individual test files can override this with their own jest.mock() calls.
@@ -24,4 +25,11 @@ jest.mock("react-native-safe-area-context", () => {
     useSafeAreaFrame: () => frame,
     initialWindowMetrics: { insets, frame },
   };
+});
+
+// Flush pending microtasks to avoid "torn down" errors from stray async work
+afterEach(async () => {
+  await act(async () => {
+    await new Promise((r) => setImmediate(r));
+  });
 });

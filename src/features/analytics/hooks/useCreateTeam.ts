@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useCreateTeamMutation } from "@/store/api";
 import type { CreateTeamRequest, CreateTeamResponse } from "@/features/analytics/types";
 
@@ -20,10 +20,10 @@ export function useCreateTeam(): UseCreateTeamReturn {
     [trigger],
   );
 
-  return {
+  return useMemo(() => ({
     create,
     loading: state.isLoading,
     error: state.error ? String(state.error) : undefined,
     lastResult: state.data,
-  };
+  }), [create, state.isLoading, state.error, state.data]);
 }

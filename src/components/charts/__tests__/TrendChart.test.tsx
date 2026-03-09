@@ -53,7 +53,7 @@ describe("TrendChart", () => {
 
   it("accepts variant and color props", () => {
     const { toJSON } = render(
-      <TrendChart data={sampleData} variant="area" color="#22c55e" />
+      <TrendChart data={sampleData} variant="area" color="#f64a00" />
     );
     expect(toJSON()).toBeTruthy();
   });

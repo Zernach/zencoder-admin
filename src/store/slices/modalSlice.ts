@@ -37,7 +37,14 @@ export const modalSlice = createSlice({
 
 export const { openModal, closeModal } = modalSlice.actions;
 
-export const selectModalVisible =
-  (name: ModalName) =>
-  (state: { modal: ModalState }): boolean =>
-    state.modal.visible[name];
+const modalSelectorCache = new Map<ModalName, (state: { modal: ModalState }) => boolean>();
+
+export const selectModalVisible = (name: ModalName) => {
+  let selector = modalSelectorCache.get(name);
+  if (!selector) {
+    selector = (state: { modal: ModalState }): boolean =>
+      state.modal.visible[name];
+    modalSelectorCache.set(name, selector);
+  }
+  return selector;
+};

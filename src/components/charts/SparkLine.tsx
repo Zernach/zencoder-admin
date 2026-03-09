@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Svg, { Path } from "react-native-svg";
 import { scaleLinear } from "d3-scale";
 import { line, curveMonotoneX } from "d3-shape";
@@ -12,7 +12,7 @@ interface SparkLineProps {
   height?: number;
 }
 
-export function SparkLine({
+export const SparkLine = React.memo(function SparkLine({
   data,
   color,
   width = 80,
@@ -22,28 +22,32 @@ export function SparkLine({
   const theme = semanticThemes[mode];
   const resolvedColor = color ?? theme.data.seriesPrimary;
 
-  if (data.length < 2) return null;
+  const pathD = useMemo(() => {
+    if (data.length < 2) return "";
 
-  const padding = 2;
-  const xScale = scaleLinear()
-    .domain([0, data.length - 1])
-    .range([padding, width - padding]);
-  const yMin = Math.min(...data);
-  const yMax = Math.max(...data);
-  const yScale = scaleLinear()
-    .domain([yMin, yMax || 1])
-    .range([height - padding, padding]);
+    const padding = 2;
+    const xScale = scaleLinear()
+      .domain([0, data.length - 1])
+      .range([padding, width - padding]);
+    const yMin = Math.min(...data);
+    const yMax = Math.max(...data);
+    const yScale = scaleLinear()
+      .domain([yMin, yMax || 1])
+      .range([height - padding, padding]);
 
-  const lineGen = line<number>()
-    .x((_, i) => xScale(i))
-    .y((d) => yScale(d))
-    .curve(curveMonotoneX);
+    const lineGen = line<number>()
+      .x((_, i) => xScale(i))
+      .y((d) => yScale(d))
+      .curve(curveMonotoneX);
 
-  const pathD = lineGen(data) ?? "";
+    return lineGen(data) ?? "";
+  }, [data, width, height]);
+
+  if (!pathD) return null;
 
   return (
     <Svg width={width} height={height}>
       <Path d={pathD} fill="none" stroke={resolvedColor} strokeWidth={1.5} />
     </Svg>
   );
-}
+});

@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { View, StyleSheet, useWindowDimensions } from "react-native";
+import type { ViewStyle } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -20,10 +21,10 @@ interface StaggerChildProps {
   index: number;
   reducedMotion: boolean;
   children: React.ReactNode;
-  style: Record<string, unknown>;
+  style: ViewStyle;
 }
 
-function StaggerChild({
+const StaggerChild = React.memo(function StaggerChild({
   index,
   reducedMotion,
   children,
@@ -55,9 +56,9 @@ function StaggerChild({
       {children}
     </Animated.View>
   );
-}
+});
 
-export function CardGrid({
+export const CardGrid = React.memo(function CardGrid({
   children,
   columns = 4,
   gap = 16,
@@ -71,6 +72,15 @@ export function CardGrid({
 
   const childArray = React.Children.toArray(children);
 
+  const childStyle = useMemo<ViewStyle>(() => {
+    if (effectiveCols === 1) return { width: "100%" };
+    return {
+      flex: 1,
+      minWidth: `${Math.floor(100 / effectiveCols) - 2}%`,
+      maxWidth: `${Math.floor(100 / effectiveCols)}%`,
+    };
+  }, [effectiveCols]);
+
   return (
     <View style={[styles.grid, { gap }]}>
       {childArray.map((child, i) => (
@@ -78,25 +88,14 @@ export function CardGrid({
           key={i}
           index={i}
           reducedMotion={reducedMotion}
-          style={{
-            flex: effectiveCols === 1 ? undefined : 1,
-            width: effectiveCols === 1 ? "100%" : undefined,
-            minWidth:
-              effectiveCols > 1
-                ? `${Math.floor(100 / effectiveCols) - 2}%`
-                : undefined,
-            maxWidth:
-              effectiveCols > 1
-                ? `${Math.floor(100 / effectiveCols)}%`
-                : undefined,
-          }}
+          style={childStyle}
         >
           {child}
         </StaggerChild>
       ))}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   grid: {

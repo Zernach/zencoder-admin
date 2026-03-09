@@ -1,7 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { TamaguiProvider, Theme } from "@tamagui/core";
-import config from "../../tamagui.config";
 
 export type AppThemeMode = "dark" | "light";
 
@@ -34,13 +32,7 @@ export function ThemeProvider({ children, defaultTheme = "dark" }: Props) {
     [mode, toggleMode]
   );
 
-  return (
-    <ThemeModeContext.Provider value={contextValue}>
-      <TamaguiProvider config={config} defaultTheme={mode}>
-        <Theme name={mode}>{children}</Theme>
-      </TamaguiProvider>
-    </ThemeModeContext.Provider>
-  );
+  return <ThemeModeContext.Provider value={contextValue}>{children}</ThemeModeContext.Provider>;
 }
 
 export function useThemeMode(): ThemeContextValue {

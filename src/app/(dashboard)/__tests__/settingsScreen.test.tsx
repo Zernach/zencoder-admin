@@ -154,7 +154,7 @@ describe("SettingsScreen", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
     expect(getByText("org_zencoder_001")).toBeTruthy();
-    expect(getByText("Enterprise")).toBeTruthy();
+    expect(getByText("ENTERPRISE")).toBeTruthy();
     expect(getByText("73 / 100")).toBeTruthy();
     expect(getByText("73% of seats used")).toBeTruthy();
   });

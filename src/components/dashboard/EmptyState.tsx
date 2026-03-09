@@ -11,7 +11,7 @@ interface EmptyStateProps {
   onClearFilters?: () => void;
 }
 
-export function EmptyState({
+export const EmptyState = React.memo(function EmptyState({
   message = "No data matches your current filters.",
   activeFilters,
   onClearFilters,
@@ -44,7 +44,7 @@ export function EmptyState({
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

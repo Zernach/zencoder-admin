@@ -1,8 +1,11 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
+import { configureStore } from "@reduxjs/toolkit";
+import { Provider } from "react-redux";
 import { Sidebar } from "../Sidebar";
 import { ROUTES } from "@/constants/routes";
 import { SUBSECTIONS } from "@/constants/navigation";
+import { sidebarSlice, type SidebarState } from "@/store/slices/sidebarSlice";
 
 const mockNavigate = jest.fn();
 let mockPathname = ROUTES.DASHBOARD;
@@ -41,13 +44,30 @@ jest.mock("react-native-reanimated", () => {
 });
 
 describe("Sidebar — subsection rendering", () => {
+  function renderSidebar(expanded = true) {
+    const store = configureStore({
+      reducer: {
+        sidebar: sidebarSlice.reducer,
+      },
+      preloadedState: {
+        sidebar: { expanded } satisfies SidebarState,
+      },
+    });
+
+    return render(
+      <Provider store={store}>
+        <Sidebar />
+      </Provider>,
+    );
+  }
+
   beforeEach(() => {
     mockNavigate.mockReset();
   });
 
   it("shows governance subsections when governance is active and expanded", () => {
     mockPathname = ROUTES.GOVERNANCE;
-    const { getByText } = render(<Sidebar expanded onToggle={jest.fn()} />);
+    const { getByText } = renderSidebar(true);
 
     for (const sub of SUBSECTIONS[ROUTES.GOVERNANCE]) {
       expect(getByText(sub.label)).toBeTruthy();
@@ -56,7 +76,7 @@ describe("Sidebar — subsection rendering", () => {
 
   it("shows agents subsections when agents is active and expanded", () => {
     mockPathname = ROUTES.AGENTS;
-    const { getByText } = render(<Sidebar expanded onToggle={jest.fn()} />);
+    const { getByText } = renderSidebar(true);
 
     for (const sub of SUBSECTIONS[ROUTES.AGENTS]) {
       expect(getByText(sub.label)).toBeTruthy();
@@ -65,7 +85,7 @@ describe("Sidebar — subsection rendering", () => {
 
   it("shows costs subsections when costs is active and expanded", () => {
     mockPathname = ROUTES.COSTS;
-    const { getByText } = render(<Sidebar expanded onToggle={jest.fn()} />);
+    const { getByText } = renderSidebar(true);
 
     for (const sub of SUBSECTIONS[ROUTES.COSTS]) {
       expect(getByText(sub.label)).toBeTruthy();
@@ -74,7 +94,7 @@ describe("Sidebar — subsection rendering", () => {
 
   it("does not show subsections for inactive tabs", () => {
     mockPathname = ROUTES.DASHBOARD;
-    const { queryByText } = render(<Sidebar expanded onToggle={jest.fn()} />);
+    const { queryByText } = renderSidebar(true);
 
     // Governance subsections should not appear
     expect(queryByText("Compliance Status")).toBeNull();
@@ -85,7 +105,7 @@ describe("Sidebar — subsection rendering", () => {
 
   it("does not show subsections when sidebar is collapsed", () => {
     mockPathname = ROUTES.GOVERNANCE;
-    const { queryByText } = render(<Sidebar expanded={false} onToggle={jest.fn()} />);
+    const { queryByText } = renderSidebar(false);
 
     expect(queryByText("Compliance Status")).toBeNull();
     expect(queryByText("Seat User Oversight")).toBeNull();
@@ -93,7 +113,7 @@ describe("Sidebar — subsection rendering", () => {
 
   it("does not show subsections for dashboard or settings", () => {
     mockPathname = ROUTES.SETTINGS;
-    const { queryByText } = render(<Sidebar expanded onToggle={jest.fn()} />);
+    const { queryByText } = renderSidebar(true);
 
     // No subsections should appear since Settings has no subsections
     expect(queryByText("Reliability")).toBeNull();
@@ -103,7 +123,7 @@ describe("Sidebar — subsection rendering", () => {
 
   it("governance subsections appear in exact required order", () => {
     mockPathname = ROUTES.GOVERNANCE;
-    const { getByLabelText } = render(<Sidebar expanded onToggle={jest.fn()} />);
+    const { getByLabelText } = renderSidebar(true);
 
     const subsectionList = getByLabelText("Governance subsections");
     expect(subsectionList).toBeTruthy();

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef, useCallback } from "react";
+import React, { createContext, useContext, useRef, useCallback, useMemo } from "react";
 import { findNodeHandle, UIManager } from "react-native";
 import { isWeb } from "@/constants/platform";
 
@@ -73,8 +73,13 @@ export function SectionScrollProvider({ children }: { children: React.ReactNode 
     );
   }, []);
 
+  const contextValue = useMemo(
+    () => ({ scrollToSection, registerScrollView, registerSection }),
+    [scrollToSection, registerScrollView, registerSection],
+  );
+
   return (
-    <SectionScrollContext.Provider value={{ scrollToSection, registerScrollView, registerSection }}>
+    <SectionScrollContext.Provider value={contextValue}>
       {children}
     </SectionScrollContext.Provider>
   );

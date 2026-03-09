@@ -11,7 +11,7 @@ interface DeltaIndicatorProps {
   polarity?: DeltaPolarity;
 }
 
-export function DeltaIndicator({
+export const DeltaIndicator = React.memo(function DeltaIndicator({
   value,
   polarity = "positive-good",
 }: DeltaIndicatorProps) {
@@ -29,7 +29,7 @@ export function DeltaIndicator({
       <Text style={[styles.text, { color }]}>{formatDelta(value)}</Text>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

@@ -6,13 +6,6 @@ export {
 } from "./filtersSlice";
 
 export {
-  loadingSlice,
-  setLoading,
-  selectIsLoading,
-  type LoadingState,
-} from "./loadingSlice";
-
-export {
   sidebarSlice,
   toggleSidebar,
   setSidebarExpanded,

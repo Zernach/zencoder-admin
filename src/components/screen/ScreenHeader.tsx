@@ -1,25 +1,21 @@
 import React from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import type { ReactNode } from "react";
-import ReduxLoadingSpinner from "./ReduxLoadingSpinner";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 
 export interface HeaderProps {
   title: string;
   subtitle?: string;
-  /** Redux loading key -- shows spinner when state.loading[key] is true */
-  isLoadingReduxKey?: string;
   /** Direct loading boolean -- shows spinner when true */
   isLoading?: boolean;
   /** Element rendered on the right side of the header row */
   rightComponent?: ReactNode;
 }
 
-function ScreenHeader({
+const ScreenHeader = React.memo(function ScreenHeader({
   title,
   subtitle,
-  isLoadingReduxKey,
   isLoading,
   rightComponent,
 }: HeaderProps) {
@@ -32,14 +28,7 @@ function ScreenHeader({
         <Text style={[styles.title, { color: theme.text.primary }]} numberOfLines={1}>
           {title}
         </Text>
-        {isLoadingReduxKey != null && (
-          <ReduxLoadingSpinner
-            reduxKey={isLoadingReduxKey}
-            size="small"
-            style={styles.spinner}
-          />
-        )}
-        {isLoading && isLoadingReduxKey == null && (
+        {isLoading && (
           <ActivityIndicator
             size="small"
             color={theme.border.brand}
@@ -58,7 +47,7 @@ function ScreenHeader({
       )}
     </View>
   );
-}
+});
 
 export default ScreenHeader;
 

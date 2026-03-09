@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import Animated, {
@@ -26,7 +26,7 @@ interface KpiCardProps {
   onPress?: () => void;
 }
 
-export function KpiCard({
+export const KpiCard = memo(function KpiCard({
   title,
   value,
   valueColor,
@@ -117,7 +117,7 @@ export function KpiCard({
   }
 
   return content;
-}
+});
 
 const styles = StyleSheet.create({
   card: {

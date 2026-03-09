@@ -12,7 +12,7 @@ interface FilterChipsProps {
   onClearAll?: () => void;
 }
 
-export function FilterChips({ chips, onClearAll }: FilterChipsProps) {
+export const FilterChips = React.memo(function FilterChips({ chips, onClearAll }: FilterChipsProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
@@ -52,7 +52,7 @@ export function FilterChips({ chips, onClearAll }: FilterChipsProps) {
       )}
     </CustomList>
   );
-}
+});
 
 const styles = StyleSheet.create({
   scroll: {

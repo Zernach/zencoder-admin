@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { useNavigation, usePathname, useRouter } from "expo-router";
@@ -28,7 +28,7 @@ function findTabNavigator(
   return null;
 }
 
-export function BottomTabs() {
+export const BottomTabs = React.memo(function BottomTabs() {
   const router = useRouter();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   const pathname = usePathname();
@@ -57,25 +57,45 @@ export function BottomTabs() {
     [navigation, router],
   );
 
+  // Cache press handlers per tab to avoid inline closure recreation in .map()
+  const pressHandlerCache = useRef(new Map<string, () => void>()).current;
+  const handleTabPressRef = useRef(handleTabPress);
+  handleTabPressRef.current = handleTabPress;
+  const pathnameRef = useRef(pathname);
+  pathnameRef.current = pathname;
+
+  const getTabPressHandler = useCallback((tab: TABS, route: TabRoute) => {
+    const cacheKey = `${tab}_${route}`;
+    let handler = pressHandlerCache.get(cacheKey);
+    if (!handler) {
+      handler = () => {
+        const active = isRouteActive(pathnameRef.current, route);
+        handleTabPressRef.current(tab, route, active);
+      };
+      pressHandlerCache.set(cacheKey, handler);
+    }
+    return handler;
+  }, [pressHandlerCache]);
+
+  const containerStyle = useMemo(() => [
+    styles.container,
+    {
+      backgroundColor: theme.bg.canvas,
+      borderTopColor: theme.border.default,
+      paddingBottom: insets.bottom === 0 ? 4 : insets.bottom,
+      paddingTop: insets.bottom === 0 ? 4 : 8,
+    },
+  ], [theme.bg.canvas, theme.border.default, insets.bottom]);
+
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: theme.bg.canvas,
-          borderTopColor: theme.border.default,
-          paddingBottom: insets.bottom === 0 ? 4 : insets.bottom,
-          paddingTop: insets.bottom === 0 ? 4 : 8,
-        },
-      ]}
-    >
+    <View style={containerStyle}>
       {TOP_NAV_ITEMS.map((tab) => {
         const active = isRouteActive(pathname, tab.route);
         const Icon = tab.icon;
         return (
           <CustomButton
             key={tab.route}
-            onPress={() => handleTabPress(tab.tab, tab.route, active)}
+            onPress={getTabPressHandler(tab.tab, tab.route)}
             disabled={active}
             style={styles.tab}
             accessibilityRole="tab"
@@ -92,7 +112,7 @@ export function BottomTabs() {
       })}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

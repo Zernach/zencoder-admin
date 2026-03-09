@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { ChevronUp, ChevronDown } from "lucide-react-native";
@@ -10,22 +10,28 @@ interface SortableHeaderProps {
   label: string;
   active: boolean;
   direction: SortDirection;
-  onPress: () => void;
+  columnKey: string;
+  onSort: (key: string) => void;
 }
 
-export function SortableHeader({
+export const SortableHeader = React.memo(function SortableHeader({
   label,
   active,
   direction,
-  onPress,
+  columnKey,
+  onSort,
 }: SortableHeaderProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const Icon = direction === "asc" ? ChevronUp : ChevronDown;
 
+  const handlePress = useCallback(() => {
+    onSort(columnKey);
+  }, [onSort, columnKey]);
+
   return (
     <CustomButton
-      onPress={onPress}
+      onPress={handlePress}
       style={styles.container}
       accessibilityRole="button"
       accessibilityLabel={`Sort by ${label}${active ? `, ${direction === "asc" ? "ascending" : "descending"}` : ""}`}
@@ -39,7 +45,7 @@ export function SortableHeader({
       )}
     </CustomButton>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

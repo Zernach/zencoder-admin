@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import Svg, { Path, Line, Text as SvgText } from "react-native-svg";
 import { scaleTime, scaleLinear } from "d3-scale";
@@ -21,7 +21,7 @@ interface TrendChartProps {
 
 const MARGIN = { top: 8, right: 8, bottom: 24, left: 44 };
 
-export function TrendChart({
+export const TrendChart = React.memo(function TrendChart({
   data,
   variant,
   color,
@@ -34,41 +34,55 @@ export function TrendChart({
   const resolvedColor = color ?? theme.data.seriesPrimary;
   const [containerWidth, setContainerWidth] = useState(300);
 
-  if (data.length === 0) return null;
+  const handleLayout = useCallback(
+    (e: { nativeEvent: { layout: { width: number } } }) =>
+      setContainerWidth(e.nativeEvent.layout.width),
+    [],
+  );
 
-  const width = containerWidth;
-  const innerW = width - MARGIN.left - MARGIN.right;
-  const innerH = height - MARGIN.top - MARGIN.bottom;
+  const chartData = useMemo(() => {
+    if (data.length === 0) return null;
 
-  const dates = data.map((d) => new Date(d.tsIso));
-  const values = data.map((d) => d.value);
-  const xScale = scaleTime()
-    .domain([dates[0]!, dates[dates.length - 1]!])
-    .range([0, innerW]);
-  const yMax = Math.max(...values, 1);
-  const yScale = scaleLinear().domain([0, yMax]).range([innerH, 0]).nice();
+    const width = containerWidth;
+    const innerW = width - MARGIN.left - MARGIN.right;
+    const innerH = height - MARGIN.top - MARGIN.bottom;
 
-  const lineGen = line<TimeSeriesPoint>()
-    .x((d) => xScale(new Date(d.tsIso)))
-    .y((d) => yScale(d.value))
-    .curve(curveMonotoneX);
+    const dates = data.map((d) => new Date(d.tsIso));
+    const values = data.map((d) => d.value);
+    const xScale = scaleTime()
+      .domain([dates[0]!, dates[dates.length - 1]!])
+      .range([0, innerW]);
+    const yMax = Math.max(...values, 1);
+    const yScale = scaleLinear().domain([0, yMax]).range([innerH, 0]).nice();
 
-  const areaGen = area<TimeSeriesPoint>()
-    .x((d) => xScale(new Date(d.tsIso)))
-    .y0(innerH)
-    .y1((d) => yScale(d.value))
-    .curve(curveMonotoneX);
+    const lineGen = line<TimeSeriesPoint>()
+      .x((d) => xScale(new Date(d.tsIso)))
+      .y((d) => yScale(d.value))
+      .curve(curveMonotoneX);
 
-  const pathD = lineGen(data) ?? "";
-  const areaD = areaGen(data) ?? "";
-  const yTicks = yScale.ticks(5);
-  const xTicks = xScale.ticks(Math.min(data.length, 6));
+    const areaGen = area<TimeSeriesPoint>()
+      .x((d) => xScale(new Date(d.tsIso)))
+      .y0(innerH)
+      .y1((d) => yScale(d.value))
+      .curve(curveMonotoneX);
+
+    return {
+      width,
+      pathD: lineGen(data) ?? "",
+      areaD: areaGen(data) ?? "",
+      yTicks: yScale.ticks(5),
+      xTicks: xScale.ticks(Math.min(data.length, 6)),
+      xScale,
+      yScale,
+    };
+  }, [data, containerWidth, height]);
+
+  if (!chartData) return null;
+
+  const { width, pathD, areaD, yTicks, xTicks, xScale, yScale } = chartData;
 
   return (
-    <View
-      style={styles.container}
-      onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
-    >
+    <View style={styles.container} onLayout={handleLayout}>
       <Svg width={width} height={height}>
         {showGrid &&
           yTicks.map((t) => (
@@ -124,7 +138,7 @@ export function TrendChart({
       </Svg>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

@@ -96,23 +96,37 @@ export const filtersSlice = createSlice({
   },
 });
 
-export const selectActiveFilters = (state: {
-  filters: FiltersState;
-}): AnalyticsFilters =>
-  selectActiveFiltersMemoized(state.filters);
-
-const selectActiveFiltersMemoized = createSelector(
-  [(filters: FiltersState) => filters],
-  (filters): AnalyticsFilters => {
-    const { preset: _, searchQuery: _sq, ...activeFilters } = filters;
-    return activeFilters;
-  }
+export const selectActiveFilters = createSelector(
+  [
+    (state: { filters: FiltersState }) => state.filters.orgId,
+    (state: { filters: FiltersState }) => state.filters.timeRange,
+    (state: { filters: FiltersState }) => state.filters.teamIds,
+    (state: { filters: FiltersState }) => state.filters.userIds,
+    (state: { filters: FiltersState }) => state.filters.projectIds,
+    (state: { filters: FiltersState }) => state.filters.providers,
+    (state: { filters: FiltersState }) => state.filters.modelIds,
+    (state: { filters: FiltersState }) => state.filters.environments,
+    (state: { filters: FiltersState }) => state.filters.statuses,
+  ],
+  (orgId, timeRange, teamIds, userIds, projectIds, providers, modelIds, environments, statuses): AnalyticsFilters => ({
+    orgId,
+    timeRange,
+    teamIds,
+    userIds,
+    projectIds,
+    providers,
+    modelIds,
+    environments,
+    statuses,
+  }),
 );
 
-export const selectPreset = (state: {
-  filters: FiltersState;
-}): TimeRangePreset => state.filters.preset;
+export const selectPreset = createSelector(
+  [(state: { filters: FiltersState }) => state.filters.preset],
+  (preset) => preset,
+);
 
-export const selectSearchQuery = (state: {
-  filters: FiltersState;
-}): string => state.filters.searchQuery;
+export const selectSearchQuery = createSelector(
+  [(state: { filters: FiltersState }) => state.filters.searchQuery],
+  (searchQuery) => searchQuery,
+);

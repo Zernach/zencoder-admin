@@ -116,8 +116,8 @@ jest.mock("@/components/tables", () => {
       secondary: { color: "#a3a3a3", fontSize: 12 },
       brand: { color: "#ff7a3d", fontSize: 12 },
     }),
-    getSuccessRateColor: () => "#22c55e",
-    chartColors: () => ({ success: "#22c55e", warning: "#f59e0b", error: "#ef4444" }),
+    getSuccessRateColor: () => "#f64a00",
+    chartColors: () => ({ success: "#f64a00", warning: "#f59e0b", error: "#ef4444" }),
   };
 });
 

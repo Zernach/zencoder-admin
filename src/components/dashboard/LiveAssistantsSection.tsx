@@ -30,14 +30,14 @@ import { ErrorState } from "./ErrorState";
 import { SectionHeader } from "./SectionHeader";
 
 const AVATAR_COLORS = [
-  "#22c55e",
   "#f64a00",
   "#f59e0b",
   "#06b6d4",
   "#84cc16",
   "#f97316",
-  "#10b981",
   "#14b8a6",
+  "#8b5cf6",
+  "#ec4899",
 ] as const;
 
 const EMPTY_STATE_MESSAGES = [
@@ -384,7 +384,7 @@ function EmptyLiveState({ theme }: { theme: ThemeColors }) {
   );
 }
 
-export function LiveAssistantsSection({
+export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
   sessions,
   loading,
   error,
@@ -535,7 +535,7 @@ export function LiveAssistantsSection({
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   section: {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dimensions } from "react-native";
 
 export type BreakpointName = "mobile" | "tablet" | "desktop";
@@ -14,12 +14,15 @@ export function useBreakpoint(): BreakpointName {
     getBreakpoint(Dimensions.get("window").width)
   );
 
-  useEffect(() => {
-    const sub = Dimensions.addEventListener("change", ({ window }) => {
-      setBp(getBreakpoint(window.width));
-    });
-    return () => sub.remove();
+  const handleChange = useCallback(({ window }: { window: { width: number } }) => {
+    const next = getBreakpoint(window.width);
+    setBp((prev) => (prev === next ? prev : next));
   }, []);
+
+  useEffect(() => {
+    const sub = Dimensions.addEventListener("change", handleChange);
+    return () => sub.remove();
+  }, [handleChange]);
 
   return bp;
 }

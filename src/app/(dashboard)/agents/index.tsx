@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { View, Text, useWindowDimensions } from "react-native";
+import React, { useCallback, useMemo } from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
@@ -14,26 +14,28 @@ import { CreateProjectModal } from "@/features/analytics/components/CreateProjec
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
-import { useSectionScroll } from "@/hooks/useSectionScroll";
+import { useSectionRef } from "@/hooks/useRegisterSection";
 import { keyExtractors } from "@/constants";
 import { useAppDispatch, openModal, ModalName } from "@/store";
-import { StyleSheet } from "react-native";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 const styles = sectionStyles;
+
+const SKELETON_4 = Array.from({ length: 4 });
 
 const AGENT_SEARCH_KEYS: (keyof AgentBreakdownRow)[] = ["agentName", "projectName"];
 const PROJECT_SEARCH_KEYS: (keyof ProjectBreakdownRow)[] = ["projectName", "teamName"];
 const RUN_SEARCH_KEYS: (keyof RunListRow)[] = ["id", "status", "provider"];
 
 export default function AgentsScreen() {
-  const { width } = useWindowDimensions();
-  const isLargeLayout = width >= 1024;
+  const bp = useBreakpoint();
+  const isLargeLayout = bp === "desktop";
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
   const cc = chartColors(mode);
   const { data, loading, error, refetch } = useAgentsHub();
-  const { registerSection } = useSectionScroll();
+  const refFor = useSectionRef();
   const dispatch = useAppDispatch();
 
   const filteredAgents = useSearchFilter(data?.agentBreakdown ?? [], AGENT_SEARCH_KEYS);
@@ -69,25 +71,38 @@ export default function AgentsScreen() {
     { key: "provider", header: "Provider", width: 80 },
   ], [ct]);
 
+  const handleOpenCreateProject = useCallback(
+    () => dispatch(openModal(ModalName.CreateProject)),
+    [dispatch],
+  );
+
+  const subtitle = useMemo(() => data
+    ? `${formatPercent(data.runSuccessRate * 100)} success rate, P50 ${formatDuration(data.p50RunDurationMs)}, ${data.agentBreakdown.length} agents active`
+    : "Agent reliability and performance",
+    [data],
+  );
+
+  const headerProps = useMemo(
+    () => ({ title: "Agents", subtitle, isLoading: loading }),
+    [subtitle, loading],
+  );
+
+  const chartScrollProps = useMemo(() => ({
+    horizontal: !isLargeLayout,
+    showsHorizontalScrollIndicator: false,
+    contentContainerStyle: [styles.chartRow, isLargeLayout && styles.chartRowFill],
+  }), [isLargeLayout]);
+
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
-  const subtitle = data
-    ? `${formatPercent(data.runSuccessRate * 100)} success rate, P50 ${formatDuration(data.p50RunDurationMs)}, ${data.agentBreakdown.length} agents active`
-    : "Agent reliability and performance";
-
   return (
-    <ScreenWrapper
-      headerProps={{
-        title: "Agents",
-        subtitle,
-        isLoading: loading,
-      }}
+    <ScreenWrapper headerProps={headerProps}
     >
-      <View ref={(r) => registerSection("reliability", r)} nativeID="reliability" style={styles.section}>
+      <View ref={refFor("reliability")} nativeID="reliability" style={styles.section}>
         <SectionHeader title="Reliability" />
         {loading ? (
           <CardGrid columns={4}>
-            {Array.from({ length: 4 }).map((_, i) => (
+            {SKELETON_4.map((_, i) => (
               <LoadingSkeleton key={i} variant="kpi" />
             ))}
           </CardGrid>
@@ -103,13 +118,7 @@ export default function AgentsScreen() {
               <KpiCard title="P95 Queue Wait" value={formatDuration(data.p95QueueWaitMs)} caption="Queue wait time" />
               <KpiCard title="Peak Concurrency" value={formatCompactNumber(data.peakConcurrency)} caption="Max concurrent runs/min" />
             </CardGrid>
-            <CustomList
-              scrollViewProps={{
-                horizontal: !isLargeLayout,
-                showsHorizontalScrollIndicator: false,
-                contentContainerStyle: [styles.chartRow, isLargeLayout && styles.chartRowFill],
-              }}
-            >
+            <CustomList scrollViewProps={chartScrollProps}>
               <ChartCard title="Reliability Trend" style={isLargeLayout ? styles.chartCardFill : undefined}>
                 <TrendChart data={data.reliabilityTrend} variant="line" color={cc.success} />
               </ChartCard>
@@ -126,7 +135,7 @@ export default function AgentsScreen() {
       </View>
 
       {data && (
-        <View ref={(r) => registerSection("agent-performance", r)} nativeID="agent-performance" style={styles.section}>
+        <View ref={refFor("agent-performance")} nativeID="agent-performance" style={styles.section}>
           <SectionHeader title="Agent Performance" subtitle={`${filteredAgents.length} agents with activity`} />
           <DataTable
             columns={agentCols}
@@ -137,18 +146,18 @@ export default function AgentsScreen() {
       )}
 
       {data && (
-        <View ref={(r) => registerSection("project-breakdown", r)} nativeID="project-breakdown" style={styles.section}>
+        <View ref={refFor("project-breakdown")} nativeID="project-breakdown" style={styles.section}>
           <View style={localStyles.sectionRow}>
             <View style={localStyles.sectionHeaderWrap}>
               <SectionHeader title="Project Breakdown" subtitle={`${data.activeProjects} of ${data.totalProjects} projects active`} />
             </View>
             <CustomButton
-              onPress={() => dispatch(openModal(ModalName.CreateProject))}
-              style={[localStyles.createButton, { backgroundColor: theme.border.brand }]}
+              onPress={handleOpenCreateProject}
+              style={[localStyles.createButton, { borderColor: theme.border.brand }]}
               accessibilityRole="button"
               accessibilityLabel="Create Project"
             >
-              <Text style={[localStyles.createButtonText, { color: theme.text.onBrand }]}>+ Create Project</Text>
+              <Text style={[localStyles.createButtonText, { color: theme.border.brand }]}>+ Create Project</Text>
             </CustomButton>
           </View>
           <CardGrid columns={3}>
@@ -165,7 +174,7 @@ export default function AgentsScreen() {
       )}
 
       {data && filteredRuns.length > 0 && (
-        <View ref={(r) => registerSection("recent-runs", r)} nativeID="recent-runs" style={styles.section}>
+        <View ref={refFor("recent-runs")} nativeID="recent-runs" style={styles.section}>
           <SectionHeader title="Recent Runs" subtitle={`Latest ${filteredRuns.length} runs`} />
           <DataTable
             columns={recentRunCols}
@@ -191,9 +200,11 @@ const localStyles = StyleSheet.create({
     minWidth: 0,
   },
   createButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 6,
+    borderRadius: 999,
     marginLeft: "auto",
     flexShrink: 0,
     maxWidth: "100%",

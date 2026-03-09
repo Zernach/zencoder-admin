@@ -10,7 +10,7 @@ interface ErrorStateProps {
   onRetry: () => void;
 }
 
-export function ErrorState({
+export const ErrorState = React.memo(function ErrorState({
   message = "Something went wrong. Please try again.",
   onRetry,
 }: ErrorStateProps) {
@@ -31,7 +31,7 @@ export function ErrorState({
       </CustomButton>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

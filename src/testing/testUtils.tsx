@@ -2,7 +2,6 @@ import React from "react";
 import { Provider as ReduxProvider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { filtersSlice } from "@/store/slices/filtersSlice";
-import { loadingSlice } from "@/store/slices/loadingSlice";
 import { sidebarSlice } from "@/store/slices/sidebarSlice";
 import { navigationHistorySlice } from "@/store/slices/navigationHistorySlice";
 import { modalSlice } from "@/store/slices/modalSlice";
@@ -43,7 +42,6 @@ export function createTestStore() {
   return configureStore({
     reducer: {
       filters: filtersSlice.reducer,
-      loading: loadingSlice.reducer,
       sidebar: sidebarSlice.reducer,
       navigationHistory: navigationHistorySlice.reducer,
       modal: modalSlice.reducer,
@@ -51,6 +49,8 @@ export function createTestStore() {
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(analyticsApi.middleware),
+    enhancers: (getDefaultEnhancers) =>
+      getDefaultEnhancers({ autoBatch: false }),
   });
 }
 

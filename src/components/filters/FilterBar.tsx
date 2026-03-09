@@ -9,6 +9,18 @@ import type { ModelProvider, RunStatus, Option, FilterChip } from "@/features/an
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 
+const FILTER_SCROLL_PROPS = {
+  horizontal: true,
+  showsHorizontalScrollIndicator: false,
+  contentContainerStyle: { flexDirection: "row", alignItems: "center", gap: 8 } as const,
+} as const;
+
+const CHIP_SCROLL_PROPS = {
+  horizontal: true,
+  showsHorizontalScrollIndicator: false,
+  contentContainerStyle: { flexDirection: "row", gap: 6, paddingVertical: 2 } as const,
+} as const;
+
 const PROVIDER_OPTIONS: Option<ModelProvider>[] = [
   { label: "Codex", value: "codex" },
   { label: "Claude", value: "claude" },
@@ -38,7 +50,7 @@ interface FilterBarProps {
   visibleFilters?: FilterCategory[];
 }
 
-export function FilterBar({ visibleFilters }: FilterBarProps) {
+export const FilterBar = React.memo(function FilterBar({ visibleFilters }: FilterBarProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const {
@@ -166,13 +178,7 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
     <View style={styles.container}>
       {/* Row 1: Filter dropdowns */}
       <View style={styles.topRow}>
-        <CustomList
-          scrollViewProps={{
-            horizontal: true,
-            showsHorizontalScrollIndicator: false,
-            contentContainerStyle: styles.filterGroup,
-          }}
-        >
+        <CustomList scrollViewProps={FILTER_SCROLL_PROPS}>
           <Filter size={14} color={theme.text.tertiary} style={styles.filterIcon} />
           {filterConfigs.map((config) => {
             if (!showFilter(config.category)) return null;
@@ -214,13 +220,7 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
 
       {/* Row 2: Active filter chips */}
       {activeChips.length > 0 && (
-        <CustomList
-          scrollViewProps={{
-            horizontal: true,
-            showsHorizontalScrollIndicator: false,
-            contentContainerStyle: styles.chipsRow,
-          }}
-        >
+        <CustomList scrollViewProps={CHIP_SCROLL_PROPS}>
           {activeChips.map((chip) => (
             <View key={chip.key} style={[styles.chip, { backgroundColor: theme.bg.surfaceElevated, borderColor: theme.border.default }]}>
               <Text style={[styles.chipText, { color: theme.text.primary }]}>{chip.label}</Text>
@@ -295,7 +295,7 @@ export function FilterBar({ visibleFilters }: FilterBarProps) {
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

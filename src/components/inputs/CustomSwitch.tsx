@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch } from "react-native";
+import { Platform, Switch } from "react-native";
 import type { ColorValue, SwitchProps } from "react-native";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme";
@@ -11,6 +11,12 @@ export interface CustomSwitchProps extends Omit<SwitchProps, "trackColor" | "thu
   };
   thumbColor?: ColorValue;
 }
+
+interface WebSwitchProps extends SwitchProps {
+  activeThumbColor?: ColorValue;
+}
+
+const WebCompatibleSwitch = Switch as React.ComponentType<WebSwitchProps>;
 
 export function CustomSwitch({
   value,
@@ -28,14 +34,16 @@ export function CustomSwitch({
     false: theme.border.default,
     true: theme.border.brand,
   };
+  const resolvedThumbColor = thumbColor ?? "#ffffff";
 
   return (
-    <Switch
+    <WebCompatibleSwitch
       {...props}
       value={value}
       onValueChange={onValueChange}
       trackColor={resolvedTrackColor}
-      thumbColor={thumbColor ?? "#ffffff"}
+      thumbColor={resolvedThumbColor}
+      activeThumbColor={Platform.OS === "web" ? resolvedThumbColor : undefined}
       accessibilityRole={accessibilityRole ?? "switch"}
       accessibilityState={{
         ...accessibilityState,

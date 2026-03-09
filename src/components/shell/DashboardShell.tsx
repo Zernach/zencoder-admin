@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
-import { useAppDispatch, useAppSelector } from "@/store";
-import { setSidebarExpanded, toggleSidebar, selectSidebarExpanded } from "@/store/slices/sidebarSlice";
+import { useAppDispatch } from "@/store";
+import { setSidebarExpanded } from "@/store/slices/sidebarSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { SectionScrollProvider } from "@/hooks/useSectionScroll";
@@ -13,10 +13,9 @@ interface DashboardShellProps {
   children: React.ReactNode;
 }
 
-export function DashboardShell({ children }: DashboardShellProps) {
+export const DashboardShell = React.memo(function DashboardShell({ children }: DashboardShellProps) {
   const bp = useBreakpoint();
   const dispatch = useAppDispatch();
-  const expanded = useAppSelector(selectSidebarExpanded);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const isMobile = bp === "mobile";
@@ -26,14 +25,16 @@ export function DashboardShell({ children }: DashboardShellProps) {
     if (bp === "desktop") dispatch(setSidebarExpanded(true));
   }, [bp, dispatch]);
 
+  const containerStyle = useMemo(
+    () => [styles.container, { backgroundColor: theme.bg.canvas }],
+    [theme.bg.canvas],
+  );
+
   return (
     <SectionScrollProvider>
-      <View style={[styles.container, { backgroundColor: theme.bg.canvas }]}>
+      <View style={containerStyle}>
         {!isMobile && (
-          <Sidebar
-            expanded={expanded}
-            onToggle={() => dispatch(toggleSidebar())}
-          />
+          <Sidebar />
         )}
         <View style={styles.main}>
           {children}
@@ -42,7 +43,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
       </View>
     </SectionScrollProvider>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

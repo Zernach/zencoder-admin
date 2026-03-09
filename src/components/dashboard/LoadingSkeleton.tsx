@@ -17,7 +17,7 @@ interface LoadingSkeletonProps {
   columns?: number;
 }
 
-function SkeletonBlock({
+const SkeletonBlock = React.memo(function SkeletonBlock({
   width,
   height,
   reducedMotion,
@@ -53,9 +53,9 @@ function SkeletonBlock({
       ]}
     />
   );
-}
+});
 
-export function LoadingSkeleton({
+export const LoadingSkeleton = React.memo(function LoadingSkeleton({
   variant,
   rows = 5,
 }: LoadingSkeletonProps) {
@@ -98,7 +98,7 @@ export function LoadingSkeleton({
         </View>
       );
   }
-}
+});
 
 const styles = StyleSheet.create({
   block: {

@@ -9,7 +9,7 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import type { Severity } from "@/features/analytics/types";
 
-export function CreateComplianceRuleModal() {
+export const CreateComplianceRuleModal = React.memo(function CreateComplianceRuleModal() {
   const visible = useAppSelector(selectModalVisible(ModalName.CreateComplianceRule));
   const dispatch = useAppDispatch();
   const { mode } = useThemeMode();
@@ -58,7 +58,7 @@ export function CreateComplianceRuleModal() {
       </View>
     </Modal>
   );
-}
+});
 
 const styles = StyleSheet.create({
   modalOverlay: {

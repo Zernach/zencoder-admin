@@ -8,7 +8,7 @@ import { CreateHumanForm } from "./CreateHumanForm";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 
-export function AddSeatModal() {
+export const AddSeatModal = React.memo(function AddSeatModal() {
   const visible = useAppSelector(selectModalVisible(ModalName.CreateSeat));
   const dispatch = useAppDispatch();
   const { mode } = useThemeMode();
@@ -57,7 +57,7 @@ export function AddSeatModal() {
       </View>
     </Modal>
   );
-}
+});
 
 const styles = StyleSheet.create({
   modalOverlay: {

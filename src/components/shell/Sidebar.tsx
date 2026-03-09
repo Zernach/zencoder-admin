@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { View, Image, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import {
@@ -20,26 +20,58 @@ import { isRouteActive, type TabRoute } from "@/constants/routes";
 import { TOP_NAV_ITEMS, hasSubsections, getSubsections } from "@/constants/navigation";
 import { SidebarSubsectionItem } from "./SidebarSubsectionItem";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { selectSidebarExpanded, toggleSidebar } from "@/store/slices/sidebarSlice";
 
-interface SidebarProps {
-  expanded: boolean;
-  onToggle: () => void;
-}
-
-export function Sidebar({ expanded, onToggle }: SidebarProps) {
+export const Sidebar = React.memo(function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
+  const expanded = useAppSelector(selectSidebarExpanded);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const { scrollToSection } = useSectionScroll();
   const sidebarWidth = useSharedValue(expanded ? 264 : 76);
-  const handleNavigate = useCallback(
+  // Use refs for values that change on navigation — keeps press handlers stable
+  const pathnameRef = useRef(pathname);
+  pathnameRef.current = pathname;
+  const routerRef = useRef(router);
+  routerRef.current = router;
+
+  // Stable press handler cache — handlers reference refs so they never go stale
+  const navPressHandlers = useRef(new Map<string, () => void>()).current;
+  const subPressHandlers = useRef(new Map<string, () => void>()).current;
+
+  const getNavPressHandler = useCallback(
     (route: TabRoute) => {
-      if (isRouteActive(pathname, route)) return;
-      router.navigate(route as never);
+      let handler = navPressHandlers.get(route);
+      if (!handler) {
+        handler = () => {
+          if (isRouteActive(pathnameRef.current, route)) return;
+          routerRef.current.navigate(route as never);
+        };
+        navPressHandlers.set(route, handler);
+      }
+      return handler;
     },
-    [pathname, router],
+    [navPressHandlers],
   );
+
+  const getSubPressHandler = useCallback(
+    (sectionId: string) => {
+      let handler = subPressHandlers.get(sectionId);
+      if (!handler) {
+        handler = () => scrollToSection(sectionId);
+        subPressHandlers.set(sectionId, handler);
+      }
+      return handler;
+    },
+    [scrollToSection, subPressHandlers],
+  );
+
+  const handleToggle = useCallback(() => {
+    dispatch(toggleSidebar());
+  }, [dispatch]);
 
   useEffect(() => {
     sidebarWidth.value = withTiming(expanded ? 264 : 76, {
@@ -51,21 +83,26 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
   useEffect(() => {
     if (!isWeb) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "[") onToggle();
-      if (e.key === "]") onToggle();
+      if (e.key === "[") handleToggle();
+      if (e.key === "]") handleToggle();
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onToggle]);
+  }, [handleToggle]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     width: sidebarWidth.value,
   }));
 
+  const sidebarStyle = useMemo(
+    () => [styles.sidebar, { backgroundColor: theme.bg.canvas, borderRightColor: theme.border.default }, animatedStyle],
+    [theme.bg.canvas, theme.border.default, animatedStyle],
+  );
+
   const isDark = mode === "dark";
 
   return (
-    <Animated.View style={[styles.sidebar, { backgroundColor: theme.bg.canvas, borderRightColor: theme.border.default }, animatedStyle]}>
+    <Animated.View style={sidebarStyle}>
       <View style={styles.header}>
         {expanded && (
           isDark ? (
@@ -88,7 +125,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
           )
         )}
         <CustomButton
-          onPress={onToggle}
+          onPress={handleToggle}
           style={styles.toggleBtn}
           accessibilityRole="button"
           accessibilityLabel={expanded ? "Collapse sidebar" : "Expand sidebar"}
@@ -111,7 +148,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
                 route={item.route}
                 active={active}
                 expanded={expanded}
-                onPress={() => handleNavigate(item.route)}
+                onPress={getNavPressHandler(item.route)}
               />
               {active && expanded && hasSubsections(item.route) && (
                 <View accessibilityRole="list" accessibilityLabel={`${item.label} subsections`}>
@@ -119,7 +156,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
                     <SidebarSubsectionItem
                       key={sub.id}
                       label={sub.label}
-                      onPress={() => scrollToSection(sub.id)}
+                      onPress={getSubPressHandler(sub.id)}
                     />
                   ))}
                 </View>
@@ -130,7 +167,7 @@ export function Sidebar({ expanded, onToggle }: SidebarProps) {
       </View>
     </Animated.View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   sidebar: {

@@ -1,16 +1,20 @@
 import { useMemo } from "react";
-import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
+import { useAppSelector } from "@/store";
+import { selectSearchQuery } from "@/store/slices/filtersSlice";
 
 /**
  * Filters an array of objects by the global search query.
  * Matches case-insensitively against the string representation of each specified key.
  * Returns the original array reference when the search query is empty.
+ *
+ * Subscribes ONLY to searchQuery (not full filter state) to avoid
+ * unnecessary re-renders when team/project/provider/status filters change.
  */
 export function useSearchFilter<T>(
   data: T[],
   searchableKeys: (keyof T)[],
 ): T[] {
-  const { searchQuery } = useDashboardFilters();
+  const searchQuery = useAppSelector(selectSearchQuery);
 
   return useMemo(() => {
     const trimmed = searchQuery.trim().toLowerCase();

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import {
   CheckCircle,
@@ -22,30 +22,31 @@ interface StatusBadgeProps {
   severity?: Severity;
 }
 
-export function StatusBadge({ variant, status, severity }: StatusBadgeProps) {
+export const StatusBadge = React.memo(function StatusBadge({ variant, status, severity }: StatusBadgeProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
-  const STATUS_CONFIG: Record<RunStatus, StatusConfigEntry> = {
-    succeeded: { color: theme.state.success, Icon: CheckCircle, label: "Success" },
-    failed: { color: theme.state.error, Icon: XCircle, label: "Failed" },
-    running: { color: theme.state.info, Icon: Play, label: "Running" },
-    queued: { color: theme.text.secondary, Icon: Clock, label: "Queued" },
-    canceled: { color: theme.text.tertiary, Icon: Slash, label: "Canceled" },
-  };
+  const config = useMemo(() => {
+    const STATUS_CONFIG: Record<RunStatus, StatusConfigEntry> = {
+      succeeded: { color: theme.state.success, Icon: CheckCircle, label: "Success" },
+      failed: { color: theme.state.error, Icon: XCircle, label: "Failed" },
+      running: { color: theme.state.info, Icon: Play, label: "Running" },
+      queued: { color: theme.text.secondary, Icon: Clock, label: "Queued" },
+      canceled: { color: theme.text.tertiary, Icon: Slash, label: "Canceled" },
+    };
 
-  const SEVERITY_CONFIG: Record<Severity, StatusConfigEntry> = {
-    HIGH: { color: theme.state.error, Icon: AlertTriangle, label: "HIGH" },
-    MEDIUM: { color: theme.state.warning, Icon: AlertCircle, label: "MEDIUM" },
-    LOW: { color: theme.text.secondary, Icon: Info, label: "LOW" },
-  };
+    const SEVERITY_CONFIG: Record<Severity, StatusConfigEntry> = {
+      HIGH: { color: theme.state.error, Icon: AlertTriangle, label: "HIGH" },
+      MEDIUM: { color: theme.state.warning, Icon: AlertCircle, label: "MEDIUM" },
+      LOW: { color: theme.text.secondary, Icon: Info, label: "LOW" },
+    };
 
-  const config =
-    variant === "run-status" && status
+    return variant === "run-status" && status
       ? STATUS_CONFIG[status]
       : variant === "severity" && severity
         ? SEVERITY_CONFIG[severity]
         : null;
+  }, [variant, status, severity, mode]);
 
   if (!config) return null;
 
@@ -66,7 +67,7 @@ export function StatusBadge({ variant, status, severity }: StatusBadgeProps) {
       <Text style={[styles.text, { color }]}>{label}</Text>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   badge: {

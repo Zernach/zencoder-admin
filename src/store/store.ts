@@ -1,6 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { filtersSlice } from "./slices/filtersSlice";
-import { loadingSlice } from "./slices/loadingSlice";
 import { sidebarSlice } from "./slices/sidebarSlice";
 import { navigationHistorySlice } from "./slices/navigationHistorySlice";
 import { modalSlice } from "./slices/modalSlice";
@@ -9,7 +8,6 @@ import { analyticsApi } from "./api/analyticsApi";
 export const store = configureStore({
   reducer: {
     filters: filtersSlice.reducer,
-    loading: loadingSlice.reducer,
     sidebar: sidebarSlice.reducer,
     navigationHistory: navigationHistorySlice.reducer,
     modal: modalSlice.reducer,

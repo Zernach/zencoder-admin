@@ -120,6 +120,8 @@ The following command will run the `0.txt` file in the `loops` directory, which 
 npm run ralph -- -p 0
 ```
 
+**Important:** Run this from a **terminal** (not from within Cursor's agent). The shell script loops after each Claude run; the plugin only stops when Claude outputs the exact string `DONE`. Avoid saying "finished" or "done" in natural language—use the literal token `DONE` only when the task is complete.
+
 To create another Ralph loop, simply create a new text file in the `loops` directory, and then run the above command with the number of the text file that you created.
 
 

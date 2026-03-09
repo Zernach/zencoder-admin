@@ -82,13 +82,13 @@ export function CreateProjectForm({ onSubmit, loading, error }: CreateProjectFor
           {error ? <Text style={[styles.errorText, { color: theme.state.error }]}>{error}</Text> : null}
           <CustomButton
             onPress={onPressSubmit}
-            style={[styles.submitButton, { backgroundColor: theme.border.brand }]}
+            style={[styles.submitButton, { borderColor: theme.border.brand }]}
             accessibilityRole="button"
-            accessibilityLabel="Create Project"
+            accessibilityLabel="Submit"
             disabled={loading}
           >
-            <Text style={[styles.submitText, { color: theme.text.onBrand }]}>
-              {loading ? "Creating..." : "Create Project"}
+            <Text style={[styles.submitText, { color: theme.border.brand }]}>
+              Submit
             </Text>
           </CustomButton>
         </>
@@ -99,9 +99,11 @@ export function CreateProjectForm({ onSubmit, loading, error }: CreateProjectFor
 
 const styles = StyleSheet.create({
   submitButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 999,
     alignItems: "center",
     marginTop: 4,
   },

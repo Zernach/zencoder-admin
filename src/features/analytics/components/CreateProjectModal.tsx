@@ -8,7 +8,7 @@ import { CreateProjectForm } from "./CreateProjectForm";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 
-export function CreateProjectModal() {
+export const CreateProjectModal = React.memo(function CreateProjectModal() {
   const visible = useAppSelector(selectModalVisible(ModalName.CreateProject));
   const dispatch = useAppDispatch();
   const { mode } = useThemeMode();
@@ -57,7 +57,7 @@ export function CreateProjectModal() {
       </View>
     </Modal>
   );
-}
+});
 
 const styles = StyleSheet.create({
   modalOverlay: {

@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   filtersSlice,
@@ -30,27 +31,75 @@ export function useDashboardFilters() {
   const preset = useAppSelector(selectPreset);
   const searchQuery = useAppSelector(selectSearchQuery);
 
-  return {
-    filters,
-    preset,
-    searchQuery,
-    setTimeRange: (p: TimeRangePreset) =>
-      dispatch(filtersSlice.actions.setTimeRangePreset(p)),
-    setCustomTimeRange: (r: TimeRange) =>
-      dispatch(filtersSlice.actions.setCustomTimeRange(r)),
-    setTeamFilter: (ids?: string[]) =>
-      dispatch(filtersSlice.actions.setTeamFilter(ids)),
-    setUserFilter: (ids?: string[]) =>
-      dispatch(filtersSlice.actions.setUserFilter(ids)),
-    setProjectFilter: (ids?: string[]) =>
-      dispatch(filtersSlice.actions.setProjectFilter(ids)),
-    setProviderFilter: (p?: ModelProvider[]) =>
-      dispatch(filtersSlice.actions.setProviderFilter(p)),
-    setStatusFilter: (s?: RunStatus[]) =>
-      dispatch(filtersSlice.actions.setStatusFilter(s)),
-    setSearchQuery: (q: string) =>
-      dispatch(filtersSlice.actions.setSearchQuery(q)),
-    clearAll: () => dispatch(filtersSlice.actions.clearAllFilters()),
-    activeFilterCount: countActiveFilters(filters),
-  };
+  const setTimeRange = useCallback(
+    (p: TimeRangePreset) => dispatch(filtersSlice.actions.setTimeRangePreset(p)),
+    [dispatch],
+  );
+  const setCustomTimeRange = useCallback(
+    (r: TimeRange) => dispatch(filtersSlice.actions.setCustomTimeRange(r)),
+    [dispatch],
+  );
+  const setTeamFilter = useCallback(
+    (ids?: string[]) => dispatch(filtersSlice.actions.setTeamFilter(ids)),
+    [dispatch],
+  );
+  const setUserFilter = useCallback(
+    (ids?: string[]) => dispatch(filtersSlice.actions.setUserFilter(ids)),
+    [dispatch],
+  );
+  const setProjectFilter = useCallback(
+    (ids?: string[]) => dispatch(filtersSlice.actions.setProjectFilter(ids)),
+    [dispatch],
+  );
+  const setProviderFilter = useCallback(
+    (p?: ModelProvider[]) => dispatch(filtersSlice.actions.setProviderFilter(p)),
+    [dispatch],
+  );
+  const setStatusFilter = useCallback(
+    (s?: RunStatus[]) => dispatch(filtersSlice.actions.setStatusFilter(s)),
+    [dispatch],
+  );
+  const setSearchQuery = useCallback(
+    (q: string) => dispatch(filtersSlice.actions.setSearchQuery(q)),
+    [dispatch],
+  );
+  const clearAll = useCallback(
+    () => dispatch(filtersSlice.actions.clearAllFilters()),
+    [dispatch],
+  );
+
+  const activeFilterCount = useMemo(() => countActiveFilters(filters), [filters]);
+
+  return useMemo(
+    () => ({
+      filters,
+      preset,
+      searchQuery,
+      setTimeRange,
+      setCustomTimeRange,
+      setTeamFilter,
+      setUserFilter,
+      setProjectFilter,
+      setProviderFilter,
+      setStatusFilter,
+      setSearchQuery,
+      clearAll,
+      activeFilterCount,
+    }),
+    [
+      filters,
+      preset,
+      searchQuery,
+      setTimeRange,
+      setCustomTimeRange,
+      setTeamFilter,
+      setUserFilter,
+      setProjectFilter,
+      setProviderFilter,
+      setStatusFilter,
+      setSearchQuery,
+      clearAll,
+      activeFilterCount,
+    ],
+  );
 }

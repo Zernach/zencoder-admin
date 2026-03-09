@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { View, useWindowDimensions } from "react-native";
+import React, { useCallback, useMemo, useRef } from "react";
+import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
 import { useLiveAgentSessions } from "@/features/analytics/hooks/useLiveAgentSessions";
@@ -20,14 +20,18 @@ import { useSearchFilter } from "@/hooks/useSearchFilter";
 import type { LiveAgentSession } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 const styles = sectionStyles;
 
 const SESSION_SEARCH_KEYS: (keyof LiveAgentSession)[] = ["agentName", "projectName", "userName", "currentTask"];
 
+const SKELETON_4 = Array.from({ length: 4 });
+const SKELETON_3 = Array.from({ length: 3 });
+
 export default function OverviewDashboardScreen() {
-  const { width } = useWindowDimensions();
-  const isLargeLayout = width >= 1024;
+  const bp = useBreakpoint();
+  const isLargeLayout = bp === "desktop";
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const cc = chartColors(mode);
@@ -42,6 +46,27 @@ export default function OverviewDashboardScreen() {
   const filteredSessions = useSearchFilter(liveSessions, SESSION_SEARCH_KEYS);
   const router = useRouter();
 
+  const handleKpiPress = useCallback(
+    (route: string) => {
+      router.push(route as never);
+    },
+    [router],
+  );
+
+  // Cache per-route KPI press handlers to avoid inline closure recreation in .map()
+  const kpiPressCache = useRef(new Map<string, () => void>()).current;
+  const handleKpiPressRef = useRef(handleKpiPress);
+  handleKpiPressRef.current = handleKpiPress;
+
+  const getKpiPressHandler = useCallback((route: string) => {
+    let handler = kpiPressCache.get(route);
+    if (!handler) {
+      handler = () => handleKpiPressRef.current(route);
+      kpiPressCache.set(route, handler);
+    }
+    return handler;
+  }, [kpiPressCache]);
+
   const subtitle = useMemo(() => {
     if (!data) return "Organization-level analytics for cloud agent operations";
     const totalRuns = data.runsTrend.reduce((s, p) => s + p.value, 0);
@@ -49,23 +74,26 @@ export default function OverviewDashboardScreen() {
     return `${totalRuns.toLocaleString()} runs across ${days} days (${preset})`;
   }, [data, preset]);
 
+  const headerProps = useMemo(
+    () => ({ title: "Home", subtitle, isLoading: loading }),
+    [subtitle, loading],
+  );
+
+  const trendScrollProps = useMemo(() => ({
+    horizontal: !isLargeLayout,
+    showsHorizontalScrollIndicator: false,
+    contentContainerStyle: [styles.chartRow, isLargeLayout && styles.chartRowFill],
+  }), [isLargeLayout]);
+
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
   return (
-    <ScreenWrapper
-      headerProps={{
-        title: "Home",
-        subtitle,
-        isLoading: loading,
-      }}
-    >
+    <ScreenWrapper headerProps={headerProps}>
       <LiveAssistantsSection
         sessions={filteredSessions}
         loading={liveLoading}
         error={liveError}
-        onRetry={() => {
-          void refetchLiveSessions();
-        }}
+        onRetry={refetchLiveSessions}
       />
 
       {/* Section 1 -- Key Metrics */}
@@ -73,7 +101,7 @@ export default function OverviewDashboardScreen() {
         <SectionHeader title="Key Metrics" subtitle="At a glance" />
         {loading ? (
           <CardGrid columns={4}>
-            {Array.from({ length: 4 }).map((_, i) => (
+            {SKELETON_4.map((_, i) => (
               <LoadingSkeleton key={i} variant="kpi" />
             ))}
           </CardGrid>
@@ -89,7 +117,7 @@ export default function OverviewDashboardScreen() {
                 caption={kpi.caption}
                 onPress={
                   kpi.route
-                    ? () => router.push(kpi.route as never)
+                    ? getKpiPressHandler(kpi.route)
                     : undefined
                 }
               />
@@ -101,13 +129,7 @@ export default function OverviewDashboardScreen() {
       {/* Section 2 -- Trends */}
       <View style={styles.section}>
         <SectionHeader title="Trends" />
-        <CustomList
-          scrollViewProps={{
-            horizontal: !isLargeLayout,
-            showsHorizontalScrollIndicator: false,
-            contentContainerStyle: [styles.chartRow, isLargeLayout && styles.chartRowFill],
-          }}
-        >
+        <CustomList scrollViewProps={trendScrollProps}>
           <ChartCard title="Runs Over Time" loading={loading} style={isLargeLayout ? styles.chartCardFill : undefined}>
             {data && (
               <TrendChart
@@ -179,7 +201,7 @@ export default function OverviewDashboardScreen() {
         <SectionHeader title="Reliability & Provider Mix" />
         {loading ? (
           <CardGrid columns={3}>
-            {Array.from({ length: 3 }).map((_, i) => (
+            {SKELETON_3.map((_, i) => (
               <LoadingSkeleton key={i} variant="kpi" />
             ))}
           </CardGrid>

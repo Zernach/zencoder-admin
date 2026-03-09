@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet, Modal } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import type { TextInput as TextInputHandle } from "react-native";
@@ -49,7 +49,7 @@ const CONTROL_HORIZONTAL_PADDING = 12;
 const CONTROL_TEXT_SIZE = 13;
 const CONTROL_HEIGHT = 36;
 
-export function TopBar() {
+export const TopBar = React.memo(function TopBar() {
   const breakpoint = useBreakpoint();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -61,20 +61,26 @@ export function TopBar() {
   const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
+  // Use refs for values that change frequently but shouldn't recreate the callback
+  const mostRecentTabRef = useRef(mostRecentTab);
+  mostRecentTabRef.current = mostRecentTab;
+
   const handleSuggestionSelect = useCallback(
     (suggestion: SearchSuggestion) => {
       setLocalQuery(suggestion.title);
       setSearchQuery(suggestion.title);
       setIsPanelOpen(false);
-      const route = buildEntityRoute(mostRecentTab, suggestion.entityType, suggestion.id);
+      const route = buildEntityRoute(mostRecentTabRef.current, suggestion.entityType, suggestion.id);
       setTimeout(() => {
         router.push(route as never);
       }, 0);
     },
-    [setSearchQuery, mostRecentTab, router],
+    [setSearchQuery, router],
   );
 
   const autocomplete = useSearchAutocomplete(handleSuggestionSelect);
+  const autocompleteRef = useRef(autocomplete);
+  autocompleteRef.current = autocomplete;
 
   useEffect(() => {
     setLocalQuery(searchQuery);
@@ -83,19 +89,19 @@ export function TopBar() {
   const handleSearchChange = useCallback(
     (text: string) => {
       setLocalQuery(text);
-      autocomplete.setQuery(text);
+      autocompleteRef.current.setQuery(text);
       setIsPanelOpen(text.trim().length >= 2);
     },
-    [autocomplete],
+    [],
   );
 
   const handleClearSearch = useCallback(() => {
     setLocalQuery("");
     setSearchQuery("");
-    autocomplete.clear();
+    autocompleteRef.current.clear();
     setIsPanelOpen(false);
     searchInputRef.current?.focus();
-  }, [setSearchQuery, autocomplete]);
+  }, [setSearchQuery]);
 
   const handleDismissPanel = useCallback(() => {
     setIsPanelOpen(false);
@@ -119,19 +125,43 @@ export function TopBar() {
     [setTimeRange],
   );
 
+  // Stable per-preset press handlers to avoid inline closures in .map()
+  const timeRangeHandlerCache = useRef(new Map<string, () => void>()).current;
+  const handleSelectTimeRangeRef = useRef(handleSelectTimeRange);
+  handleSelectTimeRangeRef.current = handleSelectTimeRange;
+  const getTimeRangeHandler = useCallback((value: SelectableTimeRangePreset) => {
+    let handler = timeRangeHandlerCache.get(value);
+    if (!handler) {
+      handler = () => handleSelectTimeRangeRef.current(value);
+      timeRangeHandlerCache.set(value, handler);
+    }
+    return handler;
+  }, [timeRangeHandlerCache]);
+
   const presetButtonLabel =
     breakpoint === "mobile" ? PRESET_SHORT_LABELS[preset] : PRESET_LABELS[preset];
   const hasQuery = localQuery.length > 0;
 
+  const containerStyle = useMemo(
+    () => [styles.container, { backgroundColor: theme.bg.canvas, borderBottomColor: theme.border.default }],
+    [theme.bg.canvas, theme.border.default],
+  );
+  const searchContainerStyle = useMemo(
+    () => [
+      styles.searchContainer,
+      { backgroundColor: theme.bg.surface, borderColor: hasQuery ? theme.border.brand : theme.border.default },
+    ],
+    [theme.bg.surface, theme.border.brand, theme.border.default, hasQuery],
+  );
+  const presetBtnStyle = useMemo(
+    () => [styles.presetBtn, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }],
+    [theme.bg.surface, theme.border.default],
+  );
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.bg.canvas, borderBottomColor: theme.border.default }]}>
+    <View style={containerStyle}>
       <View style={styles.left}>
-        <View
-          style={[
-            styles.searchContainer,
-            { backgroundColor: theme.bg.surface, borderColor: hasQuery ? theme.border.brand : theme.border.default },
-          ]}
-        >
+        <View style={searchContainerStyle}>
           <Search size={14} color={hasQuery ? theme.border.brand : theme.text.tertiary} />
           <CustomTextInput
             ref={searchInputRef}
@@ -167,7 +197,7 @@ export function TopBar() {
       </View>
       <View style={styles.right}>
         <CustomButton
-          style={[styles.presetBtn, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }]}
+          style={presetBtnStyle}
           accessibilityRole="button"
           accessibilityLabel="Open time range selector"
           onPress={openTimeRangeOverlay}
@@ -217,7 +247,7 @@ export function TopBar() {
                       { backgroundColor: theme.bg.surface, borderColor: theme.border.default },
                       isSelected && { borderColor: theme.border.brand, backgroundColor: theme.bg.brandSubtle },
                     ]}
-                    onPress={() => handleSelectTimeRange(option.value)}
+                    onPress={getTimeRangeHandler(option.value)}
                     accessibilityRole="button"
                     accessibilityLabel={`Set time range to ${option.fullLabel}`}
                     accessibilityState={{ selected: isSelected }}
@@ -240,7 +270,7 @@ export function TopBar() {
       </Modal>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

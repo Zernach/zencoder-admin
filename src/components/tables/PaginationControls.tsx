@@ -15,7 +15,7 @@ interface PaginationControlsProps {
   pageSizeOptions?: number[];
 }
 
-export function PaginationControls({
+export const PaginationControls = React.memo(function PaginationControls({
   page,
   pageSize,
   total,
@@ -60,7 +60,7 @@ export function PaginationControls({
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

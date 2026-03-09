@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { bin } from "d3-array";
 import { DATA_PALETTE } from "./palette";
@@ -13,7 +13,7 @@ interface DistributionChartProps {
   color?: string;
 }
 
-export function DistributionChart({
+export const DistributionChart = React.memo(function DistributionChart({
   data,
   bins: binCount = 10,
   xLabel,
@@ -23,10 +23,14 @@ export function DistributionChart({
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
-  if (data.length === 0) return null;
+  const { histogram, maxCount } = useMemo(() => {
+    if (data.length === 0) return { histogram: [], maxCount: 1 };
+    const hist = bin().thresholds(binCount)(data);
+    const max = Math.max(...hist.map((b) => b.length), 1);
+    return { histogram: hist, maxCount: max };
+  }, [data, binCount]);
 
-  const histogram = bin().thresholds(binCount)(data);
-  const maxCount = Math.max(...histogram.map((b) => b.length), 1);
+  if (histogram.length === 0) return null;
 
   return (
     <View style={[styles.container, { height }]}>
@@ -60,7 +64,7 @@ export function DistributionChart({
       {xLabel && <Text style={[styles.xLabel, { color: theme.text.tertiary }]}>{xLabel}</Text>}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
