@@ -80,18 +80,18 @@ export const BreakdownChart = React.memo(function BreakdownChart({
       longestFormattedValue: formatted.reduce((longest, v) => (v.length > longest.length ? v : longest), ""),
     };
   }, [data, formatValue]);
+
+  /** Estimated width for largest value (fontSize 11 ≈ 6–7px/char). Used as fallback before measurement. */
+  const estimatedValueWidth = useMemo(
+    () => (longestFormattedValue.length > 0 ? Math.max(24, longestFormattedValue.length * 8) : 24),
+    [longestFormattedValue],
+  );
   const effectiveLabelWidth = useMemo(() => {
     if (truncateLabels || measuredLabelWidth <= 0 || containerWidth <= 0) {
       return measuredLabelWidth > 0 ? measuredLabelWidth : undefined;
     }
-
-    const minTrackWidth = 56;
-    const resolvedValueWidth = showValues ? (measuredValueWidth > 0 ? measuredValueWidth : 48) : 0;
-    const gapCount = showValues ? 2 : 1;
-    const horizontalGaps = gapCount * 8;
-    const maxAllowedLabelWidth = Math.max(80, containerWidth - resolvedValueWidth - horizontalGaps - minTrackWidth);
-    return Math.min(measuredLabelWidth, maxAllowedLabelWidth);
-  }, [truncateLabels, measuredLabelWidth, containerWidth, showValues, measuredValueWidth]);
+    return measuredLabelWidth;
+  }, [truncateLabels, measuredLabelWidth, containerWidth]);
 
   const effectiveSorted = useMemo(() => {
     return sorted.map((item) => ({
@@ -229,7 +229,7 @@ export const BreakdownChart = React.memo(function BreakdownChart({
           horizontalOptions={{
             labelNumberOfLines: truncateLabels ? 1 : undefined,
             labelWidth: truncateLabels ? 80 : effectiveLabelWidth,
-            valueWidth: measuredValueWidth > 0 ? measuredValueWidth : undefined,
+            valueWidth: Math.max(measuredValueWidth > 0 ? measuredValueWidth : 0, estimatedValueWidth),
             trackMinWidth: 56,
             trackHeight: 16,
             trackColor: theme.bg.surfaceElevated,

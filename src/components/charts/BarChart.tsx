@@ -362,6 +362,7 @@ export const BarChart = React.memo(function BarChart({
                 )}
                 {showValues ? (
                   <Text
+                    numberOfLines={1}
                     style={[
                       styles.horizontalValue,
                       resolvedHorizontalOptions.valueWidth != null

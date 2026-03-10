@@ -157,22 +157,9 @@ export const LineChart = React.memo(function LineChart({
     };
   }, [containerWidth, data, height, isPercentagesVariant, xTickCount, yTickCount]);
 
-  if (!chartData) return null;
-
-  const {
-    width,
-    innerW,
-    innerH,
-    linePath,
-    areaPath,
-    yTicks,
-    xTicks,
-    xScale,
-    yScale,
-    candles,
-    candleBodyWidth,
-    linePoints,
-  } = chartData;
+  const linePoints = chartData?.linePoints ?? [];
+  const innerW = chartData?.innerW ?? 0;
+  const chartWidth = chartData?.width ?? containerWidth;
 
   const formatYTickLabel = useCallback(
     (tick: number): string => {
@@ -221,7 +208,7 @@ export const LineChart = React.memo(function LineChart({
 
     const maxLeft = Math.max(
       TOOLTIP_HORIZONTAL_PADDING,
-      width - TOOLTIP_WIDTH - TOOLTIP_HORIZONTAL_PADDING,
+      chartWidth - TOOLTIP_WIDTH - TOOLTIP_HORIZONTAL_PADDING,
     );
     const left = clamp(
       MARGIN.left + activePoint.x - TOOLTIP_WIDTH / 2,
@@ -232,7 +219,7 @@ export const LineChart = React.memo(function LineChart({
     const top = topCandidate >= 0 ? topCandidate : MARGIN.top + activePoint.y + TOOLTIP_OFFSET;
 
     return { left, top };
-  }, [activePoint, width]);
+  }, [activePoint, chartWidth]);
 
   const setActivePointFromLocation = useCallback(
     (locationX: number): void => {
@@ -387,6 +374,21 @@ export const LineChart = React.memo(function LineChart({
       return currentIndex < linePoints.length ? currentIndex : null;
     });
   }, [linePoints.length]);
+
+  if (!chartData) return null;
+
+  const {
+    width,
+    innerH,
+    linePath,
+    areaPath,
+    yTicks,
+    xTicks,
+    xScale,
+    yScale,
+    candles,
+    candleBodyWidth,
+  } = chartData;
 
   return (
     <View style={styles.container} onLayout={handleLayout}>
