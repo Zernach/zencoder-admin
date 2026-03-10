@@ -6,14 +6,14 @@ import {
   Settings,
 } from "lucide-react-native";
 import type { LucideIcon } from "lucide-react-native";
-import { ROUTES, TABS, TAB_ORDER, getRouteForTab, type TabRoute } from "./routes";
+import { ROUTES, TABS, TAB_ORDER, getRouteForTab, type NavRoute } from "./routes";
 
 // ─── Top-Level Navigation ───────────────────────────────
 
 export interface NavItem {
   icon: LucideIcon;
   label: string;
-  route: TabRoute;
+  route: NavRoute;
   tab: TABS;
 }
 
@@ -27,7 +27,7 @@ const TOP_NAV_METADATA: Record<TABS, Pick<NavItem, "icon" | "label">> = {
 
 export const TOP_NAV_ITEMS: NavItem[] = TAB_ORDER.map((tab) => ({
   tab,
-  route: getRouteForTab(tab),
+  route: tab === TABS.DASHBOARD ? ROUTES.ROOT : getRouteForTab(tab),
   ...TOP_NAV_METADATA[tab],
 }));
 
@@ -56,12 +56,11 @@ export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
     { id: "team-performance", label: "navigation.subsections.teamPerformance" },
     { id: "seat-user-oversight", label: "navigation.subsections.seatUserOversight" },
     { id: "rules", label: "navigation.subsections.rules" },
-    { id: "recent-violations", label: "navigation.subsections.recentViolations" },
+    { id: "recent-violations", label: "navigation.subsections.violations" },
     { id: "security-events", label: "navigation.subsections.securityEvents" },
     { id: "policy-changes", label: "navigation.subsections.policyChanges" },
   ],
   [ROUTES.SETTINGS]: [
-    { id: "profile", label: "navigation.subsections.profile" },
     { id: "preferences", label: "navigation.subsections.preferences" },
     { id: "internationalization", label: "navigation.subsections.internationalization" },
     { id: "organization", label: "navigation.subsections.organization" },

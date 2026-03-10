@@ -18,7 +18,7 @@ import { SidebarNavItem } from "./SidebarNavItem";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { isWeb } from "@/constants/platform";
-import { isRouteActive, type TabRoute } from "@/constants/routes";
+import { isRouteActive, type NavRoute } from "@/constants/routes";
 import { TOP_NAV_ITEMS, hasSubsections, getSubsections } from "@/constants/navigation";
 import { SidebarSubsectionItem } from "./SidebarSubsectionItem";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
@@ -46,7 +46,7 @@ export const Sidebar = React.memo(function Sidebar() {
   const subPressHandlers = useRef(new Map<string, () => void>()).current;
 
   const getNavPressHandler = useCallback(
-    (route: TabRoute) => {
+    (route: NavRoute) => {
       let handler = navPressHandlers.get(route);
       if (!handler) {
         handler = () => {

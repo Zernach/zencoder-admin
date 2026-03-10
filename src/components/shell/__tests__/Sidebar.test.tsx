@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "@testing-library/react-native";
+import { render, fireEvent } from "@testing-library/react-native";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { Sidebar } from "../Sidebar";
@@ -76,6 +76,26 @@ describe("Sidebar — subsection rendering", () => {
     }
   });
 
+  it("navigates to root when pressing home from an inactive route", () => {
+    mockPathname = ROUTES.AGENTS;
+    const { getByLabelText } = renderSidebar(true);
+
+    fireEvent.press(getByLabelText("navigation.home"));
+
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith(ROUTES.ROOT);
+  });
+
+  it("navigates to root when pressing home while on /dashboard", () => {
+    mockPathname = ROUTES.DASHBOARD;
+    const { getByLabelText } = renderSidebar(true);
+
+    fireEvent.press(getByLabelText("navigation.home"));
+
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith(ROUTES.ROOT);
+  });
+
   it("shows agents subsections when agents is active and expanded", () => {
     mockPathname = ROUTES.AGENTS;
     const { getByText } = renderSidebar(true);
@@ -130,14 +150,7 @@ describe("Sidebar — subsection rendering", () => {
     const subsectionList = getByLabelText("navigation.subsectionsLabel");
     expect(subsectionList).toBeTruthy();
 
-    const expectedLabels = [
-      "navigation.subsections.overview",
-      "navigation.subsections.teamPerformance",
-      "navigation.subsections.seatUserOversight",
-      "navigation.subsections.recentViolations",
-      "navigation.subsections.securityEvents",
-      "navigation.subsections.policyChanges",
-    ];
+    const expectedLabels = SUBSECTIONS[ROUTES.GOVERNANCE].map((subsection) => subsection.label);
     for (const label of expectedLabels) {
       expect(getByLabelText(label)).toBeTruthy();
     }

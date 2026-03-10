@@ -527,8 +527,14 @@ export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
             <View key={index} style={[styles.placeholderCard, { borderColor: theme.border.subtle, backgroundColor: theme.bg.subtle }]} />
           ))}
         </View>
-      ) : columns.length === 0 ? (
+      ) : columns.length === 0 && sessions.length === 0 ? (
         <EmptyLiveState theme={theme} />
+      ) : columns.length === 0 ? (
+        <View style={styles.placeholderWrap}>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <View key={index} style={[styles.placeholderCard, { borderColor: theme.border.subtle, backgroundColor: theme.bg.subtle }]} />
+          ))}
+        </View>
       ) : (
         <CustomList
           flatListProps={{

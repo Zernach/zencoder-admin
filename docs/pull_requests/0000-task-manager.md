@@ -83,7 +83,8 @@
 | ✅ | [0075](./0075-rule-detail-screen-and-entity-routing.md) | Rule Detail Screen & Entity Routing | Screens |
 | ✅ | [0076](./0076-bar-pie-chart-unification-toggle.md) | Bar/Pie Chart Unification Toggle | Components |
 | ✅ | [0077](./0077-datatable-pagination-all-runs.md) | DataTable Pagination Toggle + Agents All Runs | Components |
+| ✅ | [0078](./0078-home-route-dashboard-parity.md) | Home Route Dashboard Parity (No Redirect) | Screens |
 
 ---
 
-**Progress: 77 / 77**
+**Progress: 78 / 78**

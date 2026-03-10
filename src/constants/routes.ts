@@ -22,6 +22,7 @@ export enum ROUTES {
 }
 
 export type TabRoute = Exclude<ROUTES, ROUTES.ROOT>;
+export type NavRoute = ROUTES.ROOT | TabRoute;
 
 export const TAB_ORDER = [
   TABS.DASHBOARD,
@@ -82,7 +83,19 @@ export function resolveTabFromPathname(pathname: string): TABS {
   return segment != null && isTab(segment) ? segment : TABS.DASHBOARD;
 }
 
-export function isRouteActive(pathname: string, route: TabRoute): boolean {
+export function isRouteActive(pathname: string, route: NavRoute): boolean {
+  if (route === ROUTES.ROOT) {
+    return (
+      pathname === ROUTES.ROOT
+      || pathname === ROUTES.DASHBOARD
+      || pathname.startsWith(`${ROUTES.DASHBOARD}/`)
+    );
+  }
+
+  if (route === ROUTES.DASHBOARD && pathname === ROUTES.ROOT) {
+    return true;
+  }
+
   return pathname === route || pathname.startsWith(`${route}/`);
 }
 

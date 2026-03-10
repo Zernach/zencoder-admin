@@ -68,6 +68,12 @@ describe("route helpers", () => {
   });
 
   it("matches active routes for nested paths", () => {
+    expect(isRouteActive("/", ROUTES.ROOT)).toBe(true);
+    expect(isRouteActive("/dashboard", ROUTES.ROOT)).toBe(true);
+    expect(isRouteActive("/dashboard/agent/a1", ROUTES.ROOT)).toBe(true);
+    expect(isRouteActive("/agents", ROUTES.ROOT)).toBe(false);
+    expect(isRouteActive("/", ROUTES.DASHBOARD)).toBe(true);
+    expect(isRouteActive("/", ROUTES.AGENTS)).toBe(false);
     expect(isRouteActive("/agents", ROUTES.AGENTS)).toBe(true);
     expect(isRouteActive("/agents/agent/a1", ROUTES.AGENTS)).toBe(true);
     expect(isRouteActive("/dashboard", ROUTES.AGENTS)).toBe(false);

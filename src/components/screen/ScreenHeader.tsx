@@ -39,7 +39,7 @@ const ScreenHeader = React.memo(function ScreenHeader({
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel="Go back"
-            style={styles.backButton}
+            style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
           >
             <ChevronLeft size={24} color={theme.text.primary} />
           </Pressable>
@@ -93,6 +93,9 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginRight: spacing[4],
+  },
+  backButtonPressed: {
+    opacity: 0.4,
   },
   spinner: {
     marginLeft: spacing[4],

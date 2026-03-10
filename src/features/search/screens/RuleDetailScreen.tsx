@@ -193,7 +193,7 @@ export function RuleDetailScreen({ ruleId }: RuleDetailScreenProps) {
             <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Rule Details</Text>
             {!isEditing && (
               <CustomButton onPress={handleEditPress} accessibilityLabel="Edit rule">
-                <Text style={[styles.editButton, { color: theme.text.brand }]}>{t("common.edit")}</Text>
+                <Text style={[styles.editButton, { color: theme.border.brand }]}>{t("common.edit")}</Text>
               </CustomButton>
             )}
           </View>
@@ -341,7 +341,7 @@ export function RuleDetailScreen({ ruleId }: RuleDetailScreenProps) {
               <Text style={[styles.actionButton, { color: theme.text.secondary }]}>{t("common.cancel")}</Text>
             </CustomButton>
             <CustomButton onPress={handleSave} accessibilityLabel="Save rule">
-              <View style={[styles.saveButton, { backgroundColor: theme.text.brand }]}>
+              <View style={[styles.saveButton, { backgroundColor: theme.border.brand }]}>
                 {saving ? (
                   <CustomSpinner size={14} color="#fff" />
                 ) : (

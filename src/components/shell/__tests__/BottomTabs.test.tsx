@@ -86,4 +86,26 @@ describe("BottomTabs", () => {
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith(ROUTES.AGENTS);
   });
+
+  it("navigates to root when pressing home from an inactive route", () => {
+    mockPathname = ROUTES.AGENTS;
+    const { getByLabelText } = render(<BottomTabs />);
+
+    fireEvent.press(getByLabelText("navigation.home"));
+
+    expect(mockDispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith(ROUTES.ROOT);
+  });
+
+  it("navigates to root when pressing home while on /dashboard", () => {
+    mockPathname = ROUTES.DASHBOARD;
+    const { getByLabelText } = render(<BottomTabs />);
+
+    fireEvent.press(getByLabelText("navigation.home"));
+
+    expect(mockDispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith(ROUTES.ROOT);
+  });
 });

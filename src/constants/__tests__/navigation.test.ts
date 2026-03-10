@@ -10,11 +10,12 @@ import { ROUTES } from "../routes";
 describe("TOP_NAV_ITEMS", () => {
   it("contains all 5 top-level routes", () => {
     const routes = TOP_NAV_ITEMS.map((item) => item.route);
-    expect(routes).toContain(ROUTES.DASHBOARD);
+    expect(routes).toContain(ROUTES.ROOT);
     expect(routes).toContain(ROUTES.AGENTS);
     expect(routes).toContain(ROUTES.COSTS);
     expect(routes).toContain(ROUTES.GOVERNANCE);
     expect(routes).toContain(ROUTES.SETTINGS);
+    expect(routes).not.toContain(ROUTES.DASHBOARD);
     expect(TOP_NAV_ITEMS.length).toBe(5);
   });
 
@@ -29,10 +30,11 @@ describe("TOP_NAV_ITEMS", () => {
 });
 
 describe("SUBSECTIONS", () => {
-  it("defines subsections for agents, costs, and governance", () => {
+  it("defines subsections for agents, costs, governance, and settings", () => {
     expect(SUBSECTIONS[ROUTES.AGENTS]).toBeDefined();
     expect(SUBSECTIONS[ROUTES.COSTS]).toBeDefined();
     expect(SUBSECTIONS[ROUTES.GOVERNANCE]).toBeDefined();
+    expect(SUBSECTIONS[ROUTES.SETTINGS]).toBeDefined();
   });
 
   it("agents has 4 subsections", () => {
@@ -46,14 +48,13 @@ describe("SUBSECTIONS", () => {
     ]);
   });
 
-  it("costs has 4 subsections", () => {
+  it("costs has 3 subsections", () => {
     const items = SUBSECTIONS[ROUTES.COSTS];
-    expect(items.length).toBe(4);
+    expect(items.length).toBe(3);
     expect(items.map((i) => i.label)).toEqual([
+      "navigation.subsections.budgetForecast",
       "navigation.subsections.costSummary",
       "navigation.subsections.costByProvider",
-      "navigation.subsections.budgetForecast",
-      "navigation.subsections.projectBreakdown",
     ]);
   });
 
@@ -61,10 +62,10 @@ describe("SUBSECTIONS", () => {
     const items = SUBSECTIONS[ROUTES.GOVERNANCE];
     expect(items.length).toBe(6);
     expect(items.map((i) => i.label)).toEqual([
-      "navigation.subsections.overview",
       "navigation.subsections.teamPerformance",
       "navigation.subsections.seatUserOversight",
-      "navigation.subsections.recentViolations",
+      "navigation.subsections.rules",
+      "navigation.subsections.violations",
       "navigation.subsections.securityEvents",
       "navigation.subsections.policyChanges",
     ]);
@@ -86,7 +87,7 @@ describe("getSubsections", () => {
   it("returns subsections for a given route", () => {
     const items = getSubsections(ROUTES.GOVERNANCE);
     expect(items.length).toBe(6);
-    expect(items[0]!.id).toBe("overview");
+    expect(items[0]!.id).toBe("team-performance");
   });
 });
 
@@ -108,10 +109,11 @@ describe("hasSubsections", () => {
     expect(hasSubsections(ROUTES.AGENTS)).toBe(true);
     expect(hasSubsections(ROUTES.COSTS)).toBe(true);
     expect(hasSubsections(ROUTES.GOVERNANCE)).toBe(true);
+    expect(hasSubsections(ROUTES.SETTINGS)).toBe(true);
   });
 
   it("returns false for routes without subsections", () => {
+    expect(hasSubsections(ROUTES.ROOT)).toBe(false);
     expect(hasSubsections(ROUTES.DASHBOARD)).toBe(false);
-    expect(hasSubsections(ROUTES.SETTINGS)).toBe(false);
   });
 });

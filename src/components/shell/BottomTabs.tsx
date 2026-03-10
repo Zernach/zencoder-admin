@@ -8,7 +8,7 @@ import { TabActions } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
-import { isRouteActive, TABS, type TabRoute } from "@/constants/routes";
+import { isRouteActive, ROUTES, TABS, type NavRoute } from "@/constants/routes";
 import { TOP_NAV_ITEMS } from "@/constants/navigation";
 import { spacing, radius } from "@/theme/tokens";
 
@@ -46,13 +46,19 @@ export const BottomTabs = React.memo(function BottomTabs() {
   }, [router]);
 
   const handleTabPress = useCallback(
-    (tab: TABS, route: TabRoute, active: boolean) => {
+    (tab: TABS, route: NavRoute, active: boolean) => {
       if (active) {
         if (pathnameRef.current !== route) {
           router.navigate(route as never);
         }
         return;
       }
+
+      if (route === ROUTES.ROOT) {
+        router.navigate(route as never);
+        return;
+      }
+
       const tabNavigation = findTabNavigator(navigation, tab);
 
       if (tabNavigation) {
@@ -72,7 +78,7 @@ export const BottomTabs = React.memo(function BottomTabs() {
   const pathnameRef = useRef(pathname);
   pathnameRef.current = pathname;
 
-  const getTabPressHandler = useCallback((tab: TABS, route: TabRoute) => {
+  const getTabPressHandler = useCallback((tab: TABS, route: NavRoute) => {
     const cacheKey = `${tab}_${route}`;
     let handler = pressHandlerCache.get(cacheKey);
     if (!handler) {

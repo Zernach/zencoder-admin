@@ -137,7 +137,7 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
             <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.promptDescription")}</Text>
             {!isEditing && (
               <CustomButton onPress={handleEditPress} accessibilityLabel="Edit description">
-                <Text style={[styles.editButton, { color: theme.text.brand }]}>{t("common.edit")}</Text>
+                <Text style={[styles.editButton, { color: theme.border.brand }]}>{t("common.edit")}</Text>
               </CustomButton>
             )}
           </View>
@@ -158,7 +158,7 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
                   <Text style={[styles.actionButton, { color: theme.text.secondary }]}>{t("common.cancel")}</Text>
                 </CustomButton>
                 <CustomButton onPress={handleSave} accessibilityLabel="Save description">
-                  <View style={[styles.saveButton, { backgroundColor: theme.text.brand }]}>
+                  <View style={[styles.saveButton, { backgroundColor: theme.border.brand }]}>
                     {saving ? (
                       <CustomSpinner size={14} color="#fff" />
                     ) : (
