@@ -1,0 +1,41 @@
+Read the 0000-task-manager.md and plan new tasks by creating new files in the docs/pull_requests markdown files. Write user stories and acceptance criteria and plan writing the tests.
+
+Create the next pull_request files to plan for improvements to the settings screen, where we need to create two new components for modals so the user can choose their preferences:
+
+1. Language Selection
+    - create LanguageSelectionModal and LanguageSelectionForm
+    - default to English
+    - keep redux slice for deviceDefaultLanguage and selectedLanguage
+    - use i18n for app-wide implementation of language translations
+    - create an english json file to catalogue every text in the entire app
+    - allow user to choose between Russian, German, French, English, and Italian
+    - for each of those 5 languages, create a json file for i18n
+    
+
+2. Currency Selection 
+    - create CurrencySelectionModal and CurrencySelectionForm
+    - default to Euro
+    - keep redux slice for currency conversion values (hard-coded conversions) and for selectedCurrency
+    - the entire app, data tables, and data visualizations should abide by the selectedCurrency value and apply conversions app-wide
+    - the entire app should use the conversion values and the selectCurrency's currency symbol
+    - allow user to choose from the following currencies:
+        1. US Dollar (USD)
+        2. Euro (EUR)
+        3. Japanese Yen (JPY)
+        4. British Pound (GBP)
+        5. Chinese Yuan / Renminbi (CNY)
+        6. Swiss Franc (CHF)
+        7. Australian Dollar (AUD)
+        8. Canadian Dollar (CAD)
+        9. Hong Kong Dollar (HKD)
+        10. Singapore Dollar (SGD)
+        11. Swedish Krona (SEK)
+        12. Norwegian Krone (NOK)
+        13. New Zealand Dollar (NZD)
+        14. Mexican Peso (MXN)
+        15. Indian Rupee (INR)
+        16. South Korean Won (KRW)
+        17. Turkish Lira (TRY)
+        18. Brazilian Real (BRL)
+        19. South African Rand (ZAR)
+        20. Russian Ruble (RUB)

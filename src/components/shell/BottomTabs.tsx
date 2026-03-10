@@ -45,7 +45,12 @@ export const BottomTabs = React.memo(function BottomTabs() {
 
   const handleTabPress = useCallback(
     (tab: TABS, route: TabRoute, active: boolean) => {
-      if (active) return;
+      if (active) {
+        if (pathnameRef.current !== route) {
+          router.navigate(route as never);
+        }
+        return;
+      }
       const tabNavigation = findTabNavigator(navigation, tab);
 
       if (tabNavigation) {

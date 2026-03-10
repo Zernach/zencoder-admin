@@ -38,6 +38,7 @@ export function ProjectDetailScreen({ projectId }: ProjectDetailScreenProps) {
         width: 100,
         render: (r) => <StatusBadge variant="run-status" status={r.status} />,
       },
+      { key: "startedAtIso", header: "Created", width: 160, render: (r) => <Text style={ct.secondary}>{new Date(r.startedAtIso).toLocaleString()}</Text> },
       { key: "provider", header: "Provider", width: 100, render: (r) => <Text style={ct.secondary}>{r.provider}</Text> },
       {
         key: "costUsd",

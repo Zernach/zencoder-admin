@@ -48,7 +48,12 @@ export const Sidebar = React.memo(function Sidebar() {
       let handler = navPressHandlers.get(route);
       if (!handler) {
         handler = () => {
-          if (isRouteActive(pathnameRef.current, route)) return;
+          if (isRouteActive(pathnameRef.current, route)) {
+            if (pathnameRef.current !== route) {
+              routerRef.current.navigate(route as never);
+            }
+            return;
+          }
           routerRef.current.navigate(route as never);
         };
         navPressHandlers.set(route, handler);

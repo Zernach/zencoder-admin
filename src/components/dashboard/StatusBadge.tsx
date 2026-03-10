@@ -36,7 +36,7 @@ export const StatusBadge = React.memo(function StatusBadge({ variant, status, se
     const STATUS_CONFIG: Record<RunStatus, StatusConfigEntry> = {
       succeeded: { color: theme.state.success, Icon: CheckCircle, label: "Success" },
       failed: { color: theme.state.error, Icon: XCircle, label: "Failed" },
-      running: { color: theme.state.info, label: "Running", showSpinner: true },
+      running: { color: theme.state.warning, label: "Running", showSpinner: true },
       queued: { color: theme.text.secondary, Icon: Clock, label: "Queued" },
       canceled: { color: theme.text.tertiary, Icon: Slash, label: "Canceled" },
     };

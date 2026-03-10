@@ -72,7 +72,14 @@
 | ✅ | [0064](./0064-trend-chart-line-candlestick-toggle.md) | Trend Charts: Line/Candlestick (Diffs) Toggle | Components |
 | ✅ | [0065](./0065-governance-seat-usage-hover-tooltip-and-table-removal.md) | Governance Seat Usage: Hover Tooltip Details + Table Removal | Governance |
 | ✅ | [0066](./0066-chart-primitives-dry-refactor.md) | Chart Primitives DRY Refactor: Bar, Line/Candlestick, Pie | Components |
+| ⬜ | [0067](./0067-settings-preferences-slice-i18n-infrastructure.md) | Settings Preferences Redux Slice + i18n Infrastructure | Foundation |
+| ⬜ | [0068](./0068-language-selection-modal-and-translations.md) | Language Selection Modal, Form & Multi-Language Files | Settings |
+| ⬜ | [0069](./0069-i18n-app-wide-string-extraction.md) | i18n App-Wide String Extraction & Translation Integration | i18n |
+| ⬜ | [0070](./0070-currency-conversion-engine-and-redux-state.md) | Currency Conversion Engine, Redux State & Formatter Updates | Settings |
+| ⬜ | [0071](./0071-currency-selection-modal-and-settings-integration.md) | Currency Selection Modal & Form + Settings Integration | Settings |
+| ⬜ | [0072](./0072-currency-app-wide-integration.md) | Currency App-Wide Integration: Tables, Charts & Visualizations | Currency |
+| ⬜ | [0073](./0073-language-currency-preferences-test-coverage.md) | Language & Currency Preferences Full Test Coverage | Testing |
 
 ---
 
-**Progress: 66 / 66**
+**Progress: 66 / 73**
