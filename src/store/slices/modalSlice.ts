@@ -7,6 +7,7 @@ export enum ModalName {
   CreateTeam = "createTeam",
   CreateAgent = "createAgent",
   SignOutNotice = "signOutNotice",
+  LanguageSelection = "languageSelection",
 }
 
 export interface ModalState {
@@ -21,6 +22,7 @@ const initialState: ModalState = {
     [ModalName.CreateTeam]: false,
     [ModalName.CreateAgent]: false,
     [ModalName.SignOutNotice]: false,
+    [ModalName.LanguageSelection]: false,
   },
 };
 

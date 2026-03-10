@@ -2,14 +2,15 @@ import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { modalSlice } from "@/store/slices/modalSlice";
+import { modalSlice, ModalName } from "@/store/slices/modalSlice";
+import { settingsSlice } from "@/store/slices/settingsSlice";
 import { spacing } from "@/theme/tokens";
 
 function renderWithStore(ui: React.ReactElement) {
   const store = configureStore({
-    reducer: { modal: modalSlice.reducer },
+    reducer: { modal: modalSlice.reducer, settings: settingsSlice.reducer },
   });
-  return render(<Provider store={store}>{ui}</Provider>);
+  return { ...render(<Provider store={store}>{ui}</Provider>), store };
 }
 
 jest.mock("lucide-react-native", () => {
@@ -29,6 +30,9 @@ jest.mock("lucide-react-native", () => {
     Trash2: stub("Trash2"),
     AlertTriangle: stub("AlertTriangle"),
     User: stub("User"),
+    Globe: stub("Globe"),
+    ChevronRight: stub("ChevronRight"),
+    Check: stub("Check"),
   };
 });
 
@@ -162,5 +166,20 @@ describe("SettingsScreen", () => {
     expect(getByText("ENTERPRISE")).toBeTruthy();
     expect(getByText("73 / 100")).toBeTruthy();
     expect(getByText("73% of seats used")).toBeTruthy();
+  });
+
+  it("renders Language row with current language name", () => {
+    const { getByText } = renderWithStore(<SettingsScreen />);
+
+    expect(getByText("Language")).toBeTruthy();
+    expect(getByText("English")).toBeTruthy();
+  });
+
+  it("dispatches openModal for LanguageSelection when Language row is pressed", () => {
+    const { getByLabelText, store } = renderWithStore(<SettingsScreen />);
+
+    fireEvent.press(getByLabelText("Select language"));
+
+    expect(store.getState().modal.visible[ModalName.LanguageSelection]).toBe(true);
   });
 });

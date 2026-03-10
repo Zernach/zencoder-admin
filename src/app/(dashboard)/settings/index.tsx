@@ -2,15 +2,17 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomSwitch } from "@/components/inputs";
-import { Moon, Mail, MessageSquare, RefreshCw, LogOut, Trash2, User } from "lucide-react-native";
+import { Moon, Mail, MessageSquare, RefreshCw, LogOut, Trash2, User, Globe, ChevronRight } from "lucide-react-native";
 import { SectionHeader } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
 import { SignOutNoticeModal } from "@/features/analytics/components/SignOutNoticeModal";
+import { LanguageSelectionModal } from "@/features/analytics/components/LanguageSelectionModal";
+import { LANGUAGE_OPTIONS } from "@/types/settings";
 import { spacing, radius } from "@/theme/tokens";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { typography } from "@/theme/typography";
-import { useAppDispatch, openModal, ModalName } from "@/store";
+import { useAppDispatch, useAppSelector, openModal, ModalName, selectSelectedLanguage } from "@/store";
 
 type SettingToggleKey = "darkMode" | "emailNotifs" | "slackInteg" | "autoRefresh";
 type NonThemeSettingKey = Exclude<SettingToggleKey, "darkMode">;
@@ -62,6 +64,17 @@ export default function SettingsScreen() {
     }
     return handler;
   }, [toggleHandlerCache]);
+
+  const selectedLanguage = useAppSelector(selectSelectedLanguage);
+  const selectedLanguageLabel = useMemo(
+    () => LANGUAGE_OPTIONS.find((o) => o.code === selectedLanguage)?.nativeLabel ?? "English",
+    [selectedLanguage],
+  );
+
+  const handleOpenLanguageSelection = useCallback(
+    () => dispatch(openModal(ModalName.LanguageSelection)),
+    [dispatch],
+  );
 
   const handleOpenSignOut = useCallback(
     () => dispatch(openModal(ModalName.SignOutNotice)),
@@ -124,6 +137,26 @@ export default function SettingsScreen() {
               </View>
             );
           })}
+
+          {/* Language preference row */}
+          <CustomButton
+            onPress={handleOpenLanguageSelection}
+            style={[styles.row, styles.rowDivider]}
+            accessibilityRole="button"
+            accessibilityLabel="Select language"
+          >
+            <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
+              <Globe size={16} color={theme.text.secondary} />
+            </View>
+            <View style={styles.rowText}>
+              <Text style={[styles.label, { color: theme.text.primary }]}>Language</Text>
+              <Text style={[styles.desc, { color: theme.text.tertiary }]}>Display language preference</Text>
+            </View>
+            <View style={styles.langValue}>
+              <Text style={[styles.langValueText, { color: theme.text.secondary }]}>{selectedLanguageLabel}</Text>
+              <ChevronRight size={16} color={theme.text.tertiary} />
+            </View>
+          </CustomButton>
         </View>
       </View>
 
@@ -206,6 +239,7 @@ export default function SettingsScreen() {
       </View>
 
       <SignOutNoticeModal />
+      <LanguageSelectionModal />
     </ScreenWrapper>
   );
 }
@@ -366,5 +400,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing[8],
+  },
+  langValue: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing[4],
+  },
+  langValueText: {
+    fontFamily: typography.tableBody.fontFamily,
+    fontSize: 13,
+    fontWeight: "500",
   },
 });
