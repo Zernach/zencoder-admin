@@ -244,7 +244,11 @@
     "ownerRole": "Владелец",
     "language": "Язык",
     "languageDescription": "Предпочтение языка отображения",
-    "selectLanguage": "Выберите язык"
+    "selectLanguage": "Выберите язык",
+    "currency": "Валюта",
+    "currencyDescription": "Предпочитаемая валюта отображения",
+    "selectCurrency": "Выберите валюту",
+    "searchCurrency": "Поиск валют..."
   },
   "settings.signOut": {
     "demoMode": "Демо-режим",

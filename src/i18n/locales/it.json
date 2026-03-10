@@ -244,7 +244,11 @@
     "ownerRole": "Proprietario",
     "language": "Lingua",
     "languageDescription": "Preferenza lingua di visualizzazione",
-    "selectLanguage": "Seleziona lingua"
+    "selectLanguage": "Seleziona lingua",
+    "currency": "Valuta",
+    "currencyDescription": "Valuta di visualizzazione preferita",
+    "selectCurrency": "Seleziona valuta",
+    "searchCurrency": "Cerca valute..."
   },
   "settings.signOut": {
     "demoMode": "Modalità demo",

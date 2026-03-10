@@ -3,17 +3,18 @@ import { useTranslation } from "react-i18next";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomSwitch } from "@/components/inputs";
-import { Moon, Mail, MessageSquare, RefreshCw, LogOut, Trash2, User, Globe, ChevronRight } from "lucide-react-native";
+import { Moon, Mail, MessageSquare, RefreshCw, LogOut, Trash2, User, Globe, DollarSign, ChevronRight } from "lucide-react-native";
 import { SectionHeader } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
 import { SignOutNoticeModal } from "@/features/analytics/components/SignOutNoticeModal";
 import { LanguageSelectionModal } from "@/features/analytics/components/LanguageSelectionModal";
-import { LANGUAGE_OPTIONS } from "@/types/settings";
+import { CurrencySelectionModal } from "@/features/analytics/components/CurrencySelectionModal";
+import { LANGUAGE_OPTIONS, CURRENCY_OPTIONS } from "@/types/settings";
 import { spacing, radius } from "@/theme/tokens";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { typography } from "@/theme/typography";
-import { useAppDispatch, useAppSelector, openModal, ModalName, selectSelectedLanguage } from "@/store";
+import { useAppDispatch, useAppSelector, openModal, ModalName, selectSelectedLanguage, selectSelectedCurrency } from "@/store";
 
 type SettingToggleKey = "darkMode" | "emailNotifs" | "slackInteg" | "autoRefresh";
 type NonThemeSettingKey = Exclude<SettingToggleKey, "darkMode">;
@@ -89,6 +90,20 @@ export default function SettingsScreen() {
 
   const handleOpenLanguageSelection = useCallback(
     () => dispatch(openModal(ModalName.LanguageSelection)),
+    [dispatch],
+  );
+
+  const selectedCurrency = useAppSelector(selectSelectedCurrency);
+  const selectedCurrencyOption = useMemo(
+    () => CURRENCY_OPTIONS.find((o) => o.code === selectedCurrency),
+    [selectedCurrency],
+  );
+  const selectedCurrencyLabel = selectedCurrencyOption
+    ? `${selectedCurrencyOption.symbol} ${selectedCurrencyOption.code}`
+    : "EUR";
+
+  const handleOpenCurrencySelection = useCallback(
+    () => dispatch(openModal(ModalName.CurrencySelection)),
     [dispatch],
   );
 
@@ -177,6 +192,26 @@ export default function SettingsScreen() {
               <ChevronRight size={16} color={theme.text.tertiary} />
             </View>
           </CustomButton>
+
+          {/* Currency preference row */}
+          <CustomButton
+            onPress={handleOpenCurrencySelection}
+            style={[styles.row, styles.rowDivider]}
+            accessibilityRole="button"
+            accessibilityLabel={t("settings.selectCurrency")}
+          >
+            <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
+              <DollarSign size={16} color={theme.text.secondary} />
+            </View>
+            <View style={styles.rowText}>
+              <Text style={[styles.label, { color: theme.text.primary }]}>{t("settings.currency")}</Text>
+              <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t("settings.currencyDescription")}</Text>
+            </View>
+            <View style={styles.langValue}>
+              <Text style={[styles.langValueText, { color: theme.text.secondary }]}>{selectedCurrencyLabel}</Text>
+              <ChevronRight size={16} color={theme.text.tertiary} />
+            </View>
+          </CustomButton>
         </View>
       </View>
 
@@ -260,6 +295,7 @@ export default function SettingsScreen() {
 
       <SignOutNoticeModal />
       <LanguageSelectionModal />
+      <CurrencySelectionModal />
     </ScreenWrapper>
   );
 }

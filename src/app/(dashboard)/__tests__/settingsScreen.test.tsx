@@ -31,6 +31,7 @@ jest.mock("lucide-react-native", () => {
     AlertTriangle: stub("AlertTriangle"),
     User: stub("User"),
     Globe: stub("Globe"),
+    DollarSign: stub("DollarSign"),
     ChevronRight: stub("ChevronRight"),
     Check: stub("Check"),
   };
@@ -88,6 +89,26 @@ jest.mock("@/components/buttons", () => {
       <Pressable onPress={onPress} accessibilityRole={rest.accessibilityRole} accessibilityLabel={rest.accessibilityLabel}>
         {label ? <Text>{label}</Text> : children}
       </Pressable>
+    ),
+  };
+});
+
+jest.mock("@/components/inputs", () => {
+  const React = require("react");
+  const { TextInput } = require("react-native");
+  return {
+    CustomSwitch: ({ value, onValueChange, accessibilityLabel }: { value: boolean; onValueChange: () => void; accessibilityLabel?: string }) => {
+      const { Pressable, Text } = require("react-native");
+      return (
+        <Pressable onPress={onValueChange} accessibilityLabel={accessibilityLabel}>
+          <Text>{value ? "ON" : "OFF"}</Text>
+        </Pressable>
+      );
+    },
+    CustomTextInput: React.forwardRef(
+      ({ value, onChangeText, placeholder, accessibilityLabel }: { value?: string; onChangeText?: (v: string) => void; placeholder?: string; accessibilityLabel?: string }, _ref: unknown) => (
+        <TextInput value={value} onChangeText={onChangeText} placeholder={placeholder} accessibilityLabel={accessibilityLabel} />
+      ),
     ),
   };
 });
@@ -183,5 +204,21 @@ describe("SettingsScreen", () => {
     fireEvent.press(getByLabelText("settings.selectLanguage"));
 
     expect(store.getState().modal.visible[ModalName.LanguageSelection]).toBe(true);
+  });
+
+  it("renders Currency row with current currency info", () => {
+    const { getByText } = renderWithStore(<SettingsScreen />);
+
+    expect(getByText("settings.currency")).toBeTruthy();
+    // Default currency is EUR
+    expect(getByText("€ EUR")).toBeTruthy();
+  });
+
+  it("dispatches openModal for CurrencySelection when Currency row is pressed", () => {
+    const { getByLabelText, store } = renderWithStore(<SettingsScreen />);
+
+    fireEvent.press(getByLabelText("settings.selectCurrency"));
+
+    expect(store.getState().modal.visible[ModalName.CurrencySelection]).toBe(true);
   });
 });

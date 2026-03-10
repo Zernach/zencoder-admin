@@ -106,10 +106,10 @@
     "maxConcurrentRuns": "Max concurrent runs/min",
     "reliabilityTrend": "Reliability Trend",
     "failureCategories": "Failure Categories",
-    "agentPerformance": "Agent Performance",
+    "agentPerformance": "Agents Breakdown",
     "agentsWithActivity": "{{count}} agents with activity",
     "createAgent": "+ Create Agent",
-    "projectBreakdown": "Project Breakdown",
+    "projectBreakdown": "Projects Breakdown",
     "projectsActive": "{{active}} of {{total}} projects active",
     "activeProjects": "Active Projects",
     "ofTotalProjects": "of {{total}} total",
@@ -244,7 +244,11 @@
     "ownerRole": "Owner",
     "language": "Language",
     "languageDescription": "Display language preference",
-    "selectLanguage": "Select language"
+    "selectLanguage": "Select language",
+    "currency": "Currency",
+    "currencyDescription": "Display currency preference",
+    "selectCurrency": "Select currency",
+    "searchCurrency": "Search currencies..."
   },
   "settings.signOut": {
     "demoMode": "Demo Mode",

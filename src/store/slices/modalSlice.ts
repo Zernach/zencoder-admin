@@ -8,6 +8,7 @@ export enum ModalName {
   CreateAgent = "createAgent",
   SignOutNotice = "signOutNotice",
   LanguageSelection = "languageSelection",
+  CurrencySelection = "currencySelection",
 }
 
 export interface ModalState {
@@ -23,6 +24,7 @@ const initialState: ModalState = {
     [ModalName.CreateAgent]: false,
     [ModalName.SignOutNotice]: false,
     [ModalName.LanguageSelection]: false,
+    [ModalName.CurrencySelection]: false,
   },
 };
 
