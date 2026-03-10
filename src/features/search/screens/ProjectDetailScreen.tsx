@@ -1,6 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useRouter, usePathname } from "expo-router";
+import { CustomButton } from "@/components/buttons";
 import { useProjectDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
@@ -12,6 +14,7 @@ import { semanticThemes } from "@/theme/themes";
 import { cellText, getSuccessRateColor } from "@/components/tables/cellStyles";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { spacing } from "@/theme/tokens";
+import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
 
 interface ProjectDetailScreenProps {
   projectId: string;
@@ -24,18 +27,37 @@ export function ProjectDetailScreen({ projectId }: ProjectDetailScreenProps) {
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
   const { formatCurrency } = useCurrencyFormatter();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const navigateTo = useCallback(
+    (entityType: "agent" | "run", entityId: string) => {
+      const tab = resolveTabFromPathname(pathname);
+      const route = buildEntityRoute(tab, entityType, entityId);
+      router.push(route as never);
+    },
+    [pathname, router],
+  );
 
   const agentColumns = useMemo<ColumnDef<Agent>[]>(
     () => [
-      { key: "name", header: t("entityDetail.table.agentName"), render: (a) => <Text style={ct.primary}>{a.name}</Text> },
+      { key: "name", header: t("entityDetail.table.agentName"), render: (a) => (
+        <CustomButton onPress={() => navigateTo("agent", a.id)} accessibilityRole="link" accessibilityLabel={`View agent ${a.name}`}>
+          <Text style={ct.link} numberOfLines={1}>{a.name}</Text>
+        </CustomButton>
+      ) },
       { key: "id", header: t("entityDetail.table.id"), width: 140, render: (a) => <Text style={ct.secondary}>{a.id.slice(0, 12)}</Text> },
     ],
-    [ct, t],
+    [ct, t, navigateTo],
   );
 
   const runColumns = useMemo<ColumnDef<RunListRow>[]>(
     () => [
-      { key: "id", header: t("entityDetail.table.runId"), width: 140, render: (r) => <Text style={ct.primary}>{r.id.slice(0, 12)}</Text> },
+      { key: "id", header: t("entityDetail.table.runId"), width: 140, render: (r) => (
+        <CustomButton onPress={() => navigateTo("run", r.id)} accessibilityRole="link" accessibilityLabel={`View run ${r.id}`}>
+          <Text style={ct.link} numberOfLines={1}>{r.id.slice(0, 12)}</Text>
+        </CustomButton>
+      ) },
       {
         key: "status",
         header: t("entityDetail.table.status"),
@@ -53,7 +75,7 @@ export function ProjectDetailScreen({ projectId }: ProjectDetailScreenProps) {
         sortAccessor: (r) => r.costUsd,
       },
     ],
-    [ct, t, formatCurrency],
+    [ct, t, formatCurrency, navigateTo],
   );
 
   if (loading) return <LoadingSkeleton variant="text" />;

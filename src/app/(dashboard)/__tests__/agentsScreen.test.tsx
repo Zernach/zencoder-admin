@@ -8,6 +8,7 @@ const mockPathname = "/agents";
 const mockUseAgentsHub = jest.fn();
 const mockDispatch = jest.fn();
 const mockSectionRef = jest.fn((_sectionId: string) => jest.fn());
+const mockDataTable = jest.fn();
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -102,17 +103,17 @@ jest.mock("@/components/charts", () => {
       </View>
     ),
     LineChart: () => <View />,
-    BreakdownChart: ({
+    BarChart: ({
       data,
       truncateLabels,
     }: {
-      data: Array<{ key: string; value: number }>;
+      data: Array<{ key?: string; label?: string; value: number }>;
       truncateLabels?: boolean;
     }) => (
       <View>
         <Text testID="truncateLabels">{String(truncateLabels ?? true)}</Text>
         {data.map((item) => (
-          <Text key={item.key}>{item.key}</Text>
+          <Text key={item.key ?? item.label}>{item.key ?? item.label}</Text>
         ))}
       </View>
     ),
@@ -123,17 +124,21 @@ jest.mock("@/components/tables", () => {
   const React = require("react");
   const { View, Text, StyleSheet } = require("react-native");
   return {
-    DataTable: ({ columns, data }: { columns: Array<{ header: string; key: string; render?: (row: Record<string, unknown>) => React.ReactNode }>; data: Array<Record<string, unknown>> }) => (
-      <View>
-        {data.map((row, index) => (
-          <View key={index} testID={`table-row-${index}`}>
-            {columns.map((col) =>
-              col.render ? <View key={col.key}>{col.render(row)}</View> : <Text key={col.key}>{String(row[col.key] ?? "")}</Text>
-            )}
-          </View>
-        ))}
-      </View>
-    ),
+    DataTable: (props: { columns: Array<{ header: string; key: string; render?: (row: Record<string, unknown>) => React.ReactNode }>; data: Array<Record<string, unknown>>; paginate?: boolean }) => {
+      const { columns, data } = props;
+      mockDataTable(props);
+      return (
+        <View>
+          {data.map((row, index) => (
+            <View key={index} testID={`table-row-${index}`}>
+              {columns.map((col) =>
+                col.render ? <View key={col.key}>{col.render(row)}</View> : <Text key={col.key}>{String(row[col.key] ?? "")}</Text>
+              )}
+            </View>
+          ))}
+        </View>
+      );
+    },
     cellText: () => StyleSheet.create({
       primary: { color: "#e5e5e5", fontSize: 12 },
       secondary: { color: "#a3a3a3", fontSize: 12 },
@@ -235,6 +240,7 @@ function createAgentsHubData(): AgentsHubResponse {
 describe("AgentsScreen", () => {
   beforeEach(() => {
     mockSectionRef.mockClear();
+    mockDataTable.mockClear();
   });
 
   it("passes truncateLabels=false to failure categories breakdown chart", () => {
@@ -300,8 +306,8 @@ describe("AgentsScreen", () => {
       refetch: jest.fn(),
     });
 
-    const { getByLabelText } = render(<AgentsScreen />);
-    fireEvent.press(getByLabelText("View agent CodeBot"));
+    const { getAllByLabelText } = render(<AgentsScreen />);
+    fireEvent.press(getAllByLabelText("View agent CodeBot")[0]!);
 
     expect(mockPush).toHaveBeenCalledWith("/agents/agent/agent_1");
   });
@@ -321,7 +327,7 @@ describe("AgentsScreen", () => {
     expect(mockPush).toHaveBeenCalledWith("/agents/team/team_1");
   });
 
-  it("navigates to run detail when pressing run ID in recent runs table", () => {
+  it("navigates to run detail when pressing run ID in all runs table", () => {
     mockPush.mockClear();
     mockUseAgentsHub.mockReturnValue({
       data: createAgentsHubData(),
@@ -334,6 +340,24 @@ describe("AgentsScreen", () => {
     fireEvent.press(getByLabelText("View run run_001"));
 
     expect(mockPush).toHaveBeenCalledWith("/agents/run/run_001");
+  });
+
+  it("enables pagination only for the runs table", () => {
+    mockUseAgentsHub.mockReturnValue({
+      data: createAgentsHubData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    render(<AgentsScreen />);
+
+    const tableCalls = mockDataTable.mock.calls.map(([props]) => props as { paginate?: boolean; columns: Array<{ key: string }> });
+    const paginatedCalls = tableCalls.filter((props) => props.paginate === true);
+
+    expect(tableCalls.length).toBe(3);
+    expect(paginatedCalls.length).toBe(1);
+    expect(paginatedCalls[0]?.columns.some((column) => column.key === "id")).toBe(true);
   });
 
   it("renders four performance trend line charts in reliability section", () => {

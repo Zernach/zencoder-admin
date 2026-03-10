@@ -1171,10 +1171,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
     const projectBreakdown = buildProjectBreakdown(runs, this.seed.projects, this.seed.teams);
 
-    // Recent runs (latest 25)
     const recentRuns = [...runs]
-      .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
-      .slice(0, 25);
+      .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso));
 
     return {
       runSuccessRate: succeeded / total,

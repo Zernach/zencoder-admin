@@ -5,6 +5,8 @@ import { formatPercent } from "@/features/analytics/utils/formatters";
 import { typography } from "@/theme/typography";
 import { getOrangePieColorsByValue } from "./palette";
 import { PieChart, type PieChartDatum } from "./PieChart";
+import { BarChart, type BarChartBreakdownDatum } from "./BarChart";
+import { BarPieChart } from "./BarPieChart";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing, radius } from "@/theme/tokens";
@@ -29,6 +31,20 @@ export const DonutChart = React.memo(function DonutChart({
   const size = Math.min(height, 220);
   const total = data.reduce((sum, datum) => sum + datum.value, 0);
   const safeTotal = total || 1;
+  const resolvedFormatValue = formatValue ?? ((value: number) => String(value));
+
+  const barData = useMemo<BarChartBreakdownDatum[]>(
+    () =>
+      data.map((datum) => ({
+        key: datum.key,
+        value: datum.value,
+        hoverRows: [
+          { label: datum.key, value: resolvedFormatValue(datum.value) },
+          { label: "Share", value: formatPercent((datum.value / safeTotal) * 100) },
+        ],
+      })),
+    [data, resolvedFormatValue, safeTotal],
+  );
 
   const pieData = useMemo<PieChartDatum[]>(
     () => {
@@ -38,107 +54,104 @@ export const DonutChart = React.memo(function DonutChart({
         value: datum.value,
         color: colors[index] ?? "#f64a00",
         tooltipRows: [
-          { label: datum.key, value: formatValue ? formatValue(datum.value) : String(datum.value) },
+          { label: datum.key, value: resolvedFormatValue(datum.value) },
           { label: "Share", value: formatPercent((datum.value / safeTotal) * 100) },
         ],
       }));
     },
-    [data, safeTotal, formatValue],
+    [data, safeTotal, resolvedFormatValue],
   );
 
   return (
-    <View style={styles.container}>
-      <PieChart data={pieData} size={size} innerRadiusRatio={0.6} style={styles.chartFrame}>
-        {({ slices }) => (
-          <>
-            {slices
-              .filter((slice) => slice.percent > 0.05)
-              .map((slice) => (
-                <Text
-                  key={`pct-${slice.id}`}
+    <BarPieChart
+      defaultMode="pie"
+      renderBar={() => (
+        <BarChart
+          data={barData}
+          variant="horizontal-bar"
+          showModeToggle={false}
+          truncateLabels={false}
+          formatValue={resolvedFormatValue}
+        />
+      )}
+      renderPie={() => (
+        <View style={styles.pieRow}>
+          <PieChart data={pieData} size={size} innerRadiusRatio={0.6} style={styles.chartFrame}>
+            {() => (
+              <>
+                {(centerLabel || centerValue) && (
+                  <View style={styles.centerTextWrap}>
+                    {centerValue ? (
+                      <Text
+                        style={[
+                          styles.centerValue,
+                          {
+                            color: textColors.primary,
+                          },
+                        ]}
+                      >
+                        {centerValue}
+                      </Text>
+                    ) : null}
+                    {centerLabel ? (
+                      <Text
+                        style={[
+                          styles.centerLabel,
+                          {
+                            color: textColors.tertiary,
+                          },
+                        ]}
+                      >
+                        {centerLabel}
+                      </Text>
+                    ) : null}
+                  </View>
+                )}
+              </>
+            )}
+          </PieChart>
+          <View style={styles.legend}>
+            {data.map((d, i) => (
+              <View key={d.key} style={styles.legendItem}>
+                <View
                   style={[
-                    styles.segmentLabel,
+                    styles.swatch,
                     {
-                      left: slice.centroidX - 18,
-                      top: slice.centroidY - typography.label.lineHeight / 2,
-                      color: mode === "dark" ? "#ffffff" : "#000000",
+                      backgroundColor: pieData[i]?.color ?? "#f64a00",
                     },
                   ]}
+                />
+                <Text
+                  style={[styles.legendLabel, { color: textColors.secondary }]}
+                  numberOfLines={1}
                 >
-                  {formatPercent(slice.percent * 100)}
+                  {d.key}
                 </Text>
-              ))}
-
-            {(centerLabel || centerValue) && (
-              <View style={styles.centerTextWrap}>
-                {centerValue ? (
-                  <Text
-                    style={[
-                      styles.centerValue,
-                      {
-                        color: textColors.primary,
-                      },
-                    ]}
-                  >
-                    {centerValue}
-                  </Text>
-                ) : null}
-                {centerLabel ? (
-                  <Text
-                    style={[
-                      styles.centerLabel,
-                      {
-                        color: textColors.tertiary,
-                      },
-                    ]}
-                  >
-                    {centerLabel}
-                  </Text>
-                ) : null}
+                <Text style={[styles.legendValue, { color: textColors.secondary }]}>
+                  {resolvedFormatValue(d.value)}
+                </Text>
+                <Text style={[styles.legendPct, { color: textColors.tertiary }]}>
+                  {formatPercent((d.value / safeTotal) * 100)}
+                </Text>
               </View>
-            )}
-          </>
-        )}
-      </PieChart>
-      <View style={styles.legend}>
-        {data.map((d, i) => (
-          <View key={d.key} style={styles.legendItem}>
-            <View
-              style={[
-                styles.swatch,
-                {
-                  backgroundColor: pieData[i]?.color ?? "#f64a00",
-                },
-              ]}
-            />
-            <Text style={[styles.legendLabel, { color: textColors.secondary }]}>
-              {d.key}
-            </Text>
-            <Text style={[styles.legendPct, { color: textColors.tertiary }]}>
-              {formatPercent((d.value / safeTotal) * 100)}
-            </Text>
+            ))}
           </View>
-        ))}
-      </View>
-    </View>
+        </View>
+      )}
+    />
   );
 });
 
 const styles = StyleSheet.create({
-  container: {
-    gap: spacing[12],
+  pieRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    gap: spacing[16],
   },
   chartFrame: {
-    alignSelf: "center",
-  },
-  segmentLabel: {
-    position: "absolute",
-    width: 36,
-    textAlign: "center",
-    fontFamily: typography.label.fontFamily,
-    fontSize: typography.label.fontSize,
-    fontWeight: "600",
-    lineHeight: typography.label.lineHeight,
+    flexShrink: 0,
+    alignSelf: "flex-start",
   },
   centerTextWrap: {
     ...StyleSheet.absoluteFillObject,
@@ -161,14 +174,15 @@ const styles = StyleSheet.create({
     lineHeight: typography.label.lineHeight,
   },
   legend: {
-    width: "100%",
-    alignSelf: "stretch",
+    flex: 1,
+    minWidth: 180,
+    alignSelf: "flex-start",
+    justifyContent: "center",
     gap: spacing[8],
   },
   legendItem: {
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
     gap: spacing[6],
   },
   swatch: {
@@ -182,8 +196,14 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     lineHeight: typography.tableBody.lineHeight,
   },
-  legendPct: {
+  legendValue: {
     marginLeft: "auto",
+    fontFamily: typography.tableBody.fontFamily,
+    fontSize: typography.tableBody.fontSize,
+    fontWeight: "600",
+    lineHeight: typography.tableBody.lineHeight,
+  },
+  legendPct: {
     fontFamily: typography.tableBody.fontFamily,
     fontSize: typography.tableBody.fontSize,
     fontWeight: "600",

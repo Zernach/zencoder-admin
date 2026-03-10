@@ -1,4 +1,4 @@
-import { cloneElement, isValidElement, memo, useCallback, useMemo, useRef, useState } from "react";
+import { cloneElement, isValidElement, memo, useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import type { DimensionValue } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
@@ -7,6 +7,7 @@ import { CustomButton } from "@/components/buttons";
 import { LoadingSkeleton, EmptyState } from "@/components/dashboard";
 import { CustomList } from "@/components/lists";
 import { SortableHeader } from "./SortableHeader";
+import { PaginationControls } from "./PaginationControls";
 import type { SortDirection } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -35,6 +36,7 @@ interface DataTableProps<T> {
   onRowPress?: (row: T) => void;
   loading?: boolean;
   emptyMessage?: string;
+  paginate?: boolean;
   keyExtractor: (row: T) => string;
 }
 
@@ -46,6 +48,8 @@ const HORIZONTAL_SCROLL_PROPS = {
   style: { width: "100%" },
   contentContainerStyle: { minWidth: "100%", flexGrow: 1 },
 } as const;
+
+const PAGINATION_PAGE_SIZE = 25;
 
 function normalizeSortValue(value: SortableValue): string | number | boolean | null {
   if (value == null) return null;
@@ -205,6 +209,7 @@ function DataTableInner<T>({
   onRowPress,
   loading,
   emptyMessage,
+  paginate = false,
   keyExtractor,
 }: DataTableProps<T>) {
   const { t } = useTranslation();
@@ -217,6 +222,7 @@ function DataTableInner<T>({
     sortBy: initialSortBy,
     sortDirection: initialSortDirection ?? "asc",
   });
+  const [currentPage, setCurrentPage] = useState(1);
 
   const activeSortBy = onSort ? sortBy : internalSort.sortBy;
   const activeSortDirection = onSort ? sortDirection : internalSort.sortDirection;
@@ -245,6 +251,33 @@ function DataTableInner<T>({
       })
       .map((entry) => entry.row);
   }, [activeSortBy, activeSortDirection, columns, data]);
+
+  const shouldPaginate = paginate && sortedData.length > PAGINATION_PAGE_SIZE;
+  const totalPages = shouldPaginate
+    ? Math.ceil(sortedData.length / PAGINATION_PAGE_SIZE)
+    : 1;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeSortBy, activeSortDirection, paginate]);
+
+  useEffect(() => {
+    if (!shouldPaginate) {
+      if (currentPage !== 1) setCurrentPage(1);
+      return;
+    }
+
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, shouldPaginate, totalPages]);
+
+  const pageStartIndex = shouldPaginate
+    ? (currentPage - 1) * PAGINATION_PAGE_SIZE
+    : 0;
+  const visibleData = shouldPaginate
+    ? sortedData.slice(pageStartIndex, pageStartIndex + PAGINATION_PAGE_SIZE)
+    : sortedData;
 
   const handleSortPress = useCallback(
     (key: string) => {
@@ -279,65 +312,83 @@ function DataTableInner<T>({
     return <EmptyState message={emptyMessage ?? t("common.noDataAvailable")} />;
 
   return (
-    <CustomList scrollViewProps={HORIZONTAL_SCROLL_PROPS}>
-      <View style={styles.tableContent}>
-        {/* Header */}
-        <View style={headerRowStyle}>
-          {columns.map((col, colIdx) => {
-            const isLast = colIdx === columns.length - 1;
-            const effectiveAlign = col.align ?? (isLast ? "right" : undefined);
-            return (
-              <View
-                key={col.key}
-                style={[
-                  styles.cell,
-                  col.width != null
-                    ? { minWidth: col.width, flexGrow: 1, flexBasis: 0 }
-                    : styles.flexCell,
-                  effectiveAlign === "right" && styles.alignRight,
-                  effectiveAlign === "center" && styles.alignCenter,
-                ]}
-              >
-                {col.sortable !== false ? (
-                  <SortableHeader
-                    label={col.header}
-                    active={activeSortBy === col.key}
-                    direction={activeSortBy === col.key ? activeSortDirection : "asc"}
-                    columnKey={col.key}
-                    onSort={handleSortPress}
-                  />
-                ) : (
-                  <Text style={[styles.headerText, { color: theme.text.secondary }]}>{col.header}</Text>
-                )}
-              </View>
-            );
-          })}
+    <View style={styles.tableWrapper}>
+      <CustomList scrollViewProps={HORIZONTAL_SCROLL_PROPS}>
+        <View style={styles.tableContent}>
+          {/* Header */}
+          <View style={headerRowStyle}>
+            {columns.map((col, colIdx) => {
+              const isLast = colIdx === columns.length - 1;
+              const effectiveAlign = col.align ?? (isLast ? "right" : undefined);
+              return (
+                <View
+                  key={col.key}
+                  style={[
+                    styles.cell,
+                    col.width != null
+                      ? { minWidth: col.width, flexGrow: 1, flexBasis: 0 }
+                      : styles.flexCell,
+                    effectiveAlign === "right" && styles.alignRight,
+                    effectiveAlign === "center" && styles.alignCenter,
+                  ]}
+                >
+                  {col.sortable !== false ? (
+                    <SortableHeader
+                      label={col.header}
+                      active={activeSortBy === col.key}
+                      direction={activeSortBy === col.key ? activeSortDirection : "asc"}
+                      columnKey={col.key}
+                      onSort={handleSortPress}
+                    />
+                  ) : (
+                    <Text style={[styles.headerText, { color: theme.text.secondary }]}>{col.header}</Text>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+          {/* Body */}
+          {visibleData.map((row, rowIdx) => (
+            <DataTableRow
+              key={keyExtractor(row)}
+              row={row}
+              rowIdx={pageStartIndex + rowIdx}
+              columns={columns}
+              rowKey={keyExtractor(row)}
+              altRowBg={altRowBg}
+              bodyTextColor={theme.text.primary}
+              onRowPress={onRowPress}
+            />
+          ))}
         </View>
-        {/* Body */}
-        {sortedData.map((row, rowIdx) => (
-          <DataTableRow
-            key={keyExtractor(row)}
-            row={row}
-            rowIdx={rowIdx}
-            columns={columns}
-            rowKey={keyExtractor(row)}
-            altRowBg={altRowBg}
-            bodyTextColor={theme.text.primary}
-            onRowPress={onRowPress}
+      </CustomList>
+      {shouldPaginate ? (
+        <View style={styles.paginationWrap}>
+          <PaginationControls
+            page={currentPage}
+            pageSize={PAGINATION_PAGE_SIZE}
+            total={sortedData.length}
+            onPageChange={setCurrentPage}
           />
-        ))}
-      </View>
-    </CustomList>
+        </View>
+      ) : null}
+    </View>
   );
 }
 
 export const DataTable = memo(DataTableInner) as typeof DataTableInner;
 
 const styles = StyleSheet.create({
+  tableWrapper: {
+    width: "100%",
+  },
   tableContent: {
     minWidth: "100%",
     width: "100%",
     flexGrow: 1,
+  },
+  paginationWrap: {
+    paddingHorizontal: spacing[4],
   },
   headerRow: {
     flexDirection: "row",

@@ -2,9 +2,8 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useCostDashboard } from "@/features/analytics/hooks/useCostDashboard";
-import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
-import { ChartCard, LineChart, BreakdownChart, DonutChart, ProviderCostChart, ProviderTokenCostBarChart } from "@/components/charts";
-import type { BreakdownChartDatum } from "@/components/charts/BreakdownChart";
+import { CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
+import { ChartCard, LineChart, BarChart, DonutChart, ProviderCostChart, ProviderTokenCostBarChart, type BarChartBreakdownDatum } from "@/components/charts";
 import { CustomList } from "@/components/lists";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import type { CostBreakdownRow, BudgetSummary, CostPerTeamRow } from "@/features/analytics/types";
@@ -48,7 +47,7 @@ const BudgetForecastBarMemo = React.memo(function BudgetForecastBarMemo({
 }) {
   const { t } = useTranslation();
   const { formatCurrency } = useCurrencyFormatter();
-  const chartData = useMemo<BreakdownChartDatum[]>(() => {
+  const chartData = useMemo<BarChartBreakdownDatum[]>(() => {
     const remaining = budget.budgetUsd - budget.spentUsd;
     const utilization = budget.budgetUsd > 0 ? (budget.spentUsd / budget.budgetUsd) * 100 : 0;
     return [
@@ -77,7 +76,7 @@ const BudgetForecastBarMemo = React.memo(function BudgetForecastBarMemo({
       },
     ];
   }, [budget, t, formatCurrency]);
-  return <BreakdownChart data={chartData} variant="horizontal-bar" formatValue={formatCurrency} />;
+  return <BarChart data={chartData} variant="horizontal-bar" formatValue={formatCurrency} />;
 });
 
 /** Memoized breakdown chart — avoids .slice().map() on every render */
@@ -88,7 +87,7 @@ const CostPerProjectBarMemo = React.memo(function CostPerProjectBarMemo({
 }) {
   const { t } = useTranslation();
   const { formatCurrency } = useCurrencyFormatter();
-  const chartData = useMemo<BreakdownChartDatum[]>(
+  const chartData = useMemo<BarChartBreakdownDatum[]>(
     () =>
       filteredCostBreakdown.slice(0, 10).map((row) => ({
         key: row.key,
@@ -103,7 +102,7 @@ const CostPerProjectBarMemo = React.memo(function CostPerProjectBarMemo({
       })),
     [filteredCostBreakdown, formatCurrency, t],
   );
-  return <BreakdownChart data={chartData} variant="horizontal-bar" truncateLabels={false} formatValue={formatCurrency} />;
+  return <BarChart data={chartData} variant="horizontal-bar" truncateLabels={false} formatValue={formatCurrency} />;
 });
 
 export default function CostAnalyticsScreen() {
@@ -136,8 +135,7 @@ export default function CostAnalyticsScreen() {
 
   return (
     <ScreenWrapper headerProps={headerProps}>
-      <View ref={refFor("cost-summary")} nativeID="cost-summary" style={styles.section}>
-        <SectionHeader title={t("costs.costSummary")} />
+      <View ref={refFor("budget-forecast")} nativeID="budget-forecast" style={styles.section}>
         {loading ? (
           <CardGrid columns={2}>
             {SKELETON_2.map((_, i) => (
@@ -145,46 +143,51 @@ export default function CostAnalyticsScreen() {
             ))}
           </CardGrid>
         ) : data ? (
-          <>
-            <ChartCard title={t("costs.budgetForecast")}>
+          <CustomList scrollViewProps={responsiveScrollProps}>
+            <ChartCard title={t("costs.budgetForecast")} style={isLargeLayout ? styles.chartCardFill : undefined}>
               <BudgetForecastBarMemo budget={data.budget} />
             </ChartCard>
-
-            <CustomList scrollViewProps={responsiveScrollProps}>
-              <ChartCard title={t("costs.costPerTeam")} style={isLargeLayout ? styles.chartCardFill : styles.chartCardScroll}>
-                <CostPerTeamDonutMemo costPerTeam={data.costPerTeam} totalCostUsd={data.totalCostUsd} height={isLargeLayout ? 220 : 160} />
-              </ChartCard>
-              <ChartCard title={t("costs.costPerDay")} style={isLargeLayout ? styles.chartCardFill : undefined}>
-                <LineChart data={data.costTrend} />
-              </ChartCard>
-            </CustomList>
-
-            <CardGrid columns={2}>
-              <KpiCard title={t("costs.avgPerRun")} value={formatCurrency(data.averageCostPerRunUsd)} />
-              <KpiCard title={t("costs.costPerSuccess")} value={formatCurrency(data.costPerSuccessfulRunUsd)} />
-            </CardGrid>
-
-            <CustomList scrollViewProps={responsiveScrollProps}>
-              <ChartCard title={t("costs.costPerToken")} style={isLargeLayout ? styles.chartCardFill : undefined}>
-                <ProviderTokenCostBarChart data={data.providerBreakdown} />
-              </ChartCard>
-              <ChartCard title={t("costs.costPerProvider")} style={isLargeLayout ? styles.chartCardFill : undefined}>
-                <ProviderCostChart
-                  data={data.providerBreakdown}
-                  totalCostUsd={data.totalCostUsd}
-                />
-              </ChartCard>
-            </CustomList>
-          </>
+            <ChartCard title={t("costs.costPerDay")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+              <LineChart data={data.costTrend} />
+            </ChartCard>
+          </CustomList>
         ) : null}
       </View>
 
       {data && (
-        <View ref={refFor("costs-project-breakdown")} nativeID="costs-project-breakdown" style={styles.section}>
-          <SectionHeader title={t("costs.costPerProject")} />
-          <CostPerProjectBarMemo filteredCostBreakdown={filteredCostBreakdown} />
+        <View ref={refFor("cost-summary")} nativeID="cost-summary" style={styles.section}>
+          <CustomList scrollViewProps={responsiveScrollProps}>
+            <ChartCard title={t("costs.costPerTeam")} style={isLargeLayout ? styles.chartCardFill : styles.chartCardScroll}>
+              <CostPerTeamDonutMemo costPerTeam={data.costPerTeam} totalCostUsd={data.totalCostUsd} height={isLargeLayout ? 220 : 160} />
+            </ChartCard>
+            <ChartCard title={t("costs.costPerProject")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+              <CostPerProjectBarMemo filteredCostBreakdown={filteredCostBreakdown} />
+            </ChartCard>
+          </CustomList>
+
+          <CardGrid columns={2}>
+            <KpiCard title={t("costs.avgPerRun")} value={formatCurrency(data.averageCostPerRunUsd)} />
+            <KpiCard title={t("costs.costPerSuccess")} value={formatCurrency(data.costPerSuccessfulRunUsd)} />
+          </CardGrid>
         </View>
       )}
+
+      {data && (
+        <View ref={refFor("cost-by-provider")} nativeID="cost-by-provider" style={styles.section}>
+          <CustomList scrollViewProps={responsiveScrollProps}>
+            <ChartCard title={t("costs.costPerToken")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+              <ProviderTokenCostBarChart data={data.providerBreakdown} />
+            </ChartCard>
+            <ChartCard title={t("costs.costPerProvider")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+              <ProviderCostChart
+                data={data.providerBreakdown}
+                totalCostUsd={data.totalCostUsd}
+              />
+            </ChartCard>
+          </CustomList>
+        </View>
+      )}
+
     </ScreenWrapper>
   );
 }

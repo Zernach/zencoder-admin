@@ -10,6 +10,8 @@ import { spacing, radius } from "@/theme/tokens";
 import { typography } from "@/theme/typography";
 import { getOrangePieColorsByValue } from "./palette";
 import { PieChart, type PieChartDatum } from "./PieChart";
+import { BarChart, type BarChartBreakdownDatum } from "./BarChart";
+import { BarPieChart } from "./BarPieChart";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 
@@ -35,7 +37,7 @@ export const ProviderCostChart = React.memo(function ProviderCostChart({
   const { formatCurrency } = useCurrencyFormatter();
   const size = Math.min(height, 180);
 
-  const { sorted, providerMetrics, providerColors, pieData } = useMemo(() => {
+  const { sorted, providerMetrics, providerColors, pieData, barData } = useMemo(() => {
     const s = [...data].sort((a, b) => b.totalCostUsd - a.totalCostUsd);
     const chartData = s.map((row) => ({ provider: row.provider, value: row.totalCostUsd }));
     const t = chartData.reduce((sum, row) => sum + row.value, 0) || 1;
@@ -66,64 +68,88 @@ export const ProviderCostChart = React.memo(function ProviderCostChart({
     const providerColorMap = Object.fromEntries(
       slices.map((slice) => [slice.id, slice.color] as const),
     ) as Record<ProviderCostRow["provider"], string>;
+    const bars: BarChartBreakdownDatum[] = s.map((row) => ({
+      key: PROVIDER_LABELS[row.provider],
+      value: row.totalCostUsd,
+      hoverRows: [
+        { label: "Provider", value: PROVIDER_LABELS[row.provider] },
+        { label: "Cost", value: formatCurrency(row.totalCostUsd) },
+        { label: "Runs", value: formatCompactNumber(row.runCount) },
+        {
+          label: "Avg/Run",
+          value: formatCurrency(row.runCount > 0 ? row.totalCostUsd / row.runCount : 0),
+        },
+        { label: "Share", value: formatPercent((row.totalCostUsd / t) * 100) },
+      ],
+    }));
 
     return {
       sorted: s,
       providerMetrics: metrics,
       providerColors: providerColorMap,
       pieData: slices,
+      barData: bars,
     };
   }, [data, formatCurrency]);
 
   return (
-    <View style={styles.container}>
-      <PieChart data={pieData} size={size} innerRadiusRatio={0.6} style={styles.chartFrame}>
-        {() => (
-          <View style={styles.centerTextWrap}>
-            <Text style={[styles.centerValue, { color: textColors.primary }]}>
-              {formatCurrency(totalCostUsd)}
-            </Text>
-            <Text style={[styles.centerLabel, { color: textColors.tertiary }]}>
-              Cost by Provider
-            </Text>
-          </View>
-        )}
-      </PieChart>
-
-      <View style={styles.rightColumn}>
-        {sorted.map((row, i) => (
-          <View key={row.provider} style={[styles.row, i > 0 ? styles.rowSpacing : null]}>
-            <View style={styles.rowHeader}>
-              <View style={styles.providerNameWrap}>
+    <BarPieChart
+      defaultMode="pie"
+      renderBar={() => (
+        <BarChart
+          data={barData}
+          variant="horizontal-bar"
+          showModeToggle={false}
+          truncateLabels={false}
+          formatValue={formatCurrency}
+        />
+      )}
+      renderPie={() => (
+        <View style={styles.pieRow}>
+          <PieChart data={pieData} size={size} innerRadiusRatio={0.6} style={styles.chartFrame}>
+            {() => (
+              <View style={styles.centerTextWrap}>
+                <Text style={[styles.centerValue, { color: textColors.primary }]}>
+                  {formatCurrency(totalCostUsd)}
+                </Text>
+                <Text style={[styles.centerLabel, { color: textColors.tertiary }]}>
+                  Total
+                </Text>
+              </View>
+            )}
+          </PieChart>
+          <View style={styles.legend}>
+            {sorted.map((row, i) => (
+              <View key={row.provider} style={styles.legendItem}>
                 <View
                   style={[
                     styles.swatch,
-                    {
-                      backgroundColor: providerColors[row.provider] ?? "#f64a00",
-                    },
+                    { backgroundColor: providerColors[row.provider] ?? "#f64a00" },
                   ]}
                 />
-                <Text style={[styles.providerName, { color: textColors.primary }]}>
+                <Text
+                  style={[styles.legendLabel, { color: textColors.secondary }]}
+                  numberOfLines={1}
+                >
                   {PROVIDER_LABELS[row.provider]}
                 </Text>
+                <Text style={[styles.legendValue, { color: textColors.secondary }]}>
+                  {formatCurrency(row.totalCostUsd)}
+                </Text>
+                <Text style={[styles.legendPct, { color: textColors.tertiary }]}>
+                  {formatPercent(providerMetrics[i]!.share)}
+                </Text>
               </View>
-              <Text style={[styles.share, { color: textColors.secondary }]}>
-                {formatPercent(providerMetrics[i]!.share)}
-              </Text>
-            </View>
-
-            <Text style={[styles.metricLabel, { color: textColors.secondary }]}>
-              {`${formatCurrency(row.totalCostUsd)} • ${formatCompactNumber(row.runCount)} runs • ${formatCurrency(providerMetrics[i]!.avgCostPerRun)}/run`}
-            </Text>
+            ))}
           </View>
-        ))}
-      </View>
-    </View>
+        </View>
+      )}
+    />
   );
 });
 
 const styles = StyleSheet.create({
-  container: {
+  pieRow: {
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",
@@ -153,50 +179,40 @@ const styles = StyleSheet.create({
     fontWeight: typography.label.fontWeight,
     lineHeight: typography.label.lineHeight,
   },
-  rightColumn: {
-    minWidth: 220,
-    maxWidth: 320,
-    flexGrow: 0,
-    flexShrink: 1,
+  legend: {
+    flex: 1,
+    minWidth: 180,
     alignSelf: "flex-start",
+    justifyContent: "center",
+    gap: spacing[8],
   },
-  row: {
-    gap: spacing[6],
-  },
-  rowSpacing: {
-    marginTop: spacing[10],
-  },
-  rowHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[6],
-  },
-  providerNameWrap: {
+  legendItem: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing[6],
   },
   swatch: {
-    width: 9,
-    height: 9,
+    width: 8,
+    height: 8,
     borderRadius: radius.sm,
   },
-  providerName: {
-    fontFamily: typography.tableBody.fontFamily,
-    fontSize: typography.tableBody.fontSize,
-    fontWeight: "600",
-    lineHeight: typography.tableBody.lineHeight,
-  },
-  share: {
+  legendLabel: {
     fontFamily: typography.tableBody.fontFamily,
     fontSize: typography.tableBody.fontSize,
     fontWeight: "500",
     lineHeight: typography.tableBody.lineHeight,
   },
-  metricLabel: {
-    fontFamily: typography.label.fontFamily,
-    fontSize: typography.label.fontSize,
-    fontWeight: typography.label.fontWeight,
-    lineHeight: typography.label.lineHeight,
+  legendValue: {
+    marginLeft: "auto",
+    fontFamily: typography.tableBody.fontFamily,
+    fontSize: typography.tableBody.fontSize,
+    fontWeight: "600",
+    lineHeight: typography.tableBody.lineHeight,
+  },
+  legendPct: {
+    fontFamily: typography.tableBody.fontFamily,
+    fontSize: typography.tableBody.fontSize,
+    fontWeight: "600",
+    lineHeight: typography.tableBody.lineHeight,
   },
 });

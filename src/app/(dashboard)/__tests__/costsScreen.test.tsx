@@ -48,12 +48,12 @@ jest.mock("@/components/charts", () => {
       <View><Text>{title}</Text>{children}</View>
     ),
     LineChart: () => <View />,
-    BarChart: () => <View testID="bar-chart" />,
-    BreakdownChart: ({ data, truncateLabels }: { data: Array<{ key: string; value: number }>; truncateLabels?: boolean }) => (
+    BarChart: ({ data, truncateLabels }: { data?: Array<{ key?: string; label?: string; value: number }>; truncateLabels?: boolean }) => (
       <View>
+        <View testID="bar-chart" />
         <Text testID="truncateLabels">{String(truncateLabels ?? true)}</Text>
-        {data.map((item) => (
-          <Text key={item.key}>{item.key}</Text>
+        {(data ?? []).map((item) => (
+          <Text key={item.key ?? item.label}>{item.key ?? item.label}</Text>
         ))}
       </View>
     ),
@@ -127,7 +127,7 @@ describe("CostAnalyticsScreen", () => {
     mockSectionRef.mockClear();
   });
 
-  it("renders Cost per Team and Cost per Project section headers", () => {
+  it("renders Cost per Team and Cost per Project chart titles", () => {
     mockUseCostDashboard.mockReturnValue({
       data: createCostData(),
       loading: false,
@@ -135,10 +135,10 @@ describe("CostAnalyticsScreen", () => {
       refetch: jest.fn(),
     });
 
-    const { getByText } = render(<CostAnalyticsScreen />);
+    const { getByText, getAllByText } = render(<CostAnalyticsScreen />);
 
     expect(getByText("costs.costPerTeam")).toBeTruthy();
-    expect(getByText("costs.costPerProject")).toBeTruthy();
+    expect(getAllByText("costs.costPerProject").length).toBeGreaterThan(0);
   });
 
   it("renders full project names in Cost per Project without truncation", () => {
@@ -166,7 +166,7 @@ describe("CostAnalyticsScreen", () => {
 
     const { getAllByTestId } = render(<CostAnalyticsScreen />);
     const truncateFlags = getAllByTestId("truncateLabels");
-    // The Cost per Project BreakdownChart should have truncateLabels=false
+    // The Cost per Project BarChart should have truncateLabels=false
     const hasFalse = truncateFlags.some((el) => el.props.children === "false");
     expect(hasFalse).toBe(true);
   });
@@ -200,7 +200,9 @@ describe("CostAnalyticsScreen", () => {
     const sectionIds = mockSectionRef.mock.calls.map((call) => call[0]);
     expect(sectionIds).toEqual(
       expect.arrayContaining([
+        "budget-forecast",
         "cost-summary",
+        "cost-by-provider",
         "costs-project-breakdown",
       ]),
     );

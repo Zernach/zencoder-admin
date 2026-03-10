@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "expo-router";
 import { CustomButton } from "@/components/buttons";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
 import { SectionHeader, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
-import { ChartCard, BreakdownChart, MultiLineChart } from "@/components/charts";
+import { ChartCard, BarChart, MultiLineChart } from "@/components/charts";
 import type { MultiLineChartSeries } from "@/components/charts/MultiLineChart";
 import { getOrangeBarShadesStepped } from "@/components/charts/palette";
 import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
@@ -106,7 +106,7 @@ export default function GovernanceScreen() {
       key: "description",
       header: "Description",
       width: 540,
-      render: (row) => <Text style={ct.primary}>{row.description}</Text>,
+      render: (row) => <Text style={ct.secondary}>{row.description}</Text>,
     },
     {
       key: "editedAtIso",
@@ -231,18 +231,18 @@ export default function GovernanceScreen() {
   const activeUsersSeries = useMemo((): MultiLineChartSeries[] => {
     if (!data) return [];
     const result: MultiLineChartSeries[] = [];
-    if (data.mauTrend && data.mauTrend.length > 0) {
-      result.push({ label: t("dashboard.mauTrend"), data: data.mauTrend });
+    if (data.activeUsersTrend && data.activeUsersTrend.length > 0) {
+      result.push({ label: "DAU", data: data.activeUsersTrend });
     }
     if (data.wauTrend && data.wauTrend.length > 0) {
-      result.push({ label: t("dashboard.wauTrend"), data: data.wauTrend });
+      result.push({ label: "WAU", data: data.wauTrend });
     }
-    if (data.activeUsersTrend && data.activeUsersTrend.length > 0) {
-      result.push({ label: t("dashboard.activeUsersTrend"), data: data.activeUsersTrend });
+    if (data.mauTrend && data.mauTrend.length > 0) {
+      result.push({ label: "MAU", data: data.mauTrend });
     }
     const colors = getOrangeBarShadesStepped(result.length);
     return result.map((series, index) => ({ ...series, color: colors[index] }));
-  }, [data, t]);
+  }, [data]);
 
   const handleOpenCreateSeat = useCallback(
     () => dispatch(openModal(ModalName.CreateSeat)),
@@ -266,24 +266,6 @@ export default function GovernanceScreen() {
 
   return (
     <ScreenWrapper headerProps={headerProps}>
-      <View ref={refFor("overview")} nativeID="overview" style={sectionStyles.section}>
-        <SectionHeader title={t("governance.overview")} />
-        {loading ? (
-          <>
-            <LoadingSkeleton variant="chart" />
-            <LoadingSkeleton variant="chart" />
-          </>
-        ) : data ? (
-          <>
-            {activeUsersSeries.length > 0 && (
-              <ChartCard title={t("dashboard.activeUsers")}>
-                <MultiLineChart series={activeUsersSeries} height={220} />
-              </ChartCard>
-            )}
-          </>
-        ) : null}
-      </View>
-
       {data && (
         <View ref={refFor("team-performance")} nativeID="team-performance" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
@@ -335,11 +317,19 @@ export default function GovernanceScreen() {
               accessibilityLabel={t("modals.addUser")}
             />
           </View>
+          {activeUsersSeries.length > 0 && (
+            <ChartCard
+              title={t("dashboard.activeUsers")}
+              subtitle={t("governance.activeUsersSubtitle")}
+            >
+              <MultiLineChart series={activeUsersSeries} height={220} />
+            </ChartCard>
+          )}
           <ChartCard
             title={t("governance.seatUsageByRuns")}
             subtitle={t("governance.seatUsageSubtitle")}
           >
-            <BreakdownChart
+            <BarChart
               data={seatUsageChartData}
               variant="horizontal-bar"
               truncateLabels={false}
@@ -381,7 +371,10 @@ export default function GovernanceScreen() {
 
       {data && (
         <View ref={refFor("recent-violations")} nativeID="recent-violations" style={sectionStyles.section}>
-          <SectionHeader title={t("governance.recentViolations")} />
+          <SectionHeader
+            title={t("governance.recentViolations")}
+            subtitle={t("governance.recentViolationsSubtitle")}
+          />
           <DataTable
             columns={violationCols}
             data={filteredViolations}
@@ -392,7 +385,10 @@ export default function GovernanceScreen() {
 
       {data && (
         <View ref={refFor("security-events")} nativeID="security-events" style={sectionStyles.section}>
-          <SectionHeader title={t("governance.securityEvents")} />
+          <SectionHeader
+            title={t("governance.securityEvents")}
+            subtitle={t("governance.securityEventsSubtitle")}
+          />
           <DataTable
             columns={securityCols}
             data={filteredSecurityEvents}

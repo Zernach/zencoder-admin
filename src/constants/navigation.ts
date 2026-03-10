@@ -48,15 +48,14 @@ export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
     { id: "recent-runs", label: "navigation.subsections.recentRuns" },
   ],
   [ROUTES.COSTS]: [
+    { id: "budget-forecast", label: "navigation.subsections.budgetForecast" },
     { id: "cost-summary", label: "navigation.subsections.costSummary" },
     { id: "cost-by-provider", label: "navigation.subsections.costByProvider" },
-    { id: "budget-forecast", label: "navigation.subsections.budgetForecast" },
-    { id: "costs-project-breakdown", label: "navigation.subsections.projectBreakdown" },
   ],
   [ROUTES.GOVERNANCE]: [
-    { id: "overview", label: "navigation.subsections.overview" },
     { id: "team-performance", label: "navigation.subsections.teamPerformance" },
     { id: "seat-user-oversight", label: "navigation.subsections.seatUserOversight" },
+    { id: "rules", label: "navigation.subsections.rules" },
     { id: "recent-violations", label: "navigation.subsections.recentViolations" },
     { id: "security-events", label: "navigation.subsections.securityEvents" },
     { id: "policy-changes", label: "navigation.subsections.policyChanges" },

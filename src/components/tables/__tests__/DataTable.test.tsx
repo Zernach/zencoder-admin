@@ -7,6 +7,8 @@ import { DataTable, type ColumnDef } from "../DataTable";
 jest.mock("lucide-react-native", () => ({
   ChevronUp: () => "ChevronUp",
   ChevronDown: () => "ChevronDown",
+  ChevronLeft: () => "ChevronLeft",
+  ChevronRight: () => "ChevronRight",
   Inbox: () => "Inbox",
 }));
 
@@ -50,6 +52,12 @@ const unsortedData: TestRow[] = [
   { id: "1", name: "Alice", value: 100 },
   { id: "2", name: "Bob", value: 200 },
 ];
+
+const paginatedData: TestRow[] = Array.from({ length: 30 }, (_, idx) => ({
+  id: String(idx + 1),
+  name: `User ${idx + 1}`,
+  value: idx + 1,
+}));
 
 describe("DataTable", () => {
   it("renders column headers", () => {
@@ -224,5 +232,41 @@ describe("DataTable", () => {
     );
 
     expect(getByText(longValue)).toHaveStyle({ textAlign: "right" });
+  });
+
+  it("does not paginate by default", () => {
+    const { queryByLabelText, getByText } = render(
+      <DataTable
+        columns={columns}
+        data={paginatedData}
+        keyExtractor={(r) => r.id}
+      />
+    );
+
+    expect(queryByLabelText("Next page")).toBeNull();
+    expect(getByText("User 30")).toBeDefined();
+  });
+
+  it("paginates rows when paginate is enabled", () => {
+    const { getByLabelText, getByText, queryByText } = render(
+      <DataTable
+        columns={columns}
+        data={paginatedData}
+        keyExtractor={(r) => r.id}
+        paginate
+      />
+    );
+
+    expect(getByText("User 1")).toBeDefined();
+    expect(getByText("User 25")).toBeDefined();
+    expect(queryByText("User 26")).toBeNull();
+    expect(getByText(/Showing 1.?25 of 30/)).toBeDefined();
+
+    fireEvent.press(getByLabelText("Next page"));
+
+    expect(getByText("User 26")).toBeDefined();
+    expect(getByText("User 30")).toBeDefined();
+    expect(queryByText("User 1")).toBeNull();
+    expect(getByText(/Showing 26.?30 of 30/)).toBeDefined();
   });
 });

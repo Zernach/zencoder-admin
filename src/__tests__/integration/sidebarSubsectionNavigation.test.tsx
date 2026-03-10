@@ -17,7 +17,7 @@ describe("Sidebar Subsection Navigation — contract", () => {
   });
 
   it("costs subsections have matching nativeID anchors defined", () => {
-    const expectedIds = ["cost-summary", "cost-by-provider", "budget-forecast", "costs-project-breakdown"];
+    const expectedIds = ["budget-forecast", "cost-summary", "cost-by-provider"];
     const costSubs = SUBSECTIONS[ROUTES.COSTS];
     expect(costSubs.map((s) => s.id)).toEqual(expectedIds);
   });
@@ -26,17 +26,17 @@ describe("Sidebar Subsection Navigation — contract", () => {
     const govSubs = SUBSECTIONS[ROUTES.GOVERNANCE];
     expect(govSubs.length).toBe(6);
     expect(govSubs.map((s) => s.id)).toEqual([
-      "overview",
       "team-performance",
       "seat-user-oversight",
+      "rules",
       "recent-violations",
       "security-events",
       "policy-changes",
     ]);
     expect(govSubs.map((s) => s.label)).toEqual([
-      "navigation.subsections.overview",
       "navigation.subsections.teamPerformance",
       "navigation.subsections.seatUserOversight",
+      "navigation.subsections.rules",
       "navigation.subsections.recentViolations",
       "navigation.subsections.securityEvents",
       "navigation.subsections.policyChanges",
@@ -195,9 +195,9 @@ describe("Sidebar subsection press → scrollToSection integration", () => {
 
 describe("Governance subsection order and labels (strict)", () => {
   const REQUIRED_GOVERNANCE_SUBSECTIONS = [
-    { id: "overview", label: "navigation.subsections.overview" },
     { id: "team-performance", label: "navigation.subsections.teamPerformance" },
     { id: "seat-user-oversight", label: "navigation.subsections.seatUserOversight" },
+    { id: "rules", label: "navigation.subsections.rules" },
     { id: "recent-violations", label: "navigation.subsections.recentViolations" },
     { id: "security-events", label: "navigation.subsections.securityEvents" },
     { id: "policy-changes", label: "navigation.subsections.policyChanges" },

@@ -1,9 +1,13 @@
 import React from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, ActivityIndicator, Pressable, StyleSheet } from "react-native";
 import type { ReactNode } from "react";
+import { useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
+import { ChevronLeft } from "lucide-react-native";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
+import { isWeb } from "@/constants/platform";
 
 export interface HeaderProps {
   title: string;
@@ -22,10 +26,24 @@ const ScreenHeader = React.memo(function ScreenHeader({
 }: HeaderProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const router = useRouter();
+  const navigation = useNavigation();
+  const showBack = !isWeb && navigation.canGoBack();
 
   return (
     <View style={styles.container}>
       <View style={styles.titleRow}>
+        {showBack && (
+          <Pressable
+            onPress={() => router.back()}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            style={styles.backButton}
+          >
+            <ChevronLeft size={24} color={theme.text.primary} />
+          </Pressable>
+        )}
         <Text style={[styles.title, { color: theme.text.primary }]} numberOfLines={1}>
           {title}
         </Text>
@@ -72,6 +90,9 @@ const styles = StyleSheet.create({
   },
   right: {
     marginTop: spacing[4],
+  },
+  backButton: {
+    marginRight: spacing[4],
   },
   spinner: {
     marginLeft: spacing[4],

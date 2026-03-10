@@ -1,6 +1,25 @@
 import React from "react";
-import { render } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import { BarChart, type BarChartDatum } from "../BarChart";
+
+jest.mock("react-native-svg", () => {
+  const React = require("react");
+  const MockSvg = (props: Record<string, unknown>) =>
+    React.createElement("Svg", props);
+  MockSvg.displayName = "Svg";
+  const createMock = (name: string) => {
+    const component = (props: Record<string, unknown>) =>
+      React.createElement(name, props);
+    component.displayName = name;
+    return component;
+  };
+  return {
+    __esModule: true,
+    default: MockSvg,
+    Svg: MockSvg,
+    Path: createMock("Path"),
+  };
+});
 
 const sampleData: BarChartDatum[] = [
   {
@@ -56,5 +75,22 @@ describe("BarChart", () => {
     expect(getByText("Beta")).toBeTruthy();
     expect(getByTestId("bar-alpha")).toBeTruthy();
     expect(getByTestId("bar-beta")).toBeTruthy();
+  });
+
+  it("toggles between bar and pie modes", () => {
+    const { getByTestId } = render(
+      <BarChart
+        data={sampleData}
+        orientation="horizontal"
+      />,
+    );
+
+    expect(getByTestId("bar-pie-chart-current-mode-bar")).toBeTruthy();
+
+    fireEvent.press(getByTestId("bar-pie-chart-mode-pie"));
+    expect(getByTestId("bar-pie-chart-current-mode-pie")).toBeTruthy();
+
+    fireEvent.press(getByTestId("bar-pie-chart-mode-bar"));
+    expect(getByTestId("bar-pie-chart-current-mode-bar")).toBeTruthy();
   });
 });

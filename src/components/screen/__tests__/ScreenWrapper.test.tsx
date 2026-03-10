@@ -7,6 +7,11 @@ const mockDashboardPathname = ROUTES.DASHBOARD;
 
 jest.mock("expo-router", () => ({
   usePathname: () => mockDashboardPathname,
+  useRouter: () => ({ back: jest.fn() }),
+}));
+
+jest.mock("@react-navigation/native", () => ({
+  useNavigation: () => ({ canGoBack: () => false }),
 }));
 
 jest.mock("react-native-safe-area-context", () => {

@@ -22,7 +22,7 @@ test.describe("Governance", () => {
     await navigateTo(page, "Governance");
     await waitForPageLoad(page);
 
-    await expect(page.locator("text=Seat Usage by Runs")).toBeVisible({
+    await expect(page.locator("text=Agent Runs per User")).toBeVisible({
       timeout: 10_000,
     });
   });

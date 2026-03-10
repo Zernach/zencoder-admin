@@ -112,20 +112,20 @@ jest.mock("@/components/charts", () => {
         {children}
       </View>
     ),
-    BreakdownChart: ({
+    BarChart: ({
       data,
       truncateLabels,
     }: {
-      data: Array<{ key: string; value: number; hoverRows?: Array<{ label: string; value: string }> }>;
+      data: Array<{ key?: string; label?: string; value: number; hoverRows?: Array<{ label: string; value: string }> }>;
       truncateLabels?: boolean;
     }) => (
       <View>
         <Text testID="truncateLabels">{String(truncateLabels ?? true)}</Text>
         {data.map((item) => (
-          <Text key={item.key}>{`${item.key}: ${item.value}`}</Text>
+          <Text key={item.key ?? item.label}>{`${item.key ?? item.label}: ${item.value}`}</Text>
         ))}
         {data.map((item) => (
-          <Text key={`${item.key}-hoverRows`}>{`hoverRows:${item.key}:${item.hoverRows?.length ?? 0}`}</Text>
+          <Text key={`${item.key ?? item.label}-hoverRows`}>{`hoverRows:${item.key ?? item.label}:${item.hoverRows?.length ?? 0}`}</Text>
         ))}
       </View>
     ),
@@ -323,7 +323,7 @@ describe("GovernanceScreen", () => {
     expect(getByText("Carol Davis: 80")).toBeTruthy();
   });
 
-  it("renders active users chart with MAU, WAU, and DAU series", () => {
+  it("renders active users chart with Daily, Weekly, & Monthly subtitle and DAU/WAU/MAU legend labels", () => {
     mockUseGovernanceDashboard.mockReturnValue({
       data: createGovernanceData(),
       loading: false,
@@ -334,9 +334,10 @@ describe("GovernanceScreen", () => {
     const { getByText } = render(<GovernanceScreen />);
 
     expect(getByText("dashboard.activeUsers")).toBeTruthy();
-    expect(getByText("dashboard.mauTrend")).toBeTruthy();
-    expect(getByText("dashboard.wauTrend")).toBeTruthy();
-    expect(getByText("dashboard.activeUsersTrend")).toBeTruthy();
+    expect(getByText("governance.activeUsersSubtitle")).toBeTruthy();
+    expect(getByText("DAU")).toBeTruthy();
+    expect(getByText("WAU")).toBeTruthy();
+    expect(getByText("MAU")).toBeTruthy();
   });
 
   it("renders seat user oversight section header", () => {
@@ -574,7 +575,6 @@ describe("GovernanceScreen", () => {
     const sectionIds = mockSectionRef.mock.calls.map((call) => call[0]);
     expect(sectionIds).toEqual(
       expect.arrayContaining([
-        "overview",
         "team-performance",
         "seat-user-oversight",
         "rules",

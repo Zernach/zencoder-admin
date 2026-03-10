@@ -7,6 +7,7 @@ import { arc, pie } from "d3-shape";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { fontFamilies, radius, spacing } from "@/theme/tokens";
+import { typography } from "@/theme/typography";
 import { getOrangePieColorsByValue } from "./palette";
 import { clampTooltipPosition } from "./tooltipUtils";
 
@@ -44,6 +45,10 @@ interface PieChartProps {
   padding?: number;
   style?: StyleProp<ViewStyle>;
   overlayPointerEvents?: ViewProps["pointerEvents"];
+  /** Render percentage labels inside slices (for slices > threshold). Defaults to true. */
+  showSliceLabels?: boolean;
+  /** Minimum slice percent (0–1) to show a label. Defaults to 0.05 (5%). */
+  sliceLabelThreshold?: number;
   children?: (context: PieChartRenderContext) => ReactNode;
 }
 
@@ -61,8 +66,11 @@ export const PieChart = React.memo(function PieChart({
   padding = 8,
   style,
   overlayPointerEvents = "none",
+  showSliceLabels,
+  sliceLabelThreshold = 0.05,
   children,
 }: PieChartProps) {
+  const resolvedShowSliceLabels = showSliceLabels ?? true;
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
@@ -275,11 +283,26 @@ export const PieChart = React.memo(function PieChart({
           />
         ))}
       </Svg>
-      {children ? (
-        <View style={styles.overlay} pointerEvents={overlayPointerEvents}>
-          {children({ size, total, slices })}
-        </View>
-      ) : null}
+      <View style={styles.overlay} pointerEvents={overlayPointerEvents}>
+        {resolvedShowSliceLabels &&
+          slices
+            .filter((slice) => slice.percent > sliceLabelThreshold)
+            .map((slice) => (
+              <Text
+                key={`slice-label-${slice.id}`}
+                style={[
+                  styles.sliceLabel,
+                  {
+                    left: slice.centroidX - 18,
+                    top: slice.centroidY - typography.label.lineHeight / 2,
+                  },
+                ]}
+              >
+                {`${(slice.percent * 100).toFixed(1)}%`}
+              </Text>
+            ))}
+        {children ? children({ size, total, slices }) : null}
+      </View>
       {tooltipBubble}
     </View>
   );
@@ -296,6 +319,16 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
+  },
+  sliceLabel: {
+    position: "absolute",
+    width: 36,
+    textAlign: "center",
+    fontFamily: typography.label.fontFamily,
+    fontSize: typography.label.fontSize,
+    fontWeight: "600",
+    lineHeight: typography.label.lineHeight,
+    color: "#ffffff",
   },
   tooltipBubble: {
     position: "absolute",

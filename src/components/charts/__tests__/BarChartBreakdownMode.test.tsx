@@ -1,21 +1,40 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import { fireEvent, render, within } from "@testing-library/react-native";
-import { BreakdownChart, type BreakdownChartDatum } from "../BreakdownChart";
+import { BarChart, type BarChartBreakdownDatum } from "../BarChart";
 import { getOrangeBarShade, getOrangeBarShadesStepped } from "../palette";
 
-const longNameData: BreakdownChartDatum[] = [
+jest.mock("react-native-svg", () => {
+  const React = require("react");
+  const MockSvg = (props: Record<string, unknown>) =>
+    React.createElement("Svg", props);
+  MockSvg.displayName = "Svg";
+  const createMock = (name: string) => {
+    const component = (props: Record<string, unknown>) =>
+      React.createElement(name, props);
+    component.displayName = name;
+    return component;
+  };
+  return {
+    __esModule: true,
+    default: MockSvg,
+    Svg: MockSvg,
+    Path: createMock("Path"),
+  };
+});
+
+const longNameData: BarChartBreakdownDatum[] = [
   { key: "Enterprise Cloud Migration Platform", value: 500 },
   { key: "Internal Developer Tools Dashboard", value: 350 },
   { key: "Customer Analytics and Reporting Suite", value: 200 },
 ];
 
-const shortNameData: BreakdownChartDatum[] = [
+const shortNameData: BarChartBreakdownDatum[] = [
   { key: "Alpha", value: 100 },
   { key: "Beta", value: 80 },
 ];
 
-const hoverData: BreakdownChartDatum[] = [
+const hoverData: BarChartBreakdownDatum[] = [
   {
     key: "Alice Johnson",
     value: 150,
@@ -40,10 +59,10 @@ const hoverData: BreakdownChartDatum[] = [
   },
 ];
 
-describe("BreakdownChart", () => {
+describe("BarChart (breakdown mode)", () => {
   it("renders all labels in horizontal-bar mode", () => {
     const { getByText } = render(
-      <BreakdownChart data={shortNameData} variant="horizontal-bar" />
+      <BarChart data={shortNameData} variant="horizontal-bar" />
     );
 
     expect(getByText("Alpha")).toBeTruthy();
@@ -52,7 +71,7 @@ describe("BreakdownChart", () => {
 
   it("renders long labels fully when truncateLabels is false", () => {
     const { getByText, getAllByText } = render(
-      <BreakdownChart data={longNameData} variant="horizontal-bar" truncateLabels={false} />
+      <BarChart data={longNameData} variant="horizontal-bar" truncateLabels={false} />
     );
 
     expect(getByText("Enterprise Cloud Migration Platform")).toBeTruthy();
@@ -62,7 +81,7 @@ describe("BreakdownChart", () => {
 
   it("label text element has numberOfLines=undefined when truncateLabels is false", () => {
     const { getByText } = render(
-      <BreakdownChart data={longNameData} variant="horizontal-bar" truncateLabels={false} />
+      <BarChart data={longNameData} variant="horizontal-bar" truncateLabels={false} />
     );
 
     const label = getByText("Enterprise Cloud Migration Platform");
@@ -72,7 +91,7 @@ describe("BreakdownChart", () => {
 
   it("does not hardcode a fixed label column width when truncateLabels is false", () => {
     const { getByText } = render(
-      <BreakdownChart data={longNameData} variant="horizontal-bar" truncateLabels={false} />
+      <BarChart data={longNameData} variant="horizontal-bar" truncateLabels={false} />
     );
 
     const label = getByText("Enterprise Cloud Migration Platform");
@@ -85,7 +104,7 @@ describe("BreakdownChart", () => {
 
   it("label text element has numberOfLines=1 when truncateLabels is true (default)", () => {
     const { getByText } = render(
-      <BreakdownChart data={shortNameData} variant="horizontal-bar" />
+      <BarChart data={shortNameData} variant="horizontal-bar" />
     );
 
     const label = getByText("Alpha");
@@ -94,7 +113,7 @@ describe("BreakdownChart", () => {
 
   it("renders formatted values by default", () => {
     const { getAllByText } = render(
-      <BreakdownChart data={shortNameData} variant="horizontal-bar" />
+      <BarChart data={shortNameData} variant="horizontal-bar" />
     );
 
     expect(getAllByText("100").length).toBeGreaterThanOrEqual(1);
@@ -103,7 +122,7 @@ describe("BreakdownChart", () => {
 
   it("uses stepped shading by default (distinct colors per bar) in horizontal bars", () => {
     const { getByTestId } = render(
-      <BreakdownChart data={shortNameData} variant="horizontal-bar" />
+      <BarChart data={shortNameData} variant="horizontal-bar" />
     );
 
     const shades = getOrangeBarShadesStepped(2);
@@ -116,7 +135,7 @@ describe("BreakdownChart", () => {
 
   it("uses stepped shading by default (distinct colors per bar) in vertical bars", () => {
     const { getByTestId } = render(
-      <BreakdownChart data={shortNameData} variant="bar" />
+      <BarChart data={shortNameData} variant="bar" />
     );
 
     const shades = getOrangeBarShadesStepped(2);
@@ -129,7 +148,7 @@ describe("BreakdownChart", () => {
 
   it("uses scaled shading (continuous by value) when colorScale='scaled'", () => {
     const { getByTestId } = render(
-      <BreakdownChart data={shortNameData} variant="horizontal-bar" colorScale="scaled" />
+      <BarChart data={shortNameData} variant="horizontal-bar" colorScale="scaled" />
     );
 
     const firstFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-0").props.style);
@@ -141,7 +160,7 @@ describe("BreakdownChart", () => {
 
   it("shows and hides hover details bubble on label interaction", () => {
     const { getByTestId, getByText, queryByTestId } = render(
-      <BreakdownChart data={hoverData} variant="horizontal-bar" truncateLabels={false} />
+      <BarChart data={hoverData} variant="horizontal-bar" truncateLabels={false} />
     );
 
     expect(queryByTestId("breakdown-hover-bubble-0")).toBeNull();

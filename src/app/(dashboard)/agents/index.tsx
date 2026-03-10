@@ -6,7 +6,7 @@ import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
 import { SectionHeader, CardGrid, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
-import { ChartCard, LineChart, BreakdownChart, type BreakdownChartDatum } from "@/components/charts";
+import { ChartCard, LineChart, BarChart, type BarChartBreakdownDatum } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
 import { formatPercent, formatDuration, formatCompactNumber } from "@/features/analytics/utils/formatters";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
@@ -44,7 +44,7 @@ export default function AgentsScreen() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const failureCategoryData = useMemo<BreakdownChartDatum[]>(() =>
+  const failureCategoryData = useMemo<BarChartBreakdownDatum[]>(() =>
     (data?.failureCategoryBreakdown ?? []).map((cat) => ({
       key: cat.key,
       value: cat.value,
@@ -70,7 +70,6 @@ export default function AgentsScreen() {
   );
 
   const agentCols = useMemo<ColumnDef<AgentBreakdownRow>[]>(() => [
-    { key: "successRate", header: t("agents.table.success"), width: 80, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateGreenShadeColor(row.successRate, mode) }]}>{formatPercent(row.successRate * 100)}</Text> },
     {
       key: "agentName", header: t("agents.table.agent"), width: 160, render: (row) => (
         <CustomButton onPress={() => navigateTo("agent", row.agentId)} accessibilityRole="link" accessibilityLabel={`View agent ${row.agentName}`}>
@@ -78,6 +77,10 @@ export default function AgentsScreen() {
         </CustomButton>
       )
     },
+    { key: "successRate", header: t("agents.table.success"), width: 80, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateGreenShadeColor(row.successRate, mode) }]}>{formatPercent(row.successRate * 100)}</Text> },
+    { key: "totalRuns", header: t("agents.table.runs"), width: 80, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.totalRuns)}</Text> },
+    { key: "avgDurationMs", header: t("agents.table.avgDuration"), width: 100, align: "right", render: (row) => <Text style={ct.primary}>{formatDuration(row.avgDurationMs)}</Text> },
+    { key: "totalCostUsd", header: t("agents.table.cost"), width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.totalCostUsd)}</Text> },
     {
       key: "projectName", header: t("agents.table.project"), width: 160, render: (row) => (
         <CustomButton onPress={() => navigateTo("project", row.projectId)} accessibilityRole="link" accessibilityLabel={`View project ${row.projectName}`}>
@@ -85,9 +88,6 @@ export default function AgentsScreen() {
         </CustomButton>
       )
     },
-    { key: "totalRuns", header: t("agents.table.runs"), width: 80, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.totalRuns)}</Text> },
-    { key: "avgDurationMs", header: t("agents.table.avgDuration"), width: 100, align: "right", render: (row) => <Text style={ct.primary}>{formatDuration(row.avgDurationMs)}</Text> },
-    { key: "totalCostUsd", header: t("agents.table.cost"), width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.totalCostUsd)}</Text> },
   ], [ct, mode, navigateTo, t]);
 
   const projectCols = useMemo<ColumnDef<ProjectBreakdownRow>[]>(() => [
@@ -98,6 +98,11 @@ export default function AgentsScreen() {
         </CustomButton>
       )
     },
+    { key: "successRate", header: t("agents.table.success"), width: 80, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateGreenShadeColor(row.successRate, mode) }]}>{formatPercent(row.successRate * 100)}</Text> },
+    { key: "totalRuns", header: t("agents.table.runs"), width: 80, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.totalRuns)}</Text> },
+    { key: "totalCostUsd", header: t("agents.table.cost"), width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.totalCostUsd)}</Text> },
+    { key: "avgCostPerRunUsd", header: t("agents.table.avgPerRun"), width: 80, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.avgCostPerRunUsd)}</Text> },
+    { key: "agentCount", header: t("agents.table.agentCount"), width: 70, align: "right", render: (row) => <Text style={ct.primary}>{row.agentCount}</Text> },
     {
       key: "teamName", header: t("agents.table.team"), width: 130, render: (row) => (
         <CustomButton onPress={() => navigateTo("team", row.teamId)} accessibilityRole="link" accessibilityLabel={`View team ${row.teamName}`}>
@@ -105,12 +110,13 @@ export default function AgentsScreen() {
         </CustomButton>
       )
     },
-    { key: "successRate", header: t("agents.table.success"), width: 80, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateGreenShadeColor(row.successRate, mode) }]}>{formatPercent(row.successRate * 100)}</Text> },
-    { key: "totalRuns", header: t("agents.table.runs"), width: 80, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.totalRuns)}</Text> },
-    { key: "totalCostUsd", header: t("agents.table.cost"), width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.totalCostUsd)}</Text> },
-    { key: "avgCostPerRunUsd", header: t("agents.table.avgPerRun"), width: 80, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.avgCostPerRunUsd)}</Text> },
-    { key: "agentCount", header: t("agents.table.agentCount"), width: 70, align: "right", render: (row) => <Text style={ct.primary}>{row.agentCount}</Text> },
   ], [ct, mode, navigateTo, t]);
+
+  const agentMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const a of data?.agentBreakdown ?? []) map[a.agentId] = a.agentName;
+    return map;
+  }, [data?.agentBreakdown]);
 
   const recentRunCols = useMemo<ColumnDef<RunListRow>[]>(() => [
     {
@@ -126,7 +132,14 @@ export default function AgentsScreen() {
     { key: "totalTokens", header: t("agents.table.tokens"), width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.totalTokens)}</Text> },
     { key: "costUsd", header: t("agents.table.cost"), width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.costUsd)}</Text> },
     { key: "provider", header: t("agents.table.provider"), width: 80, align: "right" },
-  ], [ct, navigateTo, t]);
+    {
+      key: "agentId", header: t("agents.table.agent"), width: 160, render: (row) => (
+        <CustomButton onPress={() => navigateTo("agent", row.agentId)} accessibilityRole="link" accessibilityLabel={`View agent ${agentMap[row.agentId] ?? row.agentId}`}>
+          <Text style={ct.link} numberOfLines={1}>{agentMap[row.agentId] ?? row.agentId}</Text>
+        </CustomButton>
+      )
+    },
+  ], [agentMap, ct, navigateTo, t]);
 
   const handleOpenCreateAgent = useCallback(
     () => dispatch(openModal(ModalName.CreateAgent)),
@@ -161,7 +174,7 @@ export default function AgentsScreen() {
     <ScreenWrapper headerProps={headerProps}
     >
       <View ref={refFor("reliability")} nativeID="reliability" style={styles.section}>
-        <SectionHeader title={t("agents.reliability")} />
+        <SectionHeader title={t("agents.reliability")} subtitle={t("agents.reliabilitySubtitle")} />
         {loading ? (
           <CardGrid columns={4}>
             {SKELETON_4.map((_, i) => (
@@ -179,7 +192,7 @@ export default function AgentsScreen() {
                 />
               </ChartCard>
               <ChartCard title={t("agents.failureCategories")} style={isLargeLayout ? styles.chartCardFill : undefined}>
-                <BreakdownChart
+                <BarChart
                   data={failureCategoryData}
                   variant="horizontal-bar"
                   truncateLabels={false}
@@ -262,11 +275,12 @@ export default function AgentsScreen() {
 
       {data && filteredRuns.length > 0 && (
         <View ref={refFor("recent-runs")} nativeID="recent-runs" style={styles.section}>
-          <SectionHeader title={t("agents.recentRuns")} subtitle={t("agents.latestRuns", { count: filteredRuns.length })} />
+          <SectionHeader title={t("agents.recentRuns")} subtitle={t("agents.latestRuns", { count: formatCompactNumber(filteredRuns.length) })} />
           <DataTable
             columns={recentRunCols}
             data={filteredRuns}
             keyExtractor={keyExtractors.byId}
+            paginate
           />
         </View>
       )}

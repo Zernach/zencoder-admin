@@ -3,7 +3,7 @@ import { spacing } from "@/theme/tokens";
 
 export const sectionStyles = StyleSheet.create({
   section: {
-    gap: spacing[12],
+    gap: spacing[16],
   },
   chartRow: {
     flexDirection: "row",

@@ -1,9 +1,28 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { render } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import { ProviderTokenCostBarChart } from "../ProviderTokenCostBarChart";
 import { getOrangeBarShadesStepped } from "../palette";
 import type { ProviderCostRow } from "@/features/analytics/types";
+
+jest.mock("react-native-svg", () => {
+  const React = require("react");
+  const MockSvg = (props: Record<string, unknown>) =>
+    React.createElement("Svg", props);
+  MockSvg.displayName = "Svg";
+  const createMock = (name: string) => {
+    const component = (props: Record<string, unknown>) =>
+      React.createElement(name, props);
+    component.displayName = name;
+    return component;
+  };
+  return {
+    __esModule: true,
+    default: MockSvg,
+    Svg: MockSvg,
+    Path: createMock("Path"),
+  };
+});
 
 jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
 
@@ -88,7 +107,7 @@ describe("ProviderTokenCostBarChart", () => {
       <ProviderTokenCostBarChart data={providerData} />
     );
 
-    // BreakdownChart sorts by value desc, assigns testIDs by index
+    // BarChart breakdown mode sorts by value desc and assigns testIDs by index
     const firstFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-0").props.style);
     const secondFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-1").props.style);
     const thirdFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-2").props.style);
@@ -97,5 +116,15 @@ describe("ProviderTokenCostBarChart", () => {
     expect(firstFill.backgroundColor).toBe(shades[0]);
     expect(secondFill.backgroundColor).toBe(shades[1]);
     expect(thirdFill.backgroundColor).toBe(shades[2]);
+  });
+
+  it("supports toggling from bar mode to pie mode", () => {
+    const { getByTestId } = render(
+      <ProviderTokenCostBarChart data={providerData} />
+    );
+
+    expect(getByTestId("bar-pie-chart-current-mode-bar")).toBeTruthy();
+    fireEvent.press(getByTestId("bar-pie-chart-mode-pie"));
+    expect(getByTestId("bar-pie-chart-current-mode-pie")).toBeTruthy();
   });
 });
