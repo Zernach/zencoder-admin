@@ -9,6 +9,7 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { isRouteActive, TABS, type TabRoute } from "@/constants/routes";
 import { TOP_NAV_ITEMS } from "@/constants/navigation";
+import { spacing, radius } from "@/theme/tokens";
 
 function findTabNavigator(
   navigation: NavigationProp<ParamListBase>,
@@ -96,7 +97,7 @@ export const BottomTabs = React.memo(function BottomTabs() {
           <CustomButton
             key={tab.route}
             onPress={getTabPressHandler(tab.tab, tab.route)}
-            disabled={active}
+            disablePressedStyle={active}
             style={styles.tab}
             accessibilityRole="tab"
             accessibilityLabel={tab.label}
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   tab: {
     flex: 1,
     alignItems: "center",
-    gap: 4,
+    gap: spacing[4],
     minHeight: 44,
     justifyContent: "center",
     position: "relative",
@@ -135,6 +136,6 @@ const styles = StyleSheet.create({
     top: -4,
     width: 24,
     height: 2,
-    borderRadius: 1,
+    borderRadius: radius.sm,
   },
 });

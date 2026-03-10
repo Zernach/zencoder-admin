@@ -22,6 +22,10 @@ interface HasProjectId {
   projectId: KeyValue;
 }
 
+interface HasTeamId {
+  teamId: KeyValue;
+}
+
 export function createKeyExtractor<T>(selector: (item: T) => KeyValue): KeyExtractor<T> {
   return (item: T) => String(selector(item));
 }
@@ -31,6 +35,7 @@ const byKey = <T extends HasKey>(item: T): string => String(item.key);
 const byUserId = <T extends HasUserId>(item: T): string => String(item.userId);
 const byAgentId = <T extends HasAgentId>(item: T): string => String(item.agentId);
 const byProjectId = <T extends HasProjectId>(item: T): string => String(item.projectId);
+const byTeamId = <T extends HasTeamId>(item: T): string => String(item.teamId);
 
 export const keyExtractors = {
   byId,
@@ -38,4 +43,5 @@ export const keyExtractors = {
   byUserId,
   byAgentId,
   byProjectId,
+  byTeamId,
 } as const;

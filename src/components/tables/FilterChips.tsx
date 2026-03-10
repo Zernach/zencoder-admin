@@ -6,6 +6,7 @@ import { X } from "lucide-react-native";
 import type { FilterChip } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 interface FilterChipsProps {
   chips: FilterChip[];
@@ -60,24 +61,25 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: "row",
-    gap: 8,
-    paddingVertical: 8,
+    gap: spacing[8],
+    paddingVertical: spacing[8],
   },
   chip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
+    gap: spacing[6],
+    paddingHorizontal: spacing[10],
+    paddingVertical: spacing[6],
+    borderRadius: radius.sm,
     borderWidth: 1,
   },
   chipText: {
     fontSize: 12,
+    fontWeight: "500",
   },
   clearAll: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: spacing[10],
+    paddingVertical: spacing[6],
     justifyContent: "center",
   },
   clearAllText: {

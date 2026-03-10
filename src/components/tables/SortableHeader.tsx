@@ -5,6 +5,7 @@ import { ChevronUp, ChevronDown } from "lucide-react-native";
 import type { SortDirection } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing } from "@/theme/tokens";
 
 interface SortableHeaderProps {
   label: string;
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: spacing[4],
     minHeight: 44,
   },
   label: {

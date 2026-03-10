@@ -8,17 +8,18 @@ import { useAppDependencies } from "@/core/di/AppDependencies";
 import type { ModelProvider, RunStatus, Option, FilterChip } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 const FILTER_SCROLL_PROPS = {
   horizontal: true,
   showsHorizontalScrollIndicator: false,
-  contentContainerStyle: { flexDirection: "row", alignItems: "center", gap: 8 } as const,
+  contentContainerStyle: { flexDirection: "row", alignItems: "center", gap: spacing[8] } as const,
 } as const;
 
 const CHIP_SCROLL_PROPS = {
   horizontal: true,
   showsHorizontalScrollIndicator: false,
-  contentContainerStyle: { flexDirection: "row", gap: 6, paddingVertical: 2 } as const,
+  contentContainerStyle: { flexDirection: "row", gap: spacing[6], paddingVertical: spacing[32] } as const,
 } as const;
 
 const PROVIDER_OPTIONS: Option<ModelProvider>[] = [
@@ -299,7 +300,7 @@ export const FilterBar = React.memo(function FilterBar({ visibleFilters }: Filte
 
 const styles = StyleSheet.create({
   container: {
-    gap: 8,
+    gap: spacing[8],
   },
   topRow: {
     flexDirection: "row",
@@ -308,18 +309,18 @@ const styles = StyleSheet.create({
   filterGroup: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing[8],
   },
   filterIcon: {
-    marginRight: 2,
+    marginRight: spacing[2],
   },
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
+    gap: spacing[4],
+    paddingHorizontal: spacing[10],
+    paddingVertical: spacing[6],
+    borderRadius: radius.sm,
     borderWidth: 1,
   },
   filterButtonText: {
@@ -327,24 +328,24 @@ const styles = StyleSheet.create({
   },
   chipsRow: {
     flexDirection: "row",
-    gap: 6,
-    paddingVertical: 2,
+    gap: spacing[6],
+    paddingVertical: spacing[2],
   },
   chip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+    gap: spacing[6],
+    paddingHorizontal: spacing[8],
+    paddingVertical: spacing[4],
+    borderRadius: radius.sm,
     borderWidth: 1,
   },
   chipText: {
     fontSize: 11,
   },
   clearAllButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: spacing[8],
+    paddingVertical: spacing[4],
     justifyContent: "center",
   },
   clearAllText: {
@@ -359,7 +360,7 @@ const styles = StyleSheet.create({
   dropdownPanel: {
     width: 300,
     maxHeight: 400,
-    borderRadius: 12,
+    borderRadius: radius.lg,
     borderWidth: 1,
     overflow: "hidden",
   },
@@ -367,8 +368,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing[16],
+    paddingVertical: spacing[12],
     borderBottomWidth: 1,
   },
   dropdownTitle: {
@@ -381,14 +382,14 @@ const styles = StyleSheet.create({
   optionRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    gap: spacing[10],
+    paddingHorizontal: spacing[16],
+    paddingVertical: spacing[10],
   },
   checkbox: {
     width: 18,
     height: 18,
-    borderRadius: 4,
+    borderRadius: radius.sm,
     borderWidth: 1.5,
     alignItems: "center",
     justifyContent: "center",

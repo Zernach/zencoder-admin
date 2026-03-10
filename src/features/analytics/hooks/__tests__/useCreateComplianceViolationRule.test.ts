@@ -51,6 +51,8 @@ describe("useCreateComplianceViolationRule", () => {
       createSeat: jest.fn(),
       createProject: jest.fn(),
       createTeam: jest.fn(),
+      createAgent: jest.fn(),
+      updateAgentDescription: jest.fn(),
     };
 
     const { wrapper } = createTestWrapper({ api: mockApi });

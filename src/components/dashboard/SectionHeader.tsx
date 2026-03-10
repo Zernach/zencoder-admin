@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing } from "@/theme/tokens";
 
 interface SectionHeaderProps {
   title: string;
@@ -39,6 +40,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    marginTop: 2,
+    marginTop: spacing[2],
   },
 });

@@ -62,7 +62,7 @@ describe("SUBSECTIONS", () => {
     expect(items.length).toBe(6);
     expect(items.map((i) => i.label)).toEqual([
       "Overview",
-      "Compliance Status",
+      "Team Performance",
       "Seat User Oversight",
       "Recent Violations",
       "Security Events",

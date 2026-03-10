@@ -3,17 +3,21 @@ import { spacing } from "@/theme/tokens";
 
 export const sectionStyles = StyleSheet.create({
   section: {
-    gap: spacing[3],
+    gap: spacing[12],
   },
   chartRow: {
     flexDirection: "row",
-    gap: spacing[4],
+    gap: spacing[16],
   },
   chartRowFill: {
-    minWidth: "100%",
+    width: "100%",
+    alignSelf: "stretch",
   },
   chartCardFill: {
     flex: 1,
     minWidth: 0,
+  },
+  chartCardViewport: {
+    alignSelf: "stretch",
   },
 });

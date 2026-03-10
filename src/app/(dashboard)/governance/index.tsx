@@ -1,21 +1,29 @@
 import React, { useCallback, useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useRouter, usePathname } from "expo-router";
 import { CustomButton } from "@/components/buttons";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, BreakdownChart } from "@/components/charts";
-import { DataTable, type ColumnDef, cellText } from "@/components/tables";
-import { formatCompactNumber } from "@/features/analytics/utils/formatters";
-import type { PolicyViolationRow, SecurityEventRow, PolicyChangeEvent, ComplianceItem, SeatUserUsageRow, KeyValueMetric } from "@/features/analytics/types";
+import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
+import { formatCompactNumber, formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
+import type {
+  PolicyViolationRow,
+  SecurityEventRow,
+  PolicyChangeEvent,
+  SeatUserUsageRow,
+  TeamPerformanceComparisonRow,
+} from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import { CreateComplianceRuleModal } from "@/features/analytics/components/CreateComplianceRuleModal";
 import { AddSeatModal } from "@/features/analytics/components/AddSeatModal";
+import { CreateTeamModal } from "@/features/analytics/components/CreateTeamModal";
 import { useThemeMode } from "@/providers/ThemeProvider";
-import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
 import { useSectionRef } from "@/hooks/useRegisterSection";
 import { keyExtractors } from "@/constants";
+import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
 import { useAppDispatch, openModal, ModalName } from "@/store";
 
 const SKELETON_4 = Array.from({ length: 4 });
@@ -23,49 +31,48 @@ const SKELETON_4 = Array.from({ length: 4 });
 const VIOLATION_SEARCH_KEYS: (keyof PolicyViolationRow)[] = ["agentName", "reason", "severity"];
 const SECURITY_SEARCH_KEYS: (keyof SecurityEventRow)[] = ["type", "description"];
 const SEAT_SEARCH_KEYS: (keyof SeatUserUsageRow)[] = ["fullName", "teamName"];
+const TEAM_PERFORMANCE_SEARCH_KEYS: (keyof TeamPerformanceComparisonRow)[] = ["teamName"];
 const POLICY_CHANGE_SEARCH_KEYS: (keyof PolicyChangeEvent)[] = ["action", "target"];
-const SEAT_USAGE_CHART_PALETTE = [
-  "#0ea5e9",
-  "#22c55e",
-  "#f59e0b",
-  "#8b5cf6",
-  "#ec4899",
-  "#ef4444",
-  "#14b8a6",
-  "#6366f1",
-] as const;
-
-function getComplianceCaption(status: ComplianceItem["status"]): string {
-  if (status === "compliant") return "Passing";
-  if (status === "warning") return "Attention needed";
-  return "Immediate action required";
-}
 
 export default function GovernanceScreen() {
   const { mode } = useThemeMode();
-  const theme = semanticThemes[mode];
   const ct = cellText(mode);
   const { data, loading, error, refetch } = useGovernanceDashboard();
   const refFor = useSectionRef();
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const navigateTo = useCallback(
+    (entityType: "agent" | "project" | "team" | "human" | "run", entityId: string) => {
+      const tab = resolveTabFromPathname(pathname);
+      const route = buildEntityRoute(tab, entityType, entityId);
+      router.push(route as never);
+    },
+    [pathname, router],
+  );
 
   const filteredViolations = useSearchFilter(data?.recentViolations ?? [], VIOLATION_SEARCH_KEYS);
   const filteredSecurityEvents = useSearchFilter(data?.securityEvents ?? [], SECURITY_SEARCH_KEYS);
   const filteredSeatUsers = useSearchFilter(data?.seatUserUsage ?? [], SEAT_SEARCH_KEYS);
+  const filteredTeamPerformance = useSearchFilter(
+    data?.teamPerformanceComparison ?? [],
+    TEAM_PERFORMANCE_SEARCH_KEYS,
+  );
   const filteredPolicyChanges = useSearchFilter(data?.policyChanges ?? [], POLICY_CHANGE_SEARCH_KEYS);
-
-  const COMPLIANCE_STATUS_COLORS = useMemo<Record<ComplianceItem["status"], string>>(() => ({
-    compliant: theme.state.success,
-    warning: theme.state.warning,
-    critical: theme.state.error,
-  }), [theme.state.success, theme.state.warning, theme.state.error]);
 
   const violationCols = useMemo<ColumnDef<PolicyViolationRow>[]>(() => [
     { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
-    { key: "agentName", header: "Agent", width: 140 },
+    {
+      key: "agentName", header: "Agent", width: 140, render: (row) => (
+        <CustomButton onPress={() => navigateTo("agent", row.agentId)} accessibilityRole="link" accessibilityLabel={`View agent ${row.agentName}`}>
+          <Text style={ct.link} numberOfLines={1}>{row.agentName}</Text>
+        </CustomButton>
+      )
+    },
     { key: "reason", header: "Reason", width: 180 },
     { key: "severity", header: "Severity", width: 90, render: (row) => <StatusBadge variant="severity" severity={row.severity} /> },
-  ], [ct]);
+  ], [ct, navigateTo]);
 
   const securityCols = useMemo<ColumnDef<SecurityEventRow>[]>(() => [
     { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
@@ -73,20 +80,73 @@ export default function GovernanceScreen() {
     { key: "description", header: "Description" },
   ], [ct]);
 
-  const seatUsageCols = useMemo<ColumnDef<SeatUserUsageRow>[]>(() => [
-    { key: "fullName", header: "Full Name", width: 220 },
-    { key: "teamName", header: "Team", width: 180 },
-    { key: "runsCount", header: "Runs", width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.runsCount)}</Text> },
-    { key: "totalTokens", header: "Tokens", width: 120, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.totalTokens)}</Text> },
-    { key: "totalCostUsd", header: "Cost", width: 100, align: "right", render: (row) => <Text style={ct.primary}>${row.totalCostUsd.toFixed(2)}</Text> },
-  ], [ct]);
+  const teamPerformanceCols = useMemo<ColumnDef<TeamPerformanceComparisonRow>[]>(() => [
+    {
+      key: "teamName", header: "Team", width: 210, render: (row) => (
+        <CustomButton onPress={() => navigateTo("team", row.teamId)} accessibilityRole="link" accessibilityLabel={`View team ${row.teamName}`}>
+          <Text style={ct.link} numberOfLines={1}>{row.teamName}</Text>
+        </CustomButton>
+      )
+    },
+    {
+      key: "successRate",
+      header: "Success",
+      width: 100,
+      align: "right",
+      render: (row) => (
+        <Text style={[ct.primary, { color: getSuccessRateGreenShadeColor(row.successRate, mode) }]}>
+          {formatPercent(row.successRate * 100)}
+        </Text>
+      ),
+    },
+    {
+      key: "runsCount",
+      header: "Runs",
+      width: 90,
+      align: "right",
+      render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.runsCount)}</Text>,
+    },
+    {
+      key: "policyViolationCount",
+      header: "Violations",
+      width: 110,
+      align: "right",
+      render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.policyViolationCount)}</Text>,
+    },
+    {
+      key: "policyViolationRate",
+      header: "Violation Rate",
+      width: 130,
+      align: "right",
+      render: (row) => <Text style={ct.primary}>{formatPercent(row.policyViolationRate * 100)}</Text>,
+    },
+    {
+      key: "totalCostUsd",
+      header: "Cost",
+      width: 100,
+      align: "right",
+      render: (row) => <Text style={ct.primary}>{formatCurrency(row.totalCostUsd)}</Text>,
+    },
+  ], [ct, mode, navigateTo]);
 
   const policyChangeCols = useMemo<ColumnDef<PolicyChangeEvent>[]>(() => [
     { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
-    { key: "actorName", header: "Actor", width: 140, render: (row) => <Text style={ct.primary} numberOfLines={1}>{row.actorName}</Text> },
+    {
+      key: "actorName", header: "Actor", width: 140, render: (row) => (
+        <CustomButton onPress={() => navigateTo("human", row.actorUserId)} accessibilityRole="link" accessibilityLabel={`View user ${row.actorName}`}>
+          <Text style={ct.link} numberOfLines={1}>{row.actorName}</Text>
+        </CustomButton>
+      )
+    },
     { key: "action", header: "Action", width: 220 },
-    { key: "target", header: "Target", width: 130 },
-  ], [ct]);
+    {
+      key: "target", header: "Target", width: 130, render: (row) => (
+        <CustomButton onPress={() => navigateTo("team", row.targetTeamId)} accessibilityRole="link" accessibilityLabel={`View team ${row.target}`}>
+          <Text style={ct.link} numberOfLines={1}>{row.target}</Text>
+        </CustomButton>
+      )
+    },
+  ], [ct, navigateTo]);
 
   const subtitle = useMemo(() => data
     ? `${data.policyViolationCount} violations, ${data.securityEvents.length} security events`
@@ -96,16 +156,26 @@ export default function GovernanceScreen() {
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
-  const seatUsageChartData: KeyValueMetric[] = useMemo(() => {
-    if (!data?.seatUserUsage) return [];
-    return data.seatUserUsage.map((row) => ({
+  const seatUsageChartData = useMemo(() => {
+    return filteredSeatUsers.map((row) => ({
       key: row.fullName,
       value: row.runsCount,
+      hoverRows: [
+        { label: "Full Name", value: row.fullName },
+        { label: "Team", value: row.teamName },
+        { label: "Runs", value: formatCompactNumber(row.runsCount) },
+        { label: "Tokens", value: formatCompactNumber(row.totalTokens) },
+        { label: "Cost", value: formatCurrency(row.totalCostUsd) },
+      ],
     }));
-  }, [data?.seatUserUsage]);
+  }, [filteredSeatUsers]);
 
   const handleOpenCreateSeat = useCallback(
     () => dispatch(openModal(ModalName.CreateSeat)),
+    [dispatch],
+  );
+  const handleOpenCreateTeam = useCallback(
+    () => dispatch(openModal(ModalName.CreateTeam)),
     [dispatch],
   );
   const handleOpenCreateRule = useCallback(
@@ -149,19 +219,33 @@ export default function GovernanceScreen() {
       </View>
 
       {data && (
-        <View ref={refFor("compliance-status")} nativeID="compliance-status" style={sectionStyles.section}>
-          <SectionHeader title="Compliance Status" />
-          <CardGrid columns={3}>
-            {data.complianceItems.map((item: ComplianceItem) => (
-              <KpiCard
-                key={item.label}
-                title={item.label}
-                value={item.status}
-                valueColor={COMPLIANCE_STATUS_COLORS[item.status]}
-                caption={getComplianceCaption(item.status)}
+        <View ref={refFor("team-performance")} nativeID="team-performance" style={sectionStyles.section}>
+          <View style={localStyles.sectionRow}>
+            <View style={localStyles.sectionHeaderWrap}>
+              <SectionHeader
+                title="Team Performance Comparison"
+                subtitle="Compare performance metrics across teams"
               />
-            ))}
-          </CardGrid>
+            </View>
+            <CustomButton
+              onPress={handleOpenCreateTeam}
+              style={localStyles.createButton}
+              buttonMode="secondary"
+              buttonSize="compact"
+              label="+ Create Team"
+              textStyle={localStyles.createButtonText}
+              accessibilityRole="button"
+              accessibilityLabel="Create Team"
+            />
+          </View>
+          <DataTable
+            columns={teamPerformanceCols}
+            data={filteredTeamPerformance}
+            initialSortBy="successRate"
+            initialSortDirection="desc"
+            emptyMessage="No team performance data for the selected time range."
+            keyExtractor={keyExtractors.byTeamId}
+          />
         </View>
       )}
 
@@ -176,12 +260,14 @@ export default function GovernanceScreen() {
             </View>
             <CustomButton
               onPress={handleOpenCreateSeat}
-              style={[localStyles.createButton, { borderColor: theme.border.brand }]}
+              style={localStyles.createButton}
+              buttonMode="secondary"
+              buttonSize="compact"
+              label="+ Create User"
+              textStyle={localStyles.createButtonText}
               accessibilityRole="button"
-              accessibilityLabel="Add Seat"
-            >
-              <Text style={[localStyles.createButtonText, { color: theme.border.brand }]}>+ Add Seat</Text>
-            </CustomButton>
+              accessibilityLabel="Create User"
+            />
           </View>
           <ChartCard
             title="Seat Usage by Runs"
@@ -190,16 +276,9 @@ export default function GovernanceScreen() {
             <BreakdownChart
               data={seatUsageChartData}
               variant="horizontal-bar"
-              palette={SEAT_USAGE_CHART_PALETTE}
               truncateLabels={false}
             />
           </ChartCard>
-          <DataTable
-            columns={seatUsageCols}
-            data={filteredSeatUsers}
-            emptyMessage="No seat usage data for the selected time range."
-            keyExtractor={keyExtractors.byUserId}
-          />
         </View>
       )}
 
@@ -211,12 +290,14 @@ export default function GovernanceScreen() {
             </View>
             <CustomButton
               onPress={handleOpenCreateRule}
-              style={[localStyles.createButton, { borderColor: theme.border.brand }]}
+              style={localStyles.createButton}
+              buttonMode="secondary"
+              buttonSize="compact"
+              label="+ Create Rule"
+              textStyle={localStyles.createButtonText}
               accessibilityRole="button"
               accessibilityLabel="Create Compliance Rule"
-            >
-              <Text style={[localStyles.createButtonText, { color: theme.border.brand }]}>+ Create Rule</Text>
-            </CustomButton>
+            />
           </View>
           <DataTable
             columns={violationCols}
@@ -249,6 +330,7 @@ export default function GovernanceScreen() {
       )}
       <CreateComplianceRuleModal />
       <AddSeatModal />
+      <CreateTeamModal />
     </ScreenWrapper>
   );
 }
@@ -258,18 +340,13 @@ const localStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",
-    gap: spacing[2],
+    gap: spacing[8],
   },
   sectionHeaderWrap: {
     flex: 1,
     minWidth: 0,
   },
   createButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
     marginLeft: "auto",
     flexShrink: 0,
     maxWidth: "100%",

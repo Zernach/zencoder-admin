@@ -3,18 +3,24 @@ import { View, Text, StyleSheet } from "react-native";
 import {
   CheckCircle,
   XCircle,
-  Play,
   Clock,
   Slash,
   AlertTriangle,
   AlertCircle,
   Info,
 } from "lucide-react-native";
+import { spacing, radius } from "@/theme/tokens";
 import type { RunStatus, Severity } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { CustomSpinner } from "@/components/feedback";
 
-interface StatusConfigEntry { color: string; Icon: React.ElementType; label: string; }
+interface StatusConfigEntry {
+  color: string;
+  label: string;
+  Icon?: React.ElementType;
+  showSpinner?: boolean;
+}
 
 interface StatusBadgeProps {
   variant: "run-status" | "severity";
@@ -30,7 +36,7 @@ export const StatusBadge = React.memo(function StatusBadge({ variant, status, se
     const STATUS_CONFIG: Record<RunStatus, StatusConfigEntry> = {
       succeeded: { color: theme.state.success, Icon: CheckCircle, label: "Success" },
       failed: { color: theme.state.error, Icon: XCircle, label: "Failed" },
-      running: { color: theme.state.info, Icon: Play, label: "Running" },
+      running: { color: theme.state.info, label: "Running", showSpinner: true },
       queued: { color: theme.text.secondary, Icon: Clock, label: "Queued" },
       canceled: { color: theme.text.tertiary, Icon: Slash, label: "Canceled" },
     };
@@ -50,7 +56,7 @@ export const StatusBadge = React.memo(function StatusBadge({ variant, status, se
 
   if (!config) return null;
 
-  const { color, Icon, label } = config;
+  const { color, Icon, label, showSpinner } = config;
 
   return (
     <View
@@ -63,7 +69,11 @@ export const StatusBadge = React.memo(function StatusBadge({ variant, status, se
       accessibilityRole="text"
       accessibilityLabel={`Status: ${label}`}
     >
-      <Icon size={12} color={color} />
+      {showSpinner ? (
+        <CustomSpinner size={12} strokeWidth={1.8} color={color} trackColor={theme.data.gridLine} />
+      ) : Icon ? (
+        <Icon size={12} color={color} />
+      ) : null}
       <Text style={[styles.text, { color }]}>{label}</Text>
     </View>
   );
@@ -73,12 +83,11 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    gap: spacing[4],
+    paddingHorizontal: spacing[8],
+    paddingVertical: spacing[4],
+    borderRadius: radius.sm,
     borderWidth: 1,
-    alignSelf: "flex-start",
   },
   runStatusBadge: {
     width: 88,

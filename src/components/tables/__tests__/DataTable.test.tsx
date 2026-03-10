@@ -152,6 +152,23 @@ describe("DataTable", () => {
     expect(getByText("No results")).toBeDefined();
   });
 
+  it("initialSortBy shows sort indicator on mount", () => {
+    const { getByLabelText } = render(
+      <DataTable
+        columns={columns}
+        data={unsortedData}
+        keyExtractor={(r) => r.id}
+        initialSortBy="value"
+        initialSortDirection="desc"
+      />
+    );
+    // Active column should have direction in accessibility label
+    expect(getByLabelText("Sort by Value, descending")).toBeDefined();
+    // Other columns should NOT have direction
+    expect(getByLabelText("Sort by ID")).toBeDefined();
+    expect(getByLabelText("Sort by Name")).toBeDefined();
+  });
+
   it("row press fires onRowPress", () => {
     const onRowPress = jest.fn();
     const { getByLabelText } = render(

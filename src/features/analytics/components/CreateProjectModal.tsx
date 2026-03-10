@@ -7,6 +7,7 @@ import { useCreateProject } from "@/features/analytics/hooks/useCreateProject";
 import { CreateProjectForm } from "./CreateProjectForm";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 export const CreateProjectModal = React.memo(function CreateProjectModal() {
   const visible = useAppSelector(selectModalVisible(ModalName.CreateProject));
@@ -64,15 +65,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing[20],
   },
   modalPanel: {
     width: 400,
     maxWidth: "100%",
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    padding: 16,
-    gap: 12,
+    padding: spacing[16],
+    gap: spacing[12],
   },
   modalHeader: {
     flexDirection: "row",

@@ -161,4 +161,19 @@ describe("StubAnalyticsApi — createTeam", () => {
 
     await expect(api.createTeam({ name: "Unique Team" })).rejects.toThrow("already exists");
   });
+
+  it("created team appears in governance team performance comparison", async () => {
+    const api = createApi();
+    await api.createTeam({ name: "Platform Team" });
+
+    const gov = await api.getGovernance({
+      orgId: "org1",
+      timeRange: { fromIso: "2020-01-01T00:00:00Z", toIso: "2030-01-01T00:00:00Z" },
+    });
+
+    const createdTeam = gov.teamPerformanceComparison.find((row) => row.teamName === "Platform Team");
+    expect(createdTeam).toBeDefined();
+    expect(createdTeam!.runsCount).toBe(0);
+    expect(createdTeam!.policyViolationCount).toBe(0);
+  });
 });

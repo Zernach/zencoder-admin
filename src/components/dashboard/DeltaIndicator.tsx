@@ -5,6 +5,7 @@ import { formatDelta } from "@/features/analytics/utils/formatters";
 import type { DeltaPolarity } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing } from "@/theme/tokens";
 
 interface DeltaIndicatorProps {
   value: number;
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 2,
+    gap: spacing[2],
   },
   text: {
     fontSize: 12,

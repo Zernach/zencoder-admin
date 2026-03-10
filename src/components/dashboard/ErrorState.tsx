@@ -4,6 +4,7 @@ import { CustomButton } from "@/components/buttons";
 import { AlertTriangle } from "lucide-react-native";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing } from "@/theme/tokens";
 
 interface ErrorStateProps {
   message?: string;
@@ -23,12 +24,13 @@ export const ErrorState = React.memo(function ErrorState({
       <Text style={[styles.message, { color: theme.text.secondary }]}>{message}</Text>
       <CustomButton
         onPress={onRetry}
-        style={[styles.button, { backgroundColor: theme.border.brand }]}
+        style={styles.button}
+        buttonMode="primary"
+        buttonSize="md"
+        label="Retry"
         accessibilityRole="button"
         accessibilityLabel="Retry"
-      >
-        <Text style={[styles.buttonText, { color: theme.text.onBrand }]}>Retry</Text>
-      </CustomButton>
+      />
     </View>
   );
 });
@@ -37,8 +39,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-    padding: 32,
-    gap: 12,
+    padding: spacing[32],
+    gap: spacing[12],
     minHeight: 200,
   },
   message: {
@@ -46,16 +48,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   button: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: "600",
+    marginTop: spacing[16],
   },
 });

@@ -1,1 +1,6 @@
-export { CustomButton, type CustomButtonProps } from "./CustomButton";
+export {
+  CustomButton,
+  type CustomButtonProps,
+  type CustomButtonMode,
+  type CustomButtonSize,
+} from "./CustomButton";

@@ -5,6 +5,7 @@ import { DataList } from "./DataList";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { useWindowDimensions } from "react-native";
+import { spacing, radius } from "@/theme/tokens";
 
 interface ResponsiveTableProps<T> extends DataTableProps<T> {
   renderListItem?: (row: T) => React.ReactNode;
@@ -61,20 +62,22 @@ export function ResponsiveTable<T>({
 
 const listStyles = StyleSheet.create({
   card: {
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 8,
+    borderRadius: radius.md,
+    padding: spacing[12],
+    marginBottom: spacing[8],
     borderWidth: 1,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 4,
+    paddingVertical: spacing[4],
   },
   label: {
     fontSize: 11,
+    fontWeight: "500",
   },
   value: {
     fontSize: 12,
+    fontWeight: "500",
   },
 });

@@ -5,6 +5,7 @@ export enum ModalName {
   CreateComplianceRule = "createComplianceRule",
   CreateSeat = "createSeat",
   CreateTeam = "createTeam",
+  CreateAgent = "createAgent",
   SignOutNotice = "signOutNotice",
 }
 
@@ -18,6 +19,7 @@ const initialState: ModalState = {
     [ModalName.CreateComplianceRule]: false,
     [ModalName.CreateSeat]: false,
     [ModalName.CreateTeam]: false,
+    [ModalName.CreateAgent]: false,
     [ModalName.SignOutNotice]: false,
   },
 };

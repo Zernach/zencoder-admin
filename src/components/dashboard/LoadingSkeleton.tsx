@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import { spacing, radius } from "@/theme/tokens";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -102,23 +103,23 @@ export const LoadingSkeleton = React.memo(function LoadingSkeleton({
 
 const styles = StyleSheet.create({
   block: {
-    borderRadius: 6,
+    borderRadius: radius.sm,
   },
   kpiContainer: {
-    borderRadius: 10,
-    padding: 16,
+    borderRadius: radius.md,
+    padding: spacing[16],
     minHeight: 132,
-    gap: 12,
+    gap: spacing[12],
     justifyContent: "center",
   },
   chartContainer: {
-    borderRadius: 10,
-    padding: 16,
+    borderRadius: radius.md,
+    padding: spacing[16],
   },
   tableContainer: {
-    gap: 4,
+    gap: spacing[4],
   },
   textContainer: {
-    gap: 8,
+    gap: spacing[8],
   },
 });

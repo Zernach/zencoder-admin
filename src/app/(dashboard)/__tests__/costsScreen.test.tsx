@@ -3,9 +3,14 @@ import { render } from "@testing-library/react-native";
 import type { CostResponse } from "@/features/analytics/types";
 
 const mockUseCostDashboard = jest.fn();
+const mockSectionRef = jest.fn((_sectionId: string) => jest.fn());
 
 jest.mock("@/features/analytics/hooks/useCostDashboard", () => ({
   useCostDashboard: () => mockUseCostDashboard(),
+}));
+
+jest.mock("@/hooks/useRegisterSection", () => ({
+  useSectionRef: () => mockSectionRef,
 }));
 
 jest.mock("@/hooks/useSearchFilter", () => ({
@@ -16,9 +21,10 @@ jest.mock("@/components/screen", () => {
   const React = require("react");
   const { View } = require("react-native");
   const { StyleSheet } = require("react-native");
+  const { spacing: tokenSpacing } = require("@/theme/tokens");
   return {
     ScreenWrapper: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
-    sectionStyles: StyleSheet.create({ section: { gap: 12 }, chartRow: { flexDirection: "row", gap: 16 } }),
+    sectionStyles: StyleSheet.create({ section: { gap: tokenSpacing[12] }, chartRow: { flexDirection: "row", gap: tokenSpacing[16] } }),
   };
 });
 
@@ -41,7 +47,8 @@ jest.mock("@/components/charts", () => {
     ChartCard: ({ title, children }: { title: string; children: React.ReactNode }) => (
       <View><Text>{title}</Text>{children}</View>
     ),
-    TrendChart: () => <View />,
+    LineChart: () => <View />,
+    BarChart: () => <View testID="bar-chart" />,
     BreakdownChart: ({ data, truncateLabels }: { data: Array<{ key: string; value: number }>; truncateLabels?: boolean }) => (
       <View>
         <Text testID="truncateLabels">{String(truncateLabels ?? true)}</Text>
@@ -55,6 +62,23 @@ jest.mock("@/components/charts", () => {
     ProviderTokenCostBarChart: () => <View testID="provider-token-cost-bar-chart" />,
   };
 });
+
+jest.mock("@/providers/ThemeProvider", () => ({
+  useThemeMode: () => ({ mode: "dark" }),
+}));
+
+jest.mock("@/theme/themes", () => ({
+  semanticThemes: {
+    dark: {
+      text: { brand: "#f64a00" },
+      state: { warning: "#f59e0b", info: "#38bdf8" },
+    },
+    light: {
+      text: { brand: "#f64a00" },
+      state: { warning: "#a16207", info: "#0369a1" },
+    },
+  },
+}));
 
 const CostAnalyticsScreen = require("../costs").default;
 
@@ -82,6 +106,10 @@ function createCostData(): CostResponse {
 }
 
 describe("CostAnalyticsScreen", () => {
+  beforeEach(() => {
+    mockSectionRef.mockClear();
+  });
+
   it("renders full project names in Project Breakdown without truncation", () => {
     mockUseCostDashboard.mockReturnValue({
       data: createCostData(),
@@ -126,5 +154,26 @@ describe("CostAnalyticsScreen", () => {
     expect(getByText("Cost per Token")).toBeTruthy();
     expect(getByTestId("provider-cost-chart")).toBeTruthy();
     expect(getByTestId("provider-token-cost-bar-chart")).toBeTruthy();
+  });
+
+  it("registers all sidebar subsection section IDs as scroll anchors", () => {
+    mockUseCostDashboard.mockReturnValue({
+      data: createCostData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    render(<CostAnalyticsScreen />);
+
+    const sectionIds = mockSectionRef.mock.calls.map((call) => call[0]);
+    expect(sectionIds).toEqual(
+      expect.arrayContaining([
+        "cost-summary",
+        "cost-by-provider",
+        "budget-forecast",
+        "costs-project-breakdown",
+      ]),
+    );
   });
 });

@@ -1,15 +1,15 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import Svg, { Path } from "react-native-svg";
-import { arc, pie } from "d3-shape";
 import type { ProviderCostRow } from "@/features/analytics/types";
 import {
   formatCompactNumber,
   formatCurrency,
   formatPercent,
 } from "@/features/analytics/utils/formatters";
+import { spacing, radius } from "@/theme/tokens";
 import { typography } from "@/theme/typography";
-import { DATA_PALETTE } from "./palette";
+import { getOrangePieColorsByValue } from "./palette";
+import { PieChart, type PieChartDatum } from "./PieChart";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 
@@ -33,20 +33,11 @@ export const ProviderCostChart = React.memo(function ProviderCostChart({
   const { mode } = useThemeMode();
   const textColors = semanticThemes[mode].text;
   const size = Math.min(height, 180);
-  const chartRadius = size / 2 - 8;
-  const innerRadius = chartRadius * 0.6;
 
-  const { sorted, arcs, arcGen, providerMetrics } = useMemo(() => {
+  const { sorted, providerMetrics, providerColors, pieData } = useMemo(() => {
     const s = [...data].sort((a, b) => b.totalCostUsd - a.totalCostUsd);
-    const chartData = s.map((row) => ({ key: row.provider, value: row.totalCostUsd }));
+    const chartData = s.map((row) => ({ provider: row.provider, value: row.totalCostUsd }));
     const t = chartData.reduce((sum, row) => sum + row.value, 0) || 1;
-
-    const pieGen = pie<{ key: string; value: number }>()
-      .value((d) => d.value)
-      .sort(null);
-    const gen = arc<{ startAngle: number; endAngle: number }>()
-      .innerRadius(innerRadius)
-      .outerRadius(chartRadius);
 
     // Pre-compute per-provider metrics to avoid per-render calculations
     const metrics = s.map((row) => ({
@@ -54,23 +45,39 @@ export const ProviderCostChart = React.memo(function ProviderCostChart({
       avgCostPerRun: row.runCount > 0 ? row.totalCostUsd / row.runCount : 0,
     }));
 
-    return { sorted: s, arcs: pieGen(chartData), arcGen: gen, providerMetrics: metrics };
-  }, [data, innerRadius, chartRadius]);
+    const colors = getOrangePieColorsByValue(s.map((row) => row.totalCostUsd));
+
+    const slices: PieChartDatum[] = s.map((row, index) => ({
+      id: row.provider,
+      value: row.totalCostUsd,
+      color: colors[index] ?? "#f64a00",
+      tooltipRows: [
+        { label: "Provider", value: PROVIDER_LABELS[row.provider] },
+        { label: "Cost", value: formatCurrency(row.totalCostUsd) },
+        { label: "Runs", value: formatCompactNumber(row.runCount) },
+        {
+          label: "Avg/Run",
+          value: formatCurrency(row.runCount > 0 ? row.totalCostUsd / row.runCount : 0),
+        },
+        { label: "Share", value: formatPercent((row.totalCostUsd / t) * 100) },
+      ],
+    }));
+    const providerColorMap = Object.fromEntries(
+      slices.map((slice) => [slice.id, slice.color] as const),
+    ) as Record<ProviderCostRow["provider"], string>;
+
+    return {
+      sorted: s,
+      providerMetrics: metrics,
+      providerColors: providerColorMap,
+      pieData: slices,
+    };
+  }, [data]);
 
   return (
     <View style={styles.container}>
-      <View style={[styles.chartFrame, { width: size, height: size }]}>
-        <Svg width={size} height={size}>
-          {arcs.map((a, i) => (
-            <Path
-              key={a.data.key}
-              d={arcGen(a) ?? ""}
-              fill={DATA_PALETTE[i % DATA_PALETTE.length]}
-              transform={`translate(${size / 2},${size / 2})`}
-            />
-          ))}
-        </Svg>
-        <View style={styles.chartTextOverlay}>
+      <PieChart data={pieData} size={size} innerRadiusRatio={0.6} style={styles.chartFrame}>
+        {() => (
           <View style={styles.centerTextWrap}>
             <Text style={[styles.centerValue, { color: textColors.primary }]}>
               {formatCurrency(totalCostUsd)}
@@ -79,8 +86,8 @@ export const ProviderCostChart = React.memo(function ProviderCostChart({
               Cost by Provider
             </Text>
           </View>
-        </View>
-      </View>
+        )}
+      </PieChart>
 
       <View style={styles.rightColumn}>
         {sorted.map((row, i) => (
@@ -90,7 +97,9 @@ export const ProviderCostChart = React.memo(function ProviderCostChart({
                 <View
                   style={[
                     styles.swatch,
-                    { backgroundColor: DATA_PALETTE[i % DATA_PALETTE.length] },
+                    {
+                      backgroundColor: providerColors[row.provider] ?? "#f64a00",
+                    },
                   ]}
                 />
                 <Text style={[styles.providerName, { color: textColors.primary }]}>
@@ -117,16 +126,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",
-    gap: 16,
+    gap: spacing[16],
   },
   chartFrame: {
-    position: "relative",
     flexShrink: 0,
     alignSelf: "flex-start",
-  },
-  chartTextOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    pointerEvents: "none",
   },
   centerTextWrap: {
     ...StyleSheet.absoluteFillObject,
@@ -142,7 +146,7 @@ const styles = StyleSheet.create({
   },
   centerLabel: {
     textAlign: "center",
-    marginTop: 2,
+    marginTop: spacing[2],
     fontFamily: typography.label.fontFamily,
     fontSize: typography.label.fontSize,
     fontWeight: typography.label.fontWeight,
@@ -156,35 +160,36 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   row: {
-    gap: 6,
+    gap: spacing[6],
   },
   rowSpacing: {
-    marginTop: 10,
+    marginTop: spacing[10],
   },
   rowHeader: {
-    alignItems: "flex-start",
-    gap: 2,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing[6],
   },
   providerNameWrap: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: spacing[6],
   },
   swatch: {
     width: 9,
     height: 9,
-    borderRadius: 2,
+    borderRadius: radius.sm,
   },
   providerName: {
     fontFamily: typography.tableBody.fontFamily,
     fontSize: typography.tableBody.fontSize,
-    fontWeight: typography.tableBody.fontWeight,
+    fontWeight: "600",
     lineHeight: typography.tableBody.lineHeight,
   },
   share: {
     fontFamily: typography.tableBody.fontFamily,
     fontSize: typography.tableBody.fontSize,
-    fontWeight: typography.tableBody.fontWeight,
+    fontWeight: "500",
     lineHeight: typography.tableBody.lineHeight,
   },
   metricLabel: {

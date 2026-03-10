@@ -1,21 +1,23 @@
 import React, { useCallback, useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useRouter, usePathname } from "expo-router";
 import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
-import { ChartCard, TrendChart, BreakdownChart } from "@/components/charts";
-import { DataTable, type ColumnDef, cellText, getSuccessRateColor, chartColors } from "@/components/tables";
+import { ChartCard, LineChart, BreakdownChart } from "@/components/charts";
+import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
 import { formatPercent, formatDuration, formatCurrency, formatCompactNumber } from "@/features/analytics/utils/formatters";
 import type { AgentBreakdownRow, ProjectBreakdownRow, RunListRow } from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import { CreateProjectModal } from "@/features/analytics/components/CreateProjectModal";
+import { CreateAgentModal } from "@/features/analytics/components/CreateAgentModal";
 import { useThemeMode } from "@/providers/ThemeProvider";
-import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
 import { useSectionRef } from "@/hooks/useRegisterSection";
 import { keyExtractors } from "@/constants";
+import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
 import { useAppDispatch, openModal, ModalName } from "@/store";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 
@@ -31,45 +33,79 @@ export default function AgentsScreen() {
   const bp = useBreakpoint();
   const isLargeLayout = bp === "desktop";
   const { mode } = useThemeMode();
-  const theme = semanticThemes[mode];
   const ct = cellText(mode);
-  const cc = chartColors(mode);
   const { data, loading, error, refetch } = useAgentsHub();
   const refFor = useSectionRef();
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const filteredAgents = useSearchFilter(data?.agentBreakdown ?? [], AGENT_SEARCH_KEYS);
   const filteredProjects = useSearchFilter(data?.projectBreakdown ?? [], PROJECT_SEARCH_KEYS);
   const filteredRuns = useSearchFilter(data?.recentRuns ?? [], RUN_SEARCH_KEYS);
 
+  const navigateTo = useCallback(
+    (entityType: "agent" | "project" | "team" | "human" | "run", entityId: string) => {
+      const tab = resolveTabFromPathname(pathname);
+      const route = buildEntityRoute(tab, entityType, entityId);
+      router.push(route as never);
+    },
+    [pathname, router],
+  );
+
   const agentCols = useMemo<ColumnDef<AgentBreakdownRow>[]>(() => [
-    { key: "agentName", header: "Agent", width: 160 },
-    { key: "projectName", header: "Project", width: 160, render: (row) => <Text style={ct.secondary} numberOfLines={1}>{row.projectName}</Text> },
+    { key: "agentName", header: "Agent", width: 160, render: (row) => (
+      <CustomButton onPress={() => navigateTo("agent", row.agentId)} accessibilityRole="link" accessibilityLabel={`View agent ${row.agentName}`}>
+        <Text style={ct.link} numberOfLines={1}>{row.agentName}</Text>
+      </CustomButton>
+    ) },
+    { key: "projectName", header: "Project", width: 160, render: (row) => (
+      <CustomButton onPress={() => navigateTo("project", row.projectId)} accessibilityRole="link" accessibilityLabel={`View project ${row.projectName}`}>
+        <Text style={ct.link} numberOfLines={1}>{row.projectName}</Text>
+      </CustomButton>
+    ) },
+    { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateGreenShadeColor(row.successRate, mode) }]}>{formatPercent(row.successRate * 100)}</Text> },
     { key: "totalRuns", header: "Runs", width: 80, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.totalRuns)}</Text> },
-    { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateColor(row.successRate, mode) }]}>{formatPercent(row.successRate * 100)}</Text> },
     { key: "avgDurationMs", header: "Avg Duration", width: 100, align: "right", render: (row) => <Text style={ct.primary}>{formatDuration(row.avgDurationMs)}</Text> },
     { key: "totalCostUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.totalCostUsd)}</Text> },
-  ], [ct, mode]);
+  ], [ct, mode, navigateTo]);
 
   const projectCols = useMemo<ColumnDef<ProjectBreakdownRow>[]>(() => [
-    { key: "projectName", header: "Project", width: 180 },
-    { key: "teamName", header: "Team", width: 130, render: (row) => <Text style={ct.secondary} numberOfLines={1}>{row.teamName}</Text> },
+    { key: "projectName", header: "Project", width: 180, render: (row) => (
+      <CustomButton onPress={() => navigateTo("project", row.projectId)} accessibilityRole="link" accessibilityLabel={`View project ${row.projectName}`}>
+        <Text style={ct.link} numberOfLines={1}>{row.projectName}</Text>
+      </CustomButton>
+    ) },
+    { key: "teamName", header: "Team", width: 130, render: (row) => (
+      <CustomButton onPress={() => navigateTo("team", row.teamId)} accessibilityRole="link" accessibilityLabel={`View team ${row.teamName}`}>
+        <Text style={ct.link} numberOfLines={1}>{row.teamName}</Text>
+      </CustomButton>
+    ) },
+    { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateGreenShadeColor(row.successRate, mode) }]}>{formatPercent(row.successRate * 100)}</Text> },
     { key: "totalRuns", header: "Runs", width: 80, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.totalRuns)}</Text> },
-    { key: "successRate", header: "Success", width: 80, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateColor(row.successRate, mode) }]}>{formatPercent(row.successRate * 100)}</Text> },
     { key: "totalCostUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.totalCostUsd)}</Text> },
-    { key: "avgCostPerRunUsd", header: "Avg/Run", width: 80, align: "right", render: (row) => <Text style={ct.secondary}>{formatCurrency(row.avgCostPerRunUsd)}</Text> },
-    { key: "agentCount", header: "Agents", width: 70, align: "right", render: (row) => <Text style={ct.secondary}>{row.agentCount}</Text> },
-  ], [ct, mode]);
+    { key: "avgCostPerRunUsd", header: "Avg/Run", width: 80, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.avgCostPerRunUsd)}</Text> },
+    { key: "agentCount", header: "Agents", width: 70, align: "right", render: (row) => <Text style={ct.primary}>{row.agentCount}</Text> },
+  ], [ct, mode, navigateTo]);
 
   const recentRunCols = useMemo<ColumnDef<RunListRow>[]>(() => [
-    { key: "id", header: "Run ID", width: 110, render: (row) => <Text style={ct.brand} numberOfLines={1}>{row.id}</Text> },
+    { key: "id", header: "Run ID", width: 110, render: (row) => (
+      <CustomButton onPress={() => navigateTo("run", row.id)} accessibilityRole="link" accessibilityLabel={`View run ${row.id}`}>
+        <Text style={ct.link} numberOfLines={1}>{row.id}</Text>
+      </CustomButton>
+    ) },
     { key: "status", header: "Status", width: 100, render: (row) => <StatusBadge variant="run-status" status={row.status} /> },
     { key: "startedAtIso", header: "Started", width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.startedAtIso).toLocaleString()}</Text> },
     { key: "durationMs", header: "Duration", width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatDuration(row.durationMs)}</Text> },
     { key: "totalTokens", header: "Tokens", width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.totalTokens)}</Text> },
     { key: "costUsd", header: "Cost", width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.costUsd)}</Text> },
-    { key: "provider", header: "Provider", width: 80 },
-  ], [ct]);
+    { key: "provider", header: "Provider", width: 80, align: "right" },
+  ], [ct, navigateTo]);
+
+  const handleOpenCreateAgent = useCallback(
+    () => dispatch(openModal(ModalName.CreateAgent)),
+    [dispatch],
+  );
 
   const handleOpenCreateProject = useCallback(
     () => dispatch(openModal(ModalName.CreateProject)),
@@ -120,7 +156,11 @@ export default function AgentsScreen() {
             </CardGrid>
             <CustomList scrollViewProps={chartScrollProps}>
               <ChartCard title="Reliability Trend" style={isLargeLayout ? styles.chartCardFill : undefined}>
-                <TrendChart data={data.reliabilityTrend} variant="line" color={cc.success} />
+                <LineChart
+                  data={data.reliabilityTrend}
+                  variant="percentages"
+                  xTickCount={4}
+                />
               </ChartCard>
               <ChartCard title="Failure Categories" style={isLargeLayout ? styles.chartCardFill : undefined}>
                 <BreakdownChart
@@ -136,10 +176,26 @@ export default function AgentsScreen() {
 
       {data && (
         <View ref={refFor("agent-performance")} nativeID="agent-performance" style={styles.section}>
-          <SectionHeader title="Agent Performance" subtitle={`${filteredAgents.length} agents with activity`} />
+          <View style={localStyles.sectionRow}>
+            <View style={localStyles.sectionHeaderWrap}>
+              <SectionHeader title="Agent Performance" subtitle={`${filteredAgents.length} agents with activity`} />
+            </View>
+            <CustomButton
+              onPress={handleOpenCreateAgent}
+              style={localStyles.createButton}
+              buttonMode="secondary"
+              buttonSize="compact"
+              label="+ Create Agent"
+              textStyle={localStyles.createButtonText}
+              accessibilityRole="button"
+              accessibilityLabel="Create Agent"
+            />
+          </View>
           <DataTable
             columns={agentCols}
             data={filteredAgents}
+            initialSortBy="successRate"
+            initialSortDirection="desc"
             keyExtractor={keyExtractors.byAgentId}
           />
         </View>
@@ -153,12 +209,14 @@ export default function AgentsScreen() {
             </View>
             <CustomButton
               onPress={handleOpenCreateProject}
-              style={[localStyles.createButton, { borderColor: theme.border.brand }]}
+              style={localStyles.createButton}
+              buttonMode="secondary"
+              buttonSize="compact"
+              label="+ Create Project"
+              textStyle={localStyles.createButtonText}
               accessibilityRole="button"
               accessibilityLabel="Create Project"
-            >
-              <Text style={[localStyles.createButtonText, { color: theme.border.brand }]}>+ Create Project</Text>
-            </CustomButton>
+            />
           </View>
           <CardGrid columns={3}>
             <KpiCard title="Active Projects" value={formatCompactNumber(data.activeProjects)} caption={`of ${data.totalProjects} total`} />
@@ -168,6 +226,8 @@ export default function AgentsScreen() {
           <DataTable
             columns={projectCols}
             data={filteredProjects}
+            initialSortBy="successRate"
+            initialSortDirection="desc"
             keyExtractor={keyExtractors.byProjectId}
           />
         </View>
@@ -183,6 +243,7 @@ export default function AgentsScreen() {
           />
         </View>
       )}
+      <CreateAgentModal />
       <CreateProjectModal />
     </ScreenWrapper>
   );
@@ -193,18 +254,13 @@ const localStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",
-    gap: spacing[2],
+    gap: spacing[8],
   },
   sectionHeaderWrap: {
     flex: 1,
     minWidth: 0,
   },
   createButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
     marginLeft: "auto",
     flexShrink: 0,
     maxWidth: "100%",

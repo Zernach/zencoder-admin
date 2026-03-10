@@ -19,6 +19,7 @@ import type {
   ModelProvider,
   LiveAgentSession,
   SeatUserUsageRow,
+  TeamPerformanceComparisonRow,
   SearchSuggestionsRequest,
   SearchSuggestionsResponse,
   SearchSuggestion,
@@ -37,6 +38,10 @@ import type {
   CreateProjectResponse,
   CreateTeamRequest,
   CreateTeamResponse,
+  CreateAgentRequest,
+  CreateAgentResponse,
+  UpdateAgentDescriptionRequest,
+  UpdateAgentDescriptionResponse,
   PolicyViolationRow,
 } from "@/features/analytics/types";
 import { round2, round4 } from "../../utils/metricFormulas";
@@ -79,6 +84,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   private createdUsers: Array<{ id: string; name: string; email: string; teamId: string }> = [];
   private createdProjects: Array<{ id: string; name: string; teamId: string }> = [];
   private createdTeams: Array<{ id: string; name: string }> = [];
+  private createdAgents: Array<{ id: string; name: string; projectId: string; description: string }> = [];
 
   constructor(seedData: SeedData, config: StubConfig = {}) {
     this.seed = seedData;
@@ -157,6 +163,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       baselineBlend: number;
       round?: (value: number) => number;
       maxValue?: number;
+      longWaveCycles?: number;
+      shortWaveCycles?: number;
+      phaseShift?: number;
+      bumpCenter?: number;
+      divotCenter?: number;
+      jitterSalt?: string;
     },
   ): TimeSeriesPoint[] {
     if (points.length <= 2) {
@@ -183,16 +195,24 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     );
     const span = smoothed.length - 1;
 
+    const longWaveCycles = options.longWaveCycles ?? 3;
+    const shortWaveCycles = options.shortWaveCycles ?? 9;
+    const phaseShift = options.phaseShift ?? 0.8;
+    const bumpCenter = options.bumpCenter ?? 0.33;
+    const divotCenter = options.divotCenter ?? 0.7;
+    const jitterSalt = options.jitterSalt ?? "default";
+
     let shaped = smoothed.map((point, index) => {
       const progress = span > 0 ? index / span : 0;
       const baseline = startValue + (targetEndValue - startValue) * progress;
       const amplitude = Math.max(1, baseline * options.volatilityRatio);
 
-      const longWave = Math.sin(progress * Math.PI * 3) * amplitude;
-      const shortWave = Math.sin(progress * Math.PI * 9 + 0.8) * amplitude * 0.45;
-      const bump = Math.exp(-Math.pow((progress - 0.33) / 0.13, 2)) * amplitude * 0.55;
-      const divot = -Math.exp(-Math.pow((progress - 0.7) / 0.11, 2)) * amplitude * 0.6;
-      const jitterSeed = hashString(point.tsIso) % 13;
+      const longWave = Math.sin(progress * Math.PI * longWaveCycles) * amplitude;
+      const shortWave =
+        Math.sin(progress * Math.PI * shortWaveCycles + phaseShift) * amplitude * 0.45;
+      const bump = Math.exp(-Math.pow((progress - bumpCenter) / 0.13, 2)) * amplitude * 0.55;
+      const divot = -Math.exp(-Math.pow((progress - divotCenter) / 0.11, 2)) * amplitude * 0.6;
+      const jitterSeed = hashString(`${jitterSalt}:${point.tsIso}`) % 13;
       const jitter = ((jitterSeed - 6) / 6) * amplitude * 0.18;
 
       const blend = baseline * options.baselineBlend + point.value * (1 - options.baselineBlend);
@@ -252,6 +272,143 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     });
   }
 
+  /**
+   * Apply a logarithmic-exponential rise curve and guarantee one visible
+   * high spike and one low spike while preserving an overall upward trend.
+   */
+  private logarithmicExponentialTrend(
+    points: TimeSeriesPoint[],
+    options: {
+      minGrowthPct: number;
+      exponentialWeight: number;
+      expIntensity: number;
+      logScale: number;
+      preserveShape: number;
+      highSpikeAt: number;
+      lowSpikeAt: number;
+      highSpikeLift: number;
+      lowSpikeDrop: number;
+      maxValue?: number;
+      round?: (value: number) => number;
+    },
+  ): TimeSeriesPoint[] {
+    const clampValue = (value: number): number =>
+      options.maxValue != null
+        ? Math.max(0, Math.min(options.maxValue, value))
+        : Math.max(0, value);
+
+    if (points.length <= 2) {
+      return points.map((point) => ({
+        tsIso: point.tsIso,
+        value: options.round ? options.round(clampValue(point.value)) : clampValue(point.value),
+      }));
+    }
+
+    const span = points.length - 1;
+    const startValue = Math.max(points[0]!.value, 1);
+    const rawEndValue = points[points.length - 1]!.value;
+    const targetEndValue = Math.max(
+      rawEndValue,
+      startValue * (1 + options.minGrowthPct),
+      startValue + 1,
+    );
+    const expDenominator = Math.exp(options.expIntensity) - 1;
+    const logDenominator = Math.log1p(options.logScale);
+
+    let shaped = points.map((point, index) => {
+      const progress = span > 0 ? index / span : 0;
+      const exponentialProgress =
+        expDenominator > 0
+          ? (Math.exp(progress * options.expIntensity) - 1) / expDenominator
+          : progress;
+      const logarithmicProgress =
+        logDenominator > 0 ? Math.log1p(progress * options.logScale) / logDenominator : progress;
+      const curveProgress =
+        exponentialProgress * options.exponentialWeight +
+        logarithmicProgress * (1 - options.exponentialWeight);
+
+      const curvedBaseline = startValue + (targetEndValue - startValue) * curveProgress;
+      const blended =
+        curvedBaseline * (1 - options.preserveShape) + point.value * options.preserveShape;
+
+      return { tsIso: point.tsIso, value: clampValue(blended) };
+    });
+
+    const firstValue = shaped[0]!.value;
+    const lastValue = shaped[shaped.length - 1]!.value;
+    if (lastValue < firstValue) {
+      const uplift = firstValue - lastValue + 1;
+      shaped = shaped.map((point, index) => {
+        const progress = span > 0 ? index / span : 0;
+        return {
+          tsIso: point.tsIso,
+          value: clampValue(point.value + uplift * progress),
+        };
+      });
+    }
+
+    const midpoint = Math.floor(shaped.length / 2);
+    const firstHalf = shaped.slice(0, midpoint);
+    const secondHalf = shaped.slice(midpoint);
+    const avg = (series: TimeSeriesPoint[]): number =>
+      series.reduce((sum, point) => sum + point.value, 0) / series.length;
+
+    if (secondHalf.length > 0 && firstHalf.length > 0 && avg(secondHalf) <= avg(firstHalf)) {
+      const uplift = avg(firstHalf) - avg(secondHalf) + 1;
+      shaped = shaped.map((point, index) => {
+        const progress = span > 0 ? index / span : 0;
+        const tailBias = Math.max(0, (progress - 0.42) / 0.58);
+        return {
+          tsIso: point.tsIso,
+          value: clampValue(point.value + uplift * tailBias),
+        };
+      });
+    }
+
+    if (shaped.length >= 5) {
+      const maxInternalIndex = shaped.length - 2;
+      const clampIndex = (index: number): number => Math.max(1, Math.min(maxInternalIndex, index));
+
+      const highIndex = clampIndex(Math.round(span * options.highSpikeAt));
+      let lowIndex = clampIndex(Math.round(span * options.lowSpikeAt));
+      if (lowIndex === highIndex) {
+        lowIndex = clampIndex(lowIndex < highIndex ? lowIndex - 1 : lowIndex + 1);
+        if (lowIndex === highIndex) {
+          lowIndex = clampIndex(highIndex <= 2 ? highIndex + 1 : highIndex - 1);
+        }
+      }
+
+      const highNeighborMax = Math.max(
+        shaped[highIndex - 1]!.value,
+        shaped[highIndex + 1]!.value,
+      );
+      const forcedHighValue = Math.max(
+        shaped[highIndex]!.value,
+        highNeighborMax * (1 + options.highSpikeLift),
+      );
+      shaped[highIndex] = {
+        tsIso: shaped[highIndex]!.tsIso,
+        value: clampValue(forcedHighValue),
+      };
+
+      const lowNeighborMin = Math.min(shaped[lowIndex - 1]!.value, shaped[lowIndex + 1]!.value);
+      const lowMultiplier = Math.max(0.15, 1 - options.lowSpikeDrop);
+      const forcedLowValue = Math.min(shaped[lowIndex]!.value, lowNeighborMin * lowMultiplier);
+      shaped[lowIndex] = {
+        tsIso: shaped[lowIndex]!.tsIso,
+        value: clampValue(forcedLowValue),
+      };
+    }
+
+    return shaped.map((point) => {
+      const clamped = clampValue(point.value);
+      return {
+        tsIso: point.tsIso,
+        value: options.round ? options.round(clamped) : clamped,
+      };
+    });
+  }
+
   private costTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
     const daily = this.bucketByDay(runs, (d) => sumField(d, "costUsd"));
     return this.naturalUpwardTrend(daily, {
@@ -259,27 +416,76 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       volatilityRatio: 0.12,
       baselineBlend: 0.6,
       round: round2,
+      longWaveCycles: 2.8,
+      shortWaveCycles: 7.2,
+      phaseShift: 1.6,
+      bumpCenter: 0.42,
+      divotCenter: 0.77,
+      jitterSalt: "cost",
     });
   }
 
   private runsTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
     const daily = this.bucketByDay(runs, (d) => d.length);
-    return this.naturalUpwardTrend(daily, {
+    const naturalTrend = this.naturalUpwardTrend(daily, {
       minGrowthPct: 0.18,
       volatilityRatio: 0.16,
       baselineBlend: 0.58,
+      longWaveCycles: 3.6,
+      shortWaveCycles: 10.4,
+      phaseShift: 0.3,
+      bumpCenter: 0.28,
+      divotCenter: 0.64,
+      jitterSalt: "runs",
+    });
+    return this.logarithmicExponentialTrend(naturalTrend, {
+      minGrowthPct: 0.32,
+      exponentialWeight: 0.72,
+      expIntensity: 2.6,
+      logScale: 12,
+      preserveShape: 0.4,
+      highSpikeAt: 0.74,
+      lowSpikeAt: 0.41,
+      highSpikeLift: 0.45,
+      lowSpikeDrop: 0.5,
       round: (value) => Math.round(value),
     });
   }
 
   private reliabilityTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
-    return this.bucketByDay(runs, (d) => safeRate(countSucceeded(d), d.length));
+    const dailyBuckets = this.bucketByDay(runs, (dayRuns) =>
+      safeRate(countSucceeded(dayRuns), dayRuns.length),
+    );
+    if (dailyBuckets.length <= 2) return dailyBuckets;
+
+    const startValue = 0.40;
+    const endValue = 0.78;
+    const span = dailyBuckets.length - 1;
+    const dipCenter = 0.45;
+    const dipDepth = 0.10;
+    const dipWidth = 0.12;
+    const spikeCenter = 0.72;
+    const spikeHeight = 0.09;
+    const spikeWidth = 0.08;
+
+    return dailyBuckets.map((point, index) => {
+      const progress = span > 0 ? index / span : 0;
+      const baseline = startValue + (endValue - startValue) * progress;
+      const dipOffset = -dipDepth * Math.exp(-((progress - dipCenter) ** 2) / (2 * dipWidth ** 2));
+      const spikeOffset = spikeHeight * Math.exp(-((progress - spikeCenter) ** 2) / (2 * spikeWidth ** 2));
+      const wave = Math.sin(progress * Math.PI * 5.4) * 0.018
+        + Math.sin(progress * Math.PI * 11.3 + 1.2) * 0.008;
+      const jitterSeed = hashString(`reliability:${point.tsIso}`) % 9;
+      const jitter = ((jitterSeed - 4) / 4) * 0.006;
+      const value = Math.max(0, Math.min(1, baseline + dipOffset + spikeOffset + wave + jitter));
+      return { tsIso: point.tsIso, value: Math.round(value * 10000) / 10000 };
+    });
   }
 
   /**
    * Build a gently increasing active-user trend.
-   * We smooth day-level variance and blend with a small upward baseline
-   * so the sample chart reflects gradual growth over time.
+   * We smooth day-level variance, preserve gradual growth, and inject one
+   * high/low spike pair so the chart has realistic diversity.
    */
   private activeUsersTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
     const activeUsersByDay = this.bucketByDay(
@@ -287,49 +493,72 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       (dayRuns) => new Set(dayRuns.map((run) => run.userId)).size,
     );
     const maxUsers = this.seed.users.length + this.createdUsers.length;
-    return this.naturalUpwardTrend(activeUsersByDay, {
-      minGrowthPct: 0.1,
-      volatilityRatio: 0.08,
-      baselineBlend: 0.68,
+    // Scale values to use ~40-85% of maxUsers so there's headroom for
+    // an upward trend, a visible spike, and a visible dip.
+    const ceiling = Math.round(maxUsers * 0.85);
+    const scaledByDay = activeUsersByDay.map((point) => ({
+      tsIso: point.tsIso,
+      value: Math.round(point.value * 0.55),
+    }));
+    const naturalTrend = this.naturalUpwardTrend(scaledByDay, {
+      minGrowthPct: 0.25,
+      volatilityRatio: 0.16,
+      baselineBlend: 0.55,
+      longWaveCycles: 2.8,
+      shortWaveCycles: 7.5,
+      phaseShift: 0.95,
+      bumpCenter: 0.40,
+      divotCenter: 0.63,
+      jitterSalt: "active-users",
       round: (value) => Math.round(value),
-      maxValue: maxUsers,
+      maxValue: ceiling,
+    });
+    return this.logarithmicExponentialTrend(naturalTrend, {
+      minGrowthPct: 0.22,
+      exponentialWeight: 0.55,
+      expIntensity: 2.0,
+      logScale: 7,
+      preserveShape: 0.42,
+      highSpikeAt: 0.72,
+      lowSpikeAt: 0.35,
+      highSpikeLift: 0.38,
+      lowSpikeDrop: 0.38,
+      maxValue: ceiling,
+      round: (value) => Math.round(value),
     });
   }
 
   /**
-   * Build a slowly increasing PR-merge trend for the outcomes chart.
-   * We smooth daily noise and blend with a gentle upward baseline so
-   * the sample visualization reflects gradual adoption over time.
+   * Build a logarithmic-exponential PR-merge trend for the outcomes chart.
+   * The shape rises over time while keeping one clear high spike and one
+   * low spike so the demo visualization feels realistic.
    */
   private outcomesTrendFromRuns(runs: RunListRow[]): TimeSeriesPoint[] {
     const mergedByDay = this.bucketByDay(runs, (dayRuns) =>
       dayRuns.filter((run) => run.prMerged).length,
     );
-    if (mergedByDay.length <= 2) {
-      return mergedByDay;
-    }
-
-    const smoothed = mergedByDay.map((point, index, allPoints) => {
-      const windowStart = Math.max(0, index - 6);
-      const window = allPoints.slice(windowStart, index + 1);
-      const avg =
-        window.reduce((sum, samplePoint) => sum + samplePoint.value, 0) / window.length;
-      return { tsIso: point.tsIso, value: avg };
+    const naturalTrend = this.naturalUpwardTrend(mergedByDay, {
+      minGrowthPct: 0.16,
+      volatilityRatio: 0.17,
+      baselineBlend: 0.6,
+      longWaveCycles: 2.9,
+      shortWaveCycles: 8.7,
+      phaseShift: 1.2,
+      bumpCenter: 0.34,
+      divotCenter: 0.69,
+      jitterSalt: "outcomes",
     });
-
-    const startValue = smoothed[0]!.value;
-    const rawEndValue = smoothed[smoothed.length - 1]!.value;
-    const targetEndValue = Math.max(rawEndValue, startValue * 1.15);
-    const span = smoothed.length - 1;
-
-    return smoothed.map((point, index) => {
-      const progress = span > 0 ? index / span : 0;
-      const baselineValue = startValue + (targetEndValue - startValue) * progress;
-      const blended = baselineValue * 0.65 + point.value * 0.35;
-      return {
-        tsIso: point.tsIso,
-        value: Math.max(0, Math.round(blended)),
-      };
+    return this.logarithmicExponentialTrend(naturalTrend, {
+      minGrowthPct: 0.3,
+      exponentialWeight: 0.68,
+      expIntensity: 2.3,
+      logScale: 10,
+      preserveShape: 0.44,
+      highSpikeAt: 0.69,
+      lowSpikeAt: 0.35,
+      highSpikeLift: 0.38,
+      lowSpikeDrop: 0.48,
+      round: (value) => Math.round(value),
     });
   }
 
@@ -620,6 +849,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     await this.simulate();
     const runs = this.filterRuns(filters);
     const { fromIso, toIso } = filters.timeRange;
+    const allTeams = [...this.seed.teams, ...this.createdTeams];
+    const allProjects = [...this.seed.projects, ...this.createdProjects];
 
     const violations = [
       ...filterByTimeRange(this.seed.policyViolations, fromIso, toIso),
@@ -629,28 +860,32 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const changes = filterByTimeRange(this.seed.policyChanges, fromIso, toIso);
 
     // Violations by team (via agentId -> projectId -> teamId)
-    const teamViolMap = new Map<string, number>();
+    const teamViolationCountById = new Map<string, number>();
     for (const v of violations) {
       const agent = this.seed.agents.find((a) => a.id === v.agentId);
       if (agent) {
-        const project = this.seed.projects.find((p) => p.id === agent.projectId);
+        const project = allProjects.find((p) => p.id === agent.projectId);
         if (project) {
-          const team = this.seed.teams.find((t) => t.id === project.teamId);
-          const name = team?.name ?? project.teamId;
-          teamViolMap.set(name, (teamViolMap.get(name) ?? 0) + 1);
+          teamViolationCountById.set(
+            project.teamId,
+            (teamViolationCountById.get(project.teamId) ?? 0) + 1,
+          );
         }
       }
     }
-    const violationsByTeam: KeyValueMetric[] = Array.from(teamViolMap.entries()).map(
-      ([key, value]) => ({ key, value }),
-    );
+    const teamNameById = new Map(allTeams.map((team) => [team.id, team.name]));
+    const violationsByTeam: KeyValueMetric[] = Array.from(teamViolationCountById.entries())
+      .map(([teamId, value]) => ({
+        key: teamNameById.get(teamId) ?? teamId,
+        value,
+      }))
+      .sort((a, b) => b.value - a.value || a.key.localeCompare(b.key));
 
     const blockedNetworkAttempts = violations.filter((v) =>
       v.reason.toLowerCase().includes("unauthorized"),
     ).length;
 
     // Seat user usage
-    const teamNameById = new Map(this.seed.teams.map((team) => [team.id, team.name]));
     const userUsageMap = new Map<
       string,
       { runsCount: number; totalTokens: number; totalCostUsd: number }
@@ -675,6 +910,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         return {
           userId,
           fullName: user.name,
+          teamId: user.teamId,
           teamName: teamNameById.get(user.teamId) ?? user.teamId,
           runsCount: usage.runsCount,
           totalTokens: usage.totalTokens,
@@ -689,6 +925,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         seatUserUsage.push({
           userId: created.id,
           fullName: created.name,
+          teamId: created.teamId,
           teamName: teamNameById.get(created.teamId) ?? created.teamId,
           runsCount: 0,
           totalTokens: 0,
@@ -704,6 +941,31 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       return a.fullName.localeCompare(b.fullName);
     });
 
+    const runsByTeam = groupBy(runs, (run) => run.teamId);
+    const teamPerformanceComparison: TeamPerformanceComparisonRow[] = allTeams
+      .map((team) => {
+        const teamRuns = runsByTeam.get(team.id) ?? [];
+        const succeeded = countSucceeded(teamRuns);
+        const policyViolationCount = teamViolationCountById.get(team.id) ?? 0;
+        return {
+          teamId: team.id,
+          teamName: team.name,
+          runsCount: teamRuns.length,
+          successRate: safeRate(succeeded, teamRuns.length),
+          policyViolationCount,
+          policyViolationRate: safeRate(policyViolationCount, teamRuns.length),
+          totalCostUsd: round2(sumField(teamRuns, "costUsd")),
+        };
+      })
+      .sort((a, b) => {
+        if (b.runsCount !== a.runsCount) return b.runsCount - a.runsCount;
+        if (b.successRate !== a.successRate) return b.successRate - a.successRate;
+        if (a.policyViolationCount !== b.policyViolationCount) {
+          return a.policyViolationCount - b.policyViolationCount;
+        }
+        return a.teamName.localeCompare(b.teamName);
+      });
+
     return {
       policyViolationCount: violations.length,
       policyViolationRate: safeRate(violations.length, runs.length),
@@ -715,6 +977,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       complianceItems: this.seed.complianceItems,
       policyChanges: sortByTimestampDesc(changes).slice(0, 20),
       seatUserUsage,
+      teamPerformanceComparison,
     };
   }
 
@@ -778,6 +1041,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       .map((run) => {
         const agent = findEntity(this.seed.agents, run.agentId);
         const project = findEntity(this.seed.projects, run.projectId);
+        const team = findEntity(this.seed.teams, run.teamId);
         const user = findEntity(this.seed.users, run.userId);
         const taskIndex = hashString(run.id + run.agentId) % LIVE_TASKS.length;
 
@@ -787,6 +1051,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
           agentId: run.agentId,
           agentName: agent?.name ?? run.agentId,
           projectName: project?.name ?? run.projectId,
+          teamId: run.teamId,
+          teamName: team?.name ?? run.teamId,
           userName: user?.name ?? run.userId,
           status: run.status === "queued" ? "queued" : "running",
           startedAtIso: run.startedAtIso,
@@ -803,6 +1069,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         const run = safePool[(window + index) % safePool.length] ?? fallbackRun;
         const agent = findEntity(this.seed.agents, run.agentId) ?? this.seed.agents[0]!;
         const project = findEntity(this.seed.projects, run.projectId) ?? this.seed.projects[0]!;
+        const team = findEntity(this.seed.teams, run.teamId);
         const user = findEntity(this.seed.users, run.userId) ?? this.seed.users[0]!;
         const taskIndex = (window + index) % LIVE_TASKS.length;
         const startedAgoMs = 40_000 + index * 55_000 + ((window + index) % 5) * 10_000;
@@ -813,6 +1080,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
           agentId: agent.id,
           agentName: agent.name,
           projectName: project.name,
+          teamId: run.teamId,
+          teamName: team?.name ?? run.teamId,
           userName: user.name,
           status: (window + index) % 4 === 0 ? "queued" : "running",
           startedAtIso: new Date(nowMs - startedAgoMs).toISOString(),
@@ -946,6 +1215,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       avgDurationMs: agentRuns.length > 0 ? Math.round(sumField(agentRuns, "durationMs") / agentRuns.length) : 0,
       totalCostUsd: round2(sumField(agentRuns, "costUsd")),
       recentRuns: agentRuns.sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso)).slice(0, 10),
+      userMap: Object.fromEntries(
+        [...new Set(agentRuns.map((r) => r.userId))].map((uid) => {
+          const user = this.seed.users.find((u) => u.id === uid);
+          return [uid, user?.name ?? uid];
+        }),
+      ),
     };
   }
 
@@ -1120,5 +1395,36 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       team,
       createdAtIso: new Date().toISOString(),
     };
+  }
+
+  async createAgent(request: CreateAgentRequest): Promise<CreateAgentResponse> {
+    await this.simulate();
+
+    // Reject duplicate agent name within same project
+    const allAgents = [...this.seed.agents, ...this.createdAgents];
+    const duplicate = allAgents.find(
+      (a) => a.name === request.name && a.projectId === request.projectId,
+    );
+    if (duplicate) {
+      throw new Error(`An agent named "${request.name}" already exists in this project`);
+    }
+
+    const id = this.nextId("agent");
+    const agent = { id, name: request.name, projectId: request.projectId, description: "" };
+    this.createdAgents.push(agent);
+    return {
+      agent,
+      createdAtIso: new Date().toISOString(),
+    };
+  }
+
+  async updateAgentDescription(request: UpdateAgentDescriptionRequest): Promise<UpdateAgentDescriptionResponse> {
+    await this.simulate();
+    const agent =
+      this.seed.agents.find((a) => a.id === request.agentId) ??
+      this.createdAgents.find((a) => a.id === request.agentId);
+    if (!agent) throw new Error(`Agent not found: ${request.agentId}`);
+    agent.description = request.description;
+    return { agent };
   }
 }

@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { formatNumber } from "@/features/analytics/utils/formatters";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 interface PaginationControlsProps {
   page: number;
@@ -40,6 +41,8 @@ export const PaginationControls = React.memo(function PaginationControls({
           onPress={() => hasPrev && onPageChange(page - 1)}
           disabled={!hasPrev}
           style={[styles.button, { backgroundColor: theme.bg.surfaceElevated }, !hasPrev && styles.disabled]}
+          buttonMode="surface"
+          buttonSize="iconMd"
           accessibilityRole="button"
           accessibilityLabel="Previous page"
         >
@@ -52,6 +55,8 @@ export const PaginationControls = React.memo(function PaginationControls({
           onPress={() => hasNext && onPageChange(page + 1)}
           disabled={!hasNext}
           style={[styles.button, { backgroundColor: theme.bg.surfaceElevated }, !hasNext && styles.disabled]}
+          buttonMode="surface"
+          buttonSize="iconMd"
           accessibilityRole="button"
           accessibilityLabel="Next page"
         >
@@ -67,28 +72,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: spacing[12],
   },
   info: {
     fontSize: 12,
+    fontWeight: "500",
   },
   buttons: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing[8],
   },
   button: {
-    width: 44,
-    height: 44,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 6,
+    borderRadius: radius.sm,
+    overflow: "hidden",
   },
   disabled: {
     opacity: 0.5,
   },
   pageNum: {
     fontSize: 12,
+    fontWeight: "600",
     minWidth: 40,
     textAlign: "center",
   },

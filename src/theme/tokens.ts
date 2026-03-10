@@ -30,22 +30,23 @@ export const fontWeights = {
 
 export const spacing = {
   0: 0,
-  1: 4,
-  2: 8,
-  3: 12,
-  4: 16,
-  5: 20,
-  6: 24,
-  8: 32,
-  10: 40,
-  12: 48
+  2: 2,
+  4: 4,
+  6: 6,
+  8: 8,
+  10: 10,
+  12: 12,
+  16: 16,
+  20: 20,
+  24: 24,
+  32: 32,
+  48: 48
 } as const;
 
 export const radius = {
   sm: 6,
   md: 10,
   lg: 14,
-  xl: 18,
   full: 999
 } as const;
 

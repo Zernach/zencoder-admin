@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import { spacing, radius } from "@/theme/tokens";
 import type { LucideIcon } from "lucide-react-native";
 import { motion } from "@/theme/motion";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -99,11 +100,11 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    gap: spacing[12],
+    paddingVertical: spacing[10],
+    paddingHorizontal: spacing[16],
     minHeight: 44,
-    borderRadius: 8,
+    borderRadius: radius.md,
     position: "relative",
   },
   activeBorder: {
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
     top: 8,
     bottom: 8,
     width: 3,
-    borderRadius: 2,
+    borderRadius: radius.sm,
   },
   label: {
     fontSize: 14,
@@ -122,12 +123,12 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   badge: {
-    borderRadius: 10,
+    borderRadius: radius.md,
     minWidth: 20,
     height: 20,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 6,
+    paddingHorizontal: spacing[6],
   },
   badgeText: {
     fontSize: 10,

@@ -1,20 +1,35 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useRunDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
-import { CustomList } from "@/components/lists";
 import { ScreenWrapper } from "@/components/screen";
+import { DataTable } from "@/components/tables";
+import type { ColumnDef } from "@/components/tables/DataTable";
 import { useThemeMode } from "@/providers/ThemeProvider";
-import { semanticThemes } from "@/theme/themes";
+import { cellText } from "@/components/tables/cellStyles";
+import { spacing } from "@/theme/tokens";
 
 interface RunDetailScreenProps {
   runId: string;
 }
 
+interface DetailRow {
+  label: string;
+  value: string;
+}
+
 export function RunDetailScreen({ runId }: RunDetailScreenProps) {
   const { data, loading, error, refetch } = useRunDetailScreen(runId);
   const { mode } = useThemeMode();
-  const theme = semanticThemes[mode];
+  const ct = cellText(mode);
+
+  const detailColumns = useMemo<ColumnDef<DetailRow>[]>(
+    () => [
+      { key: "label", header: "Field", render: (r) => <Text style={ct.secondary}>{r.label}</Text> },
+      { key: "value", header: "Value", align: "right", render: (r) => <Text style={ct.primary}>{r.value}</Text> },
+    ],
+    [ct],
+  );
 
   if (loading) return <LoadingSkeleton variant="text" />;
   if (error) return <ErrorState message={error} onRetry={refetch} />;
@@ -22,60 +37,37 @@ export function RunDetailScreen({ runId }: RunDetailScreenProps) {
 
   const { run } = data;
 
+  const detailRows: DetailRow[] = [
+    { label: "Status", value: run.status },
+    { label: "Provider", value: run.provider },
+    { label: "Model", value: run.modelId },
+    { label: "Duration", value: `${(run.durationMs / 1000).toFixed(1)}s` },
+    { label: "Cost", value: `$${run.costUsd.toFixed(2)}` },
+    { label: "Tokens", value: run.totalTokens.toLocaleString() },
+    { label: "Input Tokens", value: run.inputTokens.toLocaleString() },
+    { label: "Output Tokens", value: run.outputTokens.toLocaleString() },
+    { label: "Agent", value: data.agentName },
+    { label: "Project", value: data.projectName },
+    { label: "Team", value: data.teamName },
+    { label: "User", value: data.userName },
+    { label: "Started", value: run.startedAtIso },
+    ...(run.completedAtIso ? [{ label: "Completed", value: run.completedAtIso }] : []),
+  ];
+
   return (
-    <ScreenWrapper headerProps={{ title: `Run ${run.id}` }}>
-      <CustomList scrollViewProps={{ style: styles.scroll, contentContainerStyle: styles.content }}>
-        <Text style={[styles.heading, { color: theme.text.primary }]}>Run {run.id}</Text>
-        <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
-          {data.agentName} · {data.projectName} · {data.teamName}
-        </Text>
-        <View style={styles.statsRow}>
-          <StatItem label="Status" value={run.status} theme={theme} />
-          <StatItem label="Provider" value={run.provider} theme={theme} />
-          <StatItem label="Duration" value={`${(run.durationMs / 1000).toFixed(1)}s`} theme={theme} />
-          <StatItem label="Cost" value={`$${run.costUsd.toFixed(2)}`} theme={theme} />
-          <StatItem label="Tokens" value={run.totalTokens.toLocaleString()} theme={theme} />
-        </View>
-        <View style={[styles.detailRow, { borderColor: theme.border.default }]}>
-          <Text style={[styles.detailLabel, { color: theme.text.secondary }]}>User</Text>
-          <Text style={[styles.detailValue, { color: theme.text.primary }]}>{data.userName}</Text>
-        </View>
-        <View style={[styles.detailRow, { borderColor: theme.border.default }]}>
-          <Text style={[styles.detailLabel, { color: theme.text.secondary }]}>Started</Text>
-          <Text style={[styles.detailValue, { color: theme.text.primary }]}>{run.startedAtIso}</Text>
-        </View>
-        {run.completedAtIso && (
-          <View style={[styles.detailRow, { borderColor: theme.border.default }]}>
-            <Text style={[styles.detailLabel, { color: theme.text.secondary }]}>Completed</Text>
-            <Text style={[styles.detailValue, { color: theme.text.primary }]}>{run.completedAtIso}</Text>
-          </View>
-        )}
-      </CustomList>
+    <ScreenWrapper headerProps={{ title: `Run ${run.id.slice(0, 12)}`, subtitle: `${data.agentName} · ${data.projectName} · ${data.teamName}` }} showFilterBar={false}>
+      <View style={styles.content}>
+        <DataTable
+          columns={detailColumns}
+          data={detailRows}
+          keyExtractor={(r) => r.label}
+          emptyMessage="No details."
+        />
+      </View>
     </ScreenWrapper>
   );
 }
 
-type ThemeColors = (typeof semanticThemes)["dark"];
-
-function StatItem({ label, value, theme }: { label: string; value: string; theme: ThemeColors }) {
-  return (
-    <View style={styles.stat}>
-      <Text style={[styles.statValue, { color: theme.text.primary }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: theme.text.secondary }]}>{label}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  scroll: { flex: 1 },
-  content: { padding: 16, gap: 16 },
-  heading: { fontSize: 20, fontWeight: "700" },
-  subtitle: { fontSize: 14 },
-  statsRow: { flexDirection: "row", gap: 16, flexWrap: "wrap" },
-  stat: { alignItems: "center", minWidth: 70 },
-  statValue: { fontSize: 16, fontWeight: "600" },
-  statLabel: { fontSize: 11, marginTop: 2 },
-  detailRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 8, borderBottomWidth: 1 },
-  detailLabel: { fontSize: 13 },
-  detailValue: { fontSize: 13, fontWeight: "500" },
+  content: { gap: spacing[16] },
 });

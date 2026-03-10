@@ -18,5 +18,7 @@ export {
   useCreateSeatMutation,
   useCreateProjectMutation,
   useCreateTeamMutation,
+  useCreateAgentMutation,
+  useUpdateAgentDescriptionMutation,
 } from "./analyticsApi";
 export { initializeService, getService } from "./serviceRegistry";

@@ -1,17 +1,43 @@
 import React from "react";
-import { render } from "@testing-library/react-native";
-import { BreakdownChart } from "../BreakdownChart";
-import type { KeyValueMetric } from "@/features/analytics/types";
+import { StyleSheet } from "react-native";
+import { fireEvent, render, within } from "@testing-library/react-native";
+import { BreakdownChart, type BreakdownChartDatum } from "../BreakdownChart";
+import { getOrangeBarShade } from "../palette";
 
-const longNameData: KeyValueMetric[] = [
+const longNameData: BreakdownChartDatum[] = [
   { key: "Enterprise Cloud Migration Platform", value: 500 },
   { key: "Internal Developer Tools Dashboard", value: 350 },
   { key: "Customer Analytics and Reporting Suite", value: 200 },
 ];
 
-const shortNameData: KeyValueMetric[] = [
+const shortNameData: BreakdownChartDatum[] = [
   { key: "Alpha", value: 100 },
   { key: "Beta", value: 80 },
+];
+
+const hoverData: BreakdownChartDatum[] = [
+  {
+    key: "Alice Johnson",
+    value: 150,
+    hoverRows: [
+      { label: "Full Name", value: "Alice Johnson" },
+      { label: "Team", value: "Team Alpha" },
+      { label: "Runs", value: "150" },
+      { label: "Tokens", value: "50K" },
+      { label: "Cost", value: "$45.00" },
+    ],
+  },
+  {
+    key: "Bob Smith",
+    value: 120,
+    hoverRows: [
+      { label: "Full Name", value: "Bob Smith" },
+      { label: "Team", value: "Team Beta" },
+      { label: "Runs", value: "120" },
+      { label: "Tokens", value: "40K" },
+      { label: "Cost", value: "$36.00" },
+    ],
+  },
 ];
 
 describe("BreakdownChart", () => {
@@ -73,5 +99,53 @@ describe("BreakdownChart", () => {
 
     expect(getByText("100")).toBeTruthy();
     expect(getByText("80")).toBeTruthy();
+  });
+
+  it("uses darker orange for higher values and lighter orange for lower values in horizontal bars", () => {
+    const { getByTestId } = render(
+      <BreakdownChart data={shortNameData} variant="horizontal-bar" />
+    );
+
+    const firstFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-0").props.style);
+    const secondFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-1").props.style);
+
+    expect(firstFill.backgroundColor).toBe(getOrangeBarShade(100, 80, 100));
+    expect(secondFill.backgroundColor).toBe(getOrangeBarShade(80, 80, 100));
+  });
+
+  it("uses darker orange for higher values and lighter orange for lower values in vertical bars", () => {
+    const { getByTestId } = render(
+      <BreakdownChart data={shortNameData} variant="bar" />
+    );
+
+    const firstBar = StyleSheet.flatten(getByTestId("breakdown-vertical-bar-0").props.style);
+    const secondBar = StyleSheet.flatten(getByTestId("breakdown-vertical-bar-1").props.style);
+
+    expect(firstBar.backgroundColor).toBe(getOrangeBarShade(100, 80, 100));
+    expect(secondBar.backgroundColor).toBe(getOrangeBarShade(80, 80, 100));
+  });
+
+  it("shows and hides hover details bubble on label interaction", () => {
+    const { getByTestId, getByText, queryByTestId } = render(
+      <BreakdownChart data={hoverData} variant="horizontal-bar" truncateLabels={false} />
+    );
+
+    expect(queryByTestId("breakdown-hover-bubble-0")).toBeNull();
+
+    fireEvent(getByTestId("breakdown-label-hover-target-0"), "pressIn");
+
+    const bubble = getByTestId("breakdown-hover-bubble-0");
+    const scoped = within(bubble);
+
+    expect(bubble).toBeTruthy();
+    expect(scoped.getByText("Full Name")).toBeTruthy();
+    expect(scoped.getByText("Alice Johnson")).toBeTruthy();
+    expect(scoped.getByText("Team Alpha")).toBeTruthy();
+    expect(scoped.getByText("150")).toBeTruthy();
+    expect(scoped.getByText("50K")).toBeTruthy();
+    expect(scoped.getByText("$45.00")).toBeTruthy();
+
+    fireEvent(getByTestId("breakdown-label-hover-target-0"), "pressOut");
+    expect(queryByTestId("breakdown-hover-bubble-0")).toBeNull();
   });
 });

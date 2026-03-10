@@ -6,6 +6,7 @@ import type { InputFormItem } from "@/components/forms";
 import { useFormFields } from "@/hooks/useFormFields";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing } from "@/theme/tokens";
 
 interface CreateHumanFormProps {
   onSubmit: (values: { name: string; email: string; teamId: string }) => void;
@@ -92,22 +93,21 @@ export function CreateHumanForm({ onSubmit, loading, error }: CreateHumanFormPro
 
   return (
     <InputForm
-      title="Add Seat / Team Member"
+      title="Add User"
       items={items}
       footer={
         <>
           {error ? <Text style={[styles.errorText, { color: theme.state.error }]}>{error}</Text> : null}
           <CustomButton
             onPress={onPressSubmit}
-            style={[styles.submitButton, { borderColor: theme.border.brand }]}
+            style={styles.submitButton}
+            buttonMode="primary"
+            buttonSize="lg"
+            label="Submit"
             accessibilityRole="button"
             accessibilityLabel="Submit"
             disabled={loading}
-          >
-            <Text style={[styles.submitText, { color: theme.border.brand }]}>
-              Submit
-            </Text>
-          </CustomButton>
+          />
         </>
       }
     />
@@ -116,17 +116,7 @@ export function CreateHumanForm({ onSubmit, loading, error }: CreateHumanFormPro
 
 const styles = StyleSheet.create({
   submitButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 999,
-    alignItems: "center",
-    marginTop: 4,
-  },
-  submitText: {
-    fontSize: 14,
-    fontWeight: "600",
+    marginTop: spacing[4],
   },
   errorText: {
     fontSize: 12,

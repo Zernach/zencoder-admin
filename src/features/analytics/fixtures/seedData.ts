@@ -230,15 +230,35 @@ export function generateSeedData(seed: number = 42): SeedData {
   }
 
   // ── Agents ────────────────────────────────────────────
+  const AGENT_DESCRIPTIONS: Record<string, string> = {
+    "Ticket Classifier": "Classifies incoming support tickets by category, priority, and sentiment using NLP. Routes tickets to the appropriate team queue.",
+    "Response Generator": "Generates context-aware customer support responses by analyzing ticket history, knowledge base articles, and prior interactions.",
+    "ETL Orchestrator": "Orchestrates extract-transform-load pipelines across data warehouses. Monitors job health, retries failures, and reports anomalies.",
+    "Data Validator": "Validates incoming data against schema definitions and business rules. Flags data quality issues and generates validation reports.",
+    "PR Reviewer": "Reviews pull requests for code quality, security vulnerabilities, and adherence to team coding standards. Provides inline suggestions.",
+    "Lead Scorer": "Scores inbound leads using behavioral signals, firmographic data, and engagement patterns. Outputs a 0-100 propensity score.",
+  };
+  const GENERIC_DESCRIPTIONS = [
+    "Automates repetitive workflow tasks by monitoring event triggers and executing predefined action sequences.",
+    "Processes incoming data streams, applies transformation rules, and forwards normalized results to downstream consumers.",
+    "Monitors system health metrics, detects anomalies, and triggers alerts when thresholds are breached.",
+    "Generates structured reports from raw data sources, applying aggregation and formatting rules.",
+    "Performs automated quality checks on outputs, flagging items that fail validation criteria for manual review.",
+    "Manages scheduled batch operations, handling retries, logging, and completion notifications.",
+    "Analyzes text inputs using configurable rule sets and returns categorized, structured results.",
+    "Coordinates multi-step processes across integrated services, ensuring consistent state and error recovery.",
+  ];
   const agents: Agent[] = [];
   for (let i = 0; i < 30; i++) {
     const name =
       i < NAMED_AGENTS.length
         ? NAMED_AGENTS[i]!
         : `${pick(rng, GENERATED_AGENT_PREFIXES)} ${pick(rng, GENERATED_AGENT_SUFFIXES)}`;
+    const description = AGENT_DESCRIPTIONS[name] ?? pick(rng, GENERIC_DESCRIPTIONS);
     agents.push({
       id: padId("agent", i + 1),
       name,
+      description,
       projectId: pick(rng, projects).id,
     });
   }
@@ -507,13 +527,15 @@ export function generateSeedData(seed: number = 42): SeedData {
         randInt(rng, 9, 17) * HOUR_MS
     );
     const actor = pick(rng, users);
+    const targetTeam = pick(rng, teams);
     policyChanges.push({
       id: padId("pc", i + 1),
       actorUserId: actor.id,
       actorName: actor.name,
       action: pick(rng, POLICY_ACTIONS),
       timestampIso: ts.toISOString(),
-      target: pick(rng, teams).name,
+      targetTeamId: targetTeam.id,
+      target: targetTeam.name,
     });
   }
 

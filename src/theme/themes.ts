@@ -50,7 +50,7 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
       surface: "#1a1a1a",
       surfaceElevated: "#262626",
       surfaceHover: "#2f2f2f",
-      brandSubtle: "rgba(246, 74, 0, 0.14)",
+      brandSubtle: "rgba(246, 74, 0, 0.28)",
       overlay: "rgba(0, 0, 0, 0.58)"
     },
     border: {
@@ -90,7 +90,7 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
       surface: "#ffffff",
       surfaceElevated: "#fbfdff",
       surfaceHover: "#f3f6f9",
-      brandSubtle: "rgba(246, 74, 0, 0.12)",
+      brandSubtle: "rgba(246, 74, 0, 0.22)",
       overlay: "rgba(15, 23, 32, 0.38)"
     },
     border: {
@@ -103,7 +103,7 @@ export const semanticThemes: Record<ThemeName, Omit<SemanticTheme, "shadows">> =
       primary: "#0f1720",
       secondary: "#435160",
       tertiary: "#6b7683",
-      brand: "#d94000",
+      brand: "#f64a00",
       onBrand: "#ffffff"
     },
     icon: {

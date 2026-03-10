@@ -5,6 +5,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react-native";
+import { spacing, radius } from "@/theme/tokens";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -127,6 +128,8 @@ export const Sidebar = React.memo(function Sidebar() {
         <CustomButton
           onPress={handleToggle}
           style={styles.toggleBtn}
+          buttonMode="ghost"
+          buttonSize="iconSm"
           accessibilityRole="button"
           accessibilityLabel={expanded ? "Collapse sidebar" : "Expand sidebar"}
         >
@@ -172,15 +175,15 @@ export const Sidebar = React.memo(function Sidebar() {
 const styles = StyleSheet.create({
   sidebar: {
     borderRightWidth: 1,
-    paddingVertical: 16,
+    paddingVertical: spacing[16],
     overflow: "hidden",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingHorizontal: 0,
-    marginBottom: 24,
+    paddingHorizontal: spacing[0],
+    marginBottom: spacing[24],
     minHeight: 32,
   },
   brandImage: {
@@ -191,13 +194,13 @@ const styles = StyleSheet.create({
   brandRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 10,
+    gap: spacing[8],
+    paddingHorizontal: spacing[10],
   },
   brandIcon: {
     width: 28,
     height: 28,
-    borderRadius: 6,
+    borderRadius: radius.sm,
   },
   brandText: {
     fontSize: 20,
@@ -205,15 +208,10 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   toggleBtn: {
-    width: 32,
-    height: 32,
     marginLeft: "auto",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 6,
   },
   nav: {
-    gap: 2,
-    paddingHorizontal: 8,
+    gap: spacing[2],
+    paddingHorizontal: spacing[8],
   },
 });

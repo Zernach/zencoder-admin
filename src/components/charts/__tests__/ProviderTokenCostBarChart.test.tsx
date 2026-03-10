@@ -1,6 +1,8 @@
 import React from "react";
+import { StyleSheet } from "react-native";
 import { render } from "@testing-library/react-native";
 import { ProviderTokenCostBarChart } from "../ProviderTokenCostBarChart";
+import { getOrangeBarShade } from "../palette";
 import type { ProviderCostRow } from "@/features/analytics/types";
 
 const providerData: ProviderCostRow[] = [
@@ -65,5 +67,25 @@ describe("ProviderTokenCostBarChart", () => {
     expect(getByText("ten-thousandths of a penny per token")).toBeTruthy();
     expect(queryByText(/NaN/)).toBeNull();
     expect(queryByText(/Infinity/)).toBeNull();
+  });
+
+  it("uses orange intensity shading based on per-token cost values", () => {
+    const { getByTestId } = render(
+      <ProviderTokenCostBarChart data={providerData} />
+    );
+
+    // BreakdownChart sorts by value desc, assigns testIDs by index
+    const firstFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-0").props.style);
+    const secondFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-1").props.style);
+    const thirdFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-2").props.style);
+
+    // Per-token costs: codex=13e-6, claude=8e-6, other=4e-6
+    const codexCpt = 6500 / 500_000_000;
+    const claudeCpt = 4000 / 500_000_000;
+    const otherCpt = 2000 / 500_000_000;
+
+    expect(firstFill.backgroundColor).toBe(getOrangeBarShade(codexCpt, otherCpt, codexCpt));
+    expect(secondFill.backgroundColor).toBe(getOrangeBarShade(claudeCpt, otherCpt, codexCpt));
+    expect(thirdFill.backgroundColor).toBe(getOrangeBarShade(otherCpt, otherCpt, codexCpt));
   });
 });

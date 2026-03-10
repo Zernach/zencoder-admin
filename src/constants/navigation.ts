@@ -55,7 +55,7 @@ export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
   ],
   [ROUTES.GOVERNANCE]: [
     { id: "overview", label: "Overview" },
-    { id: "compliance-status", label: "Compliance Status" },
+    { id: "team-performance", label: "Team Performance" },
     { id: "seat-user-oversight", label: "Seat User Oversight" },
     { id: "recent-violations", label: "Recent Violations" },
     { id: "security-events", label: "Security Events" },

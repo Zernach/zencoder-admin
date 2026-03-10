@@ -1,40 +1,71 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Animated, Easing, Pressable, View, Text, StyleSheet, Platform } from "react-native";
+import type { PointerEvent as RNPointerEvent } from "react-native";
 import type { KeyValueMetric } from "@/features/analytics/types";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
-import { DATA_PALETTE } from "./palette";
+import { BarChart, type BarChartDatum } from "./BarChart";
+import { getOrangeBarShade } from "./palette";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
+
+export interface BreakdownChartHoverRow {
+  label: string;
+  value: string;
+}
+
+export interface BreakdownChartDatum extends KeyValueMetric {
+  hoverRows?: BreakdownChartHoverRow[];
+}
 
 interface BreakdownChartProps {
-  data: KeyValueMetric[];
+  data: BreakdownChartDatum[];
   variant: "bar" | "horizontal-bar";
-  color?: string;
-  palette?: readonly string[];
   height?: number;
   showValues?: boolean;
   truncateLabels?: boolean;
+  formatValue?: (value: number) => string;
+  xLabel?: string;
 }
 
 export const BreakdownChart = React.memo(function BreakdownChart({
   data,
   variant = "bar",
-  palette = DATA_PALETTE,
   height = 200,
   showValues = true,
   truncateLabels = true,
+  formatValue = formatCompactNumber,
+  xLabel,
 }: BreakdownChartProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const [measuredLabelWidth, setMeasuredLabelWidth] = useState<number>(0);
   const [measuredRowHeight, setMeasuredRowHeight] = useState<number>(0);
   const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [activeTooltipIndex, setActiveTooltipIndex] = useState<number | null>(null);
+  const tooltipOpacity = useRef(new Animated.Value(0)).current;
+  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const containerRef = useRef<View>(null);
 
-  const { sorted, maxVal, longestLabel } = useMemo(() => {
+  const handlePointerMove = useCallback((event: RNPointerEvent) => {
+    const container = containerRef.current;
+    if (!container || Platform.OS !== "web") return;
+    (container as unknown as { measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => void })
+      .measureInWindow((cx, cy) => {
+        setMousePos({
+          x: (event.nativeEvent as unknown as { pageX: number }).pageX - cx,
+          y: (event.nativeEvent as unknown as { pageY: number }).pageY - cy,
+        });
+      });
+  }, []);
+
+  const { sorted, minVal, maxVal, longestLabel } = useMemo(() => {
     const s = [...data].sort((a, b) => b.value - a.value);
+    const values = s.map((item) => item.value);
     return {
       sorted: s,
-      maxVal: Math.max(...s.map((d) => d.value), 1),
+      minVal: values.length > 0 ? Math.min(...values) : 0,
+      maxVal: values.length > 0 ? Math.max(...values) : 0,
       longestLabel: s.reduce((longest, item) => (item.key.length > longest.length ? item.key : longest), ""),
     };
   }, [data]);
@@ -63,11 +94,81 @@ export const BreakdownChart = React.memo(function BreakdownChart({
     }
   }, [measuredRowHeight]);
 
+  useEffect(() => {
+    if (activeTooltipIndex === null || variant !== "horizontal-bar") {
+      tooltipOpacity.stopAnimation();
+      tooltipOpacity.setValue(0);
+      return;
+    }
+
+    tooltipOpacity.stopAnimation();
+    tooltipOpacity.setValue(0);
+    Animated.timing(tooltipOpacity, {
+      toValue: 1,
+      duration: 140,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [activeTooltipIndex, tooltipOpacity, variant]);
+
+  useEffect(() => {
+    if (activeTooltipIndex != null && activeTooltipIndex >= sorted.length) {
+      setActiveTooltipIndex(null);
+    }
+  }, [activeTooltipIndex, sorted.length]);
+
+  const tooltipAnimatedStyle = useMemo(
+    () => ({
+      opacity: tooltipOpacity,
+      transform: [
+        {
+          translateY: tooltipOpacity.interpolate({
+            inputRange: [0, 1],
+            outputRange: [6, 0],
+          }),
+        },
+        {
+          scale: tooltipOpacity.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0.96, 1],
+          }),
+        },
+      ],
+    }),
+    [tooltipOpacity],
+  );
+
+  const handleTooltipShow = useCallback((index: number): void => {
+    setActiveTooltipIndex(index);
+  }, []);
+
+  const handleTooltipHide = useCallback((index: number): void => {
+    setActiveTooltipIndex((current) => (current === index ? null : current));
+  }, []);
+
+  const chartData = useMemo<BarChartDatum[]>(
+    () =>
+      sorted.map((item, index) => ({
+        id: `${item.key}-${index}`,
+        label: item.key,
+        value: item.value,
+        valueLabel: formatValue(item.value),
+        color: getOrangeBarShade(item.value, minVal, maxVal),
+        barTestID:
+          variant === "horizontal-bar"
+            ? `breakdown-bar-fill-${index}`
+            : `breakdown-vertical-bar-${index}`,
+      })),
+    [maxVal, minVal, sorted, variant, formatValue],
+  );
+
   if (variant === "horizontal-bar") {
     return (
       <View
-        style={[styles.container, { minHeight: height }]}
+        ref={containerRef}
+        style={styles.container}
         onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
+        onPointerMove={handlePointerMove}
       >
         {!truncateLabels && longestLabel.length > 0 ? (
           <Text
@@ -77,98 +178,148 @@ export const BreakdownChart = React.memo(function BreakdownChart({
             {longestLabel}
           </Text>
         ) : null}
-        {sorted.map((item, i) => (
-          <View
-            key={`${item.key}-${i}`}
+        <BarChart
+          data={chartData}
+          orientation="horizontal"
+          showValues={showValues}
+          xLabel={xLabel}
+          onBarHoverIn={handleTooltipShow}
+          onBarHoverOut={handleTooltipHide}
+          horizontalOptions={{
+            labelNumberOfLines: truncateLabels ? 1 : undefined,
+            labelWidth: !truncateLabels ? effectiveLabelWidth : undefined,
+            valueWidth: showValues ? 48 : undefined,
+            trackMinWidth: 56,
+            trackHeight: 16,
+            trackColor: theme.bg.surfaceElevated,
+            rowHeight: !truncateLabels && measuredRowHeight > 0 ? measuredRowHeight : undefined,
+            onRowLayout: truncateLabels ? undefined : handleRowHeightLayout,
+          }}
+          layoutStyles={{
+            bars: styles.horizontalBars,
+            row: styles.hBarRow,
+            track: styles.hBarTrack,
+            fill: styles.hBarFill,
+          }}
+          textStyles={{
+            label: [
+              styles.hBarLabel,
+              { color: theme.text.secondary },
+              !truncateLabels && styles.hBarLabelFull,
+            ],
+            value: [styles.hBarValue, { color: theme.text.primary }],
+          }}
+          renderHorizontalLabel={({ item, index, style, numberOfLines }) => {
+            const hoverRows = sorted[index]?.hoverRows;
+            const hasHoverRows = Boolean(hoverRows && hoverRows.length > 0);
+
+            return (
+              <View style={styles.hBarLabelWrap}>
+                {hasHoverRows ? (
+                  <Pressable
+                    onHoverIn={() => handleTooltipShow(index)}
+                    onHoverOut={() => handleTooltipHide(index)}
+                    onPressIn={() => handleTooltipShow(index)}
+                    onPressOut={() => handleTooltipHide(index)}
+                    style={styles.hBarLabelPressable}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Show details for ${item.label}`}
+                    testID={`breakdown-label-hover-target-${index}`}
+                  >
+                    <Text style={style} numberOfLines={numberOfLines}>
+                      {item.label}
+                    </Text>
+                  </Pressable>
+                ) : (
+                  <Text style={style} numberOfLines={numberOfLines}>
+                    {item.label}
+                  </Text>
+                )}
+              </View>
+            );
+          }}
+        />
+        {activeTooltipIndex !== null && sorted[activeTooltipIndex]?.hoverRows?.length ? (
+          <Animated.View
+            pointerEvents="none"
+            testID={`breakdown-hover-bubble-${activeTooltipIndex}`}
             style={[
-              styles.hBarRow,
-              !truncateLabels && measuredRowHeight > 0
-                ? { height: measuredRowHeight }
-                : null,
+              styles.tooltipBubble,
+              {
+                left: mousePos.x + 12,
+                top: mousePos.y - 8,
+                backgroundColor: theme.bg.surface,
+                borderColor: theme.border.default,
+                shadowColor: mode === "dark" ? "#000000" : "#0f1720",
+              },
+              tooltipAnimatedStyle,
             ]}
-            onLayout={
-              truncateLabels
-                ? undefined
-                : (event) => handleRowHeightLayout(event.nativeEvent.layout.height)
-            }
           >
-            <Text
-              style={[
-                styles.hBarLabel,
-                { color: theme.text.secondary },
-                !truncateLabels && styles.hBarLabelFull,
-                !truncateLabels && effectiveLabelWidth ? { width: effectiveLabelWidth } : null,
-              ]}
-              numberOfLines={truncateLabels ? 1 : undefined}
-            >
-              {item.key}
-            </Text>
-            <View style={[styles.hBarTrack, { backgroundColor: theme.bg.surfaceElevated }]}>
-              <View
-                style={[
-                  styles.hBarFill,
-                  {
-                    width: `${(item.value / maxVal) * 100}%`,
-                    backgroundColor:
-                      palette[i % palette.length],
-                  },
-                ]}
-              />
-            </View>
-            {showValues && (
-              <Text style={[styles.hBarValue, { color: theme.text.primary }]}>
-                {formatCompactNumber(item.value)}
-              </Text>
-            )}
-          </View>
-        ))}
+            {sorted[activeTooltipIndex].hoverRows?.map((row, rowIndex) => (
+              <View key={`${row.label}-${rowIndex}`} style={styles.tooltipRow}>
+                <Text style={[styles.tooltipLabel, { color: theme.text.tertiary }]}>
+                  {row.label}
+                </Text>
+                <Text style={[styles.tooltipValue, { color: theme.text.primary }]}>
+                  {row.value}
+                </Text>
+              </View>
+            ))}
+          </Animated.View>
+        ) : null}
       </View>
     );
   }
 
-  // Vertical bars
   return (
-    <View style={[styles.barContainer, { height }]}>
-      {sorted.map((item, i) => (
-        <View key={`${item.key}-${i}`} style={styles.barCol}>
-          <View style={styles.barWrapper}>
-            {showValues && (
-              <Text style={[styles.barValue, { color: theme.text.secondary }]}>
-                {formatCompactNumber(item.value)}
-              </Text>
-            )}
-            <View
-              style={[
-                styles.bar,
-                {
-                  height: `${(item.value / maxVal) * 70}%`,
-                  backgroundColor:
-                    palette[i % palette.length],
-                },
-              ]}
-            />
-          </View>
-          <Text style={[styles.barLabel, { color: theme.text.tertiary }]} numberOfLines={1}>
-            {item.key}
-          </Text>
-        </View>
-      ))}
-    </View>
+    <BarChart
+      data={chartData}
+      orientation="vertical"
+      height={height}
+      showValues={showValues}
+      xLabel={xLabel}
+      verticalOptions={{
+        barWidth: "80%",
+        maxBarHeightPercent: 70,
+        minBarHeight: 4,
+        labelNumberOfLines: 1,
+      }}
+      layoutStyles={{
+        bars: styles.barContainer,
+        column: styles.barCol,
+        fill: styles.bar,
+      }}
+      textStyles={{
+        value: [styles.barValue, { color: theme.text.secondary }],
+        label: [styles.barLabel, { color: theme.text.tertiary }],
+      }}
+    />
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    gap: 8,
+    gap: spacing[8],
+  },
+  horizontalBars: {
+    gap: spacing[8],
   },
   hBarRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing[8],
+  },
+  hBarLabelWrap: {
+    position: "relative",
+    justifyContent: "center",
+  },
+  hBarLabelPressable: {
+    justifyContent: "center",
   },
   hBarLabel: {
     width: 80,
     fontSize: 11,
+    fontWeight: "500",
   },
   hBarLabelFull: {
     flexShrink: 0,
@@ -182,45 +333,73 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 56,
     height: 16,
-    borderRadius: 4,
+    borderRadius: radius.sm,
     overflow: "hidden",
   },
   hBarFill: {
     height: "100%",
-    borderRadius: 4,
+    borderRadius: radius.sm,
   },
   hBarValue: {
     width: 48,
     fontSize: 11,
+    fontWeight: "600",
     textAlign: "right",
+  },
+  tooltipBubble: {
+    position: "absolute",
+    minWidth: 208,
+    maxWidth: 280,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    paddingHorizontal: spacing[10],
+    paddingVertical: spacing[8],
+    zIndex: 10,
+    elevation: 5,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.22,
+    shadowRadius: 16,
+  },
+  tooltipRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing[10],
+  },
+  tooltipLabel: {
+    fontSize: 10,
+    fontWeight: "500",
+    lineHeight: 14,
+    flexShrink: 0,
+  },
+  tooltipValue: {
+    fontSize: 11,
+    lineHeight: 16,
+    fontWeight: "600",
+    textAlign: "right",
+    flexShrink: 1,
   },
   barContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: 8,
+    gap: spacing[8],
   },
   barCol: {
     flex: 1,
     alignItems: "center",
   },
-  barWrapper: {
-    flex: 1,
-    width: "100%",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
   bar: {
-    width: "80%",
-    borderRadius: 4,
-    minHeight: 4,
+    borderRadius: radius.sm,
   },
   barValue: {
     fontSize: 10,
-    marginBottom: 4,
+    fontWeight: "600",
+    marginBottom: spacing[4],
   },
   barLabel: {
     fontSize: 10,
-    marginTop: 4,
+    fontWeight: "500",
+    marginTop: spacing[4],
     textAlign: "center",
   },
 });

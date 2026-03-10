@@ -4,6 +4,7 @@ import { CustomButton } from "@/components/buttons";
 import { Inbox } from "lucide-react-native";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 interface EmptyStateProps {
   message?: string;
@@ -35,12 +36,13 @@ export const EmptyState = React.memo(function EmptyState({
       {onClearFilters && (
         <CustomButton
           onPress={onClearFilters}
-          style={[styles.button, { backgroundColor: theme.border.brand }]}
+          style={styles.button}
+          buttonMode="primary"
+          buttonSize="md"
+          label="Clear Filters"
           accessibilityRole="button"
           accessibilityLabel="Clear Filters"
-        >
-          <Text style={[styles.buttonText, { color: theme.text.onBrand }]}>Clear Filters</Text>
-        </CustomButton>
+        />
       )}
     </View>
   );
@@ -50,8 +52,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-    padding: 32,
-    gap: 12,
+    padding: spacing[32],
+    gap: spacing[12],
     minHeight: 200,
   },
   message: {
@@ -61,30 +63,19 @@ const styles = StyleSheet.create({
   filterList: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 6,
+    gap: spacing[6],
     justifyContent: "center",
   },
   chip: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: spacing[10],
+    paddingVertical: spacing[4],
+    borderRadius: radius.sm,
     borderWidth: 1,
   },
   chipText: {
     fontSize: 11,
   },
   button: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 8,
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: "600",
+    marginTop: spacing[8],
   },
 });

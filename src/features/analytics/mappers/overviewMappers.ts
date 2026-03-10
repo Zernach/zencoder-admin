@@ -45,8 +45,8 @@ export function mapOverviewToViewModel(
     ],
     usageKpis: usage
       ? [
-          { title: "WAU", value: formatCompactNumber(usage.wau), caption: "Weekly active users" },
-          { title: "MAU", value: formatCompactNumber(usage.mau), caption: "Monthly active users" },
+          { title: "Weekly Active Users (WAU)", value: formatCompactNumber(usage.wau), caption: "Weekly active users" },
+          { title: "Monthly Active Users (MAU)", value: formatCompactNumber(usage.mau), caption: "Monthly active users" },
           { title: "Adoption Rate", value: formatPercent(usage.seatAdoptionRate * 100), caption: `${usage.activeSeats30d} of total seats` },
         ]
       : [],

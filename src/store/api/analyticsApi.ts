@@ -25,6 +25,10 @@ import type {
   CreateProjectResponse,
   CreateTeamRequest,
   CreateTeamResponse,
+  CreateAgentRequest,
+  CreateAgentResponse,
+  UpdateAgentDescriptionRequest,
+  UpdateAgentDescriptionResponse,
 } from "@/features/analytics/types";
 
 interface EntityDetailArgs {
@@ -263,6 +267,31 @@ export const analyticsApi = createApi({
       },
       invalidatesTags: ["Overview", "Usage", "Governance"],
     }),
+
+    createAgent: builder.mutation<CreateAgentResponse, CreateAgentRequest>({
+      queryFn: async (request) => {
+        try {
+          return { data: await getService().createAgent(request) };
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : String(e) };
+        }
+      },
+      invalidatesTags: ["AgentsHub"],
+    }),
+
+    updateAgentDescription: builder.mutation<UpdateAgentDescriptionResponse, UpdateAgentDescriptionRequest>({
+      queryFn: async (request) => {
+        try {
+          return { data: await getService().updateAgentDescription(request) };
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : String(e) };
+        }
+      },
+      invalidatesTags: (_result, _error, { agentId }) => [
+        { type: "AgentDetail", id: agentId },
+        "AgentsHub",
+      ],
+    }),
   }),
 });
 
@@ -285,4 +314,6 @@ export const {
   useCreateSeatMutation,
   useCreateProjectMutation,
   useCreateTeamMutation,
+  useCreateAgentMutation,
+  useUpdateAgentDescriptionMutation,
 } = analyticsApi;

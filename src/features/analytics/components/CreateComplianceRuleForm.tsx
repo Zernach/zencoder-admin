@@ -1,12 +1,11 @@
 import React, { useCallback } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { InputForm } from "@/components/forms";
 import type { InputFormItem } from "@/components/forms";
 import { useFormFields } from "@/hooks/useFormFields";
-import { useThemeMode } from "@/providers/ThemeProvider";
-import { semanticThemes } from "@/theme/themes";
 import type { Severity } from "@/features/analytics/types";
+import { spacing } from "@/theme/tokens";
 
 interface CreateComplianceRuleFormProps {
   onSubmit: (values: { name: string; description: string; severity: Severity }) => void;
@@ -30,9 +29,6 @@ const INITIAL_FIELDS: FormFields = { name: "", description: "", severity: "MEDIU
 const SEVERITY_OPTIONS: Severity[] = ["HIGH", "MEDIUM", "LOW"];
 
 export function CreateComplianceRuleForm({ onSubmit, loading }: CreateComplianceRuleFormProps) {
-  const { mode } = useThemeMode();
-  const theme = semanticThemes[mode];
-
   const validate = useCallback((fields: FormFields) => {
     const errors: FormErrors = {};
     if (!fields.name.trim()) errors.name = "Name is required";
@@ -96,15 +92,14 @@ export function CreateComplianceRuleForm({ onSubmit, loading }: CreateCompliance
       footer={
         <CustomButton
           onPress={onPressSubmit}
-          style={[styles.submitButton, { borderColor: theme.border.brand }]}
+          style={styles.submitButton}
+          buttonMode="primary"
+          buttonSize="lg"
+          label="Submit"
           accessibilityRole="button"
           accessibilityLabel="Submit"
           disabled={loading}
-        >
-          <Text style={[styles.submitText, { color: theme.border.brand }]}>
-            Submit
-          </Text>
-        </CustomButton>
+        />
       }
     />
   );
@@ -112,16 +107,6 @@ export function CreateComplianceRuleForm({ onSubmit, loading }: CreateCompliance
 
 const styles = StyleSheet.create({
   submitButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 999,
-    alignItems: "center",
-    marginTop: 4,
-  },
-  submitText: {
-    fontSize: 14,
-    fontWeight: "600",
+    marginTop: spacing[4],
   },
 });

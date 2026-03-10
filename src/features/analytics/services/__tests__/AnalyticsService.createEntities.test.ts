@@ -36,6 +36,13 @@ function createMockApi(): IAnalyticsApi {
       team: { id: "team_1", name: "T" },
       createdAtIso: "2026-01-01T00:00:00Z",
     }),
+    createAgent: jest.fn().mockResolvedValue({
+      agent: { id: "agent_1", name: "A", projectId: "proj_1", description: "" },
+      createdAtIso: "2026-01-01T00:00:00Z",
+    }),
+    updateAgentDescription: jest.fn().mockResolvedValue({
+      agent: { id: "agent_1", name: "A", projectId: "proj_1", description: "Updated" },
+    }),
   };
 }
 

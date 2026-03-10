@@ -1,16 +1,17 @@
 import React, { useMemo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { bin } from "d3-array";
-import { DATA_PALETTE } from "./palette";
+import { BarChart, type BarChartDatum } from "./BarChart";
+import { getOrangeBarShade } from "./palette";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 interface DistributionChartProps {
   data: number[];
   bins?: number;
   xLabel?: string;
   height?: number;
-  color?: string;
 }
 
 export const DistributionChart = React.memo(function DistributionChart({
@@ -18,90 +19,97 @@ export const DistributionChart = React.memo(function DistributionChart({
   bins: binCount = 10,
   xLabel,
   height = 200,
-  color = DATA_PALETTE[0],
 }: DistributionChartProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
-  const { histogram, maxCount } = useMemo(() => {
-    if (data.length === 0) return { histogram: [], maxCount: 1 };
+  const chartData = useMemo<BarChartDatum[]>(() => {
+    if (data.length === 0) return [];
     const hist = bin().thresholds(binCount)(data);
-    const max = Math.max(...hist.map((b) => b.length), 1);
-    return { histogram: hist, maxCount: max };
+    const counts = hist.map((b) => b.length);
+    const min = counts.length > 0 ? Math.min(...counts) : 0;
+    const max = counts.length > 0 ? Math.max(...counts) : 1;
+    return hist.map((bucket, index) => {
+      const label =
+        bucket.x0 != null && bucket.x1 != null
+          ? `${Math.round(bucket.x0)}-${Math.round(bucket.x1)}`
+          : String(index);
+      return {
+        id: `${label}-${index}`,
+        label,
+        value: bucket.length,
+        valueLabel: String(bucket.length),
+        color: getOrangeBarShade(bucket.length, min, max),
+        barTestID: `distribution-bar-${index}`,
+        tooltipRows: [
+          { label: "Range", value: label },
+          { label: "Count", value: String(bucket.length) },
+        ],
+      };
+    });
   }, [data, binCount]);
 
-  if (histogram.length === 0) return null;
+  if (chartData.length === 0) return null;
 
   return (
-    <View style={[styles.container, { height }]}>
-      <View style={styles.bars}>
-        {histogram.map((b, i) => {
-          const label =
-            b.x0 != null && b.x1 != null
-              ? `${Math.round(b.x0)}-${Math.round(b.x1)}`
-              : String(i);
-          return (
-            <View key={i} style={styles.barCol}>
-              <View style={styles.barWrapper}>
-                <Text style={[styles.countLabel, { color: theme.text.tertiary }]}>{b.length}</Text>
-                <View
-                  style={[
-                    styles.bar,
-                    {
-                      height: `${(b.length / maxCount) * 70}%`,
-                      backgroundColor: color,
-                    },
-                  ]}
-                />
-              </View>
-              <Text style={[styles.binLabel, { color: theme.text.tertiary }]} numberOfLines={1}>
-                {label}
-              </Text>
-            </View>
-          );
-        })}
-      </View>
-      {xLabel && <Text style={[styles.xLabel, { color: theme.text.tertiary }]}>{xLabel}</Text>}
-    </View>
+    <BarChart
+      data={chartData}
+      orientation="vertical"
+      height={height}
+      showValues
+      xLabel={xLabel}
+      verticalOptions={{
+        barWidth: "90%",
+        maxBarHeightPercent: 70,
+        minBarHeight: 2,
+        labelNumberOfLines: 1,
+      }}
+      layoutStyles={{
+        container: styles.container,
+        bars: styles.bars,
+        column: styles.barCol,
+        fill: styles.bar,
+      }}
+      textStyles={{
+        value: [styles.countLabel, { color: theme.text.tertiary }],
+        label: [styles.binLabel, { color: theme.text.tertiary }],
+        xLabel: [styles.xLabel, { color: theme.text.tertiary }],
+      }}
+    />
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    gap: 4,
+    gap: spacing[4],
   },
   bars: {
     flex: 1,
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: 2,
+    gap: spacing[2],
   },
   barCol: {
     flex: 1,
     alignItems: "center",
   },
-  barWrapper: {
-    flex: 1,
-    width: "100%",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
   bar: {
-    width: "90%",
-    borderRadius: 3,
-    minHeight: 2,
+    borderRadius: radius.sm,
   },
   countLabel: {
     fontSize: 9,
-    marginBottom: 2,
+    fontWeight: "600",
+    marginBottom: spacing[2],
   },
   binLabel: {
     fontSize: 8,
-    marginTop: 2,
+    fontWeight: "500",
+    marginTop: spacing[2],
   },
   xLabel: {
     fontSize: 10,
+    fontWeight: "500",
     textAlign: "center",
-    marginTop: 4,
+    marginTop: spacing[4],
   },
 });

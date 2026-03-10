@@ -9,6 +9,7 @@ import { SortableHeader } from "./SortableHeader";
 import type { SortDirection } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 type SortableValue = string | number | boolean | Date | null | undefined;
 
@@ -27,6 +28,8 @@ interface DataTableProps<T> {
   data: T[];
   sortBy?: string;
   sortDirection?: SortDirection;
+  initialSortBy?: string;
+  initialSortDirection?: SortDirection;
   onSort?: (key: string) => void;
   onRowPress?: (row: T) => void;
   loading?: boolean;
@@ -106,27 +109,31 @@ const DataTableRow = memo(function DataTableRow<T>({
         rowIdx % 2 === 1 && { backgroundColor: altRowBg },
       ]}
     >
-      {columns.map((col) => (
-        <View
-          key={col.key}
-          style={[
-            styles.cell,
-            col.width != null
-              ? { minWidth: col.width, flexGrow: 1, flexBasis: 0 }
-              : styles.flexCell,
-            col.align === "right" && styles.alignRight,
-            col.align === "center" && styles.alignCenter,
-          ]}
-        >
-          {col.render ? (
-            col.render(row)
-          ) : (
-            <Text style={[styles.bodyText, { color: bodyTextColor }]}>
-              {String((row as Record<string, unknown>)[col.key] ?? "")}
-            </Text>
-          )}
-        </View>
-      ))}
+      {columns.map((col, colIdx) => {
+        const isLast = colIdx === columns.length - 1;
+        const effectiveAlign = col.align ?? (isLast ? "right" : undefined);
+        return (
+          <View
+            key={col.key}
+            style={[
+              styles.cell,
+              col.width != null
+                ? { minWidth: col.width, flexGrow: 1, flexBasis: 0 }
+                : styles.flexCell,
+              effectiveAlign === "right" && styles.alignRight,
+              effectiveAlign === "center" && styles.alignCenter,
+            ]}
+          >
+            {col.render ? (
+              col.render(row)
+            ) : (
+              <Text style={[styles.bodyText, { color: bodyTextColor }]}>
+                {String((row as Record<string, unknown>)[col.key] ?? "")}
+              </Text>
+            )}
+          </View>
+        );
+      })}
     </View>
   );
 
@@ -157,6 +164,8 @@ function DataTableInner<T>({
   data,
   sortBy,
   sortDirection = "asc",
+  initialSortBy,
+  initialSortDirection,
   onSort,
   onRowPress,
   loading,
@@ -169,8 +178,8 @@ function DataTableInner<T>({
     sortBy?: string;
     sortDirection: SortDirection;
   }>({
-    sortBy: undefined,
-    sortDirection: "asc",
+    sortBy: initialSortBy,
+    sortDirection: initialSortDirection ?? "asc",
   });
 
   const activeSortBy = onSort ? sortBy : internalSort.sortBy;
@@ -238,31 +247,35 @@ function DataTableInner<T>({
       <View style={styles.tableContent}>
         {/* Header */}
         <View style={headerRowStyle}>
-          {columns.map((col) => (
-            <View
-              key={col.key}
-              style={[
-                styles.cell,
-                col.width != null
-                  ? { minWidth: col.width, flexGrow: 1, flexBasis: 0 }
-                  : styles.flexCell,
-                col.align === "right" && styles.alignRight,
-                col.align === "center" && styles.alignCenter,
-              ]}
-            >
-              {col.sortable !== false ? (
-                <SortableHeader
-                  label={col.header}
-                  active={activeSortBy === col.key}
-                  direction={activeSortBy === col.key ? activeSortDirection : "asc"}
-                  columnKey={col.key}
-                  onSort={handleSortPress}
-                />
-              ) : (
-                <Text style={[styles.headerText, { color: theme.text.secondary }]}>{col.header}</Text>
-              )}
-            </View>
-          ))}
+          {columns.map((col, colIdx) => {
+            const isLast = colIdx === columns.length - 1;
+            const effectiveAlign = col.align ?? (isLast ? "right" : undefined);
+            return (
+              <View
+                key={col.key}
+                style={[
+                  styles.cell,
+                  col.width != null
+                    ? { minWidth: col.width, flexGrow: 1, flexBasis: 0 }
+                    : styles.flexCell,
+                  effectiveAlign === "right" && styles.alignRight,
+                  effectiveAlign === "center" && styles.alignCenter,
+                ]}
+              >
+                {col.sortable !== false ? (
+                  <SortableHeader
+                    label={col.header}
+                    active={activeSortBy === col.key}
+                    direction={activeSortBy === col.key ? activeSortDirection : "asc"}
+                    columnKey={col.key}
+                    onSort={handleSortPress}
+                  />
+                ) : (
+                  <Text style={[styles.headerText, { color: theme.text.secondary }]}>{col.header}</Text>
+                )}
+              </View>
+            );
+          })}
         </View>
         {/* Body */}
         {sortedData.map((row, rowIdx) => (
@@ -292,20 +305,20 @@ const styles = StyleSheet.create({
   },
   headerRow: {
     flexDirection: "row",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-    marginBottom: 2,
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[8],
+    borderRadius: radius.sm,
+    marginBottom: spacing[2],
   },
   bodyRow: {
     flexDirection: "row",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[10],
     minHeight: 44,
     alignItems: "center",
   },
   cell: {
-    paddingHorizontal: 8,
+    paddingHorizontal: spacing[8],
     justifyContent: "center",
   },
   flexCell: {
@@ -324,5 +337,6 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     fontSize: 12,
+    fontWeight: "500",
   },
 });

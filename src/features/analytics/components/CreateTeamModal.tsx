@@ -7,6 +7,7 @@ import { useCreateTeam } from "@/features/analytics/hooks/useCreateTeam";
 import { CreateTeamForm } from "./CreateTeamForm";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 export const CreateTeamModal = React.memo(function CreateTeamModal() {
   const visible = useAppSelector(selectModalVisible(ModalName.CreateTeam));
@@ -64,15 +65,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing[20],
   },
   modalPanel: {
     width: 400,
     maxWidth: "100%",
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    padding: 16,
-    gap: 12,
+    padding: spacing[16],
+    gap: spacing[12],
   },
   modalHeader: {
     flexDirection: "row",

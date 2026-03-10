@@ -97,8 +97,8 @@ const styles = StyleSheet.create({
   formContainer: {
     borderWidth: borderWidth.hairline,
     borderRadius: radius.md,
-    padding: spacing[4],
-    gap: spacing[3],
+    padding: spacing[16],
+    gap: spacing[12],
     width: "100%",
   },
   formTitle: {
@@ -111,14 +111,14 @@ const styles = StyleSheet.create({
   errorBanner: {
     borderWidth: borderWidth.hairline,
     borderRadius: radius.sm,
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[8],
   },
   errorText: {
     fontSize: fontSizes.sm,
     textAlign: "center",
   },
   itemSeparator: {
-    height: spacing[3],
+    height: spacing[8],
   },
 });

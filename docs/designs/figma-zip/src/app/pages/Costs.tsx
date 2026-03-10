@@ -53,7 +53,7 @@ export function Costs() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <ChartPlaceholder
           title="Cost per Day"
-          type="area"
+          type="line"
           height={250}
         />
         <ChartPlaceholder

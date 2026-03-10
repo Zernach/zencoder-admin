@@ -3,6 +3,7 @@ import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import type { ReactNode } from "react";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing } from "@/theme/tokens";
 
 export interface HeaderProps {
   title: string;
@@ -53,13 +54,13 @@ export default ScreenHeader;
 
 const styles = StyleSheet.create({
   container: {
-    gap: 4,
+    gap: spacing[4],
     minHeight: 48,
   },
   titleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: spacing[10],
   },
   title: {
     fontSize: 22,
@@ -70,9 +71,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   right: {
-    marginTop: 4,
+    marginTop: spacing[4],
   },
   spinner: {
-    marginLeft: 4,
+    marginLeft: spacing[4],
   },
 });

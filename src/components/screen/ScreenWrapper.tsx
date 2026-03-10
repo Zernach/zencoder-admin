@@ -9,7 +9,7 @@ import { FilterBar } from "@/components/filters";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
-import { layout } from "@/theme/tokens";
+import { layout, spacing } from "@/theme/tokens";
 import ScreenHeader from "./ScreenHeader";
 import type { HeaderProps } from "./ScreenHeader";
 
@@ -92,9 +92,9 @@ const styles = StyleSheet.create({
     paddingBottom: layout.sectionGap,
   },
   headerContainer: {
-    paddingTop: 2,
+    paddingTop: spacing[2],
   },
   filterBarContainer: {
-    paddingTop: 0,
+    paddingTop: spacing[0],
   },
 });

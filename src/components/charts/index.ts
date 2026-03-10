@@ -1,5 +1,7 @@
 export { ChartCard } from "./ChartCard";
-export { TrendChart } from "./TrendChart";
+export { BarChart } from "./BarChart";
+export { LineChart } from "./LineChart";
+export { PieChart } from "./PieChart";
 export { BreakdownChart } from "./BreakdownChart";
 export { DonutChart } from "./DonutChart";
 export { ProviderCostChart } from "./ProviderCostChart";

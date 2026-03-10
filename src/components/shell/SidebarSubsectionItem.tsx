@@ -3,6 +3,7 @@ import { Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing } from "@/theme/tokens";
 
 interface SidebarSubsectionItemProps {
   label: string;
@@ -29,9 +30,9 @@ export const SidebarSubsectionItem = memo(function SidebarSubsectionItem({ label
 
 const styles = StyleSheet.create({
   item: {
-    paddingVertical: 6,
-    paddingLeft: 48,
-    paddingRight: 16,
+    paddingVertical: spacing[6],
+    paddingLeft: spacing[48],
+    paddingRight: spacing[16],
     minHeight: 32,
     justifyContent: "center",
   },

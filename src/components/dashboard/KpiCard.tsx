@@ -7,12 +7,18 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import { spacing, radius } from "@/theme/tokens";
 import { DeltaIndicator } from "./DeltaIndicator";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { motion } from "@/theme/motion";
 import type { DeltaPolarity } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+
+interface CaptionLink {
+  text: string;
+  onPress: () => void;
+}
 
 interface KpiCardProps {
   title: string;
@@ -21,6 +27,7 @@ interface KpiCardProps {
   delta?: number;
   deltaPolarity?: DeltaPolarity;
   caption?: string;
+  captionLink?: CaptionLink;
   period?: string;
   icon?: React.ReactNode;
   onPress?: () => void;
@@ -33,6 +40,7 @@ export const KpiCard = memo(function KpiCard({
   delta,
   deltaPolarity = "positive-good",
   caption,
+  captionLink,
   period,
   icon,
   onPress,
@@ -93,10 +101,19 @@ export const KpiCard = memo(function KpiCard({
           </View>
         )}
       </View>
-      {(caption || period) && (
+      {(caption || captionLink || period) && (
         <Text style={[styles.caption, { color: theme.text.tertiary }]}>
           {caption}
-          {caption && period ? " · " : ""}
+          {captionLink && (
+            <Text
+              style={[styles.captionLink, { color: theme.border.brand }]}
+              onPress={captionLink.onPress}
+              accessibilityRole="link"
+            >
+              {captionLink.text}
+            </Text>
+          )}
+          {(caption || captionLink) && period ? " · " : ""}
           {period}
         </Text>
       )}
@@ -122,16 +139,16 @@ export const KpiCard = memo(function KpiCard({
 const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
-    borderRadius: 10,
-    padding: 16,
+    borderRadius: radius.md,
+    padding: spacing[16],
     minHeight: 132,
     justifyContent: "space-between",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginBottom: 8,
+    gap: spacing[8],
+    marginBottom: spacing[8],
   },
   icon: {
     width: 20,
@@ -147,8 +164,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-end",
     flexWrap: "nowrap",
-    gap: 8,
-    marginBottom: 4,
+    gap: spacing[8],
+    marginBottom: spacing[4],
     width: "100%",
     minWidth: 0,
   },
@@ -167,6 +184,10 @@ const styles = StyleSheet.create({
   },
   caption: {
     fontSize: 11,
+  },
+  captionLink: {
+    textDecorationLine: "underline" as const,
+    fontWeight: "600" as const,
   },
   pressed: {
     opacity: 0.85,

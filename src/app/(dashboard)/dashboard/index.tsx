@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from "react";
-import { View } from "react-native";
+import { View, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
 import { useLiveAgentSessions } from "@/features/analytics/hooks/useLiveAgentSessions";
@@ -12,15 +12,13 @@ import {
   ErrorState,
   LiveAssistantsSection,
 } from "@/components/dashboard";
-import { ChartCard, TrendChart } from "@/components/charts";
-import { chartColors } from "@/components/tables";
+import { ChartCard, LineChart } from "@/components/charts";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { CustomList } from "@/components/lists";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import type { LiveAgentSession } from "@/features/analytics/types";
-import { useThemeMode } from "@/providers/ThemeProvider";
-import { semanticThemes } from "@/theme/themes";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { buildEntityRoute, TABS } from "@/constants/routes";
 
 const styles = sectionStyles;
 
@@ -32,9 +30,7 @@ const SKELETON_3 = Array.from({ length: 3 });
 export default function OverviewDashboardScreen() {
   const bp = useBreakpoint();
   const isLargeLayout = bp === "desktop";
-  const { mode } = useThemeMode();
-  const theme = semanticThemes[mode];
-  const cc = chartColors(mode);
+  const { width: viewportWidth } = useWindowDimensions();
   const { data, loading, error, refetch } = useOverviewDashboard();
   const {
     data: liveSessions,
@@ -49,6 +45,13 @@ export default function OverviewDashboardScreen() {
   const handleKpiPress = useCallback(
     (route: string) => {
       router.push(route as never);
+    },
+    [router],
+  );
+
+  const handleLiveCardPress = useCallback(
+    (agentId: string) => {
+      router.push(buildEntityRoute(TABS.DASHBOARD, "agent", agentId) as never);
     },
     [router],
   );
@@ -85,6 +88,15 @@ export default function OverviewDashboardScreen() {
     contentContainerStyle: [styles.chartRow, isLargeLayout && styles.chartRowFill],
   }), [isLargeLayout]);
 
+  const trendCardStyle = useMemo(() => {
+    if (isLargeLayout) return styles.chartCardFill;
+    const horizontalPadding = bp === "tablet" ? 16 : 12;
+    return [
+      styles.chartCardViewport,
+      { width: Math.max(280, viewportWidth - horizontalPadding * 2) },
+    ];
+  }, [bp, isLargeLayout, viewportWidth]);
+
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
   return (
@@ -94,6 +106,7 @@ export default function OverviewDashboardScreen() {
         loading={liveLoading}
         error={liveError}
         onRetry={refetchLiveSessions}
+        onCardPress={handleLiveCardPress}
       />
 
       {/* Section 1 -- Key Metrics */}
@@ -130,21 +143,19 @@ export default function OverviewDashboardScreen() {
       <View style={styles.section}>
         <SectionHeader title="Trends" />
         <CustomList scrollViewProps={trendScrollProps}>
-          <ChartCard title="Runs Over Time" loading={loading} style={isLargeLayout ? styles.chartCardFill : undefined}>
+          <ChartCard title="Runs Over Time" loading={loading} style={trendCardStyle}>
             {data && (
-              <TrendChart
+              <LineChart
                 data={data.runsTrend}
                 variant="area"
                 height={200}
               />
             )}
           </ChartCard>
-          <ChartCard title="Cost Trend" loading={loading} style={isLargeLayout ? styles.chartCardFill : undefined}>
+          <ChartCard title="Cost per Day" loading={loading} style={trendCardStyle}>
             {data && (
-              <TrendChart
+              <LineChart
                 data={data.costTrend}
-                variant="line"
-                color={cc.success}
                 height={200}
               />
             )}
@@ -168,7 +179,7 @@ export default function OverviewDashboardScreen() {
           </CardGrid>
           {data.activeUsersTrend && data.activeUsersTrend.length > 0 && (
             <ChartCard title="Active Users Trend">
-              <TrendChart data={data.activeUsersTrend} variant="area" color={theme.data.seriesTertiary} height={180} />
+              <LineChart data={data.activeUsersTrend} variant="area" height={180} />
             </ChartCard>
           )}
         </View>
@@ -189,8 +200,8 @@ export default function OverviewDashboardScreen() {
             ))}
           </CardGrid>
           {data.outcomesTrend && data.outcomesTrend.length > 0 && (
-            <ChartCard title="PRs Merged Over Time">
-              <TrendChart data={data.outcomesTrend} variant="line" color={cc.warning} height={180} />
+            <ChartCard title="Automated Merge Requests per Day">
+              <LineChart data={data.outcomesTrend} height={180} variant="area" />
             </ChartCard>
           )}
         </View>
@@ -231,7 +242,11 @@ export default function OverviewDashboardScreen() {
                 key={a.runId}
                 title={a.type.replace(/_/g, " ")}
                 value={a.label}
-                caption={`Run ${a.runId}`}
+                caption="Run "
+                captionLink={{
+                  text: a.runId,
+                  onPress: () => router.push(`/dashboard/run/${a.runId}` as never),
+                }}
               />
             ))}
           </CardGrid>

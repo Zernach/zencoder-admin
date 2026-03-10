@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTeamDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
-import { CustomList } from "@/components/lists";
 import { ScreenWrapper } from "@/components/screen";
+import { DataTable } from "@/components/tables";
+import type { ColumnDef } from "@/components/tables/DataTable";
+import type { User, Project } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { cellText, getSuccessRateColor } from "@/components/tables/cellStyles";
+import { spacing } from "@/theme/tokens";
 
 interface TeamDetailScreenProps {
   teamId: string;
@@ -15,56 +19,90 @@ export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
   const { data, loading, error, refetch } = useTeamDetailScreen(teamId);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const ct = cellText(mode);
+
+  const memberColumns = useMemo<ColumnDef<User>[]>(
+    () => [
+      { key: "name", header: "Name", render: (u) => <Text style={ct.primary}>{u.name}</Text> },
+      { key: "email", header: "Email", render: (u) => <Text style={ct.secondary}>{u.email}</Text> },
+    ],
+    [ct],
+  );
+
+  const projectColumns = useMemo<ColumnDef<Project>[]>(
+    () => [
+      { key: "name", header: "Project Name", render: (p) => <Text style={ct.primary}>{p.name}</Text> },
+      { key: "id", header: "ID", width: 140, render: (p) => <Text style={ct.secondary}>{p.id.slice(0, 12)}</Text> },
+    ],
+    [ct],
+  );
 
   if (loading) return <LoadingSkeleton variant="text" />;
   if (error) return <ErrorState message={error} onRetry={refetch} />;
   if (!data) return null;
 
   return (
-    <ScreenWrapper headerProps={{ title: data.team.name }}>
-      <CustomList scrollViewProps={{ style: styles.scroll, contentContainerStyle: styles.content }}>
-        <Text style={[styles.heading, { color: theme.text.primary }]}>{data.team.name}</Text>
+    <ScreenWrapper headerProps={{ title: data.team.name }} showFilterBar={false}>
+      <View style={styles.content}>
         <View style={styles.statsRow}>
           <StatItem label="Members" value={String(data.memberCount)} theme={theme} />
           <StatItem label="Projects" value={String(data.projectCount)} theme={theme} />
           <StatItem label="Runs" value={String(data.totalRuns)} theme={theme} />
-          <StatItem label="Success" value={`${(data.successRate * 100).toFixed(1)}%`} theme={theme} />
+          <StatItem
+            label="Success"
+            value={`${(data.successRate * 100).toFixed(1)}%`}
+            theme={theme}
+            valueColor={getSuccessRateColor(data.successRate, mode)}
+          />
           <StatItem label="Cost" value={`$${data.totalCostUsd.toFixed(2)}`} theme={theme} />
         </View>
+
         <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Members</Text>
-        {data.members.map((member) => (
-          <Text key={member.id} style={[styles.listItem, { color: theme.text.primary }]}>
-            {member.name} · {member.email}
-          </Text>
-        ))}
+        <DataTable
+          columns={memberColumns}
+          data={data.members}
+          keyExtractor={(u) => u.id}
+          emptyMessage="No members."
+        />
+
         <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Projects</Text>
-        {data.projects.map((project) => (
-          <Text key={project.id} style={[styles.listItem, { color: theme.text.primary }]}>{project.name}</Text>
-        ))}
-      </CustomList>
+        <DataTable
+          columns={projectColumns}
+          data={data.projects}
+          keyExtractor={(p) => p.id}
+          emptyMessage="No projects."
+        />
+      </View>
     </ScreenWrapper>
   );
 }
 
 type ThemeColors = (typeof semanticThemes)["dark"];
 
-function StatItem({ label, value, theme }: { label: string; value: string; theme: ThemeColors }) {
+function StatItem({
+  label,
+  value,
+  theme,
+  valueColor,
+}: {
+  label: string;
+  value: string;
+  theme: ThemeColors;
+  valueColor?: string;
+}) {
   return (
     <View style={styles.stat}>
-      <Text style={[styles.statValue, { color: theme.text.primary }]}>{value}</Text>
+      <Text style={[styles.statValue, { color: valueColor ?? theme.text.primary }]}>{value}</Text>
       <Text style={[styles.statLabel, { color: theme.text.secondary }]}>{label}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1 },
-  content: { padding: 16, gap: 16 },
-  heading: { fontSize: 20, fontWeight: "700" },
-  statsRow: { flexDirection: "row", gap: 16, flexWrap: "wrap" },
+  content: { gap: spacing[16] },
+  statsRow: { flexDirection: "row", gap: spacing[16], flexWrap: "wrap" },
   stat: { alignItems: "center", minWidth: 70 },
   statValue: { fontSize: 16, fontWeight: "600" },
-  statLabel: { fontSize: 11, marginTop: 2 },
-  sectionTitle: { fontSize: 16, fontWeight: "600", marginTop: 8 },
-  listItem: { fontSize: 13, paddingVertical: 4 },
+  statLabel: { fontSize: 11, marginTop: spacing[2] },
+  sectionTitle: { fontSize: 16, fontWeight: "600", marginTop: spacing[8] },
 });

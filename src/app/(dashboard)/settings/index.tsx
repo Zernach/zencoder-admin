@@ -2,18 +2,9 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomSwitch } from "@/components/inputs";
-import {
-  Moon,
-  Mail,
-  MessageSquare,
-  RefreshCw,
-  LogOut,
-  Trash2,
-  User,
-} from "lucide-react-native";
+import { Moon, Mail, MessageSquare, RefreshCw, LogOut, Trash2, User } from "lucide-react-native";
 import { SectionHeader } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
-import { CreateTeamModal } from "@/features/analytics/components/CreateTeamModal";
 import { SignOutNoticeModal } from "@/features/analytics/components/SignOutNoticeModal";
 import { spacing, radius } from "@/theme/tokens";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -72,10 +63,6 @@ export default function SettingsScreen() {
     return handler;
   }, [toggleHandlerCache]);
 
-  const handleOpenCreateTeam = useCallback(
-    () => dispatch(openModal(ModalName.CreateTeam)),
-    [dispatch],
-  );
   const handleOpenSignOut = useCallback(
     () => dispatch(openModal(ModalName.SignOutNotice)),
     [dispatch],
@@ -142,22 +129,10 @@ export default function SettingsScreen() {
 
       {/* Organization */}
       <View style={styles.section}>
-        <View style={styles.sectionRow}>
-          <View style={styles.sectionHeaderWrap}>
-            <SectionHeader
-              title="Organization"
-              subtitle="Team and billing details"
-            />
-          </View>
-          <CustomButton
-            onPress={handleOpenCreateTeam}
-            style={[styles.createButton, { borderColor: theme.border.brand }]}
-            accessibilityRole="button"
-            accessibilityLabel="Create Team"
-          >
-            <Text style={[styles.createButtonText, { color: theme.border.brand }]}>+ Create Team</Text>
-          </CustomButton>
-        </View>
+        <SectionHeader
+          title="Organization"
+          subtitle="Team and billing details"
+        />
         <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Org ID</Text>
@@ -231,33 +206,32 @@ export default function SettingsScreen() {
       </View>
 
       <SignOutNoticeModal />
-      <CreateTeamModal />
     </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
   section: {
-    gap: spacing[3],
+    gap: spacing[12],
   },
   profileCard: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: radius.lg,
     borderWidth: 1,
-    padding: spacing[5],
-    gap: spacing[4],
+    padding: spacing[20],
+    gap: spacing[16],
   },
   avatarCircle: {
     width: 56,
     height: 56,
-    borderRadius: 28,
+    borderRadius: radius.full,
     alignItems: "center",
     justifyContent: "center",
   },
   profileInfo: {
     flex: 1,
-    gap: 4,
+    gap: spacing[4],
   },
   profileName: {
     fontFamily: typography.sectionTitle.fontFamily,
@@ -270,10 +244,10 @@ const styles = StyleSheet.create({
   },
   roleBadge: {
     alignSelf: "flex-start",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: spacing[8],
+    paddingVertical: spacing[2],
     borderRadius: radius.sm,
-    marginTop: 4,
+    marginTop: spacing[4],
   },
   roleBadgeText: {
     fontFamily: typography.label.fontFamily,
@@ -285,29 +259,29 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: radius.lg,
     borderWidth: 1,
-    padding: spacing[4],
-    gap: spacing[3],
+    padding: spacing[16],
+    gap: spacing[12],
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: spacing[1],
+    paddingVertical: spacing[4],
   },
   rowDivider: {
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: "rgba(128,128,128,0.15)",
-    paddingTop: spacing[3],
+    paddingTop: spacing[12],
   },
   toggleIcon: {
     width: 32,
     height: 32,
-    borderRadius: 8,
+    borderRadius: radius.md,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: spacing[3],
+    marginRight: spacing[12],
   },
-  rowText: { flex: 1, marginRight: spacing[4] },
+  rowText: { flex: 1, marginRight: spacing[16] },
   label: {
     fontFamily: typography.tableBody.fontFamily,
     fontSize: 14,
@@ -316,13 +290,13 @@ const styles = StyleSheet.create({
   desc: {
     fontFamily: typography.label.fontFamily,
     fontSize: 12,
-    marginTop: 2,
+    marginTop: spacing[2],
   },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 6,
+    paddingVertical: spacing[6],
   },
   infoLabel: {
     fontFamily: typography.label.fontFamily,
@@ -339,8 +313,8 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   planBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: spacing[8],
+    paddingVertical: spacing[2],
     borderRadius: radius.sm,
   },
   planBadgeText: {
@@ -350,30 +324,30 @@ const styles = StyleSheet.create({
   },
   seatBarOuter: {
     height: 6,
-    borderRadius: 3,
+    borderRadius: radius.sm,
     backgroundColor: "rgba(128,128,128,0.15)",
     overflow: "hidden",
   },
   seatBarInner: {
     height: "100%",
-    borderRadius: 3,
+    borderRadius: radius.sm,
   },
   seatCaption: {
     fontFamily: typography.label.fontFamily,
     fontSize: 11,
-    marginTop: -4,
+    marginTop: -spacing[4],
   },
   dangerCard: {
     borderRadius: radius.lg,
     borderWidth: 1,
     borderStyle: "dashed",
-    padding: spacing[4],
-    gap: spacing[3],
+    padding: spacing[16],
+    gap: spacing[12],
   },
   dangerBtn: {
     borderWidth: 1,
-    borderRadius: 8,
-    padding: spacing[3],
+    borderRadius: radius.md,
+    padding: spacing[12],
     alignItems: "center",
     minHeight: 44,
     justifyContent: "center",
@@ -381,8 +355,8 @@ const styles = StyleSheet.create({
   dangerText: { fontWeight: "600", fontSize: 14 },
   signOutBtn: {
     borderWidth: 1,
-    borderRadius: 8,
-    padding: spacing[3],
+    borderRadius: radius.md,
+    padding: spacing[12],
     alignItems: "center",
     minHeight: 44,
     justifyContent: "center",
@@ -391,30 +365,6 @@ const styles = StyleSheet.create({
   btnRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-  },
-  sectionRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    flexWrap: "wrap",
-    gap: spacing[2],
-  },
-  sectionHeaderWrap: {
-    flex: 1,
-    minWidth: 0,
-  },
-  createButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
-    marginLeft: "auto",
-    flexShrink: 0,
-    maxWidth: "100%",
-  },
-  createButtonText: {
-    fontSize: 13,
-    fontWeight: "600",
+    gap: spacing[8],
   },
 });

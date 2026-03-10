@@ -126,6 +126,10 @@ describe("getGovernance", () => {
     const res = await service.getGovernance(defaultFilters);
     const decStr = String(res.policyViolationRate).split(".")[1] || "";
     expect(decStr.length).toBeLessThanOrEqual(1);
+    for (const row of res.teamPerformanceComparison) {
+      const successDec = String(row.successRate).split(".")[1] || "";
+      expect(successDec.length).toBeLessThanOrEqual(3);
+    }
   });
 
   it("returns seat user usage with full names", async () => {
@@ -151,7 +155,7 @@ describe("getAgentsHub", () => {
       const costDec = String(row.totalCostUsd).split(".")[1] || "";
       expect(costDec.length).toBeLessThanOrEqual(2);
       const successDec = String(row.successRate).split(".")[1] || "";
-      expect(successDec.length).toBeLessThanOrEqual(1);
+      expect(successDec.length).toBeLessThanOrEqual(3);
     }
   });
 });
@@ -209,6 +213,8 @@ describe("delegation via mock", () => {
       createSeat: jest.fn(),
       createProject: jest.fn(),
       createTeam: jest.fn(),
+      createAgent: jest.fn(),
+      updateAgentDescription: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -262,6 +268,8 @@ describe("delegation via mock", () => {
       createSeat: jest.fn(),
       createProject: jest.fn(),
       createTeam: jest.fn(),
+      createAgent: jest.fn(),
+      updateAgentDescription: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);
@@ -311,6 +319,8 @@ describe("getSearchSuggestions", () => {
       createSeat: jest.fn(),
       createProject: jest.fn(),
       createTeam: jest.fn(),
+      createAgent: jest.fn(),
+      updateAgentDescription: jest.fn(),
     };
 
     const svc = new AnalyticsService(mockApi);

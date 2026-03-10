@@ -1,9 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import type { StyleProp, ViewStyle } from "react-native";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
+import { ChartCardHeaderActionContext } from "./ChartCardHeaderActionContext";
 
 const NOOP = () => {};
 
@@ -28,6 +30,8 @@ export const ChartCard = React.memo(function ChartCard({
 }: ChartCardProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const [headerAction, setHeaderAction] = useState<React.ReactNode>(null);
+  const headerActionContext = useMemo(() => ({ setHeaderAction }), []);
 
   const cardStyle = useMemo(() => [
     styles.card,
@@ -41,16 +45,23 @@ export const ChartCard = React.memo(function ChartCard({
   return (
     <View style={cardStyle}>
       <View style={styles.header}>
-        {title && <Text style={[styles.title, { color: theme.text.primary }]}>{title}</Text>}
-        {subtitle && <Text style={[styles.subtitle, { color: theme.text.secondary }]}>{subtitle}</Text>}
+        <View style={styles.headerTopRow}>
+          <View style={styles.headerTextWrap}>
+            {title && <Text style={[styles.title, { color: theme.text.primary }]}>{title}</Text>}
+            {subtitle && <Text style={[styles.subtitle, { color: theme.text.secondary }]}>{subtitle}</Text>}
+          </View>
+          {headerAction ? <View style={styles.headerActionWrap}>{headerAction}</View> : null}
+        </View>
       </View>
-      {loading ? (
-        <LoadingSkeleton variant="chart" />
-      ) : error ? (
-        <ErrorState message={error} onRetry={onRetry ?? NOOP} />
-      ) : (
-        children
-      )}
+      <ChartCardHeaderActionContext.Provider value={headerActionContext}>
+        {loading ? (
+          <LoadingSkeleton variant="chart" />
+        ) : error ? (
+          <ErrorState message={error} onRetry={onRetry ?? NOOP} />
+        ) : (
+          children
+        )}
+      </ChartCardHeaderActionContext.Provider>
     </View>
   );
 });
@@ -58,11 +69,24 @@ export const ChartCard = React.memo(function ChartCard({
 const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
-    borderRadius: 10,
-    padding: 16,
+    borderRadius: radius.md,
+    padding: spacing[16],
   },
   header: {
-    marginBottom: 12,
+    marginBottom: spacing[12],
+  },
+  headerTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: spacing[8],
+  },
+  headerTextWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
+  headerActionWrap: {
+    flexShrink: 0,
   },
   title: {
     fontSize: 14,
@@ -70,6 +94,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 12,
-    marginTop: 2,
+    fontWeight: "500",
+    marginTop: spacing[2],
   },
 });

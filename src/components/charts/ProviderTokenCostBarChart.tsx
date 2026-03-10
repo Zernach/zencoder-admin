@@ -1,14 +1,10 @@
 import React, { useMemo } from "react";
-import { View, Text, StyleSheet } from "react-native";
 import type { ProviderCostRow } from "@/features/analytics/types";
-import { DATA_PALETTE } from "./palette";
-import { useThemeMode } from "@/providers/ThemeProvider";
-import { semanticThemes } from "@/theme/themes";
-import { typography } from "@/theme/typography";
+import { formatCompactNumber, formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
+import { BreakdownChart, type BreakdownChartDatum } from "./BreakdownChart";
 
 interface ProviderTokenCostBarChartProps {
   data: ProviderCostRow[];
-  height?: number;
 }
 
 const PROVIDER_LABELS: Record<ProviderCostRow["provider"], string> = {
@@ -28,109 +24,30 @@ function formatTenThousandths(usdPerToken: number): string {
 
 export const ProviderTokenCostBarChart = React.memo(function ProviderTokenCostBarChart({
   data,
-  height = 180,
 }: ProviderTokenCostBarChartProps) {
-  const { mode } = useThemeMode();
-  const theme = semanticThemes[mode];
-
-  const { ranked, maxCost } = useMemo(() => {
-    const r = [...data]
-      .map((row) => ({
-        ...row,
-        costPerToken: computeCostPerToken(row),
-      }))
-      .sort((a, b) => b.costPerToken - a.costPerToken);
-
-    return { ranked: r, maxCost: Math.max(...r.map((item) => item.costPerToken), 0) };
+  const chartData = useMemo<BreakdownChartDatum[]>(() => {
+    return data.map((row) => {
+      const costPerToken = computeCostPerToken(row);
+      return {
+        key: PROVIDER_LABELS[row.provider],
+        value: costPerToken,
+        hoverRows: [
+          { label: "Provider", value: PROVIDER_LABELS[row.provider] },
+          { label: "Total Cost", value: formatCurrency(row.totalCostUsd) },
+          { label: "Tokens", value: formatCompactNumber(row.totalTokens) },
+          { label: "Runs", value: formatCompactNumber(row.runCount) },
+          { label: "Share", value: formatPercent(row.percentOfTotal) },
+        ],
+      };
+    });
   }, [data]);
 
   return (
-    <View style={[styles.container, { minHeight: height }]}>
-      <View style={styles.bars}>
-        {ranked.map((row, i) => {
-          const barFraction = maxCost > 0 ? row.costPerToken / maxCost : 0;
-          const barColor = DATA_PALETTE[i % DATA_PALETTE.length];
-          return (
-            <View key={row.provider} style={styles.row}>
-              <Text
-                style={[styles.label, { color: theme.text.primary }]}
-                numberOfLines={1}
-              >
-                {PROVIDER_LABELS[row.provider]}
-              </Text>
-              <View style={styles.barTrack}>
-                <View
-                  style={[
-                    styles.barFill,
-                    {
-                      width: `${Math.max(barFraction * 100, 2)}%`,
-                      backgroundColor: barColor,
-                    },
-                  ]}
-                />
-              </View>
-              <Text
-                style={[styles.value, { color: theme.text.secondary }]}
-                numberOfLines={1}
-              >
-                {formatTenThousandths(row.costPerToken)}
-              </Text>
-            </View>
-          );
-        })}
-      </View>
-      <Text style={[styles.axisLabel, { color: theme.text.tertiary }]}>
-        ten-thousandths of a penny per token
-      </Text>
-    </View>
+    <BreakdownChart
+      data={chartData}
+      variant="horizontal-bar"
+      formatValue={formatTenThousandths}
+      xLabel="ten-thousandths of a penny per token"
+    />
   );
-});
-
-const styles = StyleSheet.create({
-  container: {
-    gap: 8,
-    justifyContent: "center",
-  },
-  bars: {
-    gap: 10,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  label: {
-    width: 60,
-    fontFamily: typography.tableBody.fontFamily,
-    fontSize: typography.tableBody.fontSize,
-    fontWeight: typography.tableBody.fontWeight,
-    lineHeight: typography.tableBody.lineHeight,
-  },
-  barTrack: {
-    flex: 1,
-    height: 20,
-    borderRadius: 4,
-    overflow: "hidden",
-    backgroundColor: "rgba(128,128,128,0.1)",
-  },
-  barFill: {
-    height: "100%",
-    borderRadius: 4,
-  },
-  value: {
-    flexShrink: 0,
-    minWidth: 28,
-    textAlign: "right",
-    fontFamily: typography.tableBody.fontFamily,
-    fontSize: typography.tableBody.fontSize,
-    fontWeight: typography.tableBody.fontWeight,
-    lineHeight: typography.tableBody.lineHeight,
-  },
-  axisLabel: {
-    textAlign: "right",
-    fontFamily: typography.label.fontFamily,
-    fontSize: typography.label.fontSize,
-    fontWeight: typography.label.fontWeight,
-    lineHeight: typography.label.lineHeight,
-  },
 });

@@ -3,6 +3,7 @@ import { render, fireEvent } from "@testing-library/react-native";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { modalSlice } from "@/store/slices/modalSlice";
+import { spacing } from "@/theme/tokens";
 
 function renderWithStore(ui: React.ReactElement) {
   const store = configureStore({
@@ -52,9 +53,13 @@ jest.mock("@/components/screen", () => {
   const React = require("react");
   const { View } = require("react-native");
   const { StyleSheet } = require("react-native");
+  const { spacing: tokenSpacing } = require("@/theme/tokens");
   return {
     ScreenWrapper: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
-    sectionStyles: StyleSheet.create({ section: { gap: 12 }, chartRow: { flexDirection: "row", gap: 16 } }),
+    sectionStyles: StyleSheet.create({
+      section: { gap: tokenSpacing[12] },
+      chartRow: { flexDirection: "row", gap: tokenSpacing[16] },
+    }),
   };
 });
 
@@ -73,11 +78,11 @@ jest.mock("@/components/dashboard", () => {
 
 jest.mock("@/components/buttons", () => {
   const React = require("react");
-  const { Pressable } = require("react-native");
+  const { Pressable, Text } = require("react-native");
   return {
-    CustomButton: ({ children, onPress, ...rest }: { children: React.ReactNode; onPress?: () => void; accessibilityRole?: string; accessibilityLabel?: string }) => (
+    CustomButton: ({ children, label, onPress, ...rest }: { children?: React.ReactNode; label?: string; onPress?: () => void; accessibilityRole?: string; accessibilityLabel?: string }) => (
       <Pressable onPress={onPress} accessibilityRole={rest.accessibilityRole} accessibilityLabel={rest.accessibilityLabel}>
-        {children}
+        {label ? <Text>{label}</Text> : children}
       </Pressable>
     ),
   };
@@ -138,10 +143,10 @@ describe("SettingsScreen", () => {
     expect(getByText("Auto-refresh")).toBeTruthy();
   });
 
-  it("renders Create Team button", () => {
-    const { getByText } = renderWithStore(<SettingsScreen />);
+  it("does not render Create Team button in settings", () => {
+    const { queryByText } = renderWithStore(<SettingsScreen />);
 
-    expect(getByText("+ Create Team")).toBeTruthy();
+    expect(queryByText("+ Create Team")).toBeNull();
   });
 
   it("renders Clear Cache button", () => {

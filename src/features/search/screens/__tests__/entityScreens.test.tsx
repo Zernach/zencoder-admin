@@ -23,13 +23,83 @@ jest.mock("@/components/dashboard", () => ({
 }));
 
 jest.mock("@/components/screen", () => ({
-  ScreenWrapper: ({ children }: { children: React.ReactNode }) => children,
+  ScreenWrapper: ({ children, headerProps }: { children: React.ReactNode; headerProps?: { title?: string; subtitle?: string } }) => {
+    const { Text, View } = require("react-native");
+    return (
+      <View>
+        {headerProps?.title && <Text>{headerProps.title}</Text>}
+        {headerProps?.subtitle && <Text>{headerProps.subtitle}</Text>}
+        {children}
+      </View>
+    );
+  },
   sectionStyles: {},
+}));
+
+jest.mock("@/components/tables", () => ({
+  DataTable: ({ data, emptyMessage }: { data: unknown[]; emptyMessage?: string }) => {
+    const { Text } = require("react-native");
+    if (data.length === 0) return <Text>{emptyMessage ?? "No data"}</Text>;
+    return <Text>DataTable ({data.length} rows)</Text>;
+  },
+}));
+
+jest.mock("@/components/tables/cellStyles", () => {
+  const base = { color: "#fff", fontSize: 12, fontWeight: "500" };
+  const styles = {
+    primary: base,
+    secondary: base,
+    brand: base,
+    link: base,
+    success: base,
+    warning: base,
+    error: base,
+  };
+  return {
+    cellText: () => styles,
+    getSuccessRateColor: () => "#00ca51",
+    chartColors: () => ({ success: "#0f0", warning: "#ff0", error: "#f00" }),
+  };
+});
+
+jest.mock("@/components/feedback/CustomSpinner", () => ({
+  CustomSpinner: () => {
+    const { View } = require("react-native");
+    return <View testID="spinner" />;
+  },
+}));
+
+jest.mock("expo-router", () => ({
+  useRouter: () => ({ push: jest.fn() }),
+  usePathname: () => "/agents",
+}));
+
+jest.mock("@/components/buttons", () => ({
+  CustomButton: ({ children, onPress }: { children: React.ReactNode; onPress?: () => void }) => {
+    const { Pressable } = require("react-native");
+    return <Pressable onPress={onPress}>{children}</Pressable>;
+  },
+}));
+
+jest.mock("@/constants/routes", () => ({
+  buildEntityRoute: (tab: string, type: string, id: string) => `/${tab}/${type}/${id}`,
+  resolveTabFromPathname: (p: string) => p.replace("/", ""),
+}));
+
+jest.mock("@/store/api", () => ({
+  useUpdateAgentDescriptionMutation: () => [jest.fn(), { isLoading: false }],
+}));
+
+jest.mock("@/components/inputs/CustomTextInput", () => ({
+  CustomTextInput: ({ value, onChangeText, ...props }: { value: string; onChangeText: (v: string) => void; placeholder?: string; accessibilityLabel?: string }) => {
+    const { TextInput } = require("react-native");
+    return <TextInput value={value} onChangeText={onChangeText} {...props} />;
+  },
 }));
 
 const mockAgentData = {
   data: {
-    agent: { id: "a1", name: "Test Agent", projectId: "p1" },
+    agent: { id: "a1", name: "Test Agent", projectId: "p1", description: "Classifies incoming tickets" },
     projectName: "Test Project",
     teamName: "Test Team",
     totalRuns: 42,
@@ -37,6 +107,7 @@ const mockAgentData = {
     avgDurationMs: 5000,
     totalCostUsd: 123.45,
     recentRuns: [],
+    userMap: {},
   },
   loading: false,
   error: undefined,
@@ -133,6 +204,8 @@ describe("Entity detail screens", () => {
     expect(getByText("Test Agent")).toBeTruthy();
     expect(getByText("42")).toBeTruthy();
     expect(getByText("$123.45")).toBeTruthy();
+    expect(getByText("Classifies incoming tickets")).toBeTruthy();
+    expect(getByText("Prompt Description")).toBeTruthy();
   });
 
   it("ProjectDetailScreen renders project data", () => {
@@ -156,6 +229,5 @@ describe("Entity detail screens", () => {
   it("RunDetailScreen renders run data", () => {
     const { getByText } = render(<RunDetailScreen runId="r1" />);
     expect(getByText("Run r1")).toBeTruthy();
-    expect(getByText("succeeded")).toBeTruthy();
   });
 });

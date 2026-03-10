@@ -15,6 +15,7 @@ import { SearchAutocompletePanel } from "@/components/search";
 import { buildEntityRoute } from "@/constants/routes";
 import { isIos } from "@/constants";
 import { useAppSelector, selectMostRecentTab } from "@/store";
+import { spacing, radius } from "@/theme/tokens";
 
 type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
 
@@ -153,10 +154,7 @@ export const TopBar = React.memo(function TopBar() {
     ],
     [theme.bg.surface, theme.border.brand, theme.border.default, hasQuery],
   );
-  const presetBtnStyle = useMemo(
-    () => [styles.presetBtn, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }],
-    [theme.bg.surface, theme.border.default],
-  );
+  const presetBtnStyle = useMemo(() => [styles.presetBtn], []);
 
   return (
     <View style={containerStyle}>
@@ -178,6 +176,8 @@ export const TopBar = React.memo(function TopBar() {
             <CustomButton
               onPress={handleClearSearch}
               hitSlop={8}
+              buttonMode="ghost"
+              buttonSize="iconSm"
               accessibilityRole="button"
               accessibilityLabel="Clear search"
               style={styles.clearButton}
@@ -198,6 +198,7 @@ export const TopBar = React.memo(function TopBar() {
       <View style={styles.right}>
         <CustomButton
           style={presetBtnStyle}
+          buttonMode="surface"
           accessibilityRole="button"
           accessibilityLabel="Open time range selector"
           onPress={openTimeRangeOverlay}
@@ -230,6 +231,8 @@ export const TopBar = React.memo(function TopBar() {
               <CustomButton
                 onPress={closeTimeRangeOverlay}
                 hitSlop={8}
+                buttonMode="ghost"
+                buttonSize="iconSm"
                 accessibilityRole="button"
                 accessibilityLabel="Close overlay"
               >
@@ -279,7 +282,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing[16],
     borderBottomWidth: 1,
     overflow: "visible",
     zIndex: 200,
@@ -288,7 +291,7 @@ const styles = StyleSheet.create({
   left: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: spacing[12],
     flex: 1,
     overflow: "visible",
     zIndex: 201,
@@ -296,18 +299,18 @@ const styles = StyleSheet.create({
   right: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginLeft: 12,
+    gap: spacing[8],
+    marginLeft: spacing[12],
   },
   searchContainer: {
     position: "relative",
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing[8],
     height: CONTROL_HEIGHT,
-    borderRadius: 8,
+    borderRadius: radius.md,
     paddingHorizontal: CONTROL_HORIZONTAL_PADDING,
-    paddingVertical: 0,
+    paddingVertical: spacing[0],
     flex: 1,
     maxWidth: 400,
     borderWidth: 1,
@@ -319,15 +322,15 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: CONTROL_TEXT_SIZE,
     minHeight: 0,
-    paddingTop: 0,
-    paddingBottom: 0,
-    paddingVertical: 0,
-    paddingHorizontal: 0,
-    marginVertical: 0,
+    paddingTop: spacing[0],
+    paddingBottom: spacing[0],
+    paddingVertical: spacing[0],
+    paddingHorizontal: spacing[0],
+    marginVertical: spacing[0],
   },
   searchInputIos: {
-    paddingTop: 0,
-    paddingBottom: 0,
+    paddingTop: spacing[0],
+    paddingBottom: spacing[0],
   },
   searchInputWrapper: {
     flex: 1,
@@ -335,17 +338,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   clearButton: {
-    padding: 2,
+    marginRight: -spacing[32],
   },
   presetBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: spacing[6],
     height: CONTROL_HEIGHT,
     paddingHorizontal: CONTROL_HORIZONTAL_PADDING,
-    paddingVertical: 0,
-    borderRadius: 6,
-    borderWidth: 1,
+    paddingVertical: spacing[0],
   },
   presetText: {
     fontSize: CONTROL_TEXT_SIZE,
@@ -354,17 +355,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing[20],
   },
   overlayPanel: {
     width: 320,
     maxWidth: "100%",
-    borderRadius: 14,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingTop: 14,
-    paddingBottom: 12,
-    gap: 12,
+    paddingHorizontal: spacing[12],
+    paddingTop: spacing[12],
+    paddingBottom: spacing[12],
+    gap: spacing[12],
   },
   overlayHeader: {
     flexDirection: "row",
@@ -376,13 +377,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   overlayOptions: {
-    gap: 8,
+    gap: spacing[8],
   },
   overlayOptionButton: {
-    borderRadius: 10,
+    borderRadius: radius.md,
     borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[12],
   },
   overlayOptionText: {
     fontSize: 14,

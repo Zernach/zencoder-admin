@@ -66,7 +66,13 @@
 | ✅ | [0058](./0058-remove-react-query-update-tests.md) | Remove React Query — Update Providers & Test Infrastructure | Redux |
 | ✅ | [0059](./0059-cost-by-provider-split-pie-and-token-bar.md) | Costs: Split "Cost by Provider" into Pie + Cost per Token Bar | Screens |
 | ✅ | [0060](./0060-settings-screen-visual-refresh-and-demo-sign-out.md) | Settings: Visual Refresh + Demo Sign Out Notice | Screens |
+| ✅ | [0061](./0061-datatable-entity-links-navigation-and-link-style.md) | DataTable Entity Links: Human/Team/Project/Run Navigation + Unified Link Style | Components |
+| ✅ | [0062](./0062-governance-team-performance-and-create-team-relocation.md) | Governance Team Performance Table + Create Team Relocation | Governance |
+| ✅ | [0063](./0063-bar-charts-orange-value-intensity-palette.md) | Bar Charts: Orange Value-Intensity Palette | Polish |
+| ✅ | [0064](./0064-trend-chart-line-candlestick-toggle.md) | Trend Charts: Line/Candlestick (Diffs) Toggle | Components |
+| ✅ | [0065](./0065-governance-seat-usage-hover-tooltip-and-table-removal.md) | Governance Seat Usage: Hover Tooltip Details + Table Removal | Governance |
+| ✅ | [0066](./0066-chart-primitives-dry-refactor.md) | Chart Primitives DRY Refactor: Bar, Line/Candlestick, Pie | Components |
 
 ---
 
-**Progress: 60 / 60**
+**Progress: 66 / 66**

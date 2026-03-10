@@ -25,8 +25,17 @@ import type {
   CreateProjectResponse,
   CreateTeamRequest,
   CreateTeamResponse,
+  CreateAgentRequest,
+  CreateAgentResponse,
+  UpdateAgentDescriptionRequest,
+  UpdateAgentDescriptionResponse,
 } from "@/features/analytics/types";
 import { round1, round2 } from "../utils/metricFormulas";
+
+function roundRate(value: number): number {
+  // Keep enough precision on 0..1 ratios so percent displays remain varied.
+  return Math.round(value * 1000) / 1000;
+}
 
 export class AnalyticsService implements IAnalyticsService {
   constructor(private api: IAnalyticsApi) {}
@@ -89,6 +98,11 @@ export class AnalyticsService implements IAnalyticsService {
   async getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse> {
     const res = await this.api.getGovernance(filters);
     res.policyViolationRate = round1(res.policyViolationRate);
+    for (const row of res.teamPerformanceComparison) {
+      row.successRate = roundRate(row.successRate);
+      row.policyViolationRate = round1(row.policyViolationRate);
+      row.totalCostUsd = round2(row.totalCostUsd);
+    }
     return res;
   }
 
@@ -101,7 +115,7 @@ export class AnalyticsService implements IAnalyticsService {
     for (const row of res.projectBreakdown) {
       row.totalCostUsd = round2(row.totalCostUsd);
       row.avgCostPerRunUsd = round2(row.avgCostPerRunUsd);
-      row.successRate = round1(row.successRate);
+      row.successRate = roundRate(row.successRate);
     }
     return res;
   }
@@ -148,5 +162,13 @@ export class AnalyticsService implements IAnalyticsService {
 
   async createTeam(request: CreateTeamRequest): Promise<CreateTeamResponse> {
     return this.api.createTeam(request);
+  }
+
+  async createAgent(request: CreateAgentRequest): Promise<CreateAgentResponse> {
+    return this.api.createAgent(request);
+  }
+
+  async updateAgentDescription(request: UpdateAgentDescriptionRequest): Promise<UpdateAgentDescriptionResponse> {
+    return this.api.updateAgentDescription(request);
   }
 }

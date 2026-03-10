@@ -3,6 +3,7 @@ import { CustomButton } from "@/components/buttons";
 import type { SearchSuggestion, SearchSuggestionGroup } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 interface SearchSuggestionSectionProps {
   group: SearchSuggestionGroup;
@@ -43,21 +44,21 @@ export function SearchSuggestionSection({ group, onSelect }: SearchSuggestionSec
 
 const styles = StyleSheet.create({
   section: {
-    gap: 2,
+    gap: spacing[2],
   },
   sectionTitle: {
     fontSize: 11,
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[6],
   },
   row: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-    marginHorizontal: 4,
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[8],
+    borderRadius: radius.sm,
+    marginHorizontal: spacing[4],
   },
   title: {
     fontSize: 13,
@@ -65,6 +66,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 11,
-    marginTop: 2,
+    marginTop: spacing[2],
   },
 });

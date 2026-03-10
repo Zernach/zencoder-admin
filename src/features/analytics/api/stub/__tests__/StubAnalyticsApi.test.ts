@@ -23,6 +23,43 @@ const defaultFilters: AnalyticsFilters = {
   timeRange: timeRangeFromRuns(seedData.runs),
 };
 
+function hasHighAndLowSpikes(trend: { value: number }[]): { hasHighSpike: boolean; hasLowSpike: boolean } {
+  if (trend.length < 5) return { hasHighSpike: false, hasLowSpike: false };
+  const values = trend.map((point) => point.value);
+  const hasHighSpike = values.slice(1, -1).some((value, index) => {
+    const i = index + 1;
+    const neighborMax = Math.max(values[i - 1]!, values[i + 1]!);
+    return value > neighborMax * 1.18;
+  });
+  const hasLowSpike = values.slice(1, -1).some((value, index) => {
+    const i = index + 1;
+    const neighborMin = Math.min(values[i - 1]!, values[i + 1]!);
+    if (neighborMin <= 0) {
+      return value <= 0 && Math.max(values[i - 1]!, values[i + 1]!) > 0;
+    }
+    return value < neighborMin * 0.82;
+  });
+  return { hasHighSpike, hasLowSpike };
+}
+
+function hasNotableIntegerPeakAndDip(
+  trend: { value: number }[],
+): { hasPeak: boolean; hasDip: boolean } {
+  if (trend.length < 5) return { hasPeak: false, hasDip: false };
+  const values = trend.map((point) => point.value);
+  const hasPeak = values.slice(1, -1).some((value, index) => {
+    const i = index + 1;
+    const neighborMax = Math.max(values[i - 1]!, values[i + 1]!);
+    return value >= neighborMax + 1 || value >= neighborMax * 1.12;
+  });
+  const hasDip = values.slice(1, -1).some((value, index) => {
+    const i = index + 1;
+    const neighborMin = Math.min(values[i - 1]!, values[i + 1]!);
+    return value <= neighborMin - 1 || value <= neighborMin * 0.88;
+  });
+  return { hasPeak, hasDip };
+}
+
 // ── Response type conformance ────────────────────────────
 
 describe("getOverview", () => {
@@ -58,6 +95,36 @@ describe("getOverview", () => {
     assertGenerallyIncreasing(res.costTrend);
   });
 
+  it("runs and cost trends are not identical in shape", async () => {
+    const res = await api.getOverview(defaultFilters);
+    expect(res.runsTrend.length).toBe(res.costTrend.length);
+
+    const normalize = (trend: { value: number }[]): number[] => {
+      const values = trend.map((point) => point.value);
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const range = Math.max(max - min, 1);
+      return values.map((value) => (value - min) / range);
+    };
+
+    const runsNormalized = normalize(res.runsTrend);
+    const costNormalized = normalize(res.costTrend);
+    const avgAbsoluteDelta =
+      runsNormalized.reduce(
+        (sum, value, index) => sum + Math.abs(value - costNormalized[index]!),
+        0,
+      ) / runsNormalized.length;
+
+    expect(avgAbsoluteDelta).toBeGreaterThan(0.03);
+  });
+
+  it("runs trend includes one high spike and one low spike", async () => {
+    const res = await api.getOverview(defaultFilters);
+    const spikes = hasHighAndLowSpikes(res.runsTrend);
+    expect(spikes.hasHighSpike).toBe(true);
+    expect(spikes.hasLowSpike).toBe(true);
+  });
+
   it("anomalies have valid fields", async () => {
     const res = await api.getOverview(defaultFilters);
     for (const a of res.anomalies) {
@@ -80,6 +147,8 @@ describe("getLiveAgentSessions", () => {
       expect(typeof session.runId).toBe("string");
       expect(typeof session.agentName).toBe("string");
       expect(typeof session.projectName).toBe("string");
+      expect(typeof session.teamId).toBe("string");
+      expect(typeof session.teamName).toBe("string");
       expect(typeof session.userName).toBe("string");
       expect(typeof session.currentTask).toBe("string");
     }
@@ -115,6 +184,13 @@ describe("getUsage", () => {
     expect(avg(secondHalf)).toBeGreaterThanOrEqual(avg(firstHalf) - 1);
     expect(trend[trend.length - 1]!.value).toBeGreaterThanOrEqual(trend[0]!.value - 1);
   });
+
+  it("active users trend includes one high spike and one low spike", async () => {
+    const res = await api.getUsage(defaultFilters);
+    const spikes = hasNotableIntegerPeakAndDip(res.activeUsersTrend);
+    expect(spikes.hasPeak).toBe(true);
+    expect(spikes.hasDip).toBe(true);
+  });
 });
 
 describe("getOutcomes", () => {
@@ -145,6 +221,13 @@ describe("getOutcomes", () => {
 
     expect(avg(secondHalf)).toBeGreaterThan(avg(firstHalf));
     expect(trend[trend.length - 1]!.value).toBeGreaterThanOrEqual(trend[0]!.value);
+  });
+
+  it("outcomes trend includes one high spike and one low spike", async () => {
+    const res = await api.getOutcomes(defaultFilters);
+    const spikes = hasHighAndLowSpikes(res.outcomesTrend);
+    expect(spikes.hasHighSpike).toBe(true);
+    expect(spikes.hasLowSpike).toBe(true);
   });
 });
 
@@ -212,6 +295,21 @@ describe("getReliability", () => {
     const res = await api.getReliability(defaultFilters);
     expect(res.p95RunDurationMs).toBeGreaterThanOrEqual(res.p50RunDurationMs);
   });
+
+  it("reliability trend generally slopes upward", async () => {
+    const res = await api.getReliability(defaultFilters);
+    const trend = res.reliabilityTrend;
+    expect(trend.length).toBeGreaterThan(10);
+
+    const values = trend.map((point) => point.value);
+    const midpoint = Math.floor(values.length / 2);
+    const firstHalfAvg =
+      values.slice(0, midpoint).reduce((sum, value) => sum + value, 0) / midpoint;
+    const secondHalfAvg =
+      values.slice(midpoint).reduce((sum, value) => sum + value, 0) / (values.length - midpoint);
+
+    expect(secondHalfAvg).toBeGreaterThan(firstHalfAvg);
+  });
 });
 
 describe("getGovernance", () => {
@@ -227,6 +325,7 @@ describe("getGovernance", () => {
     expect(Array.isArray(res.complianceItems)).toBe(true);
     expect(Array.isArray(res.policyChanges)).toBe(true);
     expect(Array.isArray(res.seatUserUsage)).toBe(true);
+    expect(Array.isArray(res.teamPerformanceComparison)).toBe(true);
   });
 
   it("recentViolations sorted by timestampIso descending with deterministic ties", async () => {
@@ -271,7 +370,7 @@ describe("getGovernance", () => {
     }
   });
 
-  it("returns seat usage rows with full names sorted by usage", async () => {
+  it("returns seat usage rows with full names sorted by usage and valid teamId", async () => {
     const res = await api.getGovernance(defaultFilters);
     expect(res.seatUserUsage.length).toBeGreaterThan(0);
 
@@ -280,12 +379,33 @@ describe("getGovernance", () => {
     expect(typeof first.runsCount).toBe("number");
     expect(typeof first.totalTokens).toBe("number");
     expect(typeof first.totalCostUsd).toBe("number");
+    expect(typeof first.teamId).toBe("string");
+    expect(first.teamId.length).toBeGreaterThan(0);
 
     for (let i = 1; i < res.seatUserUsage.length; i++) {
       expect(res.seatUserUsage[i - 1]!.runsCount).toBeGreaterThanOrEqual(
         res.seatUserUsage[i]!.runsCount
       );
     }
+
+    for (const row of res.seatUserUsage) {
+      expect(typeof row.teamId).toBe("string");
+      expect(row.teamId.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("returns team performance rows with compare/contrast metrics", async () => {
+    const res = await api.getGovernance(defaultFilters);
+    expect(res.teamPerformanceComparison.length).toBeGreaterThan(0);
+
+    const row = res.teamPerformanceComparison[0]!;
+    expect(typeof row.teamId).toBe("string");
+    expect(typeof row.teamName).toBe("string");
+    expect(typeof row.runsCount).toBe("number");
+    expect(typeof row.successRate).toBe("number");
+    expect(typeof row.policyViolationCount).toBe("number");
+    expect(typeof row.policyViolationRate).toBe("number");
+    expect(typeof row.totalCostUsd).toBe("number");
   });
 });
 
@@ -317,15 +437,26 @@ describe("getAgentsHub", () => {
     }
   });
 
-  it("project breakdown rows have valid fields", async () => {
+  it("project breakdown rows have valid fields including teamId", async () => {
     const res = await api.getAgentsHub(defaultFilters);
     const row = res.projectBreakdown[0]!;
     expect(typeof row.projectId).toBe("string");
     expect(typeof row.projectName).toBe("string");
+    expect(typeof row.teamId).toBe("string");
+    expect(row.teamId.length).toBeGreaterThan(0);
     expect(typeof row.teamName).toBe("string");
     expect(typeof row.totalRuns).toBe("number");
     expect(typeof row.successRate).toBe("number");
     expect(typeof row.agentCount).toBe("number");
+  });
+
+  it("agent breakdown rows have valid projectId", async () => {
+    const res = await api.getAgentsHub(defaultFilters);
+    expect(res.agentBreakdown.length).toBeGreaterThan(0);
+    for (const row of res.agentBreakdown) {
+      expect(typeof row.projectId).toBe("string");
+      expect(row.projectId.length).toBeGreaterThan(0);
+    }
   });
 });
 

@@ -35,7 +35,7 @@ export interface KeyValueMetric  { key: string;   value: number; }
 export interface Team    { id: string; name: string; }
 export interface User    { id: string; name: string; email: string; teamId: string; }
 export interface Project { id: string; name: string; teamId: string; }
-export interface Agent   { id: string; name: string; projectId: string; }
+export interface Agent   { id: string; name: string; projectId: string; description: string; }
 
 // ─── Run Types ──────────────────────────────────────────
 export interface RunListRow {
@@ -79,6 +79,8 @@ export interface LiveAgentSession {
   agentId: string;
   agentName: string;
   projectName: string;
+  teamId: string;
+  teamName: string;
   userName: string;
   status: LiveAgentSessionStatus;
   startedAtIso: string;
@@ -88,13 +90,13 @@ export interface LiveAgentSession {
 
 // ─── Agent & Project Breakdown ──────────────────────────
 export interface AgentBreakdownRow {
-  agentId: string; agentName: string; projectName: string;
+  agentId: string; agentName: string; projectId: string; projectName: string;
   totalRuns: number; successRate: number;
   avgDurationMs: number; totalCostUsd: number;
 }
 
 export interface ProjectBreakdownRow {
-  projectId: string; projectName: string; teamName: string;
+  projectId: string; projectName: string; teamId: string; teamName: string;
   totalRuns: number; successRate: number;
   totalCostUsd: number; avgCostPerRunUsd: number;
   agentCount: number;
@@ -129,7 +131,7 @@ export interface BudgetSummary {
 
 export interface PolicyChangeEvent {
   id: string; actorUserId: string; actorName: string; action: string;
-  timestampIso: string; target: string;
+  timestampIso: string; targetTeamId: string; target: string;
 }
 
 export interface PolicyViolationRow {
@@ -149,9 +151,20 @@ export interface ComplianceItem {
 export interface SeatUserUsageRow {
   userId: string;
   fullName: string;
+  teamId: string;
   teamName: string;
   runsCount: number;
   totalTokens: number;
+  totalCostUsd: number;
+}
+
+export interface TeamPerformanceComparisonRow {
+  teamId: string;
+  teamName: string;
+  runsCount: number;
+  successRate: number;
+  policyViolationCount: number;
+  policyViolationRate: number;
   totalCostUsd: number;
 }
 
@@ -249,6 +262,7 @@ export interface GovernanceResponse {
   complianceItems: ComplianceItem[];
   policyChanges: PolicyChangeEvent[];
   seatUserUsage: SeatUserUsageRow[];
+  teamPerformanceComparison: TeamPerformanceComparisonRow[];
 }
 
 
@@ -288,6 +302,8 @@ export interface AgentDetailResponse {
   avgDurationMs: number;
   totalCostUsd: number;
   recentRuns: RunListRow[];
+  /** Maps userId → display name for users referenced in recentRuns */
+  userMap: Record<string, string>;
 }
 
 export interface ProjectDetailResponse {
@@ -373,6 +389,25 @@ export interface CreateTeamRequest {
 export interface CreateTeamResponse {
   team: Team;
   createdAtIso: string;
+}
+
+export interface CreateAgentRequest {
+  name: string;
+  projectId: string;
+}
+
+export interface CreateAgentResponse {
+  agent: Agent;
+  createdAtIso: string;
+}
+
+export interface UpdateAgentDescriptionRequest {
+  agentId: string;
+  description: string;
+}
+
+export interface UpdateAgentDescriptionResponse {
+  agent: Agent;
 }
 
 // ─── Seed Data Container ────────────────────────────────

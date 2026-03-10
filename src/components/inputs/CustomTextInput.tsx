@@ -90,7 +90,7 @@ CustomTextInput.displayName = "CustomTextInput";
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing[2],
+    gap: spacing[8],
   },
   label: {
     fontSize: fontSizes.sm,
@@ -100,12 +100,12 @@ const styles = StyleSheet.create({
     borderWidth: borderWidth.hairline,
     borderRadius: radius.sm,
     minHeight: 42,
-    paddingHorizontal: spacing[3],
+    paddingHorizontal: spacing[12],
     justifyContent: "center",
   },
   input: {
     fontSize: fontSizes.md,
-    paddingVertical: 0,
+    paddingVertical: spacing[0],
   },
   webFocusOutlineReset: {
     outlineColor: "transparent",

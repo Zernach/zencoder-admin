@@ -20,12 +20,13 @@ describe("Sidebar Subsection Navigation — contract", () => {
     expect(costSubs.map((s) => s.id)).toEqual(expectedIds);
   });
 
-  it("governance subsections exactly match required six entries in order", () => {
+  it("governance subsections exactly match required entries in order", () => {
     const govSubs = SUBSECTIONS[ROUTES.GOVERNANCE];
-    expect(govSubs.length).toBe(6);
+    expect(govSubs.length).toBe(7);
     expect(govSubs.map((s) => s.id)).toEqual([
       "overview",
       "compliance-status",
+      "team-performance",
       "seat-user-oversight",
       "recent-violations",
       "security-events",
@@ -34,6 +35,7 @@ describe("Sidebar Subsection Navigation — contract", () => {
     expect(govSubs.map((s) => s.label)).toEqual([
       "Overview",
       "Compliance Status",
+      "Team Performance",
       "Seat User Oversight",
       "Recent Violations",
       "Security Events",
@@ -189,19 +191,20 @@ describe("Sidebar subsection press → scrollToSection integration", () => {
   }
 });
 
-// ─── Governance-specific: six required subsection labels and order ──
+// ─── Governance-specific: required subsection labels and order ──
 
 describe("Governance subsection order and labels (strict)", () => {
   const REQUIRED_GOVERNANCE_SUBSECTIONS = [
     { id: "overview", label: "Overview" },
     { id: "compliance-status", label: "Compliance Status" },
+    { id: "team-performance", label: "Team Performance" },
     { id: "seat-user-oversight", label: "Seat User Oversight" },
     { id: "recent-violations", label: "Recent Violations" },
     { id: "security-events", label: "Security Events" },
     { id: "policy-changes", label: "Policy Changes" },
   ];
 
-  it("governance has exactly six subsections in the required order", () => {
+  it("governance has exactly the required subsections in order", () => {
     const govSubs = SUBSECTIONS[ROUTES.GOVERNANCE];
     expect(govSubs).toEqual(REQUIRED_GOVERNANCE_SUBSECTIONS);
   });
@@ -216,7 +219,7 @@ describe("Governance subsection order and labels (strict)", () => {
     );
 
     const buttons = getAllByRole("button");
-    expect(buttons.length).toBe(6);
+    expect(buttons.length).toBe(7);
     REQUIRED_GOVERNANCE_SUBSECTIONS.forEach((sub, i) => {
       expect(buttons[i]).toHaveProp("accessibilityLabel", sub.label);
     });

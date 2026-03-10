@@ -24,6 +24,7 @@ export function buildAgentBreakdown(
       return {
         agentId: agent.id,
         agentName: agent.name,
+        projectId: agent.projectId,
         projectName: project?.name ?? agent.projectId,
         totalRuns: agentRuns.length,
         successRate: safeRate(countSucceeded(agentRuns), agentRuns.length),
@@ -57,6 +58,7 @@ export function buildProjectBreakdown(
       return {
         projectId: project.id,
         projectName: project.name,
+        teamId: project.teamId,
         teamName: team?.name ?? project.teamId,
         totalRuns: projRuns.length,
         successRate: safeRate(countSucceeded(projRuns), projRuns.length),

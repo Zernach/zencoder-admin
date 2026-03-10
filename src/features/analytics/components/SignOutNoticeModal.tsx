@@ -47,12 +47,13 @@ export const SignOutNoticeModal = React.memo(function SignOutNoticeModal() {
           <Text style={[styles.noticeText, { color: theme.text.secondary }]}>{DEMO_SIGN_OUT_MESSAGE}</Text>
           <CustomButton
             onPress={handleClose}
-            style={[styles.dismissBtn, { backgroundColor: theme.border.brand }]}
+            style={styles.dismissBtn}
+            buttonMode="primary"
+            buttonSize="md"
+            label="Dismiss"
             accessibilityRole="button"
             accessibilityLabel="Dismiss sign out notice"
-          >
-            <Text style={[styles.dismissText, { color: theme.text.onBrand }]}>Dismiss</Text>
-          </CustomButton>
+          />
         </View>
       </View>
     </Modal>
@@ -64,13 +65,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing[20],
   },
   signOutNoticePanel: {
     borderRadius: radius.lg,
     borderWidth: 1,
-    padding: spacing[5],
-    gap: spacing[3],
+    padding: spacing[20],
+    gap: spacing[12],
     width: 380,
     maxWidth: "100%",
     alignItems: "center",
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
   noticeIconCircle: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: radius.full,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -94,13 +95,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   dismissBtn: {
-    borderRadius: radius.sm,
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    marginTop: spacing[1],
-  },
-  dismissText: {
-    fontSize: 13,
-    fontWeight: "600",
+    marginTop: spacing[4],
+    alignSelf: "stretch",
+    paddingVertical: spacing[12],
   },
 });

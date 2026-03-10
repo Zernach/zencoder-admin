@@ -5,6 +5,7 @@ import type { SearchSuggestionsResponse, SearchSuggestion } from "@/features/ana
 import { SearchSuggestionSection } from "./SearchSuggestionSection";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 interface SearchAutocompletePanelProps {
   suggestions: SearchSuggestionsResponse | null;
@@ -88,20 +89,20 @@ const styles = StyleSheet.create({
     right: 0,
     maxWidth: 400,
     maxHeight: 360,
-    borderRadius: 10,
+    borderRadius: radius.md,
     borderWidth: 1,
-    marginTop: 4,
+    marginTop: spacing[4],
     zIndex: 99,
     boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
     elevation: 8,
   },
   scroll: {
-    paddingVertical: 6,
+    paddingVertical: spacing[6],
   },
   stateText: {
     fontSize: 13,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[12],
     textAlign: "center",
   },
 });

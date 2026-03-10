@@ -1,22 +1,9 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Animated as RNAnimated,
-  Easing,
-  StyleSheet,
-  Text,
-  View,
-  type ListRenderItemInfo,
-} from "react-native";
+import { Animated as RNAnimated, Easing, Pressable, StyleSheet, Text, View, type ListRenderItemInfo, } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { Check } from "lucide-react-native";
 import Reanimated, {
-  Easing as ReanimatedEasing,
-  cancelAnimation,
-  useAnimatedProps,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
+  Easing as ReanimatedEasing, cancelAnimation, useAnimatedProps, useAnimatedStyle, useSharedValue, withRepeat, withTiming,
 } from "react-native-reanimated";
 import type { LiveAgentSession } from "@/features/analytics/types";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -29,16 +16,7 @@ import { CustomList } from "@/components/lists";
 import { ErrorState } from "./ErrorState";
 import { SectionHeader } from "./SectionHeader";
 
-const AVATAR_COLORS = [
-  "#f64a00",
-  "#f59e0b",
-  "#06b6d4",
-  "#84cc16",
-  "#f97316",
-  "#14b8a6",
-  "#8b5cf6",
-  "#ec4899",
-] as const;
+
 
 const EMPTY_STATE_MESSAGES = [
   "Agents are resting right now.",
@@ -67,6 +45,7 @@ interface LiveAssistantsSectionProps {
   loading: boolean;
   error?: string;
   onRetry?: () => void;
+  onCardPress?: (agentId: string) => void;
 }
 
 interface SessionCardState {
@@ -164,17 +143,17 @@ function LiveBadge({ reducedMotion, theme }: { reducedMotion: boolean; theme: Th
     opacity: reducedMotion
       ? 0
       : pulse.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0.5, 0],
-        }),
+        inputRange: [0, 1],
+        outputRange: [0.5, 0],
+      }),
     transform: [
       {
         scale: reducedMotion
           ? 1
           : pulse.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 1.7],
-            }),
+            inputRange: [0, 1],
+            outputRange: [1, 1.7],
+          }),
       },
     ],
   };
@@ -299,7 +278,7 @@ const SessionProgressIndicator = memo(function SessionProgressIndicator({
             cx={INDICATOR_SIZE / 2}
             cy={INDICATOR_SIZE / 2}
             r={INDICATOR_RADIUS}
-            stroke={completed ? theme.state.success : color}
+            stroke={color}
             strokeWidth={INDICATOR_STROKE}
             fill="none"
             strokeLinecap="round"
@@ -321,24 +300,42 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
   card,
   reducedMotion,
   theme,
+  onPress,
 }: {
   card: SessionCardState;
   reducedMotion: boolean;
   theme: ThemeColors;
+  onPress?: () => void;
 }) {
-  const avatarColor = AVATAR_COLORS[hashString(card.session.agentId) % AVATAR_COLORS.length]!;
+  const statusColor =
+    card.phase === "completed"
+      ? theme.state.success
+      : card.session.status === "queued"
+        ? theme.text.tertiary
+        : theme.border.brand;
+  const statusLabelColor =
+    card.session.status === "queued" && card.phase !== "completed"
+      ? '#aaa'
+      : statusColor;
   const elapsedClock = formatElapsedClock(card.session.startedAtIso);
   const statusLabel =
     card.phase === "completed"
-      ? "Completed"
+      ? "Succeeded"
       : card.session.status === "queued"
         ? "Queued"
         : "Running";
 
   return (
-    <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle },
+        pressed && { opacity: 0.7 },
+      ]}
+    >
       <View style={styles.topRow}>
-        <View style={[styles.avatar, { backgroundColor: avatarColor }]}>
+        <View style={[styles.avatar, { backgroundColor: statusColor }]}>
           <Text style={[styles.avatarInitial, { color: theme.text.onBrand }]}>{firstInitial(card.session.agentName)}</Text>
         </View>
         <View style={styles.titleWrap}>
@@ -351,7 +348,7 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
         </View>
         <SessionProgressIndicator
           progress={card.progress}
-          color={avatarColor}
+          color={statusColor}
           completed={card.phase === "completed"}
           reducedMotion={reducedMotion}
           theme={theme}
@@ -361,14 +358,14 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
         {card.session.currentTask}
       </Text>
       <View style={styles.metaRow}>
-        <Text style={[styles.meta, { color: theme.state.success }]} numberOfLines={1}>
+        <Text style={[styles.meta, { color: statusLabelColor }]} numberOfLines={1}>
           {statusLabel}
           <Text style={{ color: theme.text.tertiary }}> by </Text>
           <Text style={{ color: theme.text.tertiary, fontWeight: "500" }}>{card.session.userName}</Text>
         </Text>
         <Text style={[styles.elapsedTime, { color: theme.text.secondary }]}>{elapsedClock}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 });
 
@@ -389,6 +386,7 @@ export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
   loading,
   error,
   onRetry,
+  onCardPress,
 }: LiveAssistantsSectionProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -490,13 +488,19 @@ export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
       return (
         <View style={styles.column}>
           {item.rows.map((card) => (
-            <LiveAssistantCard key={card.session.sessionId} card={card} reducedMotion={reducedMotion} theme={theme} />
+            <LiveAssistantCard
+              key={card.session.sessionId}
+              card={card}
+              reducedMotion={reducedMotion}
+              theme={theme}
+              onPress={onCardPress ? () => onCardPress(card.session.agentId) : undefined}
+            />
           ))}
           {item.rows.length < ROWS_PER_COLUMN ? <View style={styles.cardSpacer} /> : null}
         </View>
       );
     },
-    [reducedMotion, theme],
+    [reducedMotion, theme, onCardPress],
   );
   const renderColumnSeparator = useCallback(
     () => <View style={styles.columnGap} />,
@@ -539,14 +543,14 @@ export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
 
 const styles = StyleSheet.create({
   section: {
-    gap: spacing[3],
+    gap: spacing[12],
   },
   liveBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing[2],
-    paddingHorizontal: spacing[2],
-    paddingVertical: spacing[1],
+    gap: spacing[8],
+    paddingHorizontal: spacing[8],
+    paddingVertical: spacing[4],
     borderRadius: radius.full,
     borderWidth: 1,
   },
@@ -573,22 +577,22 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   listContent: {
-    paddingVertical: 2,
+    paddingVertical: spacing[2],
   },
   column: {
     width: 240,
-    gap: spacing[3],
+    gap: spacing[12],
   },
   columnGap: {
-    width: spacing[3],
+    width: spacing[16],
   },
   card: {
     minHeight: 108,
     borderWidth: 1,
     borderRadius: radius.md,
-    padding: spacing[3],
+    padding: spacing[12],
     justifyContent: "space-between",
-    gap: spacing[2],
+    gap: spacing[8],
   },
   cardSpacer: {
     minHeight: 108,
@@ -596,7 +600,7 @@ const styles = StyleSheet.create({
   topRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing[2],
+    gap: spacing[8],
   },
   avatar: {
     width: 36,
@@ -611,7 +615,7 @@ const styles = StyleSheet.create({
   },
   titleWrap: {
     flex: 1,
-    gap: 1,
+    gap: spacing[0],
   },
   agentName: {
     fontSize: 14,
@@ -640,9 +644,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: "dashed",
     borderRadius: radius.md,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[5],
-    gap: spacing[1],
+    paddingHorizontal: spacing[16],
+    paddingVertical: spacing[20],
+    gap: spacing[4],
     alignItems: "center",
   },
   emptyTitle: {
@@ -656,7 +660,7 @@ const styles = StyleSheet.create({
   },
   placeholderWrap: {
     flexDirection: "row",
-    gap: spacing[3],
+    gap: spacing[12],
   },
   placeholderCard: {
     width: 240,

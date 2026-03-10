@@ -1,13 +1,13 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import Svg, { Path } from "react-native-svg";
-import { arc, pie } from "d3-shape";
 import type { KeyValueMetric } from "@/features/analytics/types";
 import { formatPercent } from "@/features/analytics/utils/formatters";
 import { typography } from "@/theme/typography";
-import { DATA_PALETTE } from "./palette";
+import { getOrangePieColorsByValue } from "./palette";
+import { PieChart, type PieChartDatum } from "./PieChart";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
+import { spacing, radius } from "@/theme/tokens";
 
 interface DonutChartProps {
   data: KeyValueMetric[];
@@ -25,97 +25,79 @@ export const DonutChart = React.memo(function DonutChart({
   const { mode } = useThemeMode();
   const textColors = semanticThemes[mode].text;
   const size = Math.min(height, 220);
-  const chartRadius = size / 2 - 8;
-  const innerRadius = chartRadius * 0.6;
-  const total = data.reduce((s, d) => s + d.value, 0) || 1;
+  const total = data.reduce((sum, datum) => sum + datum.value, 0);
+  const safeTotal = total || 1;
 
-  const { arcs, arcGen, segmentLabels } = useMemo(() => {
-    const pieGen = pie<KeyValueMetric>()
-      .value((d) => d.value)
-      .sort(null);
-
-    const gen = arc<{ startAngle: number; endAngle: number }>()
-      .innerRadius(innerRadius)
-      .outerRadius(chartRadius);
-
-    const computedArcs = pieGen(data);
-
-    // Pre-compute segment label positions to avoid per-render work
-    const labels = computedArcs
-      .filter((a) => a.data.value / total > 0.05)
-      .map((a) => {
-        const centroid = gen.centroid(a);
-        return {
-          key: a.data.key,
-          pct: formatPercent((a.data.value / total) * 100),
-          left: size / 2 + centroid[0] - 18,
-          top: size / 2 + centroid[1] - typography.label.lineHeight / 2,
-        };
-      });
-
-    return { arcs: computedArcs, arcGen: gen, segmentLabels: labels };
-  }, [data, innerRadius, chartRadius, total, size]);
+  const pieData = useMemo<PieChartDatum[]>(
+    () => {
+      const colors = getOrangePieColorsByValue(data.map((datum) => datum.value));
+      return data.map((datum, index) => ({
+        id: datum.key,
+        value: datum.value,
+        color: colors[index] ?? "#f64a00",
+        tooltipRows: [
+          { label: datum.key, value: String(datum.value) },
+          { label: "Share", value: formatPercent((datum.value / safeTotal) * 100) },
+        ],
+      }));
+    },
+    [data, safeTotal],
+  );
 
   return (
     <View style={styles.container}>
-      <View style={[styles.chartFrame, { width: size, height: size }]}>
-        <Svg width={size} height={size}>
-          {arcs.map((a, i) => (
-            <Path
-              key={a.data.key}
-              d={arcGen(a) ?? ""}
-              fill={DATA_PALETTE[i % DATA_PALETTE.length]}
-              transform={`translate(${size / 2},${size / 2})`}
-            />
-          ))}
-        </Svg>
-        <View style={styles.chartTextOverlay}>
-          {segmentLabels.map((label) => (
-            <Text
-              key={`pct-${label.key}`}
-              style={[
-                styles.segmentLabel,
-                {
-                  left: label.left,
-                  top: label.top,
-                  color: textColors.primary,
-                },
-              ]}
-            >
-              {label.pct}
-            </Text>
-          ))}
+      <PieChart data={pieData} size={size} innerRadiusRatio={0.6} style={styles.chartFrame}>
+        {({ slices }) => (
+          <>
+            {slices
+              .filter((slice) => slice.percent > 0.05)
+              .map((slice) => (
+                <Text
+                  key={`pct-${slice.id}`}
+                  style={[
+                    styles.segmentLabel,
+                    {
+                      left: slice.centroidX - 18,
+                      top: slice.centroidY - typography.label.lineHeight / 2,
+                      color: mode === "dark" ? "#ffffff" : "#000000",
+                    },
+                  ]}
+                >
+                  {formatPercent(slice.percent * 100)}
+                </Text>
+              ))}
 
-          {(centerLabel || centerValue) && (
-            <View style={styles.centerTextWrap}>
-              {centerValue && (
-                <Text
-                  style={[
-                    styles.centerValue,
-                    {
-                      color: textColors.primary,
-                    },
-                  ]}
-                >
-                  {centerValue}
-                </Text>
-              )}
-              {centerLabel && (
-                <Text
-                  style={[
-                    styles.centerLabel,
-                    {
-                      color: textColors.tertiary,
-                    },
-                  ]}
-                >
-                  {centerLabel}
-                </Text>
-              )}
-            </View>
-          )}
-        </View>
-      </View>
+            {(centerLabel || centerValue) && (
+              <View style={styles.centerTextWrap}>
+                {centerValue ? (
+                  <Text
+                    style={[
+                      styles.centerValue,
+                      {
+                        color: textColors.primary,
+                      },
+                    ]}
+                  >
+                    {centerValue}
+                  </Text>
+                ) : null}
+                {centerLabel ? (
+                  <Text
+                    style={[
+                      styles.centerLabel,
+                      {
+                        color: textColors.tertiary,
+                      },
+                    ]}
+                  >
+                    {centerLabel}
+                  </Text>
+                ) : null}
+              </View>
+            )}
+          </>
+        )}
+      </PieChart>
       <View style={styles.legend}>
         {data.map((d, i) => (
           <View key={d.key} style={styles.legendItem}>
@@ -123,8 +105,7 @@ export const DonutChart = React.memo(function DonutChart({
               style={[
                 styles.swatch,
                 {
-                  backgroundColor:
-                    DATA_PALETTE[i % DATA_PALETTE.length],
+                  backgroundColor: pieData[i]?.color ?? "#f64a00",
                 },
               ]}
             />
@@ -132,7 +113,7 @@ export const DonutChart = React.memo(function DonutChart({
               {d.key}
             </Text>
             <Text style={[styles.legendPct, { color: textColors.tertiary }]}>
-              {formatPercent((d.value / total) * 100)}
+              {formatPercent((d.value / safeTotal) * 100)}
             </Text>
           </View>
         ))}
@@ -143,15 +124,10 @@ export const DonutChart = React.memo(function DonutChart({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: spacing[12],
   },
   chartFrame: {
     alignSelf: "center",
-    position: "relative",
-  },
-  chartTextOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    pointerEvents: "none",
   },
   segmentLabel: {
     position: "absolute",
@@ -159,7 +135,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: typography.label.fontFamily,
     fontSize: typography.label.fontSize,
-    fontWeight: typography.label.fontWeight,
+    fontWeight: "600",
     lineHeight: typography.label.lineHeight,
   },
   centerTextWrap: {
@@ -176,7 +152,7 @@ const styles = StyleSheet.create({
   },
   centerLabel: {
     textAlign: "center",
-    marginTop: 2,
+    marginTop: spacing[2],
     fontFamily: typography.label.fontFamily,
     fontSize: typography.label.fontSize,
     fontWeight: typography.label.fontWeight,
@@ -185,30 +161,30 @@ const styles = StyleSheet.create({
   legend: {
     width: "100%",
     alignSelf: "stretch",
-    gap: 8,
+    gap: spacing[8],
   },
   legendItem: {
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
-    gap: 6,
+    gap: spacing[6],
   },
   swatch: {
     width: 8,
     height: 8,
-    borderRadius: 2,
+    borderRadius: radius.sm,
   },
   legendLabel: {
     fontFamily: typography.tableBody.fontFamily,
     fontSize: typography.tableBody.fontSize,
-    fontWeight: typography.tableBody.fontWeight,
+    fontWeight: "500",
     lineHeight: typography.tableBody.lineHeight,
   },
   legendPct: {
     marginLeft: "auto",
     fontFamily: typography.tableBody.fontFamily,
     fontSize: typography.tableBody.fontSize,
-    fontWeight: typography.tableBody.fontWeight,
+    fontWeight: "600",
     lineHeight: typography.tableBody.lineHeight,
   },
 });
