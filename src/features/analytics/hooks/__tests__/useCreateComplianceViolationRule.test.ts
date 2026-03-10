@@ -47,6 +47,8 @@ describe("useCreateComplianceViolationRule", () => {
       getTeamDetail: jest.fn(),
       getHumanDetail: jest.fn(),
       getRunDetail: jest.fn(),
+      getRuleDetail: jest.fn(),
+      updateRule: jest.fn(),
       createComplianceRule: jest.fn().mockRejectedValue(new Error("Server error")),
       createSeat: jest.fn(),
       createProject: jest.fn(),

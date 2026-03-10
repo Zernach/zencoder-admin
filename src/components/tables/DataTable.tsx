@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { cloneElement, isValidElement, memo, useCallback, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { DimensionValue } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
@@ -84,6 +84,33 @@ function toSortableValue(value: unknown): SortableValue {
   return String(value);
 }
 
+function alignRenderedContent(content: ReactNode, align?: "left" | "center" | "right"): ReactNode {
+  if (align !== "right" && align !== "center") return content;
+
+  const alignmentStyle = align === "right" ? styles.bodyTextAlignRight : styles.bodyTextAlignCenter;
+
+  if (typeof content === "string" || typeof content === "number") {
+    return <Text style={alignmentStyle}>{content}</Text>;
+  }
+
+  if (isValidElement(content) && content.type === Text) {
+    const style = (content.props as { style?: unknown }).style;
+    return cloneElement(content, { style: [style, alignmentStyle] } as { style: unknown });
+  }
+
+  return (
+    <View
+      style={[
+        styles.renderedContentWrapper,
+        align === "right" && styles.renderedContentAlignRight,
+        align === "center" && styles.renderedContentAlignCenter,
+      ]}
+    >
+      {content}
+    </View>
+  );
+}
+
 interface DataTableRowProps<T> {
   row: T;
   rowIdx: number;
@@ -126,9 +153,16 @@ const DataTableRow = memo(function DataTableRow<T>({
             ]}
           >
             {col.render ? (
-              col.render(row)
+              alignRenderedContent(col.render(row), effectiveAlign)
             ) : (
-              <Text style={[styles.bodyText, { color: bodyTextColor }]}>
+              <Text
+                style={[
+                  styles.bodyText,
+                  { color: bodyTextColor },
+                  effectiveAlign === "right" && styles.bodyTextAlignRight,
+                  effectiveAlign === "center" && styles.bodyTextAlignCenter,
+                ]}
+              >
                 {String((row as Record<string, unknown>)[col.key] ?? "")}
               </Text>
             )}
@@ -340,5 +374,20 @@ const styles = StyleSheet.create({
   bodyText: {
     fontSize: 12,
     fontWeight: "500",
+  },
+  bodyTextAlignRight: {
+    textAlign: "right",
+  },
+  bodyTextAlignCenter: {
+    textAlign: "center",
+  },
+  renderedContentWrapper: {
+    width: "100%",
+  },
+  renderedContentAlignRight: {
+    alignItems: "flex-end",
+  },
+  renderedContentAlignCenter: {
+    alignItems: "center",
   },
 });

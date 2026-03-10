@@ -75,7 +75,7 @@ describe("route helpers", () => {
 });
 
 describe("buildEntityRoute", () => {
-  const entities: SearchEntityType[] = ["agent", "project", "team", "human", "run"];
+  const entities: SearchEntityType[] = ["agent", "project", "team", "human", "run", "rule"];
 
   it.each(TAB_ORDER)("builds routes for tab %s across all entity types", (tab) => {
     for (const entity of entities) {
@@ -84,7 +84,7 @@ describe("buildEntityRoute", () => {
     }
   });
 
-  it("covers the full 5x5 tab/entity matrix", () => {
+  it("covers the full 5x6 tab/entity matrix", () => {
     let count = 0;
 
     for (const tab of TAB_ORDER) {
@@ -95,7 +95,7 @@ describe("buildEntityRoute", () => {
       }
     }
 
-    expect(count).toBe(25);
+    expect(count).toBe(30);
   });
 
   it("encodes special characters in entity IDs", () => {

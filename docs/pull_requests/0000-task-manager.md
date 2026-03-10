@@ -80,7 +80,8 @@
 | ✅ | [0072](./0072-currency-app-wide-integration.md) | Currency App-Wide Integration: Tables, Charts & Visualizations | Currency |
 | ✅ | [0073](./0073-language-currency-preferences-test-coverage.md) | Language & Currency Preferences Full Test Coverage | Testing |
 | ✅ | [0074](./0074-agents-kpi-to-line-charts-time-series.md) | Agents Screen: Replace KPI Cards with Time-Series Line Charts | Screens |
+| ✅ | [0075](./0075-rule-detail-screen-and-entity-routing.md) | Rule Detail Screen & Entity Routing | Screens |
 
 ---
 
-**Progress: 74 / 74**
+**Progress: 75 / 75**

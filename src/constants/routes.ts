@@ -60,6 +60,7 @@ const ENTITY_SEGMENTS: Record<SearchEntityType, string> = {
   team: "team",
   human: "human",
   run: "run",
+  rule: "rule",
 };
 
 const TAB_SET = new Set<string>(TAB_ORDER);

@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Your Team's Agents & Analytics",
-    "subtitleWithData": "Your Team's Agents & Analytics",
+    "subtitle": "Your Organization's Agents & Analytics",
+    "subtitleWithData": "Your Organization's Agents & Analytics",
     "keyMetrics": "Kluczowe wskaźniki",
     "keyMetricsSubtitle": "W skrócie",
     "trends": "Trendy",

@@ -471,10 +471,19 @@ export function generateSeedData(seed: number = 42): SeedData {
   }
 
   // ── Policy Violations ─────────────────────────────────
+  const SEED_RULES = [
+    { id: "rule_seed_1", title: "Data Retention" },
+    { id: "rule_seed_2", title: "Access Controls" },
+    { id: "rule_seed_3", title: "Audit Logging" },
+    { id: "rule_seed_4", title: "Encryption at Rest" },
+    { id: "rule_seed_5", title: "PII Protection" },
+    { id: "rule_seed_6", title: "Rate Limiting" },
+  ];
   const policyViolations: PolicyViolationRow[] = [];
   const violationCount = randInt(rng, 150, 200);
   for (let i = 0; i < violationCount; i++) {
     const agent = pick(rng, agents);
+    const rule = pick(rng, SEED_RULES);
     const dayOffset = randInt(rng, 0, 89);
     const ts = new Date(
       REFERENCE_DATE.getTime() -
@@ -487,6 +496,8 @@ export function generateSeedData(seed: number = 42): SeedData {
       timestampIso: ts.toISOString(),
       agentId: agent.id,
       agentName: agent.name,
+      ruleId: rule.id,
+      ruleTitle: rule.title,
       reason: pick(rng, VIOLATION_REASONS),
       severity: weighted(rng, [
         ["HIGH" as const, 20],

@@ -4,4 +4,5 @@ export {
   useTeamDetailScreen,
   useHumanDetailScreen,
   useRunDetailScreen,
+  useRuleDetailScreen,
 } from "./useEntityDetail";

@@ -4,6 +4,7 @@ import {
   useGetTeamDetailQuery,
   useGetHumanDetailQuery,
   useGetRunDetailQuery,
+  useGetRuleDetailQuery,
 } from "@/store/api";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import type {
@@ -12,6 +13,7 @@ import type {
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
+  RuleDetailResponse,
 } from "@/features/analytics/types";
 
 interface DetailResult<T> {
@@ -82,6 +84,20 @@ export function useRunDetailScreen(runId: string): DetailResult<RunDetailRespons
   const query = useGetRunDetailQuery(
     { orgId: filters.orgId, entityId: runId },
     { skip: !runId },
+  );
+  return {
+    data: query.data,
+    loading: query.isLoading,
+    error: query.error ? String(query.error) : undefined,
+    refetch: query.refetch,
+  };
+}
+
+export function useRuleDetailScreen(ruleId: string): DetailResult<RuleDetailResponse> {
+  const { filters } = useDashboardFilters();
+  const query = useGetRuleDetailQuery(
+    { orgId: filters.orgId, entityId: ruleId },
+    { skip: !ruleId },
   );
   return {
     data: query.data,

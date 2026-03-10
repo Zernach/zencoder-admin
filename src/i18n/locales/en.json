@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Your Team's Agents & Analytics",
-    "subtitleWithData": "Your Team's Agents & Analytics",
+    "subtitle": "Your Organization's Agents & Analytics",
+    "subtitleWithData": "Your Organization's Agents & Analytics",
     "keyMetrics": "Key Metrics",
     "keyMetricsSubtitle": "At a glance",
     "trends": "Trends",
@@ -155,6 +155,7 @@
     "costPerSuccess": "Average Cost per Successful Run",
     "budgetRemaining": "Budget Remaining",
     "ofBudget": "of {{budget}}",
+    "costPerTeam": "Cost per Team",
     "costPerProject": "Cost per Project",
     "costPerDay": "Cost per Day",
     "costPerToken": "Cost per Token",
@@ -209,6 +210,7 @@
       "success": "Success",
       "runs": "Runs",
       "violations": "Violations",
+      "rule": "Rule",
       "rules": "Rules",
       "violationRate": "Violation Rate",
       "cost": "Cost",

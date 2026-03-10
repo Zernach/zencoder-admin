@@ -127,6 +127,15 @@ export interface CostBreakdownRow {
   averageCostPerRunUsd: number; percentOfTotal: number;
 }
 
+export interface CostPerTeamRow {
+  teamId: string;
+  teamName: string;
+  totalCostUsd: number;
+  runsStarted: number;
+  averageCostPerRunUsd: number;
+  percentOfTotal: number;
+}
+
 export interface BudgetSummary {
   budgetUsd: number; spentUsd: number;
   remainingUsd: number; forecastMonthEndUsd: number;
@@ -140,6 +149,7 @@ export interface PolicyChangeEvent {
 export interface PolicyViolationRow {
   id: string; timestampIso: string;
   agentId: string; agentName: string;
+  ruleId: string; ruleTitle: string;
   reason: string; severity: Severity;
 }
 
@@ -239,6 +249,7 @@ export interface CostResponse {
   costPerSuccessfulRunUsd: number;
   costTrend: TimeSeriesPoint[];
   costBreakdown: CostBreakdownRow[];
+  costPerTeam: CostPerTeamRow[];
   providerBreakdown: ProviderCostRow[];
   budget: BudgetSummary;
 }
@@ -292,7 +303,7 @@ export interface GovernanceResponse {
 
 
 // ─── Search Autocomplete ────────────────────────────────
-export type SearchEntityType = "agent" | "project" | "team" | "human" | "run";
+export type SearchEntityType = "agent" | "project" | "team" | "human" | "run" | "rule";
 
 export interface SearchSuggestion {
   id: string;
@@ -369,6 +380,32 @@ export interface RunDetailResponse {
   projectName: string;
   teamName: string;
   userName: string;
+}
+
+export interface RuleDetailResponse {
+  rule: GovernanceRuleRow;
+  /** Agent IDs this rule currently applies to */
+  assignedAgentIds: string[];
+  /** Project IDs this rule currently applies to */
+  assignedProjectIds: string[];
+  /** All agents available for assignment */
+  allAgents: Agent[];
+  /** All projects available for assignment */
+  allProjects: Project[];
+  recentViolations: PolicyViolationRow[];
+  recentRuns: RunListRow[];
+}
+
+export interface UpdateRuleRequest {
+  ruleId: string;
+  title: string;
+  description: string;
+  assignedAgentIds: string[];
+  assignedProjectIds: string[];
+}
+
+export interface UpdateRuleResponse {
+  rule: GovernanceRuleRow;
 }
 
 // ─── Create Entity Contracts ────────────────────────────

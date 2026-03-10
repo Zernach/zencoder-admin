@@ -17,6 +17,9 @@ import type {
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
+  RuleDetailResponse,
+  UpdateRuleRequest,
+  UpdateRuleResponse,
   CreateComplianceRuleRequest,
   CreateComplianceRuleResponse,
   CreateSeatRequest,
@@ -85,6 +88,11 @@ export class AnalyticsService implements IAnalyticsService {
       row.averageCostPerRunUsd = round2(row.averageCostPerRunUsd);
       row.percentOfTotal = round1(row.percentOfTotal);
     }
+    for (const row of res.costPerTeam) {
+      row.totalCostUsd = round2(row.totalCostUsd);
+      row.averageCostPerRunUsd = round2(row.averageCostPerRunUsd);
+      row.percentOfTotal = round1(row.percentOfTotal);
+    }
     return res;
   }
 
@@ -145,6 +153,14 @@ export class AnalyticsService implements IAnalyticsService {
 
   async getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse> {
     return this.api.getRunDetail(orgId, runId);
+  }
+
+  async getRuleDetail(orgId: string, ruleId: string): Promise<RuleDetailResponse> {
+    return this.api.getRuleDetail(orgId, ruleId);
+  }
+
+  async updateRule(request: UpdateRuleRequest): Promise<UpdateRuleResponse> {
+    return this.api.updateRule(request);
   }
 
   async createComplianceRule(request: CreateComplianceRuleRequest): Promise<CreateComplianceRuleResponse> {

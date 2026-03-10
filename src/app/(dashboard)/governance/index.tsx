@@ -31,7 +31,7 @@ import { keyExtractors } from "@/constants";
 import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
 import { useAppDispatch, openModal, ModalName } from "@/store";
 
-const VIOLATION_SEARCH_KEYS: (keyof PolicyViolationRow)[] = ["agentName", "reason", "severity"];
+const VIOLATION_SEARCH_KEYS: (keyof PolicyViolationRow)[] = ["agentName", "ruleTitle", "reason", "severity"];
 const SECURITY_SEARCH_KEYS: (keyof SecurityEventRow)[] = ["type", "description"];
 const SEAT_SEARCH_KEYS: (keyof SeatUserUsageRow)[] = ["fullName", "teamName"];
 const TEAM_PERFORMANCE_SEARCH_KEYS: (keyof TeamPerformanceComparisonRow)[] = ["teamName"];
@@ -50,7 +50,7 @@ export default function GovernanceScreen() {
   const pathname = usePathname();
 
   const navigateTo = useCallback(
-    (entityType: "agent" | "project" | "team" | "human" | "run", entityId: string) => {
+    (entityType: "agent" | "project" | "team" | "human" | "run" | "rule", entityId: string) => {
       const tab = resolveTabFromPathname(pathname);
       const route = buildEntityRoute(tab, entityType, entityId);
       router.push(route as never);
@@ -77,6 +77,13 @@ export default function GovernanceScreen() {
         </CustomButton>
       )
     },
+    {
+      key: "ruleTitle", header: t("governance.table.rule"), width: 150, render: (row) => (
+        <CustomButton onPress={() => navigateTo("rule", row.ruleId)} accessibilityRole="link" accessibilityLabel={`View rule ${row.ruleTitle}`}>
+          <Text style={ct.link} numberOfLines={1}>{row.ruleTitle}</Text>
+        </CustomButton>
+      )
+    },
     { key: "reason", header: t("governance.table.reason"), width: 180 },
     { key: "severity", header: t("governance.table.severity"), width: 90, render: (row) => <StatusBadge variant="severity" severity={row.severity} /> },
   ], [ct, navigateTo, t]);
@@ -88,18 +95,18 @@ export default function GovernanceScreen() {
   ], [ct, t]);
 
   const rulesCols = useMemo<ColumnDef<GovernanceRuleRow>[]>(() => [
-    { key: "title", header: "Title", width: 220 },
+    {
+      key: "title", header: "Title", width: 220, render: (row) => (
+        <CustomButton onPress={() => navigateTo("rule", row.id)} accessibilityRole="link" accessibilityLabel={`View rule ${row.title}`}>
+          <Text style={ct.link} numberOfLines={1}>{row.title}</Text>
+        </CustomButton>
+      )
+    },
     {
       key: "description",
       header: "Description",
       width: 540,
       render: (row) => <Text style={ct.primary}>{row.description}</Text>,
-    },
-    {
-      key: "createdAtIso",
-      header: "Created",
-      width: 180,
-      render: (row) => <Text style={ct.primary}>{new Date(row.createdAtIso).toLocaleString()}</Text>,
     },
     {
       key: "editedAtIso",
@@ -108,13 +115,19 @@ export default function GovernanceScreen() {
       render: (row) => <Text style={ct.primary}>{new Date(row.editedAtIso).toLocaleString()}</Text>,
     },
     {
+      key: "createdAtIso",
+      header: "Created",
+      width: 180,
+      render: (row) => <Text style={ct.primary}>{new Date(row.createdAtIso).toLocaleString()}</Text>,
+    },
+    {
       key: "runsCheckedCount",
       header: "Runs",
       width: 90,
       align: "right",
       render: (row) => <Text style={ct.primary}>{row.runsCheckedCount.toLocaleString()}</Text>,
     },
-  ], [ct]);
+  ], [ct, navigateTo]);
 
   const teamPerformanceCols = useMemo<ColumnDef<TeamPerformanceComparisonRow>[]>(() => [
     {
@@ -143,13 +156,6 @@ export default function GovernanceScreen() {
       render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.runsCount)}</Text>,
     },
     {
-      key: "policyViolationCount",
-      header: t("governance.table.violations"),
-      width: 110,
-      align: "right",
-      render: (row) => <Text style={ct.error}>{formatCompactNumber(row.policyViolationCount)}</Text>,
-    },
-    {
       key: "rulesCount",
       header: t("governance.table.rules"),
       width: 90,
@@ -157,11 +163,22 @@ export default function GovernanceScreen() {
       render: (row) => <Text style={ct.success}>{formatCompactNumber(row.rulesCount)}</Text>,
     },
     {
+      key: "policyViolationCount",
+      header: t("governance.table.violations"),
+      width: 110,
+      align: "right",
+      render: (row) => <Text style={ct.error}>{formatCompactNumber(row.policyViolationCount)}</Text>,
+    },
+    {
       key: "policyViolationRate",
       header: t("governance.table.violationRate"),
       width: 130,
       align: "right",
-      render: (row) => <Text style={ct.primary}>{formatPercent(row.policyViolationRate * 100)}</Text>,
+      sortAccessor: (row) => (row.runsCount > 0 ? row.policyViolationCount / row.runsCount : 0),
+      render: (row) => {
+        const computedViolationRate = row.runsCount > 0 ? row.policyViolationCount / row.runsCount : 0;
+        return <Text style={ct.error}>{formatPercent(computedViolationRate * 100)}</Text>;
+      },
     },
     {
       key: "totalCostUsd",

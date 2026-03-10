@@ -15,6 +15,9 @@ import type {
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
+  RuleDetailResponse,
+  UpdateRuleRequest,
+  UpdateRuleResponse,
   CreateComplianceRuleRequest,
   CreateComplianceRuleResponse,
   CreateSeatRequest,
@@ -44,6 +47,8 @@ export interface IAnalyticsService {
   getTeamDetail(orgId: string, teamId: string): Promise<TeamDetailResponse>;
   getHumanDetail(orgId: string, humanId: string): Promise<HumanDetailResponse>;
   getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse>;
+  getRuleDetail(orgId: string, ruleId: string): Promise<RuleDetailResponse>;
+  updateRule(request: UpdateRuleRequest): Promise<UpdateRuleResponse>;
   createComplianceRule(request: CreateComplianceRuleRequest): Promise<CreateComplianceRuleResponse>;
   createSeat(request: CreateSeatRequest): Promise<CreateSeatResponse>;
   createProject(request: CreateProjectRequest): Promise<CreateProjectResponse>;

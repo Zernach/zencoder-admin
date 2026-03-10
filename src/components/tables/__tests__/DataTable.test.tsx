@@ -1,5 +1,6 @@
 import React from "react";
 import { render, fireEvent, within } from "@testing-library/react-native";
+import { Text } from "react-native";
 import { DataTable, type ColumnDef } from "../DataTable";
 
 // Mock dependencies
@@ -181,5 +182,47 @@ describe("DataTable", () => {
     );
     fireEvent.press(getByLabelText("Table row 1"));
     expect(onRowPress).toHaveBeenCalledWith(data[0]);
+  });
+
+  it("keeps wrapped text right-aligned in the final column", () => {
+    const longValue = "This is a long value that wraps to multiple lines in narrow columns";
+    const longTextColumns: ColumnDef<{ id: string; notes: string }>[] = [
+      { key: "id", header: "ID", width: 80 },
+      { key: "notes", header: "Notes" },
+    ];
+    const longTextData = [{ id: "1", notes: longValue }];
+
+    const { getByText } = render(
+      <DataTable
+        columns={longTextColumns}
+        data={longTextData}
+        keyExtractor={(r) => r.id}
+      />
+    );
+
+    expect(getByText(longValue)).toHaveStyle({ textAlign: "right" });
+  });
+
+  it("keeps rendered text right-aligned in the final column", () => {
+    const longValue = "Rendered long text should stay right aligned";
+    const longTextColumns: ColumnDef<{ id: string; notes: string }>[] = [
+      { key: "id", header: "ID", width: 80 },
+      {
+        key: "notes",
+        header: "Notes",
+        render: (row) => <Text>{row.notes}</Text>,
+      },
+    ];
+    const longTextData = [{ id: "1", notes: longValue }];
+
+    const { getByText } = render(
+      <DataTable
+        columns={longTextColumns}
+        data={longTextData}
+        keyExtractor={(r) => r.id}
+      />
+    );
+
+    expect(getByText(longValue)).toHaveStyle({ textAlign: "right" });
   });
 });

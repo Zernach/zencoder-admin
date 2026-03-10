@@ -30,6 +30,9 @@ import type {
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
+  RuleDetailResponse,
+  UpdateRuleRequest,
+  UpdateRuleResponse,
   CreateComplianceRuleRequest,
   CreateComplianceRuleResponse,
   GovernanceRuleRow,
@@ -45,6 +48,7 @@ import type {
   UpdateAgentDescriptionResponse,
   PolicyViolationRow,
   TeamViolationMetric,
+  CostPerTeamRow,
 } from "@/features/analytics/types";
 import { round2, round4 } from "../../utils/metricFormulas";
 import {
@@ -110,6 +114,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   private createdProjects: Array<{ id: string; name: string; teamId: string }> = [];
   private createdTeams: Array<{ id: string; name: string }> = [];
   private createdAgents: Array<{ id: string; name: string; projectId: string; description: string }> = [];
+  private ruleAssignments: Map<string, { agentIds: string[]; projectIds: string[] }> = new Map();
 
   constructor(seedData: SeedData, config: StubConfig = {}) {
     this.seed = seedData;
@@ -836,6 +841,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const runs = this.filterRuns(filters);
     const totalCost = sumField(runs, "costUsd");
     const succeededCount = countSucceeded(runs);
+    const allTeams = [...this.seed.teams, ...this.createdTeams];
 
     // Breakdown by project
     const runsByProject = groupBy(runs, (r) => r.projectId);
@@ -849,6 +855,22 @@ export class StubAnalyticsApi implements IAnalyticsApi {
           runsStarted: projRuns.length,
           averageCostPerRunUsd: round4(projCost / (projRuns.length || 1)),
           percentOfTotal: safeRate(projCost, totalCost),
+        };
+      })
+      .sort((a, b) => b.totalCostUsd - a.totalCostUsd);
+
+    const runsByTeam = groupBy(runs, (r) => r.teamId);
+    const costPerTeam: CostPerTeamRow[] = Array.from(runsByTeam.entries())
+      .map(([teamId, teamRuns]) => {
+        const teamCost = sumField(teamRuns, "costUsd");
+        const team = allTeams.find((entry) => entry.id === teamId);
+        return {
+          teamId,
+          teamName: team?.name ?? teamId,
+          totalCostUsd: round2(teamCost),
+          runsStarted: teamRuns.length,
+          averageCostPerRunUsd: round4(teamCost / (teamRuns.length || 1)),
+          percentOfTotal: safeRate(teamCost, totalCost),
         };
       })
       .sort((a, b) => b.totalCostUsd - a.totalCostUsd);
@@ -887,6 +909,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       costPerSuccessfulRunUsd: round4(totalCost / (succeededCount || 1)),
       costTrend: this.costTrendFromRuns(runs),
       costBreakdown,
+      costPerTeam,
       providerBreakdown,
       budget: {
         budgetUsd,
@@ -1458,6 +1481,93 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     };
   }
 
+  async getRuleDetail(_orgId: string, ruleId: string): Promise<RuleDetailResponse> {
+    await this.simulate();
+    // Build the same rules list that getGovernance produces so we can look up by id
+    const baseRules: GovernanceRuleRow[] = this.seed.complianceItems.map((item, index) => {
+      const sortedChanges = [...this.seed.policyChanges].sort((a, b) =>
+        a.timestampIso.localeCompare(b.timestampIso),
+      );
+      const changeCount = sortedChanges.length || 1;
+      const createdAtIso = sortedChanges[index % changeCount]?.timestampIso ?? new Date().toISOString();
+      const editedAtIso = sortedChanges[sortedChanges.length - 1 - (index % changeCount)]?.timestampIso ?? new Date().toISOString();
+      const earliestIso = createdAtIso <= editedAtIso ? createdAtIso : editedAtIso;
+      const latestIso = editedAtIso >= createdAtIso ? editedAtIso : createdAtIso;
+      return {
+        id: `rule_seed_${index + 1}`,
+        title: item.label,
+        description:
+          BASE_RULE_DESCRIPTIONS[item.label] ??
+          `${item.label} guardrail for policy-safe execution across projects and teams.`,
+        createdAtIso: earliestIso,
+        editedAtIso: latestIso,
+        runsCheckedCount: Math.max(1, Math.round(((index + 1) / (this.seed.complianceItems.length || 1)) * this.seed.runs.length)),
+      };
+    });
+
+    const createdRules: GovernanceRuleRow[] = this.createdComplianceRules.map((rule) => ({
+      id: rule.id,
+      title: rule.title,
+      description: rule.description,
+      createdAtIso: rule.createdAtIso,
+      editedAtIso: rule.editedAtIso,
+      runsCheckedCount: this.seed.runs.length,
+    }));
+
+    const allRules = [...baseRules, ...createdRules];
+    const rule = allRules.find((r) => r.id === ruleId);
+    if (!rule) throw new Error(`Rule not found: ${ruleId}`);
+
+    // Get stored assignments or default: seed rules start with first 3 agents / 2 projects
+    const assignments = this.ruleAssignments.get(ruleId) ?? {
+      agentIds: this.seed.agents.slice(0, 3).map((a) => a.id),
+      projectIds: this.seed.projects.slice(0, 2).map((p) => p.id),
+    };
+
+    const recentViolations = [...this.seed.policyViolations]
+      .sort((a, b) => b.timestampIso.localeCompare(a.timestampIso))
+      .slice(0, 5);
+
+    // Runs from assigned agents, sorted newest-first
+    const assignedAgentSet = new Set(assignments.agentIds);
+    const recentRuns = [...this.seed.runs]
+      .filter((r) => assignedAgentSet.has(r.agentId))
+      .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
+      .slice(0, 15);
+
+    return {
+      rule,
+      assignedAgentIds: assignments.agentIds,
+      assignedProjectIds: assignments.projectIds,
+      allAgents: this.seed.agents,
+      allProjects: this.seed.projects,
+      recentViolations,
+      recentRuns,
+    };
+  }
+
+  async updateRule(request: UpdateRuleRequest): Promise<UpdateRuleResponse> {
+    await this.simulate();
+
+    // Try to find and update in createdComplianceRules first
+    const created = this.createdComplianceRules.find((r) => r.id === request.ruleId);
+    if (created) {
+      created.title = request.title;
+      created.description = request.description;
+      created.editedAtIso = new Date().toISOString();
+    }
+
+    // Store the assignments
+    this.ruleAssignments.set(request.ruleId, {
+      agentIds: request.assignedAgentIds,
+      projectIds: request.assignedProjectIds,
+    });
+
+    // Return updated rule
+    const detail = await this.getRuleDetail("", request.ruleId);
+    return { rule: { ...detail.rule, title: request.title, description: request.description, editedAtIso: new Date().toISOString() } };
+  }
+
   private nextId(prefix: string): string {
     return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   }
@@ -1483,6 +1593,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         timestampIso: run.startedAtIso,
         agentId: run.agentId,
         agentName: agent?.name ?? run.agentId,
+        ruleId,
+        ruleTitle: request.name,
         reason: `Rule "${request.name}": ${request.description}`,
         severity: request.severity,
       });

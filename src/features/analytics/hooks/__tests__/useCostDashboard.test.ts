@@ -25,6 +25,7 @@ describe("useCostDashboard", () => {
     expect(typeof data.averageCostPerRunUsd).toBe("number");
     expect(Array.isArray(data.costTrend)).toBe(true);
     expect(Array.isArray(data.costBreakdown)).toBe(true);
+    expect(Array.isArray(data.costPerTeam)).toBe(true);
     expect(data.budget).toBeDefined();
     expect(typeof data.budget.budgetUsd).toBe("number");
   });

@@ -17,6 +17,8 @@ function createMockApi(): IAnalyticsApi {
     getTeamDetail: jest.fn(),
     getHumanDetail: jest.fn(),
     getRunDetail: jest.fn(),
+    getRuleDetail: jest.fn(),
+    updateRule: jest.fn(),
     createComplianceRule: jest.fn().mockResolvedValue({
       id: "rule_1",
       name: "R",

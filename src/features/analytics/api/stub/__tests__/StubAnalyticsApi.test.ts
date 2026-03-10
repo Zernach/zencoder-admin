@@ -252,6 +252,7 @@ describe("getCost", () => {
     expect(typeof res.costPerSuccessfulRunUsd).toBe("number");
     expect(res.costTrend.length).toBeGreaterThan(0);
     expect(res.costBreakdown.length).toBeGreaterThan(0);
+    expect(res.costPerTeam.length).toBeGreaterThan(0);
     expect(typeof res.budget.budgetUsd).toBe("number");
     expect(typeof res.budget.spentUsd).toBe("number");
     expect(typeof res.budget.remainingUsd).toBe("number");

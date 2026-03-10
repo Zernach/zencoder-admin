@@ -17,6 +17,9 @@ import type {
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
+  RuleDetailResponse,
+  UpdateRuleRequest,
+  UpdateRuleResponse,
   CreateComplianceRuleRequest,
   CreateComplianceRuleResponse,
   CreateSeatRequest,
@@ -54,6 +57,7 @@ export const analyticsApi = createApi({
     "TeamDetail",
     "HumanDetail",
     "RunDetail",
+    "RuleDetail",
   ],
   endpoints: (builder) => ({
     // ─── Dashboard Queries ─────────────────────────────────
@@ -223,7 +227,34 @@ export const analyticsApi = createApi({
       ],
     }),
 
+    getRuleDetail: builder.query<RuleDetailResponse, EntityDetailArgs>({
+      queryFn: async ({ orgId, entityId }) => {
+        try {
+          return { data: await getService().getRuleDetail(orgId, entityId) };
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : String(e) };
+        }
+      },
+      providesTags: (_result, _error, { entityId }) => [
+        { type: "RuleDetail", id: entityId },
+      ],
+    }),
+
     // ─── Mutations ─────────────────────────────────────────
+    updateRule: builder.mutation<UpdateRuleResponse, UpdateRuleRequest>({
+      queryFn: async (request) => {
+        try {
+          return { data: await getService().updateRule(request) };
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : String(e) };
+        }
+      },
+      invalidatesTags: (_result, _error, { ruleId }) => [
+        { type: "RuleDetail", id: ruleId },
+        "Governance",
+      ],
+    }),
+
     createComplianceRule: builder.mutation<CreateComplianceRuleResponse, CreateComplianceRuleRequest>({
       queryFn: async (request) => {
         try {
@@ -310,6 +341,8 @@ export const {
   useGetTeamDetailQuery,
   useGetHumanDetailQuery,
   useGetRunDetailQuery,
+  useGetRuleDetailQuery,
+  useUpdateRuleMutation,
   useCreateComplianceRuleMutation,
   useCreateSeatMutation,
   useCreateProjectMutation,

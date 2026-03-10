@@ -231,8 +231,8 @@ const styles = StyleSheet.create({
   descriptionText: { fontSize: 14, lineHeight: 20 },
   editButton: { fontSize: 13, fontWeight: "600" },
   descriptionEditArea: { gap: spacing[8] },
-  descriptionInput: { fontSize: 14, lineHeight: 20, minHeight: 80, textAlignVertical: "top" },
-  descriptionInputContainer: { minHeight: 80, alignItems: "flex-start", paddingVertical: spacing[8] },
+  descriptionInput: { fontSize: 14, lineHeight: 20, minHeight: 80, width: "100%", flexGrow: 1, textAlignVertical: "top" },
+  descriptionInputContainer: { minHeight: 80, alignItems: "stretch", paddingVertical: spacing[8] },
   descriptionActions: { flexDirection: "row", justifyContent: "flex-end", gap: spacing[8] },
   actionButton: { fontSize: 13, fontWeight: "600", paddingVertical: spacing[4] },
   saveButton: {

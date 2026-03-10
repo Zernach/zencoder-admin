@@ -210,8 +210,8 @@ function createGovernanceData(): GovernanceDashboardData {
       { teamName: "Team Beta", totalViolations: 2, reasonBreakdown: [{ key: "Content Policy Violation", value: 1 }, { key: "Credential Exposure", value: 1 }] },
     ],
     recentViolations: [
-      { id: "v1", timestampIso: "2026-03-03T10:00:00.000Z", agentId: "a1", agentName: "Agent A", reason: "Blocked", severity: "HIGH" },
-      { id: "v2", timestampIso: "2026-03-02T08:00:00.000Z", agentId: "a2", agentName: "Agent B", reason: "Timeout", severity: "MEDIUM" },
+      { id: "v1", timestampIso: "2026-03-03T10:00:00.000Z", agentId: "a1", agentName: "Agent A", ruleId: "rule_seed_1", ruleTitle: "Data Retention", reason: "Blocked", severity: "HIGH" },
+      { id: "v2", timestampIso: "2026-03-02T08:00:00.000Z", agentId: "a2", agentName: "Agent B", ruleId: "rule_seed_2", ruleTitle: "Access Controls", reason: "Timeout", severity: "MEDIUM" },
     ],
     securityEvents: [
       { id: "s1", type: "Login", description: "Failed login", timestampIso: "2026-03-03T12:00:00.000Z" },
@@ -380,6 +380,52 @@ describe("GovernanceScreen", () => {
 
     expect(getByText("governance.teamPerformanceComparison")).toBeTruthy();
     expect(getByText("governance.createTeam")).toBeTruthy();
+  });
+
+  it("renders violation rate next to violations before rules", () => {
+    mockUseGovernanceDashboard.mockReturnValue({
+      data: createGovernanceData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { toJSON } = render(<GovernanceScreen />);
+    const tree = JSON.stringify(toJSON());
+
+    const violationsHeaderIndex = tree.indexOf("governance.table.violations");
+    const violationRateHeaderIndex = tree.indexOf("governance.table.violationRate");
+    const rulesHeaderIndex = tree.indexOf("governance.table.rules");
+
+    expect(violationsHeaderIndex).toBeGreaterThan(-1);
+    expect(violationRateHeaderIndex).toBeGreaterThan(-1);
+    expect(rulesHeaderIndex).toBeGreaterThan(-1);
+    expect(rulesHeaderIndex).toBeLessThan(violationsHeaderIndex);
+    expect(violationsHeaderIndex).toBeLessThan(violationRateHeaderIndex);
+  });
+
+  it("computes team violation rate from violations divided by total runs and styles it as error", () => {
+    const data = createGovernanceData();
+    const firstTeam = data.teamPerformanceComparison[0];
+    if (!firstTeam) throw new Error("Expected teamPerformanceComparison to include at least one row");
+    data.teamPerformanceComparison[0] = {
+      ...firstTeam,
+      runsCount: 12,
+      policyViolationCount: 3,
+      policyViolationRate: 0.99,
+    };
+    mockUseGovernanceDashboard.mockReturnValue({
+      data,
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText, queryByText } = render(<GovernanceScreen />);
+    const computedViolationRateCell = getByText("25.0%");
+
+    expect(computedViolationRateCell).toHaveStyle({ color: "#ef4444" });
+    expect(queryByText("99.0%")).toBeNull();
   });
 
   it("renders rules section and keeps a single create-rule action", () => {

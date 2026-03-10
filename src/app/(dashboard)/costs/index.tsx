@@ -7,7 +7,8 @@ import { ChartCard, LineChart, BreakdownChart, DonutChart, ProviderCostChart, Pr
 import type { BreakdownChartDatum } from "@/components/charts/BreakdownChart";
 import { CustomList } from "@/components/lists";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
-import type { CostBreakdownRow, BudgetSummary } from "@/features/analytics/types";
+import type { CostBreakdownRow, BudgetSummary, CostPerTeamRow } from "@/features/analytics/types";
+import { formatPercent } from "@/features/analytics/utils/formatters";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import { useSectionRef } from "@/hooks/useRegisterSection";
@@ -20,20 +21,20 @@ const SKELETON_2 = Array.from({ length: 2 });
 const COST_BREAKDOWN_SEARCH_KEYS: (keyof CostBreakdownRow)[] = ["key"];
 
 /** Memoized donut chart data derivation — avoids .slice().map() on every render */
-const CostDonutMemo = React.memo(function CostDonutMemo({
-  costBreakdown,
+const CostPerTeamDonutMemo = React.memo(function CostPerTeamDonutMemo({
+  costPerTeam,
   totalCostUsd,
   height,
 }: {
-  costBreakdown: CostBreakdownRow[];
+  costPerTeam: CostPerTeamRow[];
   totalCostUsd: number;
   height?: number;
 }) {
   const { t } = useTranslation();
   const { formatCurrency } = useCurrencyFormatter();
   const donutData = useMemo(
-    () => costBreakdown.slice(0, 6).map(r => ({ key: r.key, value: r.totalCostUsd })),
-    [costBreakdown],
+    () => costPerTeam.slice(0, 6).map((row) => ({ key: row.teamName, value: row.totalCostUsd })),
+    [costPerTeam],
   );
   const centerValue = useMemo(() => formatCurrency(totalCostUsd), [totalCostUsd, formatCurrency]);
   return <DonutChart data={donutData} centerLabel={t("common.total")} centerValue={centerValue} height={height} formatValue={formatCurrency} />;
@@ -80,16 +81,29 @@ const BudgetForecastBarMemo = React.memo(function BudgetForecastBarMemo({
 });
 
 /** Memoized breakdown chart — avoids .slice().map() on every render */
-const ProjectBreakdownMemo = React.memo(function ProjectBreakdownMemo({
+const CostPerProjectBarMemo = React.memo(function CostPerProjectBarMemo({
   filteredCostBreakdown,
 }: {
   filteredCostBreakdown: CostBreakdownRow[];
 }) {
-  const chartData = useMemo(
-    () => filteredCostBreakdown.slice(0, 10).map(r => ({ key: r.key, value: r.totalCostUsd })),
-    [filteredCostBreakdown],
+  const { t } = useTranslation();
+  const { formatCurrency } = useCurrencyFormatter();
+  const chartData = useMemo<BreakdownChartDatum[]>(
+    () =>
+      filteredCostBreakdown.slice(0, 10).map((row) => ({
+        key: row.key,
+        value: row.totalCostUsd,
+        hoverRows: [
+          { label: t("common.projects"), value: row.key },
+          { label: t("common.cost"), value: formatCurrency(row.totalCostUsd) },
+          { label: t("common.runs"), value: row.runsStarted.toLocaleString("en-US") },
+          { label: t("costs.avgPerRun"), value: formatCurrency(row.averageCostPerRunUsd) },
+          { label: "Share", value: formatPercent(row.percentOfTotal * 100) },
+        ],
+      })),
+    [filteredCostBreakdown, formatCurrency, t],
   );
-  return <BreakdownChart data={chartData} variant="horizontal-bar" height={300} truncateLabels={false} />;
+  return <BreakdownChart data={chartData} variant="horizontal-bar" truncateLabels={false} formatValue={formatCurrency} />;
 });
 
 export default function CostAnalyticsScreen() {
@@ -137,8 +151,8 @@ export default function CostAnalyticsScreen() {
             </ChartCard>
 
             <CustomList scrollViewProps={responsiveScrollProps}>
-              <ChartCard title={t("costs.costPerProject")} style={isLargeLayout ? styles.chartCardFill : styles.chartCardScroll}>
-                <CostDonutMemo costBreakdown={data.costBreakdown} totalCostUsd={data.totalCostUsd} height={isLargeLayout ? 220 : 160} />
+              <ChartCard title={t("costs.costPerTeam")} style={isLargeLayout ? styles.chartCardFill : styles.chartCardScroll}>
+                <CostPerTeamDonutMemo costPerTeam={data.costPerTeam} totalCostUsd={data.totalCostUsd} height={isLargeLayout ? 220 : 160} />
               </ChartCard>
               <ChartCard title={t("costs.costPerDay")} style={isLargeLayout ? styles.chartCardFill : undefined}>
                 <LineChart data={data.costTrend} />
@@ -167,11 +181,10 @@ export default function CostAnalyticsScreen() {
 
       {data && (
         <View ref={refFor("costs-project-breakdown")} nativeID="costs-project-breakdown" style={styles.section}>
-          <SectionHeader title={t("costs.projectBreakdown")} />
-          <ProjectBreakdownMemo filteredCostBreakdown={filteredCostBreakdown} />
+          <SectionHeader title={t("costs.costPerProject")} />
+          <CostPerProjectBarMemo filteredCostBreakdown={filteredCostBreakdown} />
         </View>
       )}
     </ScreenWrapper>
   );
 }
-

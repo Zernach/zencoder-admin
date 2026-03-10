@@ -207,6 +207,8 @@ describe("delegation via mock", () => {
       getTeamDetail: jest.fn(),
       getHumanDetail: jest.fn(),
       getRunDetail: jest.fn(),
+      getRuleDetail: jest.fn(),
+      updateRule: jest.fn(),
       createComplianceRule: jest.fn(),
       createSeat: jest.fn(),
       createProject: jest.fn(),
@@ -238,6 +240,16 @@ describe("delegation via mock", () => {
           percentOfTotal: 0.406,
         },
       ],
+      costPerTeam: [
+        {
+          teamId: "team_1",
+          teamName: "Team 1",
+          totalCostUsd: 800.999,
+          runsStarted: 120,
+          averageCostPerRunUsd: 6.6749,
+          percentOfTotal: 0.649,
+        },
+      ],
       providerBreakdown: [],
       budget: {
         budgetUsd: 60000,
@@ -262,6 +274,8 @@ describe("delegation via mock", () => {
       getTeamDetail: jest.fn(),
       getHumanDetail: jest.fn(),
       getRunDetail: jest.fn(),
+      getRuleDetail: jest.fn(),
+      updateRule: jest.fn(),
       createComplianceRule: jest.fn(),
       createSeat: jest.fn(),
       createProject: jest.fn(),
@@ -282,6 +296,9 @@ describe("delegation via mock", () => {
     expect(res.costBreakdown[0]!.totalCostUsd).toBe(501);
     expect(res.costBreakdown[0]!.averageCostPerRunUsd).toBe(5.01);
     expect(res.costBreakdown[0]!.percentOfTotal).toBe(0.4);
+    expect(res.costPerTeam[0]!.totalCostUsd).toBe(801);
+    expect(res.costPerTeam[0]!.averageCostPerRunUsd).toBe(6.67);
+    expect(res.costPerTeam[0]!.percentOfTotal).toBe(0.6);
   });
 });
 
@@ -313,6 +330,8 @@ describe("getSearchSuggestions", () => {
       getTeamDetail: jest.fn(),
       getHumanDetail: jest.fn(),
       getRunDetail: jest.fn(),
+      getRuleDetail: jest.fn(),
+      updateRule: jest.fn(),
       createComplianceRule: jest.fn(),
       createSeat: jest.fn(),
       createProject: jest.fn(),
@@ -370,6 +389,16 @@ describe("entity detail delegation", () => {
     const res = await service.getRunDetail("org1", runId);
     expect(res.run.id).toBe(runId);
     expect(typeof res.agentName).toBe("string");
+  });
+
+  it("getRuleDetail delegates to api", async () => {
+    const res = await service.getRuleDetail("org1", "rule_seed_1");
+    expect(res.rule.id).toBe("rule_seed_1");
+    expect(Array.isArray(res.recentViolations)).toBe(true);
+    expect(Array.isArray(res.allAgents)).toBe(true);
+    expect(Array.isArray(res.allProjects)).toBe(true);
+    expect(Array.isArray(res.assignedAgentIds)).toBe(true);
+    expect(Array.isArray(res.assignedProjectIds)).toBe(true);
   });
 });
 

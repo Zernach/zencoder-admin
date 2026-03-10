@@ -100,6 +100,11 @@ function createCostData(): CostResponse {
     averageCostPerRunUsd: 1.25,
     costPerSuccessfulRunUsd: 1.45,
     costTrend: [{ tsIso: "2026-03-01T00:00:00.000Z", value: 400 }],
+    costPerTeam: [
+      { teamId: "team-alpha", teamName: "Team Alpha", totalCostUsd: 6500, runsStarted: 260, averageCostPerRunUsd: 25, percentOfTotal: 0.52 },
+      { teamId: "team-beta", teamName: "Team Beta", totalCostUsd: 4000, runsStarted: 170, averageCostPerRunUsd: 23.53, percentOfTotal: 0.32 },
+      { teamId: "team-gamma", teamName: "Team Gamma", totalCostUsd: 2000, runsStarted: 100, averageCostPerRunUsd: 20, percentOfTotal: 0.16 },
+    ],
     costBreakdown: [
       { key: "Enterprise Cloud Migration Platform with Extended Name", totalCostUsd: 5000, runsStarted: 200, averageCostPerRunUsd: 25, percentOfTotal: 0.4 },
       { key: "Internal Developer Tools Dashboard Project", totalCostUsd: 3500, runsStarted: 150, averageCostPerRunUsd: 23.33, percentOfTotal: 0.28 },
@@ -122,7 +127,21 @@ describe("CostAnalyticsScreen", () => {
     mockSectionRef.mockClear();
   });
 
-  it("renders full project names in Project Breakdown without truncation", () => {
+  it("renders Cost per Team and Cost per Project section headers", () => {
+    mockUseCostDashboard.mockReturnValue({
+      data: createCostData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText } = render(<CostAnalyticsScreen />);
+
+    expect(getByText("costs.costPerTeam")).toBeTruthy();
+    expect(getByText("costs.costPerProject")).toBeTruthy();
+  });
+
+  it("renders full project names in Cost per Project without truncation", () => {
     mockUseCostDashboard.mockReturnValue({
       data: createCostData(),
       loading: false,
@@ -137,7 +156,7 @@ describe("CostAnalyticsScreen", () => {
     expect(getByText("Customer Analytics Reporting Suite v2")).toBeTruthy();
   });
 
-  it("passes truncateLabels=false to Project Breakdown chart", () => {
+  it("passes truncateLabels=false to Cost per Project chart", () => {
     mockUseCostDashboard.mockReturnValue({
       data: createCostData(),
       loading: false,
@@ -147,7 +166,7 @@ describe("CostAnalyticsScreen", () => {
 
     const { getAllByTestId } = render(<CostAnalyticsScreen />);
     const truncateFlags = getAllByTestId("truncateLabels");
-    // The Project Breakdown BreakdownChart should have truncateLabels=false
+    // The Cost per Project BreakdownChart should have truncateLabels=false
     const hasFalse = truncateFlags.some((el) => el.props.children === "false");
     expect(hasFalse).toBe(true);
   });

@@ -14,6 +14,8 @@ export {
   useGetTeamDetailQuery,
   useGetHumanDetailQuery,
   useGetRunDetailQuery,
+  useGetRuleDetailQuery,
+  useUpdateRuleMutation,
   useCreateComplianceRuleMutation,
   useCreateSeatMutation,
   useCreateProjectMutation,

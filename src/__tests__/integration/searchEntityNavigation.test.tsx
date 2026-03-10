@@ -3,7 +3,7 @@ import type { SearchEntityType } from "@/features/analytics/types";
 
 describe("search entity navigation integration", () => {
   const tabs = [...TAB_ORDER];
-  const entities: SearchEntityType[] = ["agent", "project", "team", "human", "run"];
+  const entities: SearchEntityType[] = ["agent", "project", "team", "human", "run", "rule"];
 
   it("every tab resolves correctly from its path", () => {
     for (const tab of tabs) {
@@ -29,7 +29,7 @@ describe("search entity navigation integration", () => {
         routes.add(route);
       }
     }
-    expect(routes.size).toBe(25);
+    expect(routes.size).toBe(30);
   });
 
   it("typing without selection does not produce route changes", () => {

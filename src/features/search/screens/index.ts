@@ -3,3 +3,4 @@ export { ProjectDetailScreen } from "./ProjectDetailScreen";
 export { TeamDetailScreen } from "./TeamDetailScreen";
 export { HumanDetailScreen } from "./HumanDetailScreen";
 export { RunDetailScreen } from "./RunDetailScreen";
+export { RuleDetailScreen } from "./RuleDetailScreen";

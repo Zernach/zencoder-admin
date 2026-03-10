@@ -70,6 +70,7 @@ export default function AgentsScreen() {
   );
 
   const agentCols = useMemo<ColumnDef<AgentBreakdownRow>[]>(() => [
+    { key: "successRate", header: t("agents.table.success"), width: 80, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateGreenShadeColor(row.successRate, mode) }]}>{formatPercent(row.successRate * 100)}</Text> },
     {
       key: "agentName", header: t("agents.table.agent"), width: 160, render: (row) => (
         <CustomButton onPress={() => navigateTo("agent", row.agentId)} accessibilityRole="link" accessibilityLabel={`View agent ${row.agentName}`}>
@@ -84,7 +85,6 @@ export default function AgentsScreen() {
         </CustomButton>
       )
     },
-    { key: "successRate", header: t("agents.table.success"), width: 80, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateGreenShadeColor(row.successRate, mode) }]}>{formatPercent(row.successRate * 100)}</Text> },
     { key: "totalRuns", header: t("agents.table.runs"), width: 80, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.totalRuns)}</Text> },
     { key: "avgDurationMs", header: t("agents.table.avgDuration"), width: 100, align: "right", render: (row) => <Text style={ct.primary}>{formatDuration(row.avgDurationMs)}</Text> },
     { key: "totalCostUsd", header: t("agents.table.cost"), width: 90, align: "right", render: (row) => <Text style={ct.primary}>{formatCurrency(row.totalCostUsd)}</Text> },
