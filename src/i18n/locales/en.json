@@ -42,22 +42,22 @@
     "settings": "Settings",
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar",
-    "subsections": "{{label}} subsections"
-  },
-  "navigation.subsections": {
-    "reliability": "Reliability",
-    "agentPerformance": "Agents Breakdown",
-    "projectBreakdown": "Projects Breakdown",
-    "recentRuns": "Recent Runs",
-    "costSummary": "Cost Summary",
-    "costByProvider": "Cost by Provider",
-    "budgetForecast": "Budget Forecast",
-    "overview": "Overview",
-    "teamPerformance": "Team Performance",
-    "seatUserOversight": "Seat User Oversight",
-    "recentViolations": "Recent Violations",
-    "securityEvents": "Security Events",
-    "policyChanges": "Policy Changes"
+    "subsectionsLabel": "{{label}} subsections",
+    "subsections": {
+      "reliability": "Reliability",
+      "agentPerformance": "Agents Breakdown",
+      "projectBreakdown": "Projects Breakdown",
+      "recentRuns": "Recent Runs",
+      "costSummary": "Cost Summary",
+      "costByProvider": "Cost by Provider",
+      "budgetForecast": "Budget Forecast",
+      "overview": "Overview",
+      "teamPerformance": "Team Performance",
+      "seatUserOversight": "Seat User Oversight",
+      "recentViolations": "Recent Violations",
+      "securityEvents": "Security Events",
+      "policyChanges": "Policy Changes"
+    }
   },
   "dashboard": {
     "subtitle": "Organization-level analytics for cloud agent operations",
@@ -76,21 +76,21 @@
     "reliabilityAndProviderMix": "Reliability & Provider Mix",
     "anomalies": "Anomalies",
     "anomaliesSubtitle": "Notable outliers",
-    "run": "Run "
-  },
-  "dashboard.live": {
-    "title": "Live",
-    "subtitle": "AI Assistants in Action",
-    "succeeded": "Succeeded",
-    "queued": "Queued",
-    "running": "Running",
-    "emptyMessages": {
-      "resting": "Agents are resting right now.",
-      "quiet": "It's quiet in here.",
-      "noMembers": "No team members are running agents right now.",
-      "waiting": "Waiting for the next agent workflow."
-    },
-    "emptySubtitle": "New live sessions will appear automatically as engineers start runs."
+    "run": "Run ",
+    "live": {
+      "title": "Live",
+      "subtitle": "AI Assistants in Action",
+      "succeeded": "Succeeded",
+      "queued": "Queued",
+      "running": "Running",
+      "emptyMessages": {
+        "resting": "Agents are resting right now.",
+        "quiet": "It's quiet in here.",
+        "noMembers": "No team members are running agents right now.",
+        "waiting": "Waiting for the next agent workflow."
+      },
+      "emptySubtitle": "New live sessions will appear automatically as engineers start runs."
+    }
   },
   "agents": {
     "subtitle": "Agent reliability and performance",
@@ -104,6 +104,10 @@
     "queueWaitTime": "Queue wait time",
     "peakConcurrency": "Peak Concurrency",
     "maxConcurrentRuns": "Max concurrent runs/min",
+    "p50DurationTrend": "P50 Duration Over Time",
+    "p95DurationTrend": "P95 Duration Over Time",
+    "p95QueueWaitTrend": "P95 Queue Time Over Time",
+    "peakConcurrencyTrend": "Peak Concurrency Over Time",
     "reliabilityTrend": "Reliability Trend",
     "failureCategories": "Failure Categories",
     "agentPerformance": "Agents Breakdown",
@@ -115,24 +119,24 @@
     "ofTotalProjects": "of {{total}} total",
     "totalCost": "Total Cost",
     "recentRuns": "Recent Runs",
-    "latestRuns": "Latest {{count}} runs"
-  },
-  "agents.table": {
-    "agent": "Agent",
-    "project": "Project",
-    "success": "Success",
-    "runs": "Runs",
-    "avgDuration": "Avg Duration",
-    "cost": "Cost",
-    "team": "Team",
-    "avgPerRun": "Avg/Run",
-    "agentCount": "Agents",
-    "runId": "Run ID",
-    "status": "Status",
-    "started": "Started",
-    "duration": "Duration",
-    "tokens": "Tokens",
-    "provider": "Provider"
+    "latestRuns": "Latest {{count}} runs",
+    "table": {
+      "agent": "Agent",
+      "project": "Project",
+      "success": "Success",
+      "runs": "Runs",
+      "avgDuration": "Avg Duration",
+      "cost": "Cost",
+      "team": "Team",
+      "avgPerRun": "Avg/Run",
+      "agentCount": "Agents",
+      "runId": "Run ID",
+      "status": "Status",
+      "started": "Started",
+      "duration": "Duration",
+      "tokens": "Tokens",
+      "provider": "Provider"
+    }
   },
   "costs": {
     "subtitle": "Spending trends and budget tracking",
@@ -149,19 +153,19 @@
     "costPerProvider": "Cost per Provider",
     "budgetForecast": "Budget Forecast",
     "budgetVsSpentVsForecast": "Budget vs Spent vs Forecast",
-    "projectBreakdown": "Project Breakdown"
-  },
-  "costs.budget": {
-    "budget": "Budget",
-    "spent": "Spent",
-    "forecast": "Forecast",
-    "monthlyBudget": "Monthly Budget",
-    "remaining": "Remaining",
-    "utilization": "Utilization",
-    "amountSpent": "Amount Spent",
-    "ofBudget": "Of Budget",
-    "monthEndForecast": "Month-End Forecast",
-    "overUnderBudget": "Over/Under Budget"
+    "projectBreakdown": "Project Breakdown",
+    "budget": {
+      "budget": "Budget",
+      "spent": "Spent",
+      "forecast": "Forecast",
+      "monthlyBudget": "Monthly Budget",
+      "remaining": "Remaining",
+      "utilization": "Utilization",
+      "amountSpent": "Amount Spent",
+      "ofBudget": "Of Budget",
+      "monthEndForecast": "Month-End Forecast",
+      "overUnderBudget": "Over/Under Budget"
+    }
   },
   "governance": {
     "subtitle": "Policy enforcement and security monitoring",
@@ -185,31 +189,31 @@
     "createRule": "+ Create Rule",
     "securityEvents": "Security Events",
     "policyChanges": "Policy Changes",
-    "policyChangesSubtitle": "Audit trail of policy modifications"
-  },
-  "governance.table": {
-    "time": "Time",
-    "agent": "Agent",
-    "reason": "Reason",
-    "severity": "Severity",
-    "type": "Type",
-    "description": "Description",
-    "team": "Team",
-    "success": "Success",
-    "runs": "Runs",
-    "violations": "Violations",
-    "violationRate": "Violation Rate",
-    "cost": "Cost",
-    "actor": "Actor",
-    "action": "Action",
-    "target": "Target"
-  },
-  "governance.seatUsage": {
-    "fullName": "Full Name",
-    "team": "Team",
-    "runs": "Runs",
-    "tokens": "Tokens",
-    "cost": "Cost"
+    "policyChangesSubtitle": "Audit trail of policy modifications",
+    "table": {
+      "time": "Time",
+      "agent": "Agent",
+      "reason": "Reason",
+      "severity": "Severity",
+      "type": "Type",
+      "description": "Description",
+      "team": "Team",
+      "success": "Success",
+      "runs": "Runs",
+      "violations": "Violations",
+      "violationRate": "Violation Rate",
+      "cost": "Cost",
+      "actor": "Actor",
+      "action": "Action",
+      "target": "Target"
+    },
+    "seatUsage": {
+      "fullName": "Full Name",
+      "team": "Team",
+      "runs": "Runs",
+      "tokens": "Tokens",
+      "cost": "Cost"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -238,7 +242,6 @@
     "dangerZone": "Danger Zone",
     "dangerZoneSubtitle": "Irreversible and destructive actions",
     "clearCacheLabel": "Clear all cached data",
-    "signOut": "Sign Out",
     "adminUser": "Admin User",
     "adminEmail": "admin@zencoder.io",
     "ownerRole": "Owner",
@@ -248,12 +251,13 @@
     "currency": "Currency",
     "currencyDescription": "Display currency preference",
     "selectCurrency": "Select currency",
-    "searchCurrency": "Search currencies..."
-  },
-  "settings.signOut": {
-    "demoMode": "Demo Mode",
-    "demoMessage": "This is a dashboard demo, so you are unable to sign out.",
-    "dismiss": "Dismiss"
+    "searchCurrency": "Search currencies...",
+    "signOutLabel": "Sign Out",
+    "signOut": {
+      "demoMode": "Demo Mode",
+      "demoMessage": "This is a dashboard demo, so you are unable to sign out.",
+      "dismiss": "Dismiss"
+    }
   },
   "search": {
     "placeholder": "Search agents, projects, runs...",
@@ -266,56 +270,56 @@
     "suggestionsLabel": "Search suggestions"
   },
   "modals": {
-    "createAgent": "Create Agent",
-    "createProject": "Create Project",
-    "createTeam": "Create Team",
-    "createComplianceRule": "Create Compliance Rule",
     "addUser": "Add User",
-    "closeForm": "Close form"
-  },
-  "modals.createAgent": {
-    "agentName": "Agent Name",
-    "agentNamePlaceholder": "e.g. Code Review Bot",
-    "agentNameRequired": "Agent name is required",
-    "projectId": "Project ID",
-    "projectIdPlaceholder": "e.g. proj_dashboard",
-    "projectIdRequired": "Project ID is required"
-  },
-  "modals.createProject": {
-    "projectName": "Project Name",
-    "projectNamePlaceholder": "e.g. Frontend Dashboard",
-    "projectNameRequired": "Project name is required",
-    "teamId": "Team ID",
-    "teamIdPlaceholder": "e.g. team_engineering",
-    "teamIdRequired": "Team ID is required"
-  },
-  "modals.createTeam": {
-    "teamName": "Team Name",
-    "teamNamePlaceholder": "e.g. Platform Engineering",
-    "teamNameRequired": "Team name is required"
-  },
-  "modals.createUser": {
-    "fullName": "Full Name",
-    "fullNamePlaceholder": "e.g. Jane Doe",
-    "fullNameRequired": "Full name is required",
-    "email": "Email",
-    "emailPlaceholder": "e.g. jane@company.com",
-    "emailRequired": "Email is required",
-    "emailInvalid": "Invalid email address",
-    "teamId": "Team ID",
-    "teamIdPlaceholder": "e.g. team_engineering",
-    "teamIdRequired": "Team ID is required"
-  },
-  "modals.createComplianceRule": {
-    "ruleName": "Rule Name",
-    "ruleNamePlaceholder": "e.g. Max token limit exceeded",
-    "ruleNameRequired": "Name is required",
-    "description": "Description",
-    "descriptionPlaceholder": "Describe when this rule triggers",
-    "descriptionRequired": "Description is required",
-    "severityLabel": "Severity (HIGH, MEDIUM, LOW)",
-    "severityPlaceholder": "MEDIUM",
-    "severityInvalid": "Invalid severity"
+    "closeForm": "Close form",
+    "createAgentTitle": "Create Agent",
+    "createProjectTitle": "Create Project",
+    "createTeamTitle": "Create Team",
+    "createComplianceRuleTitle": "Create Compliance Rule",
+    "createAgent": {
+      "agentName": "Agent Name",
+      "agentNamePlaceholder": "e.g. Code Review Bot",
+      "agentNameRequired": "Agent name is required",
+      "projectId": "Project ID",
+      "projectIdPlaceholder": "e.g. proj_dashboard",
+      "projectIdRequired": "Project ID is required"
+    },
+    "createProject": {
+      "projectName": "Project Name",
+      "projectNamePlaceholder": "e.g. Frontend Dashboard",
+      "projectNameRequired": "Project name is required",
+      "teamId": "Team ID",
+      "teamIdPlaceholder": "e.g. team_engineering",
+      "teamIdRequired": "Team ID is required"
+    },
+    "createTeam": {
+      "teamName": "Team Name",
+      "teamNamePlaceholder": "e.g. Platform Engineering",
+      "teamNameRequired": "Team name is required"
+    },
+    "createUser": {
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "e.g. Jane Doe",
+      "fullNameRequired": "Full name is required",
+      "email": "Email",
+      "emailPlaceholder": "e.g. jane@company.com",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "teamId": "Team ID",
+      "teamIdPlaceholder": "e.g. team_engineering",
+      "teamIdRequired": "Team ID is required"
+    },
+    "createComplianceRule": {
+      "ruleName": "Rule Name",
+      "ruleNamePlaceholder": "e.g. Max token limit exceeded",
+      "ruleNameRequired": "Name is required",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe when this rule triggers",
+      "descriptionRequired": "Description is required",
+      "severityLabel": "Severity (HIGH, MEDIUM, LOW)",
+      "severityPlaceholder": "MEDIUM",
+      "severityInvalid": "Invalid severity"
+    }
   },
   "filters": {
     "team": "Team",
@@ -323,24 +327,24 @@
     "project": "Project",
     "projects": "Projects",
     "provider": "Provider",
-    "providers": "Providers",
     "status": "Status",
-    "statuses": "Statuses",
     "filterBy": "Filter by {{category}}",
     "closeFilterDropdown": "Close filter dropdown",
-    "withCount": "{{label}} ({{count}})"
-  },
-  "filters.providers": {
-    "codex": "Codex",
-    "claude": "Claude",
-    "other": "Other"
-  },
-  "filters.statuses": {
-    "succeeded": "Succeeded",
-    "failed": "Failed",
-    "running": "Running",
-    "queued": "Queued",
-    "canceled": "Canceled"
+    "withCount": "{{label}} ({{count}})",
+    "providersLabel": "Providers",
+    "statusesLabel": "Statuses",
+    "providers": {
+      "codex": "Codex",
+      "claude": "Claude",
+      "other": "Other"
+    },
+    "statuses": {
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "running": "Running",
+      "queued": "Queued",
+      "canceled": "Canceled"
+    }
   },
   "timeRange": {
     "selectTimeRange": "Select Time Range",
@@ -373,38 +377,38 @@
     "noAgents": "No agents.",
     "noMembers": "No members.",
     "noProjects": "No projects.",
-    "noDetails": "No details."
-  },
-  "entityDetail.runFields": {
-    "status": "Status",
-    "provider": "Provider",
-    "model": "Model",
-    "duration": "Duration",
-    "cost": "Cost",
-    "tokens": "Tokens",
-    "inputTokens": "Input Tokens",
-    "outputTokens": "Output Tokens",
-    "agent": "Agent",
-    "project": "Project",
-    "team": "Team",
-    "user": "User",
-    "started": "Started",
-    "completed": "Completed"
-  },
-  "entityDetail.table": {
-    "runId": "Run ID",
-    "owner": "Owner",
-    "status": "Status",
-    "created": "Created",
-    "provider": "Provider",
-    "duration": "Duration",
-    "cost": "Cost",
-    "tokens": "Tokens",
-    "agentName": "Agent Name",
-    "id": "ID",
-    "name": "Name",
-    "email": "Email",
-    "projectName": "Project Name"
+    "noDetails": "No details.",
+    "runFields": {
+      "status": "Status",
+      "provider": "Provider",
+      "model": "Model",
+      "duration": "Duration",
+      "cost": "Cost",
+      "tokens": "Tokens",
+      "inputTokens": "Input Tokens",
+      "outputTokens": "Output Tokens",
+      "agent": "Agent",
+      "project": "Project",
+      "team": "Team",
+      "user": "User",
+      "started": "Started",
+      "completed": "Completed"
+    },
+    "table": {
+      "runId": "Run ID",
+      "owner": "Owner",
+      "status": "Status",
+      "created": "Created",
+      "provider": "Provider",
+      "duration": "Duration",
+      "cost": "Cost",
+      "tokens": "Tokens",
+      "agentName": "Agent Name",
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "projectName": "Project Name"
+    }
   },
   "errors": {
     "somethingWentWrong": "Something went wrong. Please try again.",

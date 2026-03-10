@@ -42,22 +42,22 @@
     "settings": "Einstellungen",
     "collapseSidebar": "Seitenleiste einklappen",
     "expandSidebar": "Seitenleiste ausklappen",
-    "subsections": "{{label}} Unterabschnitte"
-  },
-  "navigation.subsections": {
-    "reliability": "Zuverlässigkeit",
-    "agentPerformance": "Agentenleistung",
-    "projectBreakdown": "Projektaufschlüsselung",
-    "recentRuns": "Letzte Ausführungen",
-    "costSummary": "Kostenübersicht",
-    "costByProvider": "Kosten nach Anbieter",
-    "budgetForecast": "Budgetprognose",
-    "overview": "Übersicht",
-    "teamPerformance": "Teamleistung",
-    "seatUserOversight": "Benutzerübersicht",
-    "recentViolations": "Letzte Verstöße",
-    "securityEvents": "Sicherheitsereignisse",
-    "policyChanges": "Richtlinienänderungen"
+    "subsectionsLabel": "{{label}} Unterabschnitte",
+    "subsections": {
+      "reliability": "Zuverlässigkeit",
+      "agentPerformance": "Agentenleistung",
+      "projectBreakdown": "Projektaufschlüsselung",
+      "recentRuns": "Letzte Ausführungen",
+      "costSummary": "Kostenübersicht",
+      "costByProvider": "Kosten nach Anbieter",
+      "budgetForecast": "Budgetprognose",
+      "overview": "Übersicht",
+      "teamPerformance": "Teamleistung",
+      "seatUserOversight": "Benutzerübersicht",
+      "recentViolations": "Letzte Verstöße",
+      "securityEvents": "Sicherheitsereignisse",
+      "policyChanges": "Richtlinienänderungen"
+    }
   },
   "dashboard": {
     "subtitle": "Organisationsweite Analytik für Cloud-Agenten-Operationen",
@@ -76,21 +76,21 @@
     "reliabilityAndProviderMix": "Zuverlässigkeit & Anbietermix",
     "anomalies": "Anomalien",
     "anomaliesSubtitle": "Bemerkenswerte Ausreißer",
-    "run": "Ausführung "
-  },
-  "dashboard.live": {
-    "title": "Live",
-    "subtitle": "KI-Assistenten in Aktion",
-    "succeeded": "Erfolgreich",
-    "queued": "In Warteschlange",
-    "running": "Läuft",
-    "emptyMessages": {
-      "resting": "Agenten ruhen sich gerade aus.",
-      "quiet": "Hier ist es ruhig.",
-      "noMembers": "Kein Teammitglied führt gerade Agenten aus.",
-      "waiting": "Warten auf den nächsten Agenten-Workflow."
-    },
-    "emptySubtitle": "Neue Live-Sitzungen erscheinen automatisch, wenn Entwickler Ausführungen starten."
+    "run": "Ausführung ",
+    "live": {
+      "title": "Live",
+      "subtitle": "KI-Assistenten in Aktion",
+      "succeeded": "Erfolgreich",
+      "queued": "In Warteschlange",
+      "running": "Läuft",
+      "emptyMessages": {
+        "resting": "Agenten ruhen sich gerade aus.",
+        "quiet": "Hier ist es ruhig.",
+        "noMembers": "Kein Teammitglied führt gerade Agenten aus.",
+        "waiting": "Warten auf den nächsten Agenten-Workflow."
+      },
+      "emptySubtitle": "Neue Live-Sitzungen erscheinen automatisch, wenn Entwickler Ausführungen starten."
+    }
   },
   "agents": {
     "subtitle": "Agentenzuverlässigkeit und -leistung",
@@ -104,6 +104,10 @@
     "queueWaitTime": "Wartezeit in Warteschlange",
     "peakConcurrency": "Spitzenparallelität",
     "maxConcurrentRuns": "Max. gleichzeitige Ausführungen/Min.",
+    "p50DurationTrend": "P50 Dauer im Zeitverlauf",
+    "p95DurationTrend": "P95 Dauer im Zeitverlauf",
+    "p95QueueWaitTrend": "P95 Wartezeit im Zeitverlauf",
+    "peakConcurrencyTrend": "Spitzenauslastung im Zeitverlauf",
     "reliabilityTrend": "Zuverlässigkeitstrend",
     "failureCategories": "Fehlerkategorien",
     "agentPerformance": "Agentenleistung",
@@ -115,24 +119,24 @@
     "ofTotalProjects": "von {{total}} gesamt",
     "totalCost": "Gesamtkosten",
     "recentRuns": "Letzte Ausführungen",
-    "latestRuns": "Neueste {{count}} Ausführungen"
-  },
-  "agents.table": {
-    "agent": "Agent",
-    "project": "Projekt",
-    "success": "Erfolg",
-    "runs": "Ausführungen",
-    "avgDuration": "Durchschn. Dauer",
-    "cost": "Kosten",
-    "team": "Team",
-    "avgPerRun": "Durchschn./Ausf.",
-    "agentCount": "Agenten",
-    "runId": "Ausführungs-ID",
-    "status": "Status",
-    "started": "Gestartet",
-    "duration": "Dauer",
-    "tokens": "Token",
-    "provider": "Anbieter"
+    "latestRuns": "Neueste {{count}} Ausführungen",
+    "table": {
+      "agent": "Agent",
+      "project": "Projekt",
+      "success": "Erfolg",
+      "runs": "Ausführungen",
+      "avgDuration": "Durchschn. Dauer",
+      "cost": "Kosten",
+      "team": "Team",
+      "avgPerRun": "Durchschn./Ausf.",
+      "agentCount": "Agenten",
+      "runId": "Ausführungs-ID",
+      "status": "Status",
+      "started": "Gestartet",
+      "duration": "Dauer",
+      "tokens": "Token",
+      "provider": "Anbieter"
+    }
   },
   "costs": {
     "subtitle": "Ausgabentrends und Budgetverfolgung",
@@ -149,19 +153,19 @@
     "costPerProvider": "Kosten pro Anbieter",
     "budgetForecast": "Budgetprognose",
     "budgetVsSpentVsForecast": "Budget vs Ausgaben vs Prognose",
-    "projectBreakdown": "Projektaufschlüsselung"
-  },
-  "costs.budget": {
-    "budget": "Budget",
-    "spent": "Ausgegeben",
-    "forecast": "Prognose",
-    "monthlyBudget": "Monatsbudget",
-    "remaining": "Verbleibend",
-    "utilization": "Auslastung",
-    "amountSpent": "Ausgegebener Betrag",
-    "ofBudget": "Vom Budget",
-    "monthEndForecast": "Monatsendprognose",
-    "overUnderBudget": "Über-/Unterbudget"
+    "projectBreakdown": "Projektaufschlüsselung",
+    "budget": {
+      "budget": "Budget",
+      "spent": "Ausgegeben",
+      "forecast": "Prognose",
+      "monthlyBudget": "Monatsbudget",
+      "remaining": "Verbleibend",
+      "utilization": "Auslastung",
+      "amountSpent": "Ausgegebener Betrag",
+      "ofBudget": "Vom Budget",
+      "monthEndForecast": "Monatsendprognose",
+      "overUnderBudget": "Über-/Unterbudget"
+    }
   },
   "governance": {
     "subtitle": "Richtliniendurchsetzung und Sicherheitsüberwachung",
@@ -185,31 +189,31 @@
     "createRule": "+ Regel erstellen",
     "securityEvents": "Sicherheitsereignisse",
     "policyChanges": "Richtlinienänderungen",
-    "policyChangesSubtitle": "Prüfpfad der Richtlinienänderungen"
-  },
-  "governance.table": {
-    "time": "Zeit",
-    "agent": "Agent",
-    "reason": "Grund",
-    "severity": "Schweregrad",
-    "type": "Typ",
-    "description": "Beschreibung",
-    "team": "Team",
-    "success": "Erfolg",
-    "runs": "Ausführungen",
-    "violations": "Verstöße",
-    "violationRate": "Verstoßrate",
-    "cost": "Kosten",
-    "actor": "Akteur",
-    "action": "Aktion",
-    "target": "Ziel"
-  },
-  "governance.seatUsage": {
-    "fullName": "Vollständiger Name",
-    "team": "Team",
-    "runs": "Ausführungen",
-    "tokens": "Token",
-    "cost": "Kosten"
+    "policyChangesSubtitle": "Prüfpfad der Richtlinienänderungen",
+    "table": {
+      "time": "Zeit",
+      "agent": "Agent",
+      "reason": "Grund",
+      "severity": "Schweregrad",
+      "type": "Typ",
+      "description": "Beschreibung",
+      "team": "Team",
+      "success": "Erfolg",
+      "runs": "Ausführungen",
+      "violations": "Verstöße",
+      "violationRate": "Verstoßrate",
+      "cost": "Kosten",
+      "actor": "Akteur",
+      "action": "Aktion",
+      "target": "Ziel"
+    },
+    "seatUsage": {
+      "fullName": "Vollständiger Name",
+      "team": "Team",
+      "runs": "Ausführungen",
+      "tokens": "Token",
+      "cost": "Kosten"
+    }
   },
   "settings": {
     "title": "Einstellungen",
@@ -238,7 +242,6 @@
     "dangerZone": "Gefahrenzone",
     "dangerZoneSubtitle": "Irreversible und destruktive Aktionen",
     "clearCacheLabel": "Alle zwischengespeicherten Daten löschen",
-    "signOut": "Abmelden",
     "adminUser": "Admin-Benutzer",
     "adminEmail": "admin@zencoder.io",
     "ownerRole": "Eigentümer",
@@ -248,12 +251,13 @@
     "currency": "Währung",
     "currencyDescription": "Bevorzugte Anzeigewährung",
     "selectCurrency": "Währung auswählen",
-    "searchCurrency": "Währungen suchen..."
-  },
-  "settings.signOut": {
-    "demoMode": "Demo-Modus",
-    "demoMessage": "Dies ist eine Dashboard-Demo, eine Abmeldung ist nicht möglich.",
-    "dismiss": "Schließen"
+    "searchCurrency": "Währungen suchen...",
+    "signOutLabel": "Abmelden",
+    "signOut": {
+      "demoMode": "Demo-Modus",
+      "demoMessage": "Dies ist eine Dashboard-Demo, eine Abmeldung ist nicht möglich.",
+      "dismiss": "Schließen"
+    }
   },
   "search": {
     "placeholder": "Agenten, Projekte, Ausführungen suchen...",
@@ -266,56 +270,56 @@
     "suggestionsLabel": "Suchvorschläge"
   },
   "modals": {
-    "createAgent": "Agent erstellen",
-    "createProject": "Projekt erstellen",
-    "createTeam": "Team erstellen",
-    "createComplianceRule": "Compliance-Regel erstellen",
     "addUser": "Benutzer hinzufügen",
-    "closeForm": "Formular schließen"
-  },
-  "modals.createAgent": {
-    "agentName": "Agentenname",
-    "agentNamePlaceholder": "z.B. Code Review Bot",
-    "agentNameRequired": "Agentenname ist erforderlich",
-    "projectId": "Projekt-ID",
-    "projectIdPlaceholder": "z.B. proj_dashboard",
-    "projectIdRequired": "Projekt-ID ist erforderlich"
-  },
-  "modals.createProject": {
-    "projectName": "Projektname",
-    "projectNamePlaceholder": "z.B. Frontend Dashboard",
-    "projectNameRequired": "Projektname ist erforderlich",
-    "teamId": "Team-ID",
-    "teamIdPlaceholder": "z.B. team_engineering",
-    "teamIdRequired": "Team-ID ist erforderlich"
-  },
-  "modals.createTeam": {
-    "teamName": "Teamname",
-    "teamNamePlaceholder": "z.B. Platform Engineering",
-    "teamNameRequired": "Teamname ist erforderlich"
-  },
-  "modals.createUser": {
-    "fullName": "Vollständiger Name",
-    "fullNamePlaceholder": "z.B. Max Mustermann",
-    "fullNameRequired": "Vollständiger Name ist erforderlich",
-    "email": "E-Mail",
-    "emailPlaceholder": "z.B. max@firma.de",
-    "emailRequired": "E-Mail ist erforderlich",
-    "emailInvalid": "Ungültige E-Mail-Adresse",
-    "teamId": "Team-ID",
-    "teamIdPlaceholder": "z.B. team_engineering",
-    "teamIdRequired": "Team-ID ist erforderlich"
-  },
-  "modals.createComplianceRule": {
-    "ruleName": "Regelname",
-    "ruleNamePlaceholder": "z.B. Maximales Token-Limit überschritten",
-    "ruleNameRequired": "Name ist erforderlich",
-    "description": "Beschreibung",
-    "descriptionPlaceholder": "Beschreiben Sie, wann diese Regel ausgelöst wird",
-    "descriptionRequired": "Beschreibung ist erforderlich",
-    "severityLabel": "Schweregrad (HIGH, MEDIUM, LOW)",
-    "severityPlaceholder": "MEDIUM",
-    "severityInvalid": "Ungültiger Schweregrad"
+    "closeForm": "Formular schließen",
+    "createAgentTitle": "Agent erstellen",
+    "createProjectTitle": "Projekt erstellen",
+    "createTeamTitle": "Team erstellen",
+    "createComplianceRuleTitle": "Compliance-Regel erstellen",
+    "createAgent": {
+      "agentName": "Agentenname",
+      "agentNamePlaceholder": "z.B. Code Review Bot",
+      "agentNameRequired": "Agentenname ist erforderlich",
+      "projectId": "Projekt-ID",
+      "projectIdPlaceholder": "z.B. proj_dashboard",
+      "projectIdRequired": "Projekt-ID ist erforderlich"
+    },
+    "createProject": {
+      "projectName": "Projektname",
+      "projectNamePlaceholder": "z.B. Frontend Dashboard",
+      "projectNameRequired": "Projektname ist erforderlich",
+      "teamId": "Team-ID",
+      "teamIdPlaceholder": "z.B. team_engineering",
+      "teamIdRequired": "Team-ID ist erforderlich"
+    },
+    "createTeam": {
+      "teamName": "Teamname",
+      "teamNamePlaceholder": "z.B. Platform Engineering",
+      "teamNameRequired": "Teamname ist erforderlich"
+    },
+    "createUser": {
+      "fullName": "Vollständiger Name",
+      "fullNamePlaceholder": "z.B. Max Mustermann",
+      "fullNameRequired": "Vollständiger Name ist erforderlich",
+      "email": "E-Mail",
+      "emailPlaceholder": "z.B. max@firma.de",
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Ungültige E-Mail-Adresse",
+      "teamId": "Team-ID",
+      "teamIdPlaceholder": "z.B. team_engineering",
+      "teamIdRequired": "Team-ID ist erforderlich"
+    },
+    "createComplianceRule": {
+      "ruleName": "Regelname",
+      "ruleNamePlaceholder": "z.B. Maximales Token-Limit überschritten",
+      "ruleNameRequired": "Name ist erforderlich",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreiben Sie, wann diese Regel ausgelöst wird",
+      "descriptionRequired": "Beschreibung ist erforderlich",
+      "severityLabel": "Schweregrad (HIGH, MEDIUM, LOW)",
+      "severityPlaceholder": "MEDIUM",
+      "severityInvalid": "Ungültiger Schweregrad"
+    }
   },
   "filters": {
     "team": "Team",
@@ -323,24 +327,24 @@
     "project": "Projekt",
     "projects": "Projekte",
     "provider": "Anbieter",
-    "providers": "Anbieter",
     "status": "Status",
-    "statuses": "Status",
     "filterBy": "Filtern nach {{category}}",
     "closeFilterDropdown": "Filter-Dropdown schließen",
-    "withCount": "{{label}} ({{count}})"
-  },
-  "filters.providers": {
-    "codex": "Codex",
-    "claude": "Claude",
-    "other": "Sonstige"
-  },
-  "filters.statuses": {
-    "succeeded": "Erfolgreich",
-    "failed": "Fehlgeschlagen",
-    "running": "Läuft",
-    "queued": "In Warteschlange",
-    "canceled": "Abgebrochen"
+    "withCount": "{{label}} ({{count}})",
+    "providersLabel": "Anbieter",
+    "statusesLabel": "Status",
+    "providers": {
+      "codex": "Codex",
+      "claude": "Claude",
+      "other": "Sonstige"
+    },
+    "statuses": {
+      "succeeded": "Erfolgreich",
+      "failed": "Fehlgeschlagen",
+      "running": "Läuft",
+      "queued": "In Warteschlange",
+      "canceled": "Abgebrochen"
+    }
   },
   "timeRange": {
     "selectTimeRange": "Zeitraum auswählen",
@@ -373,38 +377,38 @@
     "noAgents": "Keine Agenten.",
     "noMembers": "Keine Mitglieder.",
     "noProjects": "Keine Projekte.",
-    "noDetails": "Keine Details."
-  },
-  "entityDetail.runFields": {
-    "status": "Status",
-    "provider": "Anbieter",
-    "model": "Modell",
-    "duration": "Dauer",
-    "cost": "Kosten",
-    "tokens": "Token",
-    "inputTokens": "Eingabe-Token",
-    "outputTokens": "Ausgabe-Token",
-    "agent": "Agent",
-    "project": "Projekt",
-    "team": "Team",
-    "user": "Benutzer",
-    "started": "Gestartet",
-    "completed": "Abgeschlossen"
-  },
-  "entityDetail.table": {
-    "runId": "Ausführungs-ID",
-    "owner": "Besitzer",
-    "status": "Status",
-    "created": "Erstellt",
-    "provider": "Anbieter",
-    "duration": "Dauer",
-    "cost": "Kosten",
-    "tokens": "Token",
-    "agentName": "Agentenname",
-    "id": "ID",
-    "name": "Name",
-    "email": "E-Mail",
-    "projectName": "Projektname"
+    "noDetails": "Keine Details.",
+    "runFields": {
+      "status": "Status",
+      "provider": "Anbieter",
+      "model": "Modell",
+      "duration": "Dauer",
+      "cost": "Kosten",
+      "tokens": "Token",
+      "inputTokens": "Eingabe-Token",
+      "outputTokens": "Ausgabe-Token",
+      "agent": "Agent",
+      "project": "Projekt",
+      "team": "Team",
+      "user": "Benutzer",
+      "started": "Gestartet",
+      "completed": "Abgeschlossen"
+    },
+    "table": {
+      "runId": "Ausführungs-ID",
+      "owner": "Besitzer",
+      "status": "Status",
+      "created": "Erstellt",
+      "provider": "Anbieter",
+      "duration": "Dauer",
+      "cost": "Kosten",
+      "tokens": "Token",
+      "agentName": "Agentenname",
+      "id": "ID",
+      "name": "Name",
+      "email": "E-Mail",
+      "projectName": "Projektname"
+    }
   },
   "errors": {
     "somethingWentWrong": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",

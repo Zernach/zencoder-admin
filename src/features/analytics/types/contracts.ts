@@ -241,6 +241,10 @@ export interface AgentsHubResponse {
   peakConcurrency: number;
   failureCategoryBreakdown: KeyValueMetric[];
   reliabilityTrend: TimeSeriesPoint[];
+  p50DurationTrend: TimeSeriesPoint[];
+  p95DurationTrend: TimeSeriesPoint[];
+  p95QueueWaitTrend: TimeSeriesPoint[];
+  peakConcurrencyTrend: TimeSeriesPoint[];
   agentBreakdown: AgentBreakdownRow[];
   // Project breakdown
   totalProjects: number;

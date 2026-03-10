@@ -42,22 +42,22 @@
     "settings": "Настройки",
     "collapseSidebar": "Свернуть боковую панель",
     "expandSidebar": "Развернуть боковую панель",
-    "subsections": "Подразделы {{label}}"
-  },
-  "navigation.subsections": {
-    "reliability": "Надёжность",
-    "agentPerformance": "Производительность агентов",
-    "projectBreakdown": "Разбивка по проектам",
-    "recentRuns": "Последние запуски",
-    "costSummary": "Сводка расходов",
-    "costByProvider": "Расходы по провайдерам",
-    "budgetForecast": "Прогноз бюджета",
-    "overview": "Обзор",
-    "teamPerformance": "Производительность команд",
-    "seatUserOversight": "Контроль пользователей",
-    "recentViolations": "Последние нарушения",
-    "securityEvents": "События безопасности",
-    "policyChanges": "Изменения политик"
+    "subsectionsLabel": "Подразделы {{label}}",
+    "subsections": {
+      "reliability": "Надёжность",
+      "agentPerformance": "Производительность агентов",
+      "projectBreakdown": "Разбивка по проектам",
+      "recentRuns": "Последние запуски",
+      "costSummary": "Сводка расходов",
+      "costByProvider": "Расходы по провайдерам",
+      "budgetForecast": "Прогноз бюджета",
+      "overview": "Обзор",
+      "teamPerformance": "Производительность команд",
+      "seatUserOversight": "Контроль пользователей",
+      "recentViolations": "Последние нарушения",
+      "securityEvents": "События безопасности",
+      "policyChanges": "Изменения политик"
+    }
   },
   "dashboard": {
     "subtitle": "Аналитика операций облачных агентов на уровне организации",
@@ -76,21 +76,21 @@
     "reliabilityAndProviderMix": "Надёжность и провайдеры",
     "anomalies": "Аномалии",
     "anomaliesSubtitle": "Заметные отклонения",
-    "run": "Запуск "
-  },
-  "dashboard.live": {
-    "title": "Live",
-    "subtitle": "ИИ-ассистенты в действии",
-    "succeeded": "Успешно",
-    "queued": "В очереди",
-    "running": "Выполняется",
-    "emptyMessages": {
-      "resting": "Агенты сейчас отдыхают.",
-      "quiet": "Здесь тихо.",
-      "noMembers": "Никто из команды сейчас не запускает агентов.",
-      "waiting": "Ожидание следующего рабочего процесса агента."
-    },
-    "emptySubtitle": "Новые сессии будут появляться автоматически, когда инженеры запустят процессы."
+    "run": "Запуск ",
+    "live": {
+      "title": "Live",
+      "subtitle": "ИИ-ассистенты в действии",
+      "succeeded": "Успешно",
+      "queued": "В очереди",
+      "running": "Выполняется",
+      "emptyMessages": {
+        "resting": "Агенты сейчас отдыхают.",
+        "quiet": "Здесь тихо.",
+        "noMembers": "Никто из команды сейчас не запускает агентов.",
+        "waiting": "Ожидание следующего рабочего процесса агента."
+      },
+      "emptySubtitle": "Новые сессии будут появляться автоматически, когда инженеры запустят процессы."
+    }
   },
   "agents": {
     "subtitle": "Надёжность и производительность агентов",
@@ -104,6 +104,10 @@
     "queueWaitTime": "Время ожидания в очереди",
     "peakConcurrency": "Пиковая параллельность",
     "maxConcurrentRuns": "Макс. параллельных запусков/мин",
+    "p50DurationTrend": "Длительность P50 по времени",
+    "p95DurationTrend": "Длительность P95 по времени",
+    "p95QueueWaitTrend": "Время ожидания P95 по времени",
+    "peakConcurrencyTrend": "Пиковая конкуренция по времени",
     "reliabilityTrend": "Тренд надёжности",
     "failureCategories": "Категории ошибок",
     "agentPerformance": "Производительность агентов",
@@ -115,24 +119,24 @@
     "ofTotalProjects": "из {{total}} всего",
     "totalCost": "Общая стоимость",
     "recentRuns": "Последние запуски",
-    "latestRuns": "Последние {{count}} запусков"
-  },
-  "agents.table": {
-    "agent": "Агент",
-    "project": "Проект",
-    "success": "Успех",
-    "runs": "Запуски",
-    "avgDuration": "Средняя длит.",
-    "cost": "Стоимость",
-    "team": "Команда",
-    "avgPerRun": "Ср./запуск",
-    "agentCount": "Агенты",
-    "runId": "ID запуска",
-    "status": "Статус",
-    "started": "Начало",
-    "duration": "Длительность",
-    "tokens": "Токены",
-    "provider": "Провайдер"
+    "latestRuns": "Последние {{count}} запусков",
+    "table": {
+      "agent": "Агент",
+      "project": "Проект",
+      "success": "Успех",
+      "runs": "Запуски",
+      "avgDuration": "Средняя длит.",
+      "cost": "Стоимость",
+      "team": "Команда",
+      "avgPerRun": "Ср./запуск",
+      "agentCount": "Агенты",
+      "runId": "ID запуска",
+      "status": "Статус",
+      "started": "Начало",
+      "duration": "Длительность",
+      "tokens": "Токены",
+      "provider": "Провайдер"
+    }
   },
   "costs": {
     "subtitle": "Тренды расходов и отслеживание бюджета",
@@ -149,19 +153,19 @@
     "costPerProvider": "Стоимость по провайдерам",
     "budgetForecast": "Прогноз бюджета",
     "budgetVsSpentVsForecast": "Бюджет vs Расходы vs Прогноз",
-    "projectBreakdown": "Разбивка по проектам"
-  },
-  "costs.budget": {
-    "budget": "Бюджет",
-    "spent": "Потрачено",
-    "forecast": "Прогноз",
-    "monthlyBudget": "Месячный бюджет",
-    "remaining": "Остаток",
-    "utilization": "Использование",
-    "amountSpent": "Сумма расходов",
-    "ofBudget": "От бюджета",
-    "monthEndForecast": "Прогноз на конец месяца",
-    "overUnderBudget": "Превышение/недорасход"
+    "projectBreakdown": "Разбивка по проектам",
+    "budget": {
+      "budget": "Бюджет",
+      "spent": "Потрачено",
+      "forecast": "Прогноз",
+      "monthlyBudget": "Месячный бюджет",
+      "remaining": "Остаток",
+      "utilization": "Использование",
+      "amountSpent": "Сумма расходов",
+      "ofBudget": "От бюджета",
+      "monthEndForecast": "Прогноз на конец месяца",
+      "overUnderBudget": "Превышение/недорасход"
+    }
   },
   "governance": {
     "subtitle": "Контроль политик и мониторинг безопасности",
@@ -185,31 +189,31 @@
     "createRule": "+ Создать правило",
     "securityEvents": "События безопасности",
     "policyChanges": "Изменения политик",
-    "policyChangesSubtitle": "Журнал изменений политик"
-  },
-  "governance.table": {
-    "time": "Время",
-    "agent": "Агент",
-    "reason": "Причина",
-    "severity": "Серьёзность",
-    "type": "Тип",
-    "description": "Описание",
-    "team": "Команда",
-    "success": "Успех",
-    "runs": "Запуски",
-    "violations": "Нарушения",
-    "violationRate": "Частота нарушений",
-    "cost": "Стоимость",
-    "actor": "Исполнитель",
-    "action": "Действие",
-    "target": "Цель"
-  },
-  "governance.seatUsage": {
-    "fullName": "Полное имя",
-    "team": "Команда",
-    "runs": "Запуски",
-    "tokens": "Токены",
-    "cost": "Стоимость"
+    "policyChangesSubtitle": "Журнал изменений политик",
+    "table": {
+      "time": "Время",
+      "agent": "Агент",
+      "reason": "Причина",
+      "severity": "Серьёзность",
+      "type": "Тип",
+      "description": "Описание",
+      "team": "Команда",
+      "success": "Успех",
+      "runs": "Запуски",
+      "violations": "Нарушения",
+      "violationRate": "Частота нарушений",
+      "cost": "Стоимость",
+      "actor": "Исполнитель",
+      "action": "Действие",
+      "target": "Цель"
+    },
+    "seatUsage": {
+      "fullName": "Полное имя",
+      "team": "Команда",
+      "runs": "Запуски",
+      "tokens": "Токены",
+      "cost": "Стоимость"
+    }
   },
   "settings": {
     "title": "Настройки",
@@ -238,7 +242,6 @@
     "dangerZone": "Опасная зона",
     "dangerZoneSubtitle": "Необратимые и деструктивные действия",
     "clearCacheLabel": "Очистить все кэшированные данные",
-    "signOut": "Выйти",
     "adminUser": "Администратор",
     "adminEmail": "admin@zencoder.io",
     "ownerRole": "Владелец",
@@ -248,12 +251,13 @@
     "currency": "Валюта",
     "currencyDescription": "Предпочитаемая валюта отображения",
     "selectCurrency": "Выберите валюту",
-    "searchCurrency": "Поиск валют..."
-  },
-  "settings.signOut": {
-    "demoMode": "Демо-режим",
-    "demoMessage": "Это демонстрационная панель управления, поэтому выход недоступен.",
-    "dismiss": "Закрыть"
+    "searchCurrency": "Поиск валют...",
+    "signOutLabel": "Выйти",
+    "signOut": {
+      "demoMode": "Демо-режим",
+      "demoMessage": "Это демонстрационная панель управления, поэтому выход недоступен.",
+      "dismiss": "Закрыть"
+    }
   },
   "search": {
     "placeholder": "Поиск агентов, проектов, запусков...",
@@ -266,56 +270,56 @@
     "suggestionsLabel": "Подсказки поиска"
   },
   "modals": {
-    "createAgent": "Создать агента",
-    "createProject": "Создать проект",
-    "createTeam": "Создать команду",
-    "createComplianceRule": "Создать правило соответствия",
     "addUser": "Добавить пользователя",
-    "closeForm": "Закрыть форму"
-  },
-  "modals.createAgent": {
-    "agentName": "Имя агента",
-    "agentNamePlaceholder": "напр. Бот для ревью кода",
-    "agentNameRequired": "Имя агента обязательно",
-    "projectId": "ID проекта",
-    "projectIdPlaceholder": "напр. proj_dashboard",
-    "projectIdRequired": "ID проекта обязателен"
-  },
-  "modals.createProject": {
-    "projectName": "Название проекта",
-    "projectNamePlaceholder": "напр. Панель управления",
-    "projectNameRequired": "Название проекта обязательно",
-    "teamId": "ID команды",
-    "teamIdPlaceholder": "напр. team_engineering",
-    "teamIdRequired": "ID команды обязателен"
-  },
-  "modals.createTeam": {
-    "teamName": "Название команды",
-    "teamNamePlaceholder": "напр. Платформенная инженерия",
-    "teamNameRequired": "Название команды обязательно"
-  },
-  "modals.createUser": {
-    "fullName": "Полное имя",
-    "fullNamePlaceholder": "напр. Иван Петров",
-    "fullNameRequired": "Полное имя обязательно",
-    "email": "Email",
-    "emailPlaceholder": "напр. ivan@company.com",
-    "emailRequired": "Email обязателен",
-    "emailInvalid": "Неверный email адрес",
-    "teamId": "ID команды",
-    "teamIdPlaceholder": "напр. team_engineering",
-    "teamIdRequired": "ID команды обязателен"
-  },
-  "modals.createComplianceRule": {
-    "ruleName": "Название правила",
-    "ruleNamePlaceholder": "напр. Превышен лимит токенов",
-    "ruleNameRequired": "Название обязательно",
-    "description": "Описание",
-    "descriptionPlaceholder": "Опишите, когда срабатывает это правило",
-    "descriptionRequired": "Описание обязательно",
-    "severityLabel": "Серьёзность (HIGH, MEDIUM, LOW)",
-    "severityPlaceholder": "MEDIUM",
-    "severityInvalid": "Недопустимая серьёзность"
+    "closeForm": "Закрыть форму",
+    "createAgentTitle": "Создать агента",
+    "createProjectTitle": "Создать проект",
+    "createTeamTitle": "Создать команду",
+    "createComplianceRuleTitle": "Создать правило соответствия",
+    "createAgent": {
+      "agentName": "Имя агента",
+      "agentNamePlaceholder": "напр. Бот для ревью кода",
+      "agentNameRequired": "Имя агента обязательно",
+      "projectId": "ID проекта",
+      "projectIdPlaceholder": "напр. proj_dashboard",
+      "projectIdRequired": "ID проекта обязателен"
+    },
+    "createProject": {
+      "projectName": "Название проекта",
+      "projectNamePlaceholder": "напр. Панель управления",
+      "projectNameRequired": "Название проекта обязательно",
+      "teamId": "ID команды",
+      "teamIdPlaceholder": "напр. team_engineering",
+      "teamIdRequired": "ID команды обязателен"
+    },
+    "createTeam": {
+      "teamName": "Название команды",
+      "teamNamePlaceholder": "напр. Платформенная инженерия",
+      "teamNameRequired": "Название команды обязательно"
+    },
+    "createUser": {
+      "fullName": "Полное имя",
+      "fullNamePlaceholder": "напр. Иван Петров",
+      "fullNameRequired": "Полное имя обязательно",
+      "email": "Email",
+      "emailPlaceholder": "напр. ivan@company.com",
+      "emailRequired": "Email обязателен",
+      "emailInvalid": "Неверный email адрес",
+      "teamId": "ID команды",
+      "teamIdPlaceholder": "напр. team_engineering",
+      "teamIdRequired": "ID команды обязателен"
+    },
+    "createComplianceRule": {
+      "ruleName": "Название правила",
+      "ruleNamePlaceholder": "напр. Превышен лимит токенов",
+      "ruleNameRequired": "Название обязательно",
+      "description": "Описание",
+      "descriptionPlaceholder": "Опишите, когда срабатывает это правило",
+      "descriptionRequired": "Описание обязательно",
+      "severityLabel": "Серьёзность (HIGH, MEDIUM, LOW)",
+      "severityPlaceholder": "MEDIUM",
+      "severityInvalid": "Недопустимая серьёзность"
+    }
   },
   "filters": {
     "team": "Команда",
@@ -323,24 +327,24 @@
     "project": "Проект",
     "projects": "Проекты",
     "provider": "Провайдер",
-    "providers": "Провайдеры",
     "status": "Статус",
-    "statuses": "Статусы",
     "filterBy": "Фильтровать по {{category}}",
     "closeFilterDropdown": "Закрыть фильтр",
-    "withCount": "{{label}} ({{count}})"
-  },
-  "filters.providers": {
-    "codex": "Codex",
-    "claude": "Claude",
-    "other": "Другой"
-  },
-  "filters.statuses": {
-    "succeeded": "Успешно",
-    "failed": "Ошибка",
-    "running": "Выполняется",
-    "queued": "В очереди",
-    "canceled": "Отменено"
+    "withCount": "{{label}} ({{count}})",
+    "providersLabel": "Провайдеры",
+    "statusesLabel": "Статусы",
+    "providers": {
+      "codex": "Codex",
+      "claude": "Claude",
+      "other": "Другой"
+    },
+    "statuses": {
+      "succeeded": "Успешно",
+      "failed": "Ошибка",
+      "running": "Выполняется",
+      "queued": "В очереди",
+      "canceled": "Отменено"
+    }
   },
   "timeRange": {
     "selectTimeRange": "Выберите временной диапазон",
@@ -373,38 +377,38 @@
     "noAgents": "Нет агентов.",
     "noMembers": "Нет участников.",
     "noProjects": "Нет проектов.",
-    "noDetails": "Нет деталей."
-  },
-  "entityDetail.runFields": {
-    "status": "Статус",
-    "provider": "Провайдер",
-    "model": "Модель",
-    "duration": "Длительность",
-    "cost": "Стоимость",
-    "tokens": "Токены",
-    "inputTokens": "Входные токены",
-    "outputTokens": "Выходные токены",
-    "agent": "Агент",
-    "project": "Проект",
-    "team": "Команда",
-    "user": "Пользователь",
-    "started": "Начало",
-    "completed": "Завершено"
-  },
-  "entityDetail.table": {
-    "runId": "ID запуска",
-    "owner": "Владелец",
-    "status": "Статус",
-    "created": "Создано",
-    "provider": "Провайдер",
-    "duration": "Длительность",
-    "cost": "Стоимость",
-    "tokens": "Токены",
-    "agentName": "Имя агента",
-    "id": "ID",
-    "name": "Имя",
-    "email": "Email",
-    "projectName": "Название проекта"
+    "noDetails": "Нет деталей.",
+    "runFields": {
+      "status": "Статус",
+      "provider": "Провайдер",
+      "model": "Модель",
+      "duration": "Длительность",
+      "cost": "Стоимость",
+      "tokens": "Токены",
+      "inputTokens": "Входные токены",
+      "outputTokens": "Выходные токены",
+      "agent": "Агент",
+      "project": "Проект",
+      "team": "Команда",
+      "user": "Пользователь",
+      "started": "Начало",
+      "completed": "Завершено"
+    },
+    "table": {
+      "runId": "ID запуска",
+      "owner": "Владелец",
+      "status": "Статус",
+      "created": "Создано",
+      "provider": "Провайдер",
+      "duration": "Длительность",
+      "cost": "Стоимость",
+      "tokens": "Токены",
+      "agentName": "Имя агента",
+      "id": "ID",
+      "name": "Имя",
+      "email": "Email",
+      "projectName": "Название проекта"
+    }
   },
   "errors": {
     "somethingWentWrong": "Что-то пошло не так. Попробуйте ещё раз.",

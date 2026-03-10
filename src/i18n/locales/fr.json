@@ -42,22 +42,22 @@
     "settings": "Paramètres",
     "collapseSidebar": "Réduire la barre latérale",
     "expandSidebar": "Développer la barre latérale",
-    "subsections": "Sous-sections {{label}}"
-  },
-  "navigation.subsections": {
-    "reliability": "Fiabilité",
-    "agentPerformance": "Performance des agents",
-    "projectBreakdown": "Répartition par projet",
-    "recentRuns": "Exécutions récentes",
-    "costSummary": "Résumé des coûts",
-    "costByProvider": "Coûts par fournisseur",
-    "budgetForecast": "Prévision budgétaire",
-    "overview": "Vue d'ensemble",
-    "teamPerformance": "Performance des équipes",
-    "seatUserOversight": "Supervision des utilisateurs",
-    "recentViolations": "Violations récentes",
-    "securityEvents": "Événements de sécurité",
-    "policyChanges": "Modifications de politique"
+    "subsectionsLabel": "Sous-sections {{label}}",
+    "subsections": {
+      "reliability": "Fiabilité",
+      "agentPerformance": "Performance des agents",
+      "projectBreakdown": "Répartition par projet",
+      "recentRuns": "Exécutions récentes",
+      "costSummary": "Résumé des coûts",
+      "costByProvider": "Coûts par fournisseur",
+      "budgetForecast": "Prévision budgétaire",
+      "overview": "Vue d'ensemble",
+      "teamPerformance": "Performance des équipes",
+      "seatUserOversight": "Supervision des utilisateurs",
+      "recentViolations": "Violations récentes",
+      "securityEvents": "Événements de sécurité",
+      "policyChanges": "Modifications de politique"
+    }
   },
   "dashboard": {
     "subtitle": "Analytique au niveau de l'organisation pour les opérations d'agents cloud",
@@ -76,21 +76,21 @@
     "reliabilityAndProviderMix": "Fiabilité et mix fournisseurs",
     "anomalies": "Anomalies",
     "anomaliesSubtitle": "Valeurs aberrantes notables",
-    "run": "Exécution "
-  },
-  "dashboard.live": {
-    "title": "Live",
-    "subtitle": "Assistants IA en action",
-    "succeeded": "Réussi",
-    "queued": "En attente",
-    "running": "En cours",
-    "emptyMessages": {
-      "resting": "Les agents se reposent en ce moment.",
-      "quiet": "C'est calme ici.",
-      "noMembers": "Aucun membre de l'équipe n'exécute d'agents en ce moment.",
-      "waiting": "En attente du prochain workflow d'agent."
-    },
-    "emptySubtitle": "Les nouvelles sessions apparaîtront automatiquement lorsque les développeurs lanceront des exécutions."
+    "run": "Exécution ",
+    "live": {
+      "title": "Live",
+      "subtitle": "Assistants IA en action",
+      "succeeded": "Réussi",
+      "queued": "En attente",
+      "running": "En cours",
+      "emptyMessages": {
+        "resting": "Les agents se reposent en ce moment.",
+        "quiet": "C'est calme ici.",
+        "noMembers": "Aucun membre de l'équipe n'exécute d'agents en ce moment.",
+        "waiting": "En attente du prochain workflow d'agent."
+      },
+      "emptySubtitle": "Les nouvelles sessions apparaîtront automatiquement lorsque les développeurs lanceront des exécutions."
+    }
   },
   "agents": {
     "subtitle": "Fiabilité et performance des agents",
@@ -104,6 +104,10 @@
     "queueWaitTime": "Temps d'attente en file",
     "peakConcurrency": "Concurrence maximale",
     "maxConcurrentRuns": "Max. exécutions simultanées/min",
+    "p50DurationTrend": "Durée P50 dans le temps",
+    "p95DurationTrend": "Durée P95 dans le temps",
+    "p95QueueWaitTrend": "Temps d'attente P95 dans le temps",
+    "peakConcurrencyTrend": "Concurrence maximale dans le temps",
     "reliabilityTrend": "Tendance de fiabilité",
     "failureCategories": "Catégories d'échecs",
     "agentPerformance": "Performance des agents",
@@ -115,24 +119,24 @@
     "ofTotalProjects": "sur {{total}} au total",
     "totalCost": "Coût total",
     "recentRuns": "Exécutions récentes",
-    "latestRuns": "{{count}} dernières exécutions"
-  },
-  "agents.table": {
-    "agent": "Agent",
-    "project": "Projet",
-    "success": "Succès",
-    "runs": "Exécutions",
-    "avgDuration": "Durée moy.",
-    "cost": "Coût",
-    "team": "Équipe",
-    "avgPerRun": "Moy./exéc.",
-    "agentCount": "Agents",
-    "runId": "ID d'exécution",
-    "status": "Statut",
-    "started": "Démarré",
-    "duration": "Durée",
-    "tokens": "Jetons",
-    "provider": "Fournisseur"
+    "latestRuns": "{{count}} dernières exécutions",
+    "table": {
+      "agent": "Agent",
+      "project": "Projet",
+      "success": "Succès",
+      "runs": "Exécutions",
+      "avgDuration": "Durée moy.",
+      "cost": "Coût",
+      "team": "Équipe",
+      "avgPerRun": "Moy./exéc.",
+      "agentCount": "Agents",
+      "runId": "ID d'exécution",
+      "status": "Statut",
+      "started": "Démarré",
+      "duration": "Durée",
+      "tokens": "Jetons",
+      "provider": "Fournisseur"
+    }
   },
   "costs": {
     "subtitle": "Tendances des dépenses et suivi budgétaire",
@@ -149,19 +153,19 @@
     "costPerProvider": "Coût par fournisseur",
     "budgetForecast": "Prévision budgétaire",
     "budgetVsSpentVsForecast": "Budget vs Dépenses vs Prévision",
-    "projectBreakdown": "Répartition par projet"
-  },
-  "costs.budget": {
-    "budget": "Budget",
-    "spent": "Dépensé",
-    "forecast": "Prévision",
-    "monthlyBudget": "Budget mensuel",
-    "remaining": "Restant",
-    "utilization": "Utilisation",
-    "amountSpent": "Montant dépensé",
-    "ofBudget": "Du budget",
-    "monthEndForecast": "Prévision fin de mois",
-    "overUnderBudget": "Excédent/déficit budgétaire"
+    "projectBreakdown": "Répartition par projet",
+    "budget": {
+      "budget": "Budget",
+      "spent": "Dépensé",
+      "forecast": "Prévision",
+      "monthlyBudget": "Budget mensuel",
+      "remaining": "Restant",
+      "utilization": "Utilisation",
+      "amountSpent": "Montant dépensé",
+      "ofBudget": "Du budget",
+      "monthEndForecast": "Prévision fin de mois",
+      "overUnderBudget": "Excédent/déficit budgétaire"
+    }
   },
   "governance": {
     "subtitle": "Application des politiques et surveillance de la sécurité",
@@ -185,31 +189,31 @@
     "createRule": "+ Créer une règle",
     "securityEvents": "Événements de sécurité",
     "policyChanges": "Modifications de politique",
-    "policyChangesSubtitle": "Journal des modifications de politique"
-  },
-  "governance.table": {
-    "time": "Heure",
-    "agent": "Agent",
-    "reason": "Raison",
-    "severity": "Gravité",
-    "type": "Type",
-    "description": "Description",
-    "team": "Équipe",
-    "success": "Succès",
-    "runs": "Exécutions",
-    "violations": "Violations",
-    "violationRate": "Taux de violation",
-    "cost": "Coût",
-    "actor": "Acteur",
-    "action": "Action",
-    "target": "Cible"
-  },
-  "governance.seatUsage": {
-    "fullName": "Nom complet",
-    "team": "Équipe",
-    "runs": "Exécutions",
-    "tokens": "Jetons",
-    "cost": "Coût"
+    "policyChangesSubtitle": "Journal des modifications de politique",
+    "table": {
+      "time": "Heure",
+      "agent": "Agent",
+      "reason": "Raison",
+      "severity": "Gravité",
+      "type": "Type",
+      "description": "Description",
+      "team": "Équipe",
+      "success": "Succès",
+      "runs": "Exécutions",
+      "violations": "Violations",
+      "violationRate": "Taux de violation",
+      "cost": "Coût",
+      "actor": "Acteur",
+      "action": "Action",
+      "target": "Cible"
+    },
+    "seatUsage": {
+      "fullName": "Nom complet",
+      "team": "Équipe",
+      "runs": "Exécutions",
+      "tokens": "Jetons",
+      "cost": "Coût"
+    }
   },
   "settings": {
     "title": "Paramètres",
@@ -238,7 +242,6 @@
     "dangerZone": "Zone de danger",
     "dangerZoneSubtitle": "Actions irréversibles et destructives",
     "clearCacheLabel": "Effacer toutes les données en cache",
-    "signOut": "Déconnexion",
     "adminUser": "Administrateur",
     "adminEmail": "admin@zencoder.io",
     "ownerRole": "Propriétaire",
@@ -248,12 +251,13 @@
     "currency": "Devise",
     "currencyDescription": "Devise d'affichage préférée",
     "selectCurrency": "Sélectionner la devise",
-    "searchCurrency": "Rechercher des devises..."
-  },
-  "settings.signOut": {
-    "demoMode": "Mode démo",
-    "demoMessage": "Ceci est une démo du tableau de bord, la déconnexion n'est pas possible.",
-    "dismiss": "Fermer"
+    "searchCurrency": "Rechercher des devises...",
+    "signOutLabel": "Déconnexion",
+    "signOut": {
+      "demoMode": "Mode démo",
+      "demoMessage": "Ceci est une démo du tableau de bord, la déconnexion n'est pas possible.",
+      "dismiss": "Fermer"
+    }
   },
   "search": {
     "placeholder": "Rechercher agents, projets, exécutions...",
@@ -266,56 +270,56 @@
     "suggestionsLabel": "Suggestions de recherche"
   },
   "modals": {
-    "createAgent": "Créer un agent",
-    "createProject": "Créer un projet",
-    "createTeam": "Créer une équipe",
-    "createComplianceRule": "Créer une règle de conformité",
     "addUser": "Ajouter un utilisateur",
-    "closeForm": "Fermer le formulaire"
-  },
-  "modals.createAgent": {
-    "agentName": "Nom de l'agent",
-    "agentNamePlaceholder": "ex. Bot de revue de code",
-    "agentNameRequired": "Le nom de l'agent est requis",
-    "projectId": "ID du projet",
-    "projectIdPlaceholder": "ex. proj_dashboard",
-    "projectIdRequired": "L'ID du projet est requis"
-  },
-  "modals.createProject": {
-    "projectName": "Nom du projet",
-    "projectNamePlaceholder": "ex. Tableau de bord Frontend",
-    "projectNameRequired": "Le nom du projet est requis",
-    "teamId": "ID de l'équipe",
-    "teamIdPlaceholder": "ex. team_engineering",
-    "teamIdRequired": "L'ID de l'équipe est requis"
-  },
-  "modals.createTeam": {
-    "teamName": "Nom de l'équipe",
-    "teamNamePlaceholder": "ex. Ingénierie de plateforme",
-    "teamNameRequired": "Le nom de l'équipe est requis"
-  },
-  "modals.createUser": {
-    "fullName": "Nom complet",
-    "fullNamePlaceholder": "ex. Jean Dupont",
-    "fullNameRequired": "Le nom complet est requis",
-    "email": "Email",
-    "emailPlaceholder": "ex. jean@entreprise.fr",
-    "emailRequired": "L'email est requis",
-    "emailInvalid": "Adresse email invalide",
-    "teamId": "ID de l'équipe",
-    "teamIdPlaceholder": "ex. team_engineering",
-    "teamIdRequired": "L'ID de l'équipe est requis"
-  },
-  "modals.createComplianceRule": {
-    "ruleName": "Nom de la règle",
-    "ruleNamePlaceholder": "ex. Limite maximale de jetons dépassée",
-    "ruleNameRequired": "Le nom est requis",
-    "description": "Description",
-    "descriptionPlaceholder": "Décrivez quand cette règle se déclenche",
-    "descriptionRequired": "La description est requise",
-    "severityLabel": "Gravité (HIGH, MEDIUM, LOW)",
-    "severityPlaceholder": "MEDIUM",
-    "severityInvalid": "Gravité invalide"
+    "closeForm": "Fermer le formulaire",
+    "createAgentTitle": "Créer un agent",
+    "createProjectTitle": "Créer un projet",
+    "createTeamTitle": "Créer une équipe",
+    "createComplianceRuleTitle": "Créer une règle de conformité",
+    "createAgent": {
+      "agentName": "Nom de l'agent",
+      "agentNamePlaceholder": "ex. Bot de revue de code",
+      "agentNameRequired": "Le nom de l'agent est requis",
+      "projectId": "ID du projet",
+      "projectIdPlaceholder": "ex. proj_dashboard",
+      "projectIdRequired": "L'ID du projet est requis"
+    },
+    "createProject": {
+      "projectName": "Nom du projet",
+      "projectNamePlaceholder": "ex. Tableau de bord Frontend",
+      "projectNameRequired": "Le nom du projet est requis",
+      "teamId": "ID de l'équipe",
+      "teamIdPlaceholder": "ex. team_engineering",
+      "teamIdRequired": "L'ID de l'équipe est requis"
+    },
+    "createTeam": {
+      "teamName": "Nom de l'équipe",
+      "teamNamePlaceholder": "ex. Ingénierie de plateforme",
+      "teamNameRequired": "Le nom de l'équipe est requis"
+    },
+    "createUser": {
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "ex. Jean Dupont",
+      "fullNameRequired": "Le nom complet est requis",
+      "email": "Email",
+      "emailPlaceholder": "ex. jean@entreprise.fr",
+      "emailRequired": "L'email est requis",
+      "emailInvalid": "Adresse email invalide",
+      "teamId": "ID de l'équipe",
+      "teamIdPlaceholder": "ex. team_engineering",
+      "teamIdRequired": "L'ID de l'équipe est requis"
+    },
+    "createComplianceRule": {
+      "ruleName": "Nom de la règle",
+      "ruleNamePlaceholder": "ex. Limite maximale de jetons dépassée",
+      "ruleNameRequired": "Le nom est requis",
+      "description": "Description",
+      "descriptionPlaceholder": "Décrivez quand cette règle se déclenche",
+      "descriptionRequired": "La description est requise",
+      "severityLabel": "Gravité (HIGH, MEDIUM, LOW)",
+      "severityPlaceholder": "MEDIUM",
+      "severityInvalid": "Gravité invalide"
+    }
   },
   "filters": {
     "team": "Équipe",
@@ -323,24 +327,24 @@
     "project": "Projet",
     "projects": "Projets",
     "provider": "Fournisseur",
-    "providers": "Fournisseurs",
     "status": "Statut",
-    "statuses": "Statuts",
     "filterBy": "Filtrer par {{category}}",
     "closeFilterDropdown": "Fermer le filtre",
-    "withCount": "{{label}} ({{count}})"
-  },
-  "filters.providers": {
-    "codex": "Codex",
-    "claude": "Claude",
-    "other": "Autre"
-  },
-  "filters.statuses": {
-    "succeeded": "Réussi",
-    "failed": "Échoué",
-    "running": "En cours",
-    "queued": "En attente",
-    "canceled": "Annulé"
+    "withCount": "{{label}} ({{count}})",
+    "providersLabel": "Fournisseurs",
+    "statusesLabel": "Statuts",
+    "providers": {
+      "codex": "Codex",
+      "claude": "Claude",
+      "other": "Autre"
+    },
+    "statuses": {
+      "succeeded": "Réussi",
+      "failed": "Échoué",
+      "running": "En cours",
+      "queued": "En attente",
+      "canceled": "Annulé"
+    }
   },
   "timeRange": {
     "selectTimeRange": "Sélectionner la période",
@@ -373,38 +377,38 @@
     "noAgents": "Aucun agent.",
     "noMembers": "Aucun membre.",
     "noProjects": "Aucun projet.",
-    "noDetails": "Aucun détail."
-  },
-  "entityDetail.runFields": {
-    "status": "Statut",
-    "provider": "Fournisseur",
-    "model": "Modèle",
-    "duration": "Durée",
-    "cost": "Coût",
-    "tokens": "Jetons",
-    "inputTokens": "Jetons d'entrée",
-    "outputTokens": "Jetons de sortie",
-    "agent": "Agent",
-    "project": "Projet",
-    "team": "Équipe",
-    "user": "Utilisateur",
-    "started": "Démarré",
-    "completed": "Terminé"
-  },
-  "entityDetail.table": {
-    "runId": "ID d'exécution",
-    "owner": "Propriétaire",
-    "status": "Statut",
-    "created": "Créé",
-    "provider": "Fournisseur",
-    "duration": "Durée",
-    "cost": "Coût",
-    "tokens": "Jetons",
-    "agentName": "Nom de l'agent",
-    "id": "ID",
-    "name": "Nom",
-    "email": "Email",
-    "projectName": "Nom du projet"
+    "noDetails": "Aucun détail.",
+    "runFields": {
+      "status": "Statut",
+      "provider": "Fournisseur",
+      "model": "Modèle",
+      "duration": "Durée",
+      "cost": "Coût",
+      "tokens": "Jetons",
+      "inputTokens": "Jetons d'entrée",
+      "outputTokens": "Jetons de sortie",
+      "agent": "Agent",
+      "project": "Projet",
+      "team": "Équipe",
+      "user": "Utilisateur",
+      "started": "Démarré",
+      "completed": "Terminé"
+    },
+    "table": {
+      "runId": "ID d'exécution",
+      "owner": "Propriétaire",
+      "status": "Statut",
+      "created": "Créé",
+      "provider": "Fournisseur",
+      "duration": "Durée",
+      "cost": "Coût",
+      "tokens": "Jetons",
+      "agentName": "Nom de l'agent",
+      "id": "ID",
+      "name": "Nom",
+      "email": "Email",
+      "projectName": "Nom du projet"
+    }
   },
   "errors": {
     "somethingWentWrong": "Une erreur est survenue. Veuillez réessayer.",

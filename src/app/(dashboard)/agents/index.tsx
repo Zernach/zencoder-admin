@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "expo-router";
 import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
-import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
+import { SectionHeader, CardGrid, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
 import { ChartCard, LineChart, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
 import { formatPercent, formatDuration, formatCompactNumber } from "@/features/analytics/utils/formatters";
@@ -158,14 +158,22 @@ export default function AgentsScreen() {
           </CardGrid>
         ) : data ? (
           <>
-            <CardGrid columns={4}>
-              <KpiCard title={t("agents.p50Duration")} value={formatDuration(data.p50RunDurationMs)} />
-              <KpiCard title={t("agents.p95Duration")} value={formatDuration(data.p95RunDurationMs)} />
-            </CardGrid>
-            <CardGrid columns={2}>
-              <KpiCard title={t("agents.p95QueueWait")} value={formatDuration(data.p95QueueWaitMs)} caption={t("agents.queueWaitTime")} />
-              <KpiCard title={t("agents.peakConcurrency")} value={formatCompactNumber(data.peakConcurrency)} caption={t("agents.maxConcurrentRuns")} />
-            </CardGrid>
+            <CustomList scrollViewProps={chartScrollProps}>
+              <ChartCard title={t("agents.p50DurationTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+                <LineChart data={data.p50DurationTrend} variant="line" xTickCount={4} />
+              </ChartCard>
+              <ChartCard title={t("agents.p95DurationTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+                <LineChart data={data.p95DurationTrend} variant="line" xTickCount={4} />
+              </ChartCard>
+            </CustomList>
+            <CustomList scrollViewProps={chartScrollProps}>
+              <ChartCard title={t("agents.p95QueueWaitTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+                <LineChart data={data.p95QueueWaitTrend} variant="line" xTickCount={4} />
+              </ChartCard>
+              <ChartCard title={t("agents.peakConcurrencyTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+                <LineChart data={data.peakConcurrencyTrend} variant="line" xTickCount={4} />
+              </ChartCard>
+            </CustomList>
             <CustomList scrollViewProps={chartScrollProps}>
               <ChartCard title={t("agents.reliabilityTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
                 <LineChart
@@ -200,7 +208,7 @@ export default function AgentsScreen() {
               label={t("agents.createAgent")}
               textStyle={localStyles.createButtonText}
               accessibilityRole="button"
-              accessibilityLabel={t("modals.createAgent")}
+              accessibilityLabel={t("modals.createAgentTitle")}
             />
           </View>
           <DataTable
@@ -227,7 +235,7 @@ export default function AgentsScreen() {
               label="+ Create Project"
               textStyle={localStyles.createButtonText}
               accessibilityRole="button"
-              accessibilityLabel={t("modals.createProject")}
+              accessibilityLabel={t("modals.createProjectTitle")}
             />
           </View>
           <DataTable

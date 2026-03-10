@@ -164,6 +164,22 @@ function createAgentsHubData(): AgentsHubResponse {
       { tsIso: "2026-03-01T00:00:00.000Z", value: 94 },
       { tsIso: "2026-03-02T00:00:00.000Z", value: 92 },
     ],
+    p50DurationTrend: [
+      { tsIso: "2026-03-01T00:00:00.000Z", value: 1100 },
+      { tsIso: "2026-03-02T00:00:00.000Z", value: 1300 },
+    ],
+    p95DurationTrend: [
+      { tsIso: "2026-03-01T00:00:00.000Z", value: 3200 },
+      { tsIso: "2026-03-02T00:00:00.000Z", value: 3600 },
+    ],
+    p95QueueWaitTrend: [
+      { tsIso: "2026-03-01T00:00:00.000Z", value: 200 },
+      { tsIso: "2026-03-02T00:00:00.000Z", value: 300 },
+    ],
+    peakConcurrencyTrend: [
+      { tsIso: "2026-03-01T00:00:00.000Z", value: 15 },
+      { tsIso: "2026-03-02T00:00:00.000Z", value: 20 },
+    ],
     agentBreakdown: [
       {
         agentId: "agent_1",
@@ -318,5 +334,52 @@ describe("AgentsScreen", () => {
     fireEvent.press(getByLabelText("View run run_001"));
 
     expect(mockPush).toHaveBeenCalledWith("/agents/run/run_001");
+  });
+
+  it("renders four performance trend line charts in reliability section", () => {
+    mockUseAgentsHub.mockReturnValue({
+      data: createAgentsHubData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText } = render(<AgentsScreen />);
+
+    expect(getByText("agents.p50DurationTrend")).toBeTruthy();
+    expect(getByText("agents.p95DurationTrend")).toBeTruthy();
+    expect(getByText("agents.p95QueueWaitTrend")).toBeTruthy();
+    expect(getByText("agents.peakConcurrencyTrend")).toBeTruthy();
+  });
+
+  it("does not render KpiCards for duration/queue/concurrency metrics", () => {
+    mockUseAgentsHub.mockReturnValue({
+      data: createAgentsHubData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { queryByText } = render(<AgentsScreen />);
+
+    // Old KpiCard scalar labels should no longer appear
+    expect(queryByText("agents.p50Duration: 1.2s")).toBeNull();
+    expect(queryByText("agents.p95Duration: 3.4s")).toBeNull();
+    expect(queryByText("agents.p95QueueWait: 0.3s")).toBeNull();
+    expect(queryByText("agents.peakConcurrency: 18")).toBeNull();
+  });
+
+  it("still renders reliability trend and failure categories charts", () => {
+    mockUseAgentsHub.mockReturnValue({
+      data: createAgentsHubData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText } = render(<AgentsScreen />);
+
+    expect(getByText("agents.reliabilityTrend")).toBeTruthy();
+    expect(getByText("agents.failureCategories")).toBeTruthy();
   });
 });

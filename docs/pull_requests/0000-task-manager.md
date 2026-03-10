@@ -79,8 +79,8 @@
 | ✅ | [0071](./0071-currency-selection-modal-and-settings-integration.md) | Currency Selection Modal & Form + Settings Integration | Settings |
 | ✅ | [0072](./0072-currency-app-wide-integration.md) | Currency App-Wide Integration: Tables, Charts & Visualizations | Currency |
 | ✅ | [0073](./0073-language-currency-preferences-test-coverage.md) | Language & Currency Preferences Full Test Coverage | Testing |
-| ⬜ | [0074](./0074-agents-kpi-to-line-charts-time-series.md) | Agents Screen: Replace KPI Cards with Time-Series Line Charts | Screens |
+| ✅ | [0074](./0074-agents-kpi-to-line-charts-time-series.md) | Agents Screen: Replace KPI Cards with Time-Series Line Charts | Screens |
 
 ---
 
-**Progress: 73 / 74**
+**Progress: 74 / 74**
