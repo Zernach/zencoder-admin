@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Analyses op organisatieniveau voor cloudagent-operaties",
-    "subtitleWithData": "{{totalRuns}} uitvoeringen over {{days}} dagen ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Belangrijke statistieken",
     "keyMetricsSubtitle": "In een oogopslag",
     "trends": "Trends",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Nieuwe livesessies verschijnen automatisch wanneer engineers uitvoeringen starten."
     },
     "wauTrend": "Wekelijks actieve gebruikers (WAU)",
-    "mauTrend": "Maandelijks actieve gebruikers (MAU)"
+    "mauTrend": "Maandelijks actieve gebruikers (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Betrouwbaarheid en prestaties van agenten",

@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Bulut ajan operasyonları için kurum düzeyinde analitik",
-    "subtitleWithData": "{{totalRuns}} çalıştırma, {{days}} gün boyunca ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Temel Metrikler",
     "keyMetricsSubtitle": "Bir bakışta",
     "trends": "Trendler",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Mühendisler çalıştırma başlattığında yeni canlı oturumlar otomatik olarak görünecektir."
     },
     "wauTrend": "Haftalık Aktif Kullanıcılar (WAU)",
-    "mauTrend": "Aylık Aktif Kullanıcılar (MAU)"
+    "mauTrend": "Aylık Aktif Kullanıcılar (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Ajan güvenilirliği ve performansı",

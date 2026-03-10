@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Анализ на ниво организация за операции с облачни агенти",
-    "subtitleWithData": "{{totalRuns}} изпълнения за {{days}} дни ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Ключови метрики",
     "keyMetricsSubtitle": "С един поглед",
     "trends": "Тенденции",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Нови сесии ще се появяват автоматично, когато инженерите стартират изпълнения."
     },
     "wauTrend": "Седмични активни потребители (WAU)",
-    "mauTrend": "Месечни активни потребители (MAU)"
+    "mauTrend": "Месечни активни потребители (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Надеждност и производителност на агентите",

@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Analytika na úrovni organizace pro operace cloudových agentů",
-    "subtitleWithData": "{{totalRuns}} spuštění za {{days}} dní ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Klíčové ukazatele",
     "keyMetricsSubtitle": "Na první pohled",
     "trends": "Trendy",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Nové živé relace se zobrazí automaticky, jakmile inženýři zahájí spuštění."
     },
     "wauTrend": "Týdenní aktivní uživatelé (WAU)",
-    "mauTrend": "Měsíční aktivní uživatelé (MAU)"
+    "mauTrend": "Měsíční aktivní uživatelé (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Spolehlivost a výkonnost agentů",

@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Analytique au niveau de l'organisation pour les opérations d'agents cloud",
-    "subtitleWithData": "{{totalRuns}} exécutions sur {{days}} jours ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Métriques clés",
     "keyMetricsSubtitle": "En un coup d'œil",
     "trends": "Tendances",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Les nouvelles sessions apparaîtront automatiquement lorsque les développeurs lanceront des exécutions."
     },
     "wauTrend": "Utilisateurs actifs hebdomadaires (WAU)",
-    "mauTrend": "Utilisateurs actifs mensuels (MAU)"
+    "mauTrend": "Utilisateurs actifs mensuels (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Fiabilité et performance des agents",

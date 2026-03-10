@@ -4,7 +4,6 @@ import { View, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
 import { useLiveAgentSessions } from "@/features/analytics/hooks/useLiveAgentSessions";
-import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import {
   SectionHeader,
   CardGrid,
@@ -13,15 +12,14 @@ import {
   ErrorState,
   LiveAssistantsSection,
 } from "@/components/dashboard";
-import { ChartCard, LineChart, MultiLineChart } from "@/components/charts";
-import type { MultiLineChartSeries } from "@/components/charts/MultiLineChart";
-import { getOrangeBarShadesStepped } from "@/components/charts/palette";
+import { ChartCard, LineChart } from "@/components/charts";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { CustomList } from "@/components/lists";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import type { LiveAgentSession } from "@/features/analytics/types";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { buildEntityRoute, TABS } from "@/constants/routes";
+import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 
 const styles = sectionStyles;
 
@@ -42,9 +40,9 @@ export default function OverviewDashboardScreen() {
     error: liveError,
     refetch: refetchLiveSessions,
   } = useLiveAgentSessions();
-  const { preset } = useDashboardFilters();
   const filteredSessions = useSearchFilter(liveSessions, SESSION_SEARCH_KEYS);
   const router = useRouter();
+  const { formatCurrency } = useCurrencyFormatter();
 
   const handleKpiPress = useCallback(
     (route: string) => {
@@ -74,16 +72,9 @@ export default function OverviewDashboardScreen() {
     return handler;
   }, [kpiPressCache]);
 
-  const subtitle = useMemo(() => {
-    if (!data) return t("dashboard.subtitle");
-    const totalRuns = data.runsTrend.reduce((s, p) => s + p.value, 0);
-    const days = data.runsTrend.length;
-    return t("dashboard.subtitleWithData", { totalRuns: totalRuns.toLocaleString(), days, preset });
-  }, [data, preset, t]);
-
   const headerProps = useMemo(
-    () => ({ title: t("navigation.home"), subtitle, isLoading: loading }),
-    [subtitle, loading, t],
+    () => ({ title: t("dashboard.title"), subtitle: t("dashboard.subtitle"), isLoading: loading }),
+    [loading, t],
   );
 
   const trendScrollProps = useMemo(() => ({
@@ -99,22 +90,6 @@ export default function OverviewDashboardScreen() {
       { width: Math.max(280, viewportWidth - 12 * 2) },
     ];
   }, [bp, isLargeLayout, viewportWidth]);
-
-  const activeUsersSeries = useMemo((): MultiLineChartSeries[] => {
-    if (!data) return [];
-    const result: MultiLineChartSeries[] = [];
-    if (data.mauTrend && data.mauTrend.length > 0) {
-      result.push({ label: t("dashboard.mauTrend"), data: data.mauTrend });
-    }
-    if (data.wauTrend && data.wauTrend.length > 0) {
-      result.push({ label: t("dashboard.wauTrend"), data: data.wauTrend });
-    }
-    if (data.activeUsersTrend && data.activeUsersTrend.length > 0) {
-      result.push({ label: t("dashboard.activeUsersTrend"), data: data.activeUsersTrend });
-    }
-    const colors = getOrangeBarShadesStepped(result.length);
-    return result.map((s, i) => ({ ...s, color: colors[i] }));
-  }, [data, t]);
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
@@ -136,7 +111,7 @@ export default function OverviewDashboardScreen() {
             {data && (
               <LineChart
                 data={data.runsTrend}
-                variant="area"
+                variant="line"
                 height={200}
               />
             )}
@@ -150,11 +125,6 @@ export default function OverviewDashboardScreen() {
             )}
           </ChartCard>
         </CustomList>
-        {activeUsersSeries.length > 0 && (
-          <ChartCard title={t("dashboard.activeUsers")}>
-            <MultiLineChart series={activeUsersSeries} height={220} />
-          </ChartCard>
-        )}
       </View>
 
       {/* Section 3 -- Outcomes */}
@@ -173,7 +143,7 @@ export default function OverviewDashboardScreen() {
           </CardGrid>
           {data.outcomesTrend && data.outcomesTrend.length > 0 && (
             <ChartCard title={t("dashboard.automatedMergeRequestsPerDay")}>
-              <LineChart data={data.outcomesTrend} height={180} variant="area" />
+              <LineChart data={data.outcomesTrend} height={180} variant="line" />
             </ChartCard>
           )}
         </View>
@@ -213,7 +183,7 @@ export default function OverviewDashboardScreen() {
               <KpiCard
                 key={a.runId}
                 title={a.type.replace(/_/g, " ")}
-                value={a.label}
+                value={a.type === "highest_cost" ? formatCurrency(a.value) : a.label}
                 caption={t("dashboard.run")}
                 captionLink={{
                   text: a.runId,

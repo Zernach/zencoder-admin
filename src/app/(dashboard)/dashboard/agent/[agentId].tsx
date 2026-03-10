@@ -1,7 +1,3 @@
-import { useLocalSearchParams } from "expo-router";
-import { AgentDetailScreen } from "@/features/search/screens";
+import { AgentDetailRoute } from "@/components/routes";
 
-export default function AgentDetailRoute() {
-  const { agentId } = useLocalSearchParams<{ agentId: string }>();
-  return <AgentDetailScreen agentId={agentId ?? ""} />;
-}
+export default AgentDetailRoute;

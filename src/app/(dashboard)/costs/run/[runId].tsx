@@ -1,7 +1,3 @@
-import { useLocalSearchParams } from "expo-router";
-import { RunDetailScreen } from "@/features/search/screens";
+import { RunDetailRoute } from "@/components/routes";
 
-export default function RunDetailRoute() {
-  const { runId } = useLocalSearchParams<{ runId: string }>();
-  return <RunDetailScreen runId={runId ?? ""} />;
-}
+export default RunDetailRoute;

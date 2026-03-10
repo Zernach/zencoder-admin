@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Organisationsövergripande analys för molnagentoperationer",
-    "subtitleWithData": "{{totalRuns}} körningar under {{days}} dagar ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Nyckeltal",
     "keyMetricsSubtitle": "I ett ögonkast",
     "trends": "Trender",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Nya livesessioner visas automatiskt när ingenjörer startar körningar."
     },
     "wauTrend": "Veckovisa aktiva användare (WAU)",
-    "mauTrend": "Månatliga aktiva användare (MAU)"
+    "mauTrend": "Månatliga aktiva användare (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Agenttillförlitlighet och prestanda",

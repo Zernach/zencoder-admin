@@ -41,6 +41,10 @@ describe("StubAnalyticsApi — createComplianceRule", () => {
 
     const afterGov = await api.getGovernance(filters);
     expect(afterGov.policyViolationCount).toBeGreaterThan(beforeViolationCount);
+    const createdRule = afterGov.rules.find((rule) => rule.title === "Test Rule");
+    expect(createdRule).toBeDefined();
+    expect(createdRule!.description).toBe("Test desc");
+    expect(typeof createdRule!.runsCheckedCount).toBe("number");
 
     // New violations should appear in the list (recentViolations is capped at 20)
     const newViolations = afterGov.recentViolations.filter((v) =>
@@ -175,5 +179,6 @@ describe("StubAnalyticsApi — createTeam", () => {
     expect(createdTeam).toBeDefined();
     expect(createdTeam!.runsCount).toBe(0);
     expect(createdTeam!.policyViolationCount).toBe(0);
+    expect(createdTeam!.rulesCount).toBe(0);
   });
 });

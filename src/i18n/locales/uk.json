@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Аналітика на рівні організації для операцій хмарних агентів",
-    "subtitleWithData": "{{totalRuns}} запусків за {{days}} днів ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Ключові показники",
     "keyMetricsSubtitle": "Загальний огляд",
     "trends": "Тенденції",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Нові сесії в реальному часі з'являтимуться автоматично, коли інженери почнуть запуски."
     },
     "wauTrend": "Щотижневі активні користувачі (WAU)",
-    "mauTrend": "Щомісячні активні користувачі (MAU)"
+    "mauTrend": "Щомісячні активні користувачі (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Надійність та продуктивність агентів",

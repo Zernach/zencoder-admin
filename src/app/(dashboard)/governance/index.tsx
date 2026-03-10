@@ -4,13 +4,15 @@ import { View, Text, StyleSheet } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { CustomButton } from "@/components/buttons";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
-import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
-import { ChartCard, BreakdownChart } from "@/components/charts";
-import type { BreakdownChartDatum } from "@/components/charts/BreakdownChart";
+import { SectionHeader, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
+import { ChartCard, BreakdownChart, MultiLineChart } from "@/components/charts";
+import type { MultiLineChartSeries } from "@/components/charts/MultiLineChart";
+import { getOrangeBarShadesStepped } from "@/components/charts/palette";
 import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
 import { formatCompactNumber, formatPercent } from "@/features/analytics/utils/formatters";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import type {
+  GovernanceRuleRow,
   PolicyViolationRow,
   SecurityEventRow,
   PolicyChangeEvent,
@@ -29,13 +31,12 @@ import { keyExtractors } from "@/constants";
 import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
 import { useAppDispatch, openModal, ModalName } from "@/store";
 
-const SKELETON_4 = Array.from({ length: 4 });
-
 const VIOLATION_SEARCH_KEYS: (keyof PolicyViolationRow)[] = ["agentName", "reason", "severity"];
 const SECURITY_SEARCH_KEYS: (keyof SecurityEventRow)[] = ["type", "description"];
 const SEAT_SEARCH_KEYS: (keyof SeatUserUsageRow)[] = ["fullName", "teamName"];
 const TEAM_PERFORMANCE_SEARCH_KEYS: (keyof TeamPerformanceComparisonRow)[] = ["teamName"];
 const POLICY_CHANGE_SEARCH_KEYS: (keyof PolicyChangeEvent)[] = ["action", "target"];
+const RULE_SEARCH_KEYS: (keyof GovernanceRuleRow)[] = ["title", "description"];
 
 export default function GovernanceScreen() {
   const { t } = useTranslation();
@@ -65,6 +66,7 @@ export default function GovernanceScreen() {
     TEAM_PERFORMANCE_SEARCH_KEYS,
   );
   const filteredPolicyChanges = useSearchFilter(data?.policyChanges ?? [], POLICY_CHANGE_SEARCH_KEYS);
+  const filteredRules = useSearchFilter(data?.rules ?? [], RULE_SEARCH_KEYS);
 
   const violationCols = useMemo<ColumnDef<PolicyViolationRow>[]>(() => [
     { key: "timestampIso", header: t("governance.table.time"), width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
@@ -84,6 +86,35 @@ export default function GovernanceScreen() {
     { key: "type", header: t("governance.table.type"), width: 160 },
     { key: "description", header: t("governance.table.description") },
   ], [ct, t]);
+
+  const rulesCols = useMemo<ColumnDef<GovernanceRuleRow>[]>(() => [
+    { key: "title", header: "Title", width: 220 },
+    {
+      key: "description",
+      header: "Description",
+      width: 540,
+      render: (row) => <Text style={ct.primary}>{row.description}</Text>,
+    },
+    {
+      key: "createdAtIso",
+      header: "Created",
+      width: 180,
+      render: (row) => <Text style={ct.primary}>{new Date(row.createdAtIso).toLocaleString()}</Text>,
+    },
+    {
+      key: "editedAtIso",
+      header: "Edited",
+      width: 180,
+      render: (row) => <Text style={ct.primary}>{new Date(row.editedAtIso).toLocaleString()}</Text>,
+    },
+    {
+      key: "runsCheckedCount",
+      header: "Runs",
+      width: 90,
+      align: "right",
+      render: (row) => <Text style={ct.primary}>{row.runsCheckedCount.toLocaleString()}</Text>,
+    },
+  ], [ct]);
 
   const teamPerformanceCols = useMemo<ColumnDef<TeamPerformanceComparisonRow>[]>(() => [
     {
@@ -116,7 +147,14 @@ export default function GovernanceScreen() {
       header: t("governance.table.violations"),
       width: 110,
       align: "right",
-      render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.policyViolationCount)}</Text>,
+      render: (row) => <Text style={ct.error}>{formatCompactNumber(row.policyViolationCount)}</Text>,
+    },
+    {
+      key: "rulesCount",
+      header: t("governance.table.rules"),
+      width: 90,
+      align: "right",
+      render: (row) => <Text style={ct.success}>{formatCompactNumber(row.rulesCount)}</Text>,
     },
     {
       key: "policyViolationRate",
@@ -159,18 +197,6 @@ export default function GovernanceScreen() {
     [data, t],
   );
 
-  const violationsByTeamChartData = useMemo<BreakdownChartDatum[]>(() => {
-    if (!data) return [];
-    return data.violationsByTeam.map((team) => ({
-      key: team.teamName,
-      value: team.totalViolations,
-      hoverRows: team.reasonBreakdown.map((r) => ({
-        label: r.key,
-        value: String(r.value),
-      })),
-    }));
-  }, [data]);
-
   const seatUsageChartData = useMemo(() => {
     return filteredSeatUsers.map((row) => ({
       key: row.fullName,
@@ -184,6 +210,22 @@ export default function GovernanceScreen() {
       ],
     }));
   }, [filteredSeatUsers, t]);
+
+  const activeUsersSeries = useMemo((): MultiLineChartSeries[] => {
+    if (!data) return [];
+    const result: MultiLineChartSeries[] = [];
+    if (data.mauTrend && data.mauTrend.length > 0) {
+      result.push({ label: t("dashboard.mauTrend"), data: data.mauTrend });
+    }
+    if (data.wauTrend && data.wauTrend.length > 0) {
+      result.push({ label: t("dashboard.wauTrend"), data: data.wauTrend });
+    }
+    if (data.activeUsersTrend && data.activeUsersTrend.length > 0) {
+      result.push({ label: t("dashboard.activeUsersTrend"), data: data.activeUsersTrend });
+    }
+    const colors = getOrangeBarShadesStepped(result.length);
+    return result.map((series, index) => ({ ...series, color: colors[index] }));
+  }, [data, t]);
 
   const handleOpenCreateSeat = useCallback(
     () => dispatch(openModal(ModalName.CreateSeat)),
@@ -210,27 +252,17 @@ export default function GovernanceScreen() {
       <View ref={refFor("overview")} nativeID="overview" style={sectionStyles.section}>
         <SectionHeader title={t("governance.overview")} />
         {loading ? (
-          <CardGrid columns={4}>
-            {SKELETON_4.map((_, i) => (
-              <LoadingSkeleton key={i} variant="kpi" />
-            ))}
-          </CardGrid>
+          <>
+            <LoadingSkeleton variant="chart" />
+            <LoadingSkeleton variant="chart" />
+          </>
         ) : data ? (
           <>
-            <CardGrid columns={4}>
-              <KpiCard title={t("governance.violations")} value={formatCompactNumber(data.policyViolationCount)} />
-              <KpiCard title={t("governance.blockedNetwork")} value={formatCompactNumber(data.blockedNetworkAttempts)} />
-              <KpiCard title={t("governance.auditEvents")} value={formatCompactNumber(data.auditEventsCount)} />
-              <KpiCard title={t("governance.violationRate")} value={`${(data.policyViolationRate * 100).toFixed(1)}%`} />
-            </CardGrid>
-
-            <ChartCard title={t("governance.violationsByTeam")}>
-              <BreakdownChart
-                data={violationsByTeamChartData}
-                variant="horizontal-bar"
-                truncateLabels={false}
-              />
-            </ChartCard>
+            {activeUsersSeries.length > 0 && (
+              <ChartCard title={t("dashboard.activeUsers")}>
+                <MultiLineChart series={activeUsersSeries} height={220} />
+              </ChartCard>
+            )}
           </>
         ) : null}
       </View>
@@ -301,10 +333,13 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
-        <View ref={refFor("recent-violations")} nativeID="recent-violations" style={sectionStyles.section}>
+        <View ref={refFor("rules")} nativeID="rules" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
             <View style={localStyles.sectionHeaderWrap}>
-              <SectionHeader title={t("governance.recentViolations")} />
+              <SectionHeader
+                title="Rules"
+                subtitle="Customized guardrails per project, team, or agent"
+              />
             </View>
             <CustomButton
               onPress={handleOpenCreateRule}
@@ -317,6 +352,19 @@ export default function GovernanceScreen() {
               accessibilityLabel={t("modals.createComplianceRuleTitle")}
             />
           </View>
+          <DataTable
+            columns={rulesCols}
+            data={filteredRules}
+            initialSortBy="editedAtIso"
+            initialSortDirection="desc"
+            keyExtractor={keyExtractors.byId}
+          />
+        </View>
+      )}
+
+      {data && (
+        <View ref={refFor("recent-violations")} nativeID="recent-violations" style={sectionStyles.section}>
+          <SectionHeader title={t("governance.recentViolations")} />
           <DataTable
             columns={violationCols}
             data={filteredViolations}

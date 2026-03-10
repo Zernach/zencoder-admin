@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Organisationsniveau-analyse for cloud-agentoperationer",
-    "subtitleWithData": "{{totalRuns}} kørsler over {{days}} dage ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Nøgletal",
     "keyMetricsSubtitle": "Et hurtigt overblik",
     "trends": "Tendenser",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Nye live-sessioner vises automatisk, når ingeniører starter kørsler."
     },
     "wauTrend": "Ugentlige aktive brugere (WAU)",
-    "mauTrend": "Månedlige aktive brugere (MAU)"
+    "mauTrend": "Månedlige aktive brugere (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Agentpålidelighed og præstation",

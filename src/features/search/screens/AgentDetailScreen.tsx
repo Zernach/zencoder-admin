@@ -180,7 +180,7 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
           columns={runColumns}
           data={data.recentRuns}
           keyExtractor={(r) => r.id}
-          initialSortBy="costUsd"
+          initialSortBy="startedAtIso"
           initialSortDirection="desc"
           emptyMessage={t("entityDetail.noRunsYet")}
         />

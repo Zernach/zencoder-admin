@@ -320,7 +320,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   clearButton: {
-    marginRight: -spacing[32],
+    marginRight: -spacing[4],
+    flexShrink: 0,
   },
   presetBtn: {
     flexDirection: "row",

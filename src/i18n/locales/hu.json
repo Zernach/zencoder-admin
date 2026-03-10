@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Szervezeti szintű elemzés a felhőágens-műveletekhez",
-    "subtitleWithData": "{{totalRuns}} futtatás {{days}} nap alatt ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Kulcsmutatók",
     "keyMetricsSubtitle": "Egy pillantásra",
     "trends": "Trendek",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Új élő munkamenetek automatikusan megjelennek, amint a mérnökök futtatásokat indítanak."
     },
     "wauTrend": "Heti aktív felhasználók (WAU)",
-    "mauTrend": "Havi aktív felhasználók (MAU)"
+    "mauTrend": "Havi aktív felhasználók (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Ágens-megbízhatóság és teljesítmény",

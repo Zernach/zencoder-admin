@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Organisationsweite Analytik für Cloud-Agenten-Operationen",
-    "subtitleWithData": "{{totalRuns}} Ausführungen über {{days}} Tage ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Schlüsselkennzahlen",
     "keyMetricsSubtitle": "Auf einen Blick",
     "trends": "Trends",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Neue Live-Sitzungen erscheinen automatisch, wenn Entwickler Ausführungen starten."
     },
     "wauTrend": "Wöchentlich aktive Benutzer (WAU)",
-    "mauTrend": "Monatlich aktive Benutzer (MAU)"
+    "mauTrend": "Monatlich aktive Benutzer (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Agentenzuverlässigkeit und -leistung",

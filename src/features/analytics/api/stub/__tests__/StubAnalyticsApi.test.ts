@@ -329,12 +329,10 @@ describe("getGovernance", () => {
   it("returns valid GovernanceResponse", async () => {
     const res = await api.getGovernance(defaultFilters);
     expect(typeof res.policyViolationCount).toBe("number");
-    expect(typeof res.policyViolationRate).toBe("number");
-    expect(typeof res.blockedNetworkAttempts).toBe("number");
-    expect(typeof res.auditEventsCount).toBe("number");
     expect(Array.isArray(res.violationsByTeam)).toBe(true);
     expect(Array.isArray(res.recentViolations)).toBe(true);
     expect(Array.isArray(res.securityEvents)).toBe(true);
+    expect(Array.isArray(res.rules)).toBe(true);
     expect(Array.isArray(res.complianceItems)).toBe(true);
     expect(Array.isArray(res.policyChanges)).toBe(true);
     expect(Array.isArray(res.seatUserUsage)).toBe(true);
@@ -417,8 +415,22 @@ describe("getGovernance", () => {
     expect(typeof row.runsCount).toBe("number");
     expect(typeof row.successRate).toBe("number");
     expect(typeof row.policyViolationCount).toBe("number");
+    expect(typeof row.rulesCount).toBe("number");
     expect(typeof row.policyViolationRate).toBe("number");
     expect(typeof row.totalCostUsd).toBe("number");
+  });
+
+  it("returns governance rules with created/edited timestamps and runs count", async () => {
+    const res = await api.getGovernance(defaultFilters);
+    expect(res.rules.length).toBeGreaterThan(0);
+
+    const row = res.rules[0]!;
+    expect(typeof row.id).toBe("string");
+    expect(typeof row.title).toBe("string");
+    expect(typeof row.description).toBe("string");
+    expect(typeof row.createdAtIso).toBe("string");
+    expect(typeof row.editedAtIso).toBe("string");
+    expect(typeof row.runsCheckedCount).toBe("number");
   });
 });
 

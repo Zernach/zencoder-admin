@@ -97,7 +97,6 @@ export class AnalyticsService implements IAnalyticsService {
 
   async getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse> {
     const res = await this.api.getGovernance(filters);
-    res.policyViolationRate = round1(res.policyViolationRate);
     for (const row of res.teamPerformanceComparison) {
       row.successRate = roundRate(row.successRate);
       row.policyViolationRate = round1(row.policyViolationRate);

@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Аналитика на нивоу организације за операције облак агената",
-    "subtitleWithData": "{{totalRuns}} покретања током {{days}} дана ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Ључне метрике",
     "keyMetricsSubtitle": "На први поглед",
     "trends": "Трендови",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Нове сесије уживо ће се аутоматски појавити када инжењери покрену нова покретања."
     },
     "wauTrend": "Недељни активни корисници (WAU)",
-    "mauTrend": "Месечни активни корисници (MAU)"
+    "mauTrend": "Месечни активни корисници (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Поузданост и перформансе агената",

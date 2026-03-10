@@ -22,12 +22,14 @@ describe("useGovernanceDashboard", () => {
     await waitFor(() => expect(result.current.data).toBeDefined());
     const data = result.current.data!;
     expect(typeof data.policyViolationCount).toBe("number");
-    expect(typeof data.policyViolationRate).toBe("number");
-    expect(typeof data.blockedNetworkAttempts).toBe("number");
     expect(Array.isArray(data.recentViolations)).toBe(true);
+    expect(Array.isArray(data.rules)).toBe(true);
     expect(Array.isArray(data.complianceItems)).toBe(true);
     expect(Array.isArray(data.seatUserUsage)).toBe(true);
     expect(Array.isArray(data.teamPerformanceComparison)).toBe(true);
+    expect(Array.isArray(data.activeUsersTrend)).toBe(true);
+    expect(Array.isArray(data.wauTrend)).toBe(true);
+    expect(Array.isArray(data.mauTrend)).toBe(true);
   });
 
   it("returns { data, loading, error, refetch } shape", () => {

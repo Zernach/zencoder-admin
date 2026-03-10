@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Organization-level analytics for cloud agent operations",
-    "subtitleWithData": "{{totalRuns}} runs across {{days}} days ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Key Metrics",
     "keyMetricsSubtitle": "At a glance",
     "trends": "Trends",
@@ -97,7 +97,8 @@
         "waiting": "Waiting for the next agent workflow."
       },
       "emptySubtitle": "New live sessions will appear automatically as engineers start runs."
-    }
+    },
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Agent reliability and performance",
@@ -148,7 +149,7 @@
   "costs": {
     "subtitle": "Spending trends and budget tracking",
     "subtitleWithData": "{{totalCost}} spent across {{projectCount}} projects",
-    "costSummary":  "Financial Investments",
+    "costSummary": "Financial Investments",
     "totalCost": "Total Cost",
     "avgPerRun": "Average Cost per Run",
     "costPerSuccess": "Average Cost per Successful Run",
@@ -208,6 +209,7 @@
       "success": "Success",
       "runs": "Runs",
       "violations": "Violations",
+      "rules": "Rules",
       "violationRate": "Violation Rate",
       "cost": "Cost",
       "actor": "Actor",

@@ -157,6 +157,15 @@ export interface ComplianceItem {
   label: string; status: "compliant" | "warning" | "critical";
 }
 
+export interface GovernanceRuleRow {
+  id: string;
+  title: string;
+  description: string;
+  createdAtIso: string;
+  editedAtIso: string;
+  runsCheckedCount: number;
+}
+
 export interface SeatUserUsageRow {
   userId: string;
   fullName: string;
@@ -173,6 +182,7 @@ export interface TeamPerformanceComparisonRow {
   runsCount: number;
   successRate: number;
   policyViolationCount: number;
+  rulesCount: number;
   policyViolationRate: number;
   totalCostUsd: number;
 }
@@ -269,11 +279,11 @@ export interface AgentsHubResponse {
 }
 
 export interface GovernanceResponse {
-  policyViolationCount: number; policyViolationRate: number;
-  blockedNetworkAttempts: number; auditEventsCount: number;
+  policyViolationCount: number;
   violationsByTeam: TeamViolationMetric[];
   recentViolations: PolicyViolationRow[];
   securityEvents: SecurityEventRow[];
+  rules: GovernanceRuleRow[];
   complianceItems: ComplianceItem[];
   policyChanges: PolicyChangeEvent[];
   seatUserUsage: SeatUserUsageRow[];

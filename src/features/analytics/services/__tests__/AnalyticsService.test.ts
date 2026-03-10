@@ -122,10 +122,8 @@ describe("getReliability", () => {
 });
 
 describe("getGovernance", () => {
-  it("returns rounded policyViolationRate", async () => {
+  it("returns rounded team performance rates", async () => {
     const res = await service.getGovernance(defaultFilters);
-    const decStr = String(res.policyViolationRate).split(".")[1] || "";
-    expect(decStr.length).toBeLessThanOrEqual(1);
     for (const row of res.teamPerformanceComparison) {
       const successDec = String(row.successRate).split(".")[1] || "";
       expect(successDec.length).toBeLessThanOrEqual(3);
@@ -191,7 +189,7 @@ describe("delegation via mock", () => {
       },
       runsTrend: [{ tsIso: "2025-01-01T00:00:00Z", value: 100 }],
       costTrend: [{ tsIso: "2025-01-01T00:00:00Z", value: 500 }],
-      anomalies: [{ runId: "run_1", type: "highest_cost", label: "$100", value: 100 }],
+      anomalies: [{ runId: "run_1", type: "highest_cost", label: "100.00", value: 100 }],
     };
 
     const mockApi: IAnalyticsApi = {

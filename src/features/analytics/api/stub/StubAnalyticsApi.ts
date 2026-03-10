@@ -32,6 +32,7 @@ import type {
   RunDetailResponse,
   CreateComplianceRuleRequest,
   CreateComplianceRuleResponse,
+  GovernanceRuleRow,
   CreateSeatRequest,
   CreateSeatResponse,
   CreateProjectRequest,
@@ -74,6 +75,21 @@ interface StubConfig {
   debugFailureRate?: number;
 }
 
+const BASE_RULE_DESCRIPTIONS: Record<string, string> = {
+  "Data Retention":
+    "Blocks agent operations that retain prompts, outputs, or intermediate artifacts beyond approved project retention windows unless legal hold metadata is explicitly attached.",
+  "Access Controls":
+    "Requires every agent action to execute with least-privilege credentials, denying attempts to access repositories, services, or secrets outside the assigned project and team scope.",
+  "Audit Logging":
+    "Enforces immutable audit trail coverage for every policy-relevant action, including actor identity, request context, target resources, and change diffs for downstream investigations.",
+  "Encryption at Rest":
+    "Prevents storage operations on unencrypted data stores and ensures generated artifacts are written only to locations that satisfy organization encryption-at-rest control requirements.",
+  "PII Protection":
+    "Scans prompts and outputs for personally identifiable information and redacts or blocks policy-violating content when sensitivity thresholds are exceeded by model responses.",
+  "Rate Limiting":
+    "Applies per-agent and per-team guardrails for execution volume, preventing runaway automation loops and protecting shared infrastructure during burst traffic conditions.",
+};
+
 // ─── Stub Implementation ─────────────────────────────────
 
 export class StubAnalyticsApi implements IAnalyticsApi {
@@ -82,6 +98,14 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   private latencyMax: number;
   private failureRate: number;
   private createdViolations: PolicyViolationRow[] = [];
+  private createdComplianceRules: Array<{
+    id: string;
+    title: string;
+    description: string;
+    createdAtIso: string;
+    editedAtIso: string;
+    affectedTeamIds: string[];
+  }> = [];
   private createdUsers: Array<{ id: string; name: string; email: string; teamId: string }> = [];
   private createdProjects: Array<{ id: string; name: string; teamId: string }> = [];
   private createdTeams: Array<{ id: string; name: string }> = [];
@@ -660,7 +684,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       anomalies.push({
         runId: byCost[0].id,
         type: "highest_cost",
-        label: `$${byCost[0].costUsd.toFixed(2)}`,
+        label: byCost[0].costUsd.toFixed(2),
         value: byCost[0].costUsd,
       });
     if (byDuration[0])
@@ -907,6 +931,9 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     ];
     const secEvents = filterByTimeRange(this.seed.securityEvents, fromIso, toIso);
     const changes = filterByTimeRange(this.seed.policyChanges, fromIso, toIso);
+    const createdRulesInRange = this.createdComplianceRules.filter(
+      (rule) => rule.createdAtIso >= fromIso && rule.createdAtIso <= toIso,
+    );
 
     // Violations by team (via agentId -> projectId -> teamId) with reason breakdown
     const teamViolationCountById = new Map<string, number>();
@@ -927,6 +954,21 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       }
     }
     const teamNameById = new Map(allTeams.map((team) => [team.id, team.name]));
+    const teamRuleCountById = new Map<string, number>();
+
+    for (const change of changes) {
+      teamRuleCountById.set(
+        change.targetTeamId,
+        (teamRuleCountById.get(change.targetTeamId) ?? 0) + 1,
+      );
+    }
+
+    for (const rule of createdRulesInRange) {
+      for (const teamId of rule.affectedTeamIds) {
+        teamRuleCountById.set(teamId, (teamRuleCountById.get(teamId) ?? 0) + 1);
+      }
+    }
+
     const violationsByTeam: TeamViolationMetric[] = Array.from(teamViolationCountById.entries())
       .map(([teamId, total]) => ({
         teamName: teamNameById.get(teamId) ?? teamId,
@@ -936,10 +978,6 @@ export class StubAnalyticsApi implements IAnalyticsApi {
           .sort((a, b) => b.value - a.value || a.key.localeCompare(b.key)),
       }))
       .sort((a, b) => b.totalViolations - a.totalViolations || a.teamName.localeCompare(b.teamName));
-
-    const blockedNetworkAttempts = violations.filter((v) =>
-      v.reason.toLowerCase().includes("unauthorized"),
-    ).length;
 
     // Seat user usage
     const userUsageMap = new Map<
@@ -1009,6 +1047,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
           runsCount: teamRuns.length,
           successRate: safeRate(succeeded, teamRuns.length),
           policyViolationCount,
+          rulesCount: teamRuleCountById.get(team.id) ?? 0,
           policyViolationRate: safeRate(policyViolationCount, teamRuns.length),
           totalCostUsd: round2(sumField(teamRuns, "costUsd")),
         };
@@ -1022,14 +1061,74 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         return a.teamName.localeCompare(b.teamName);
       });
 
+    const sortedSeedPolicyChanges = [...this.seed.policyChanges].sort((a, b) =>
+      a.timestampIso.localeCompare(b.timestampIso),
+    );
+    const seedPolicyChangeCount = sortedSeedPolicyChanges.length || 1;
+    const defaultCreatedIso = sortedSeedPolicyChanges[0]?.timestampIso ?? fromIso;
+    const defaultEditedIso =
+      sortedSeedPolicyChanges[sortedSeedPolicyChanges.length - 1]?.timestampIso ?? toIso;
+    const complianceItemCount = this.seed.complianceItems.length || 1;
+
+    const baseRules: GovernanceRuleRow[] = this.seed.complianceItems.map((item, index) => {
+      const createdAtIso =
+        sortedSeedPolicyChanges[index % seedPolicyChangeCount]?.timestampIso ??
+        defaultCreatedIso;
+      const editedAtIso =
+        sortedSeedPolicyChanges[
+          sortedSeedPolicyChanges.length - 1 - (index % seedPolicyChangeCount)
+        ]?.timestampIso ?? defaultEditedIso;
+      const earliestIso = createdAtIso <= editedAtIso ? createdAtIso : editedAtIso;
+      const latestIso = editedAtIso >= createdAtIso ? editedAtIso : createdAtIso;
+      const runsCheckedCount = Math.max(
+        1,
+        Math.round(((index + 1) / complianceItemCount) * runs.length),
+      );
+
+      return {
+        id: `rule_seed_${index + 1}`,
+        title: item.label,
+        description:
+          BASE_RULE_DESCRIPTIONS[item.label] ??
+          `${item.label} guardrail for policy-safe execution across projects and teams.`,
+        createdAtIso: earliestIso,
+        editedAtIso: latestIso,
+        runsCheckedCount,
+      };
+    });
+
+    const createdRules: GovernanceRuleRow[] = this.createdComplianceRules.map((rule) => {
+      const runsCheckedCount =
+        rule.affectedTeamIds.length === 0
+          ? runs.length
+          : runs.filter((run) => rule.affectedTeamIds.includes(run.teamId)).length;
+      const latestRelatedViolationIso = this.createdViolations
+        .filter((violation) => violation.id.startsWith(`${rule.id}_viol_`))
+        .map((violation) => violation.timestampIso)
+        .sort((a, b) => b.localeCompare(a))[0];
+      const editedAtIso =
+        latestRelatedViolationIso != null && latestRelatedViolationIso > rule.editedAtIso
+          ? latestRelatedViolationIso
+          : rule.editedAtIso;
+
+      return {
+        id: rule.id,
+        title: rule.title,
+        description: rule.description,
+        createdAtIso: rule.createdAtIso,
+        editedAtIso,
+        runsCheckedCount,
+      };
+    });
+
+    const rules = [...baseRules, ...createdRules];
+
     return {
       policyViolationCount: violations.length,
-      policyViolationRate: safeRate(violations.length, runs.length),
-      blockedNetworkAttempts,
-      auditEventsCount: changes.length + violations.length,
       violationsByTeam,
       recentViolations: sortByTimestampDesc(violations).slice(0, 20),
       securityEvents: sortByTimestampDesc(secEvents).slice(0, 20),
+      rules,
       complianceItems: this.seed.complianceItems,
       policyChanges: sortByTimestampDesc(changes).slice(0, 20),
       seatUserUsage,
@@ -1375,6 +1474,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       .filter((r) => r.status === "failed")
       .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
       .slice(0, 3);
+    const affectedTeamIds = [...new Set(failedRuns.map((run) => run.teamId))];
 
     for (const run of failedRuns) {
       const agent = this.seed.agents.find((a) => a.id === run.agentId);
@@ -1387,6 +1487,15 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         severity: request.severity,
       });
     }
+
+    this.createdComplianceRules.push({
+      id: ruleId,
+      title: request.name,
+      description: request.description,
+      createdAtIso,
+      editedAtIso: createdAtIso,
+      affectedTeamIds,
+    });
 
     return {
       id: ruleId,

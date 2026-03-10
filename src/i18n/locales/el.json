@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Αναλυτικά στοιχεία σε επίπεδο οργανισμού για λειτουργίες πρακτόρων στο cloud",
-    "subtitleWithData": "{{totalRuns}} εκτελέσεις σε {{days}} ημέρες ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Βασικοί Δείκτες",
     "keyMetricsSubtitle": "Με μια ματιά",
     "trends": "Τάσεις",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Νέες ζωντανές συνεδρίες θα εμφανιστούν αυτόματα όταν οι μηχανικοί ξεκινήσουν εκτελέσεις."
     },
     "wauTrend": "Εβδομαδιαίοι Ενεργοί Χρήστες (WAU)",
-    "mauTrend": "Μηνιαίοι Ενεργοί Χρήστες (MAU)"
+    "mauTrend": "Μηνιαίοι Ενεργοί Χρήστες (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Αξιοπιστία και απόδοση πρακτόρων",

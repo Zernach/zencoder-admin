@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
-import type { GovernanceResponse } from "@/features/analytics/types";
+import type { GovernanceDashboardData } from "@/features/analytics/hooks/useGovernanceDashboard";
 
 const mockPush = jest.fn();
 const mockPathname = "/governance";
@@ -129,6 +129,17 @@ jest.mock("@/components/charts", () => {
         ))}
       </View>
     ),
+    MultiLineChart: ({
+      series,
+    }: {
+      series: Array<{ label: string; data: Array<{ tsIso: string; value: number }> }>;
+    }) => (
+      <View>
+        {series.map((line) => (
+          <Text key={line.label}>{line.label}</Text>
+        ))}
+      </View>
+    ),
   };
 });
 
@@ -136,8 +147,21 @@ jest.mock("@/components/tables", () => {
   const React = require("react");
   const { View, Text, StyleSheet } = require("react-native");
   return {
-    DataTable: ({ columns, data }: { columns: Array<{ header: string; key: string; render?: (row: Record<string, unknown>) => React.ReactNode }>; data: Array<Record<string, unknown>> }) => (
+    DataTable: ({
+      columns,
+      data,
+      initialSortBy,
+      initialSortDirection,
+    }: {
+      columns: Array<{ header: string; key: string; render?: (row: Record<string, unknown>) => React.ReactNode }>;
+      data: Array<Record<string, unknown>>;
+      initialSortBy?: string;
+      initialSortDirection?: string;
+    }) => (
       <View>
+        {initialSortBy ? (
+          <Text>{`sort:${initialSortBy}:${initialSortDirection ?? "asc"}`}</Text>
+        ) : null}
         {columns.map((column) => (
           <Text key={column.header}>{column.header}</Text>
         ))}
@@ -155,6 +179,8 @@ jest.mock("@/components/tables", () => {
       secondary: { color: "#a3a3a3", fontSize: 12 },
       brand: { color: "#ff7a3d", fontSize: 12 },
       link: { color: "#ff7a3d", fontSize: 12, textDecorationLine: "underline" },
+      success: { color: "#22c55e", fontSize: 12 },
+      error: { color: "#ef4444", fontSize: 12 },
     }),
     getSuccessRateColor: () => "#f64a00",
     getSuccessRateGreenShadeColor: () => "#22c55e",
@@ -176,12 +202,9 @@ jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
 
 const GovernanceScreen = require("../governance").default;
 
-function createGovernanceData(): GovernanceResponse {
+function createGovernanceData(): GovernanceDashboardData {
   return {
     policyViolationCount: 5,
-    policyViolationRate: 0.02,
-    blockedNetworkAttempts: 2,
-    auditEventsCount: 12,
     violationsByTeam: [
       { teamName: "Team Alpha", totalViolations: 3, reasonBreakdown: [{ key: "PII Detection", value: 2 }, { key: "Rate Limit Exceeded", value: 1 }] },
       { teamName: "Team Beta", totalViolations: 2, reasonBreakdown: [{ key: "Content Policy Violation", value: 1 }, { key: "Credential Exposure", value: 1 }] },
@@ -196,6 +219,26 @@ function createGovernanceData(): GovernanceResponse {
     ],
     complianceItems: [
       { label: "Data Encryption", status: "compliant" },
+    ],
+    rules: [
+      {
+        id: "rule_1",
+        title: "Data Encryption",
+        description:
+          "Prevents storage operations on unencrypted systems and validates encryption controls for generated artifacts across all governed environments.",
+        createdAtIso: "2026-02-15T09:00:00.000Z",
+        editedAtIso: "2026-03-03T10:15:00.000Z",
+        runsCheckedCount: 412,
+      },
+      {
+        id: "rule_2",
+        title: "PII Redaction",
+        description:
+          "Scans prompts and outputs for personally identifiable information and blocks unsafe content when configured sensitivity thresholds are exceeded.",
+        createdAtIso: "2026-02-10T11:30:00.000Z",
+        editedAtIso: "2026-03-02T08:45:00.000Z",
+        runsCheckedCount: 265,
+      },
     ],
     policyChanges: [
       { id: "p1", actorUserId: "u1", actorName: "Alice Johnson", action: "Updated policy", timestampIso: "2026-03-03T14:00:00.000Z", targetTeamId: "t1", target: "Network" },
@@ -213,6 +256,7 @@ function createGovernanceData(): GovernanceResponse {
         runsCount: 500,
         successRate: 0.93,
         policyViolationCount: 3,
+        rulesCount: 8,
         policyViolationRate: 0.006,
         totalCostUsd: 2250,
       },
@@ -222,9 +266,25 @@ function createGovernanceData(): GovernanceResponse {
         runsCount: 420,
         successRate: 0.9,
         policyViolationCount: 2,
+        rulesCount: 6,
         policyViolationRate: 0.005,
         totalCostUsd: 1800,
       },
+    ],
+    activeUsersTrend: [
+      { tsIso: "2026-03-01T00:00:00.000Z", value: 18 },
+      { tsIso: "2026-03-02T00:00:00.000Z", value: 21 },
+      { tsIso: "2026-03-03T00:00:00.000Z", value: 23 },
+    ],
+    wauTrend: [
+      { tsIso: "2026-03-01T00:00:00.000Z", value: 42 },
+      { tsIso: "2026-03-02T00:00:00.000Z", value: 44 },
+      { tsIso: "2026-03-03T00:00:00.000Z", value: 46 },
+    ],
+    mauTrend: [
+      { tsIso: "2026-03-01T00:00:00.000Z", value: 63 },
+      { tsIso: "2026-03-02T00:00:00.000Z", value: 66 },
+      { tsIso: "2026-03-03T00:00:00.000Z", value: 68 },
     ],
   };
 }
@@ -261,6 +321,22 @@ describe("GovernanceScreen", () => {
     expect(getByText("Alice Johnson: 150")).toBeTruthy();
     expect(getByText("Bob Smith: 120")).toBeTruthy();
     expect(getByText("Carol Davis: 80")).toBeTruthy();
+  });
+
+  it("renders active users chart with MAU, WAU, and DAU series", () => {
+    mockUseGovernanceDashboard.mockReturnValue({
+      data: createGovernanceData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText } = render(<GovernanceScreen />);
+
+    expect(getByText("dashboard.activeUsers")).toBeTruthy();
+    expect(getByText("dashboard.mauTrend")).toBeTruthy();
+    expect(getByText("dashboard.wauTrend")).toBeTruthy();
+    expect(getByText("dashboard.activeUsersTrend")).toBeTruthy();
   });
 
   it("renders seat user oversight section header", () => {
@@ -306,7 +382,29 @@ describe("GovernanceScreen", () => {
     expect(getByText("governance.createTeam")).toBeTruthy();
   });
 
-  it("passes truncateLabels=false to governance horizontal breakdown charts", () => {
+  it("renders rules section and keeps a single create-rule action", () => {
+    mockUseGovernanceDashboard.mockReturnValue({
+      data: createGovernanceData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText, getAllByText } = render(<GovernanceScreen />);
+
+    expect(getByText("Rules")).toBeTruthy();
+    expect(getByText("Customized guardrails per project, team, or agent")).toBeTruthy();
+    expect(getByText("Title")).toBeTruthy();
+    expect(getByText("Description")).toBeTruthy();
+    expect(getByText("Created")).toBeTruthy();
+    expect(getByText("Edited")).toBeTruthy();
+    expect(getByText("Runs")).toBeTruthy();
+    expect(getByText("sort:editedAtIso:desc")).toBeTruthy();
+    expect(getByText("governance.recentViolations")).toBeTruthy();
+    expect(getAllByText("governance.createRule")).toHaveLength(1);
+  });
+
+  it("passes truncateLabels=false to governance horizontal breakdown chart", () => {
     mockUseGovernanceDashboard.mockReturnValue({
       data: createGovernanceData(),
       loading: false,
@@ -318,8 +416,8 @@ describe("GovernanceScreen", () => {
     const truncateFlags = getAllByTestId("truncateLabels");
     const falseFlags = truncateFlags.filter((el) => el.props.children === "false");
 
-    // Governance screen renders two horizontal-bar breakdown charts.
-    expect(falseFlags.length).toBeGreaterThanOrEqual(2);
+    // Governance screen renders one horizontal-bar breakdown chart.
+    expect(falseFlags.length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders violations with newest timestamp first", () => {
@@ -433,6 +531,7 @@ describe("GovernanceScreen", () => {
         "overview",
         "team-performance",
         "seat-user-oversight",
+        "rules",
         "recent-violations",
         "security-events",
         "policy-changes",

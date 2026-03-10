@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Analíticas a nivel de organización para operaciones de agentes en la nube",
-    "subtitleWithData": "{{totalRuns}} ejecuciones en {{days}} días ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Métricas clave",
     "keyMetricsSubtitle": "De un vistazo",
     "trends": "Tendencias",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Las nuevas sesiones en vivo aparecerán automáticamente cuando los ingenieros inicien ejecuciones."
     },
     "wauTrend": "Usuarios activos semanales (WAU)",
-    "mauTrend": "Usuarios activos mensuales (MAU)"
+    "mauTrend": "Usuarios activos mensuales (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Fiabilidad y rendimiento de los agentes",

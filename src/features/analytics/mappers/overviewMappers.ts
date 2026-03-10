@@ -1,4 +1,4 @@
-import type { OverviewResponse, UsageResponse, OutcomesResponse, TimeSeriesPoint, RunAnomaly, DeltaPolarity } from "../types";
+import type { OverviewResponse, OutcomesResponse, TimeSeriesPoint, RunAnomaly, DeltaPolarity } from "../types";
 import { formatPercent, formatCompactNumber } from "../utils/formatters";
 import { ROUTES } from "@/constants/routes";
 
@@ -18,16 +18,12 @@ export interface OverviewViewModel {
   outcomesKpis: KpiCardData[];
   runsTrend: TimeSeriesPoint[];
   costTrend: TimeSeriesPoint[];
-  activeUsersTrend?: TimeSeriesPoint[];
-  wauTrend?: TimeSeriesPoint[];
-  mauTrend?: TimeSeriesPoint[];
   outcomesTrend?: TimeSeriesPoint[];
   anomalies: RunAnomaly[];
 }
 
 export function mapOverviewToViewModel(
   res: OverviewResponse,
-  usage: UsageResponse | undefined,
   outcomes: OutcomesResponse | undefined,
   formatCurrency: (amount: number) => string,
 ): OverviewViewModel {
@@ -55,9 +51,6 @@ export function mapOverviewToViewModel(
       : [],
     runsTrend: res.runsTrend,
     costTrend: res.costTrend,
-    activeUsersTrend: usage?.activeUsersTrend,
-    wauTrend: usage?.wauTrend,
-    mauTrend: usage?.mauTrend,
     outcomesTrend: outcomes?.outcomesTrend,
     anomalies: res.anomalies,
   };

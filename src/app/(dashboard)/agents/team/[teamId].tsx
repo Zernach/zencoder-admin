@@ -1,7 +1,3 @@
-import { useLocalSearchParams } from "expo-router";
-import { TeamDetailScreen } from "@/features/search/screens";
+import { TeamDetailRoute } from "@/components/routes";
 
-export default function TeamDetailRoute() {
-  const { teamId } = useLocalSearchParams<{ teamId: string }>();
-  return <TeamDetailScreen teamId={teamId ?? ""} />;
-}
+export default TeamDetailRoute;

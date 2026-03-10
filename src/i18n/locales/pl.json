@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Analityka na poziomie organizacji dla operacji agentów chmurowych",
-    "subtitleWithData": "{{totalRuns}} uruchomień w ciągu {{days}} dni ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Kluczowe wskaźniki",
     "keyMetricsSubtitle": "W skrócie",
     "trends": "Trendy",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Nowe sesje na żywo pojawią się automatycznie, gdy inżynierowie rozpoczną uruchomienia."
     },
     "wauTrend": "Tygodniowi aktywni użytkownicy (WAU)",
-    "mauTrend": "Miesięczni aktywni użytkownicy (MAU)"
+    "mauTrend": "Miesięczni aktywni użytkownicy (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Niezawodność i wydajność agentów",

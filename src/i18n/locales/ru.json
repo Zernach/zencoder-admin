@@ -65,8 +65,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Аналитика операций облачных агентов на уровне организации",
-    "subtitleWithData": "{{totalRuns}} запусков за {{days}} дней ({{preset}})",
+    "subtitle": "Your Team's Agents & Analytics",
+    "subtitleWithData": "Your Team's Agents & Analytics",
     "keyMetrics": "Ключевые метрики",
     "keyMetricsSubtitle": "Обзор",
     "trends": "Тренды",
@@ -97,7 +97,8 @@
       "emptySubtitle": "Новые сессии будут появляться автоматически, когда инженеры запустят процессы."
     },
     "wauTrend": "Еженедельные активные пользователи (WAU)",
-    "mauTrend": "Ежемесячные активные пользователи (MAU)"
+    "mauTrend": "Ежемесячные активные пользователи (MAU)",
+    "title": "Admin Home"
   },
   "agents": {
     "subtitle": "Надёжность и производительность агентов",
