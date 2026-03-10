@@ -6,7 +6,7 @@ import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
 import { SectionHeader, CardGrid, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
-import { ChartCard, LineChart, BreakdownChart } from "@/components/charts";
+import { ChartCard, LineChart, BreakdownChart, type BreakdownChartDatum } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
 import { formatPercent, formatDuration, formatCompactNumber } from "@/features/analytics/utils/formatters";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
@@ -43,6 +43,18 @@ export default function AgentsScreen() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const pathname = usePathname();
+
+  const failureCategoryData = useMemo<BreakdownChartDatum[]>(() =>
+    (data?.failureCategoryBreakdown ?? []).map((cat) => ({
+      key: cat.key,
+      value: cat.value,
+      hoverRows: cat.agentBreakdown.map((a) => ({
+        label: a.key,
+        value: formatCompactNumber(a.value),
+      })),
+    })),
+    [data?.failureCategoryBreakdown],
+  );
 
   const filteredAgents = useSearchFilter(data?.agentBreakdown ?? [], AGENT_SEARCH_KEYS);
   const filteredProjects = useSearchFilter(data?.projectBreakdown ?? [], PROJECT_SEARCH_KEYS);
@@ -159,6 +171,22 @@ export default function AgentsScreen() {
         ) : data ? (
           <>
             <CustomList scrollViewProps={chartScrollProps}>
+              <ChartCard title={t("agents.reliabilityTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+                <LineChart
+                  data={data.reliabilityTrend}
+                  variant="percentages"
+                  xTickCount={4}
+                />
+              </ChartCard>
+              <ChartCard title={t("agents.failureCategories")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+                <BreakdownChart
+                  data={failureCategoryData}
+                  variant="horizontal-bar"
+                  truncateLabels={false}
+                />
+              </ChartCard>
+            </CustomList>
+            <CustomList scrollViewProps={chartScrollProps}>
               <ChartCard title={t("agents.p50DurationTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
                 <LineChart data={data.p50DurationTrend} variant="line" xTickCount={4} />
               </ChartCard>
@@ -172,22 +200,6 @@ export default function AgentsScreen() {
               </ChartCard>
               <ChartCard title={t("agents.peakConcurrencyTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
                 <LineChart data={data.peakConcurrencyTrend} variant="line" xTickCount={4} />
-              </ChartCard>
-            </CustomList>
-            <CustomList scrollViewProps={chartScrollProps}>
-              <ChartCard title={t("agents.reliabilityTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
-                <LineChart
-                  data={data.reliabilityTrend}
-                  variant="percentages"
-                  xTickCount={4}
-                />
-              </ChartCard>
-              <ChartCard title={t("agents.failureCategories")} style={isLargeLayout ? styles.chartCardFill : undefined}>
-                <BreakdownChart
-                  data={data.failureCategoryBreakdown}
-                  variant="horizontal-bar"
-                  truncateLabels={false}
-                />
               </ChartCard>
             </CustomList>
           </>

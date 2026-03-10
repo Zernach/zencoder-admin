@@ -56,7 +56,12 @@
       "seatUserOversight": "Контроль пользователей",
       "recentViolations": "Последние нарушения",
       "securityEvents": "События безопасности",
-      "policyChanges": "Изменения политик"
+      "policyChanges": "Изменения политик",
+      "profile": "Профиль",
+      "preferences": "Параметры",
+      "internationalization": "Интернационализация",
+      "organization": "Организация",
+      "dangerZone": "Опасная зона"
     }
   },
   "dashboard": {
@@ -67,7 +72,7 @@
     "trends": "Тренды",
     "runsOverTime": "Запуски за период",
     "costPerDay": "Стоимость в день",
-    "usageAndAdoption": "Использование и внедрение",
+    "activeUsers": "Активные пользователи",
     "usageSubtitle": "Метрики активных пользователей",
     "activeUsersTrend": "Тренд активных пользователей",
     "outcomes": "Результаты",
@@ -90,7 +95,9 @@
         "waiting": "Ожидание следующего рабочего процесса агента."
       },
       "emptySubtitle": "Новые сессии будут появляться автоматически, когда инженеры запустят процессы."
-    }
+    },
+    "wauTrend": "Еженедельные активные пользователи (WAU)",
+    "mauTrend": "Ежемесячные активные пользователи (MAU)"
   },
   "agents": {
     "subtitle": "Надёжность и производительность агентов",
@@ -232,6 +239,8 @@
     "slackDescription": "Отправлять оповещения в канал Slack",
     "autoRefresh": "Авто-обновление",
     "autoRefreshDescription": "Обновлять данные каждые 30 секунд",
+    "internationalization": "Интернационализация",
+    "internationalizationSubtitle": "Языки и валюты",
     "organization": "Организация",
     "organizationSubtitle": "Данные о команде и оплате",
     "orgId": "ID организации",
@@ -252,6 +261,7 @@
     "currencyDescription": "Предпочитаемая валюта отображения",
     "selectCurrency": "Выберите валюту",
     "searchCurrency": "Поиск валют...",
+    "searchLanguage": "Поиск языков...",
     "signOutLabel": "Выйти",
     "signOut": {
       "demoMode": "Демо-режим",

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { CustomTextInput } from "@/components/inputs";

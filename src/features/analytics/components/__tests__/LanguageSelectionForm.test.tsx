@@ -11,6 +11,31 @@ jest.mock("lucide-react-native", () => {
   };
 });
 
+jest.mock("@/components/inputs", () => {
+  const React = require("react");
+  const { TextInput } = require("react-native");
+  return {
+    CustomTextInput: React.forwardRef(
+      (
+        { value, onChangeText, placeholder, accessibilityLabel, ...rest }: {
+          value?: string;
+          onChangeText?: (v: string) => void;
+          placeholder?: string;
+          accessibilityLabel?: string;
+        },
+        _ref: unknown,
+      ) => (
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          accessibilityLabel={accessibilityLabel}
+        />
+      ),
+    ),
+  };
+});
+
 jest.mock("@/components/buttons", () => {
   const React = require("react");
   const { Pressable } = require("react-native");
@@ -84,5 +109,41 @@ describe("LanguageSelectionForm", () => {
 
     const englishOption = getByLabelText("English (English)");
     expect(englishOption.props.accessibilityState).toEqual({ selected: false });
+  });
+
+  it("filters languages by English name", () => {
+    const { getByLabelText, queryByLabelText } = render(
+      <LanguageSelectionForm selectedLanguage="en" onSelect={mockOnSelect} />,
+    );
+
+    const searchInput = getByLabelText("settings.searchLanguage");
+    fireEvent.changeText(searchInput, "german");
+
+    expect(queryByLabelText("German (Deutsch)")).toBeTruthy();
+    expect(queryByLabelText("English (English)")).toBeNull();
+  });
+
+  it("filters languages by native label", () => {
+    const { getByLabelText, queryByLabelText } = render(
+      <LanguageSelectionForm selectedLanguage="en" onSelect={mockOnSelect} />,
+    );
+
+    const searchInput = getByLabelText("settings.searchLanguage");
+    fireEvent.changeText(searchInput, "Deutsch");
+
+    expect(queryByLabelText("German (Deutsch)")).toBeTruthy();
+    expect(queryByLabelText("French (Français)")).toBeNull();
+  });
+
+  it("filters languages by code", () => {
+    const { getByLabelText, queryByLabelText } = render(
+      <LanguageSelectionForm selectedLanguage="en" onSelect={mockOnSelect} />,
+    );
+
+    const searchInput = getByLabelText("settings.searchLanguage");
+    fireEvent.changeText(searchInput, "fr");
+
+    expect(queryByLabelText("French (Français)")).toBeTruthy();
+    expect(queryByLabelText("German (Deutsch)")).toBeNull();
   });
 });

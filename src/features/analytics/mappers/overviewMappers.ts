@@ -19,6 +19,8 @@ export interface OverviewViewModel {
   runsTrend: TimeSeriesPoint[];
   costTrend: TimeSeriesPoint[];
   activeUsersTrend?: TimeSeriesPoint[];
+  wauTrend?: TimeSeriesPoint[];
+  mauTrend?: TimeSeriesPoint[];
   outcomesTrend?: TimeSeriesPoint[];
   anomalies: RunAnomaly[];
 }
@@ -34,7 +36,6 @@ export function mapOverviewToViewModel(
 
   return {
     adoptionKpis: [
-      { title: "Seat Adoption", value: formatPercent(k.seatAdoptionRate * 100), delta: d.seatAdoptionRate, caption: "Active seats" },
       { title: "Success Rate", value: formatPercent(k.runSuccessRate * 100), delta: d.runSuccessRate, caption: "All runs" },
       { title: "Total Cost", value: formatCurrency(k.totalCostUsd), delta: d.totalCostUsd, caption: "Period total", route: ROUTES.COSTS },
       { title: "Violations", value: formatCompactNumber(k.policyViolationCount), delta: d.policyViolationCount, deltaPolarity: "negative-good", caption: "Policy blocks", route: ROUTES.GOVERNANCE },
@@ -44,23 +45,19 @@ export function mapOverviewToViewModel(
       { title: "Codex Share", value: formatPercent(k.providerShareCodex * 100), caption: "Provider mix" },
       { title: "Claude Share", value: formatPercent(k.providerShareClaude * 100), caption: "Provider mix" },
     ],
-    usageKpis: usage
-      ? [
-          { title: "Weekly Active Users (WAU)", value: formatCompactNumber(usage.wau), caption: "Weekly active users" },
-          { title: "Monthly Active Users (MAU)", value: formatCompactNumber(usage.mau), caption: "Monthly active users" },
-          { title: "Adoption Rate", value: formatPercent(usage.seatAdoptionRate * 100), caption: `${usage.activeSeats30d} of total seats` },
-        ]
-      : [],
+    usageKpis: [],
     outcomesKpis: outcomes
       ? [
-          { title: "PRs Created", value: formatCompactNumber(outcomes.prsCreated), caption: `${formatCompactNumber(outcomes.prsMerged)} merged` },
-          { title: "Merge Rate", value: formatPercent(outcomes.prMergeRate * 100), caption: "PR merge rate" },
-          { title: "Test Pass Rate", value: formatPercent(outcomes.testsPassRate * 100), caption: "Across all runs" },
-        ]
+        { title: "PRs Created", value: formatCompactNumber(outcomes.prsCreated), caption: `${formatCompactNumber(outcomes.prsMerged)} merged` },
+        { title: "Merge Rate", value: formatPercent(outcomes.prMergeRate * 100), caption: "PR merge rate" },
+        { title: "Test Pass Rate", value: formatPercent(outcomes.testsPassRate * 100), caption: "Across all runs" },
+      ]
       : [],
     runsTrend: res.runsTrend,
     costTrend: res.costTrend,
     activeUsersTrend: usage?.activeUsersTrend,
+    wauTrend: usage?.wauTrend,
+    mauTrend: usage?.mauTrend,
     outcomesTrend: outcomes?.outcomesTrend,
     anomalies: res.anomalies,
   };

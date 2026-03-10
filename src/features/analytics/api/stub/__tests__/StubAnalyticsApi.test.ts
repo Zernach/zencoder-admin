@@ -164,8 +164,21 @@ describe("getUsage", () => {
     expect(typeof res.activeSeats30d).toBe("number");
     expect(typeof res.seatAdoptionRate).toBe("number");
     expect(res.activeUsersTrend.length).toBeGreaterThan(0);
+    expect(res.wauTrend.length).toBeGreaterThan(0);
+    expect(res.mauTrend.length).toBeGreaterThan(0);
     expect(res.runsPerUserDistribution.length).toBeGreaterThan(0);
     expect(res.breakdownByTeam.length).toBeGreaterThan(0);
+  });
+
+  it("wauTrend values are <= mauTrend values for matching days", async () => {
+    const res = await api.getUsage(defaultFilters);
+    const mauByDay = new Map(res.mauTrend.map((p) => [p.tsIso, p.value]));
+    for (const wauPoint of res.wauTrend) {
+      const mauValue = mauByDay.get(wauPoint.tsIso);
+      if (mauValue !== undefined) {
+        expect(wauPoint.value).toBeLessThanOrEqual(mauValue + 5); // allow small smoothing variance
+      }
+    }
   });
 
   it("active users trend generally increases over time", async () => {

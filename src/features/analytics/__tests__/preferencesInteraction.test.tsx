@@ -123,7 +123,7 @@ describe("Preferences Interaction — Cross-Feature Tests", () => {
   describe("edge cases", () => {
     it("rapid language switches do not produce stale state", async () => {
       const store = createSettingsStore();
-      const languages: LanguageCode[] = ["en", "ru", "de", "fr", "it", "en"];
+      const languages: LanguageCode[] = ["en", "ru", "de", "fr", "it", "es", "pl", "tr", "en"];
 
       for (const lang of languages) {
         store.dispatch(setLanguage(lang));

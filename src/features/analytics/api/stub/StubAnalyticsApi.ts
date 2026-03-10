@@ -43,6 +43,7 @@ import type {
   UpdateAgentDescriptionRequest,
   UpdateAgentDescriptionResponse,
   PolicyViolationRow,
+  TeamViolationMetric,
 } from "@/features/analytics/types";
 import { round2, round4 } from "../../utils/metricFormulas";
 import {
@@ -493,12 +494,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       (dayRuns) => new Set(dayRuns.map((run) => run.userId)).size,
     );
     const maxUsers = this.seed.users.length + this.createdUsers.length;
-    // Scale values to use ~40-85% of maxUsers so there's headroom for
-    // an upward trend, a visible spike, and a visible dip.
-    const ceiling = Math.round(maxUsers * 0.85);
+    // DAU is the lowest line — keep values in the ~15-35% range of maxUsers
+    // so it sits well below WAU and MAU.
+    const ceiling = Math.round(maxUsers * 0.35);
     const scaledByDay = activeUsersByDay.map((point) => ({
       tsIso: point.tsIso,
-      value: Math.round(point.value * 0.55),
+      value: Math.round(point.value * 0.25),
     }));
     const naturalTrend = this.naturalUpwardTrend(scaledByDay, {
       minGrowthPct: 0.25,
@@ -521,10 +522,56 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       preserveShape: 0.42,
       highSpikeAt: 0.72,
       lowSpikeAt: 0.35,
-      highSpikeLift: 0.38,
-      lowSpikeDrop: 0.38,
+      highSpikeLift: 0.25,
+      lowSpikeDrop: 0.25,
       maxValue: ceiling,
       round: (value) => Math.round(value),
+    });
+  }
+
+  /**
+   * Build a rolling-window active users trend (e.g. 7-day WAU or 30-day MAU).
+   * For each day in the dataset, count distinct users in the preceding `windowDays`.
+   */
+  private rollingActiveUsersTrend(
+    runs: RunListRow[],
+    windowDays: number,
+    salt: string,
+  ): TimeSeriesPoint[] {
+    const dayGroups = groupBy(runs, (r) => r.startedAtIso.slice(0, 10));
+    const sortedDays = Array.from(dayGroups.keys()).sort();
+    if (sortedDays.length === 0) return [];
+
+    const rawPoints: TimeSeriesPoint[] = sortedDays.map((day) => {
+      const cutoff = new Date(
+        new Date(`${day}T00:00:00.000Z`).getTime() - windowDays * 86_400_000,
+      ).toISOString().slice(0, 10);
+      let uniqueUsers = new Set<string>();
+      for (const [d, dayRuns] of dayGroups.entries()) {
+        if (d > cutoff && d <= day) {
+          for (const run of dayRuns) uniqueUsers.add(run.userId);
+        }
+      }
+      return { tsIso: `${day}T00:00:00.000Z`, value: uniqueUsers.size };
+    });
+
+    const maxUsers = this.seed.users.length + this.createdUsers.length;
+    // MAU (30-day) is the highest line, WAU (7-day) sits in between DAU and MAU.
+    const ceilingRatio = windowDays >= 30 ? 0.92 : 0.60;
+    const ceiling = Math.round(maxUsers * ceilingRatio);
+
+    return this.naturalUpwardTrend(rawPoints, {
+      minGrowthPct: 0.12,
+      volatilityRatio: 0.08,
+      baselineBlend: 0.7,
+      longWaveCycles: 2.2,
+      shortWaveCycles: 5.5,
+      phaseShift: windowDays === 7 ? 0.3 : 0.7,
+      bumpCenter: 0.45,
+      divotCenter: 0.6,
+      jitterSalt: salt,
+      round: (value) => Math.round(value),
+      maxValue: ceiling,
     });
   }
 
@@ -697,6 +744,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       activeSeats30d: usersLast30d.size,
       seatAdoptionRate,
       activeUsersTrend: this.activeUsersTrendFromRuns(runs),
+      wauTrend: this.rollingActiveUsersTrend(runs, 7, "wau"),
+      mauTrend: this.rollingActiveUsersTrend(runs, 30, "mau"),
       runsPerUserDistribution,
       breakdownByTeam,
     };
@@ -839,7 +888,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       p95RunDurationMs: percentile(durations, 95),
       p95QueueWaitMs: percentile(queueWaits, 95),
       peakConcurrency: computePeakConcurrency(runs),
-      failureCategoryBreakdown: buildFailureCategoryBreakdown(runs),
+      failureCategoryBreakdown: buildFailureCategoryBreakdown(runs, this.seed.agents),
       reliabilityTrend: this.reliabilityTrendFromRuns(runs),
       agentBreakdown: buildAgentBreakdown(runs, this.seed.agents, this.seed.projects),
     };
@@ -859,8 +908,9 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const secEvents = filterByTimeRange(this.seed.securityEvents, fromIso, toIso);
     const changes = filterByTimeRange(this.seed.policyChanges, fromIso, toIso);
 
-    // Violations by team (via agentId -> projectId -> teamId)
+    // Violations by team (via agentId -> projectId -> teamId) with reason breakdown
     const teamViolationCountById = new Map<string, number>();
+    const teamReasonCountById = new Map<string, Map<string, number>>();
     for (const v of violations) {
       const agent = this.seed.agents.find((a) => a.id === v.agentId);
       if (agent) {
@@ -870,16 +920,22 @@ export class StubAnalyticsApi implements IAnalyticsApi {
             project.teamId,
             (teamViolationCountById.get(project.teamId) ?? 0) + 1,
           );
+          const reasonMap = teamReasonCountById.get(project.teamId) ?? new Map<string, number>();
+          reasonMap.set(v.reason, (reasonMap.get(v.reason) ?? 0) + 1);
+          teamReasonCountById.set(project.teamId, reasonMap);
         }
       }
     }
     const teamNameById = new Map(allTeams.map((team) => [team.id, team.name]));
-    const violationsByTeam: KeyValueMetric[] = Array.from(teamViolationCountById.entries())
-      .map(([teamId, value]) => ({
-        key: teamNameById.get(teamId) ?? teamId,
-        value,
+    const violationsByTeam: TeamViolationMetric[] = Array.from(teamViolationCountById.entries())
+      .map(([teamId, total]) => ({
+        teamName: teamNameById.get(teamId) ?? teamId,
+        totalViolations: total,
+        reasonBreakdown: Array.from(teamReasonCountById.get(teamId)?.entries() ?? [])
+          .map(([reason, count]) => ({ key: reason, value: count }))
+          .sort((a, b) => b.value - a.value || a.key.localeCompare(b.key)),
       }))
-      .sort((a, b) => b.value - a.value || a.key.localeCompare(b.key));
+      .sort((a, b) => b.totalViolations - a.totalViolations || a.teamName.localeCompare(b.teamName));
 
     const blockedNetworkAttempts = violations.filter((v) =>
       v.reason.toLowerCase().includes("unauthorized"),
@@ -1005,7 +1061,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       p95RunDurationMs: percentile(durations, 95),
       p95QueueWaitMs: percentile(queueWaits, 95),
       peakConcurrency: computePeakConcurrency(runs),
-      failureCategoryBreakdown: buildFailureCategoryBreakdown(runs),
+      failureCategoryBreakdown: buildFailureCategoryBreakdown(runs, this.seed.agents),
       reliabilityTrend: this.reliabilityTrendFromRuns(runs),
       p50DurationTrend: this.bucketByDay(runs, (d) => percentile(d.map((r) => r.durationMs).sort((a, b) => a - b), 50)),
       p95DurationTrend: this.bucketByDay(runs, (d) => percentile(d.map((r) => r.durationMs).sort((a, b) => a - b), 95)),

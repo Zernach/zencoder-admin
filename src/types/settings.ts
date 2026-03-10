@@ -3,7 +3,27 @@
  */
 
 /** Supported language codes */
-export type LanguageCode = "en" | "ru" | "de" | "fr" | "it";
+export type LanguageCode =
+  | "en"
+  | "ru"
+  | "de"
+  | "fr"
+  | "it"
+  | "es"
+  | "pl"
+  | "uk"
+  | "ro"
+  | "nl"
+  | "tr"
+  | "el"
+  | "hu"
+  | "pt"
+  | "cs"
+  | "sv"
+  | "sr"
+  | "bg"
+  | "hr"
+  | "da";
 
 /** Supported currency codes */
 export type CurrencyCode =
@@ -50,12 +70,27 @@ export const LANGUAGE_OPTIONS: LanguageOption[] = [
   { code: "de", label: "German", nativeLabel: "Deutsch" },
   { code: "fr", label: "French", nativeLabel: "Français" },
   { code: "it", label: "Italian", nativeLabel: "Italiano" },
+  { code: "es", label: "Spanish", nativeLabel: "Español" },
+  { code: "pl", label: "Polish", nativeLabel: "Polski" },
+  { code: "uk", label: "Ukrainian", nativeLabel: "Українська" },
+  { code: "ro", label: "Romanian", nativeLabel: "Română" },
+  { code: "nl", label: "Dutch", nativeLabel: "Nederlands" },
+  { code: "tr", label: "Turkish", nativeLabel: "Türkçe" },
+  { code: "el", label: "Greek", nativeLabel: "Ελληνικά" },
+  { code: "hu", label: "Hungarian", nativeLabel: "Magyar" },
+  { code: "pt", label: "Portuguese", nativeLabel: "Português" },
+  { code: "cs", label: "Czech", nativeLabel: "Čeština" },
+  { code: "sv", label: "Swedish", nativeLabel: "Svenska" },
+  { code: "sr", label: "Serbian", nativeLabel: "Српски" },
+  { code: "bg", label: "Bulgarian", nativeLabel: "Български" },
+  { code: "hr", label: "Croatian", nativeLabel: "Hrvatski" },
+  { code: "da", label: "Danish", nativeLabel: "Dansk" },
 ];
 
 /** All supported currency options */
 export const CURRENCY_OPTIONS: CurrencyOption[] = [
-  { code: "USD", symbol: "$", name: "US Dollar", decimals: 2 },
   { code: "EUR", symbol: "€", name: "Euro", decimals: 2 },
+  { code: "USD", symbol: "$", name: "US Dollar", decimals: 2 },
   { code: "GBP", symbol: "£", name: "British Pound", decimals: 2 },
   { code: "JPY", symbol: "¥", name: "Japanese Yen", decimals: 0 },
   { code: "CNY", symbol: "¥", name: "Chinese Yuan", decimals: 2 },

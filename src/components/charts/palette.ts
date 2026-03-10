@@ -88,6 +88,28 @@ export function getOrangeBarShade(value: number, minValue: number, maxValue: num
   return interpolateStops(ORANGE_PIE_STOPS, 1 - contrastBoostedRatio);
 }
 
+/**
+ * Generate N equally-spaced distinct shades for bar charts.
+ * Each bar gets a visually distinct color with equal color distance between bars.
+ */
+export function getOrangeBarShadesStepped(count: number): string[] {
+  const safeCount = Math.max(0, Math.floor(count));
+
+  if (safeCount === 0) {
+    return [];
+  }
+
+  if (safeCount === 1) {
+    return [ORANGE_PIE_DARK];
+  }
+
+  return Array.from({ length: safeCount }, (_, index) => {
+    const ratio = index / (safeCount - 1);
+    const contrastBoostedRatio = Math.pow(ratio, ORANGE_PIE_GAMMA);
+    return interpolateStops(ORANGE_PIE_STOPS, contrastBoostedRatio);
+  });
+}
+
 export function getOrangePieShades(count: number): string[] {
   const safeCount = Math.max(0, Math.floor(count));
 

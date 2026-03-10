@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { useNavigation, usePathname, useRouter } from "expo-router";
 import type { NavigationProp, ParamListBase } from "@react-navigation/native";
@@ -30,6 +31,7 @@ function findTabNavigator(
 }
 
 export const BottomTabs = React.memo(function BottomTabs() {
+  const { t } = useTranslation();
   const router = useRouter();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   const pathname = usePathname();
@@ -105,12 +107,12 @@ export const BottomTabs = React.memo(function BottomTabs() {
             disablePressedStyle={active}
             style={styles.tab}
             accessibilityRole="tab"
-            accessibilityLabel={tab.label}
+            accessibilityLabel={t(tab.label)}
             accessibilityState={{ selected: active }}
           >
             <Icon size={20} color={active ? theme.border.brand : theme.text.tertiary} />
             <Text style={[styles.label, { color: active ? theme.border.brand : theme.text.tertiary }]}>
-              {tab.label}
+              {t(tab.label)}
             </Text>
             {active && <View style={[styles.indicator, { backgroundColor: theme.border.brand }]} />}
           </CustomButton>

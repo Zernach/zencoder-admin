@@ -56,7 +56,12 @@
       "seatUserOversight": "Benutzerübersicht",
       "recentViolations": "Letzte Verstöße",
       "securityEvents": "Sicherheitsereignisse",
-      "policyChanges": "Richtlinienänderungen"
+      "policyChanges": "Richtlinienänderungen",
+      "profile": "Profil",
+      "preferences": "Einstellungen",
+      "internationalization": "Internationalisierung",
+      "organization": "Organisation",
+      "dangerZone": "Gefahrenzone"
     }
   },
   "dashboard": {
@@ -67,7 +72,7 @@
     "trends": "Trends",
     "runsOverTime": "Ausführungen im Zeitverlauf",
     "costPerDay": "Kosten pro Tag",
-    "usageAndAdoption": "Nutzung & Einführung",
+    "activeUsers": "Aktive Benutzer",
     "usageSubtitle": "Aktive Benutzermetriken",
     "activeUsersTrend": "Trend aktiver Benutzer",
     "outcomes": "Ergebnisse",
@@ -90,7 +95,9 @@
         "waiting": "Warten auf den nächsten Agenten-Workflow."
       },
       "emptySubtitle": "Neue Live-Sitzungen erscheinen automatisch, wenn Entwickler Ausführungen starten."
-    }
+    },
+    "wauTrend": "Wöchentlich aktive Benutzer (WAU)",
+    "mauTrend": "Monatlich aktive Benutzer (MAU)"
   },
   "agents": {
     "subtitle": "Agentenzuverlässigkeit und -leistung",
@@ -232,6 +239,8 @@
     "slackDescription": "Warnungen in Slack-Kanal senden",
     "autoRefresh": "Automatische Aktualisierung",
     "autoRefreshDescription": "Dashboard-Daten alle 30 Sekunden aktualisieren",
+    "internationalization": "Internationalisierung",
+    "internationalizationSubtitle": "Sprachen und Währungen",
     "organization": "Organisation",
     "organizationSubtitle": "Team- und Abrechnungsdetails",
     "orgId": "Org-ID",
@@ -252,6 +261,7 @@
     "currencyDescription": "Bevorzugte Anzeigewährung",
     "selectCurrency": "Währung auswählen",
     "searchCurrency": "Währungen suchen...",
+    "searchLanguage": "Sprachen suchen...",
     "signOutLabel": "Abmelden",
     "signOut": {
       "demoMode": "Demo-Modus",

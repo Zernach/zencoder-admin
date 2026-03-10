@@ -8,6 +8,7 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { fontFamilies, radius, spacing } from "@/theme/tokens";
 import { getOrangePieColorsByValue } from "./palette";
+import { clampTooltipPosition } from "./tooltipUtils";
 
 export interface PieChartTooltipRow {
   label: string;
@@ -126,6 +127,7 @@ export const PieChart = React.memo(function PieChart({
   const [activeTooltipIndex, setActiveTooltipIndex] = useState<number | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const containerRef = useRef<View>(null);
+  const containerSizeRef = useRef({ width: 0, height: 0 });
   const tooltipOpacity = useRef(new Animated.Value(0)).current;
 
   const handlePointerMove = useCallback(
@@ -137,7 +139,8 @@ export const PieChart = React.memo(function PieChart({
         container as unknown as {
           measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => void;
         }
-      ).measureInWindow((cx, cy) => {
+      ).measureInWindow((cx, cy, cw, ch) => {
+        containerSizeRef.current = { width: cw, height: ch };
         const px = (event.nativeEvent as unknown as { pageX: number }).pageX - cx;
         const py = (event.nativeEvent as unknown as { pageY: number }).pageY - cy;
         setMousePos({ x: px, y: py });
@@ -215,6 +218,11 @@ export const PieChart = React.memo(function PieChart({
       ? slices[activeTooltipIndex]?.tooltipRows
       : undefined;
 
+  const tooltipPos = clampTooltipPosition(
+    mousePos.x, mousePos.y,
+    containerSizeRef.current.width, containerSizeRef.current.height,
+  );
+
   const tooltipBubble =
     activeTooltipRows && activeTooltipRows.length > 0 ? (
       <Animated.View
@@ -223,8 +231,8 @@ export const PieChart = React.memo(function PieChart({
         style={[
           styles.tooltipBubble,
           {
-            left: mousePos.x + 12,
-            top: mousePos.y - 8,
+            left: tooltipPos.left,
+            top: tooltipPos.top,
             backgroundColor: theme.bg.surface,
             borderColor: theme.border.default,
             shadowColor: mode === "dark" ? "#000000" : "#0f1720",

@@ -36,7 +36,7 @@ const CostDonutMemo = React.memo(function CostDonutMemo({
     [costBreakdown],
   );
   const centerValue = useMemo(() => formatCurrency(totalCostUsd), [totalCostUsd, formatCurrency]);
-  return <DonutChart data={donutData} centerLabel={t("common.total")} centerValue={centerValue} height={height} />;
+  return <DonutChart data={donutData} centerLabel={t("common.total")} centerValue={centerValue} height={height} formatValue={formatCurrency} />;
 });
 
 /** Memoized budget forecast bar chart */

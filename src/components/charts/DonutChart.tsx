@@ -14,6 +14,7 @@ interface DonutChartProps {
   centerLabel?: string;
   centerValue?: string;
   height?: number;
+  formatValue?: (value: number) => string;
 }
 
 export const DonutChart = React.memo(function DonutChart({
@@ -21,6 +22,7 @@ export const DonutChart = React.memo(function DonutChart({
   centerLabel,
   centerValue,
   height = 220,
+  formatValue,
 }: DonutChartProps) {
   const { mode } = useThemeMode();
   const textColors = semanticThemes[mode].text;
@@ -36,12 +38,12 @@ export const DonutChart = React.memo(function DonutChart({
         value: datum.value,
         color: colors[index] ?? "#f64a00",
         tooltipRows: [
-          { label: datum.key, value: String(datum.value) },
+          { label: datum.key, value: formatValue ? formatValue(datum.value) : String(datum.value) },
           { label: "Share", value: formatPercent((datum.value / safeTotal) * 100) },
         ],
       }));
     },
-    [data, safeTotal],
+    [data, safeTotal, formatValue],
   );
 
   return (

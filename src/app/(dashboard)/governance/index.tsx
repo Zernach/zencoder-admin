@@ -6,6 +6,7 @@ import { CustomButton } from "@/components/buttons";
 import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernanceDashboard";
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, BreakdownChart } from "@/components/charts";
+import type { BreakdownChartDatum } from "@/components/charts/BreakdownChart";
 import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
 import { formatCompactNumber, formatPercent } from "@/features/analytics/utils/formatters";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
@@ -158,7 +159,17 @@ export default function GovernanceScreen() {
     [data, t],
   );
 
-  if (error) return <ErrorState message={error} onRetry={refetch} />;
+  const violationsByTeamChartData = useMemo<BreakdownChartDatum[]>(() => {
+    if (!data) return [];
+    return data.violationsByTeam.map((team) => ({
+      key: team.teamName,
+      value: team.totalViolations,
+      hoverRows: team.reasonBreakdown.map((r) => ({
+        label: r.key,
+        value: String(r.value),
+      })),
+    }));
+  }, [data]);
 
   const seatUsageChartData = useMemo(() => {
     return filteredSeatUsers.map((row) => ({
@@ -192,6 +203,8 @@ export default function GovernanceScreen() {
     [subtitle, loading, t],
   );
 
+  if (error) return <ErrorState message={error} onRetry={refetch} />;
+
   return (
     <ScreenWrapper headerProps={headerProps}>
       <View ref={refFor("overview")} nativeID="overview" style={sectionStyles.section}>
@@ -213,7 +226,7 @@ export default function GovernanceScreen() {
 
             <ChartCard title={t("governance.violationsByTeam")}>
               <BreakdownChart
-                data={data.violationsByTeam}
+                data={violationsByTeamChartData}
                 variant="horizontal-bar"
                 truncateLabels={false}
               />
@@ -239,7 +252,7 @@ export default function GovernanceScreen() {
               label={t("governance.createTeam")}
               textStyle={localStyles.createButtonText}
               accessibilityRole="button"
-              accessibilityLabel={t("modals.createTeam")}
+              accessibilityLabel={t("modals.createTeamTitle")}
             />
           </View>
           <DataTable
@@ -281,6 +294,7 @@ export default function GovernanceScreen() {
               data={seatUsageChartData}
               variant="horizontal-bar"
               truncateLabels={false}
+              colorScale="scaled"
             />
           </ChartCard>
         </View>
@@ -300,7 +314,7 @@ export default function GovernanceScreen() {
               label={t("governance.createRule")}
               textStyle={localStyles.createButtonText}
               accessibilityRole="button"
-              accessibilityLabel={t("modals.createComplianceRule")}
+              accessibilityLabel={t("modals.createComplianceRuleTitle")}
             />
           </View>
           <DataTable

@@ -26,7 +26,6 @@ export const SignOutNoticeModal = React.memo(function SignOutNoticeModal() {
       backgroundColor: theme.bg.surface,
       borderColor: theme.state.warning + "40",
       padding: spacing[20],
-      alignItems: "center" as const,
     }),
     [theme.bg.surface, theme.state.warning],
   );
@@ -40,28 +39,34 @@ export const SignOutNoticeModal = React.memo(function SignOutNoticeModal() {
       showCloseButton={false}
       panelStyle={panelStyle}
     >
-      <View style={[styles.noticeIconCircle, { backgroundColor: theme.state.warning + "1A" }]}>
-        <AlertTriangle size={20} color={theme.state.warning} />
+      <View style={styles.content}>
+        <View style={[styles.iconRow, { backgroundColor: theme.state.warning + "1A" }]}>
+          <AlertTriangle size={20} color={theme.state.warning} />
+        </View>
+        <Text style={[styles.noticeTitle, { color: theme.text.primary }]}>{t("settings.signOut.demoMode")}</Text>
+        <Text style={[styles.noticeText, { color: theme.text.secondary }]}>{t("settings.signOut.demoMessage")}</Text>
+        <CustomButton
+          onPress={handleClose}
+          style={styles.dismissBtn}
+          buttonMode="primary"
+          buttonSize="md"
+          label={t("settings.signOut.dismiss")}
+          accessibilityRole="button"
+          accessibilityLabel="Dismiss sign out notice"
+        />
       </View>
-      <Text style={[styles.noticeTitle, { color: theme.text.primary }]}>{t("settings.signOut.demoMode")}</Text>
-      <Text style={[styles.noticeText, { color: theme.text.secondary }]}>{t("settings.signOut.demoMessage")}</Text>
-      <CustomButton
-        onPress={handleClose}
-        style={styles.dismissBtn}
-        buttonMode="primary"
-        buttonSize="md"
-        label={t("settings.signOut.dismiss")}
-        accessibilityRole="button"
-        accessibilityLabel="Dismiss sign out notice"
-      />
     </CustomModal>
   );
 });
 
 const styles = StyleSheet.create({
-  noticeIconCircle: {
-    width: 44,
-    height: 44,
+  content: {
+    alignItems: "center",
+    gap: spacing[12],
+  },
+  iconRow: {
+    width: 40,
+    height: 40,
     borderRadius: radius.full,
     alignItems: "center",
     justifyContent: "center",
@@ -78,7 +83,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   dismissBtn: {
-    marginTop: spacing[4],
     alignSelf: "stretch",
     paddingVertical: spacing[12],
   },

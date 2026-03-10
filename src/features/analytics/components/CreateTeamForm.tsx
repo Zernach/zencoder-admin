@@ -62,7 +62,7 @@ export function CreateTeamForm({ onSubmit, loading, error }: CreateTeamFormProps
 
   return (
     <InputForm
-      title={t("modals.createTeam")}
+      title={t("modals.createTeamTitle")}
       items={items}
       footer={
         <>

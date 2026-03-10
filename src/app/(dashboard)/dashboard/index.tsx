@@ -13,7 +13,9 @@ import {
   ErrorState,
   LiveAssistantsSection,
 } from "@/components/dashboard";
-import { ChartCard, LineChart } from "@/components/charts";
+import { ChartCard, LineChart, MultiLineChart } from "@/components/charts";
+import type { MultiLineChartSeries } from "@/components/charts/MultiLineChart";
+import { getOrangeBarShadesStepped } from "@/components/charts/palette";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { CustomList } from "@/components/lists";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
@@ -98,6 +100,22 @@ export default function OverviewDashboardScreen() {
     ];
   }, [bp, isLargeLayout, viewportWidth]);
 
+  const activeUsersSeries = useMemo((): MultiLineChartSeries[] => {
+    if (!data) return [];
+    const result: MultiLineChartSeries[] = [];
+    if (data.mauTrend && data.mauTrend.length > 0) {
+      result.push({ label: t("dashboard.mauTrend"), data: data.mauTrend });
+    }
+    if (data.wauTrend && data.wauTrend.length > 0) {
+      result.push({ label: t("dashboard.wauTrend"), data: data.wauTrend });
+    }
+    if (data.activeUsersTrend && data.activeUsersTrend.length > 0) {
+      result.push({ label: t("dashboard.activeUsersTrend"), data: data.activeUsersTrend });
+    }
+    const colors = getOrangeBarShadesStepped(result.length);
+    return result.map((s, i) => ({ ...s, color: colors[i] }));
+  }, [data, t]);
+
   if (error) return <ErrorState message={error} onRetry={refetch} />;
 
   return (
@@ -110,37 +128,7 @@ export default function OverviewDashboardScreen() {
         onCardPress={handleLiveCardPress}
       />
 
-      {/* Section 1 -- Key Metrics */}
-      <View style={styles.section}>
-        <SectionHeader title={t("dashboard.keyMetrics")} subtitle={t("dashboard.keyMetricsSubtitle")} />
-        {loading ? (
-          <CardGrid columns={4}>
-            {SKELETON_4.map((_, i) => (
-              <LoadingSkeleton key={i} variant="kpi" />
-            ))}
-          </CardGrid>
-        ) : data ? (
-          <CardGrid columns={4}>
-            {data.adoptionKpis.map((kpi) => (
-              <KpiCard
-                key={kpi.title}
-                title={kpi.title}
-                value={kpi.value}
-                delta={kpi.delta}
-                deltaPolarity={kpi.deltaPolarity}
-                caption={kpi.caption}
-                onPress={
-                  kpi.route
-                    ? getKpiPressHandler(kpi.route)
-                    : undefined
-                }
-              />
-            ))}
-          </CardGrid>
-        ) : null}
-      </View>
-
-      {/* Section 2 -- Trends */}
+      {/* Section 1 -- Trends */}
       <View style={styles.section}>
         <SectionHeader title={t("dashboard.trends")} />
         <CustomList scrollViewProps={trendScrollProps}>
@@ -162,31 +150,14 @@ export default function OverviewDashboardScreen() {
             )}
           </ChartCard>
         </CustomList>
+        {activeUsersSeries.length > 0 && (
+          <ChartCard title={t("dashboard.activeUsers")}>
+            <MultiLineChart series={activeUsersSeries} height={220} />
+          </ChartCard>
+        )}
       </View>
 
-      {/* Section 3 -- Usage & Adoption */}
-      {data && data.usageKpis.length > 0 && (
-        <View style={styles.section}>
-          <SectionHeader title={t("dashboard.usageAndAdoption")} subtitle={t("dashboard.usageSubtitle")} />
-          <CardGrid columns={3}>
-            {data.usageKpis.map((kpi) => (
-              <KpiCard
-                key={kpi.title}
-                title={kpi.title}
-                value={kpi.value}
-                caption={kpi.caption}
-              />
-            ))}
-          </CardGrid>
-          {data.activeUsersTrend && data.activeUsersTrend.length > 0 && (
-            <ChartCard title={t("dashboard.activeUsersTrend")}>
-              <LineChart data={data.activeUsersTrend} variant="area" height={180} />
-            </ChartCard>
-          )}
-        </View>
-      )}
-
-      {/* Section 4 -- Outcomes */}
+      {/* Section 3 -- Outcomes */}
       {data && data.outcomesKpis.length > 0 && (
         <View style={styles.section}>
           <SectionHeader title={t("dashboard.outcomes")} subtitle={t("dashboard.outcomesSubtitle")} />
@@ -208,35 +179,35 @@ export default function OverviewDashboardScreen() {
         </View>
       )}
 
-      {/* Section 5 -- Reliability & Provider Mix */}
-      <View style={styles.section}>
-        <SectionHeader title={t("dashboard.reliabilityAndProviderMix")} />
-        {loading ? (
-          <CardGrid columns={3}>
-            {SKELETON_3.map((_, i) => (
-              <LoadingSkeleton key={i} variant="kpi" />
-            ))}
-          </CardGrid>
-        ) : data ? (
-          <CardGrid columns={3}>
-            {data.reliabilityKpis.map((kpi) => (
-              <KpiCard
-                key={kpi.title + kpi.caption}
-                title={kpi.title}
-                value={kpi.value}
-                delta={kpi.delta}
-                deltaPolarity={kpi.deltaPolarity}
-                caption={kpi.caption}
-              />
-            ))}
-          </CardGrid>
-        ) : null}
-      </View>
-
-      {/* Section 6 -- Anomalies */}
+      {/* Section 4 -- Anomalies */}
       {data && data.anomalies.length > 0 && (
         <View style={styles.section}>
-          <SectionHeader title={t("dashboard.anomalies")} subtitle={t("dashboard.anomaliesSubtitle")} />
+          <SectionHeader title={t("dashboard.keyMetrics")} subtitle={t("dashboard.keyMetricsSubtitle")} />
+          {loading ? (
+            <CardGrid columns={4}>
+              {SKELETON_4.map((_, i) => (
+                <LoadingSkeleton key={i} variant="kpi" />
+              ))}
+            </CardGrid>
+          ) : data ? (
+            <CardGrid columns={3}>
+              {data.adoptionKpis.map((kpi) => (
+                <KpiCard
+                  key={kpi.title}
+                  title={kpi.title}
+                  value={kpi.value}
+                  delta={kpi.delta}
+                  deltaPolarity={kpi.deltaPolarity}
+                  caption={kpi.caption}
+                  onPress={
+                    kpi.route
+                      ? getKpiPressHandler(kpi.route)
+                      : undefined
+                  }
+                />
+              ))}
+            </CardGrid>
+          ) : null}
           <CardGrid columns={3}>
             {data.anomalies.map((a) => (
               <KpiCard

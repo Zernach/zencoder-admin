@@ -1,7 +1,8 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
+import { CustomTextInput } from "@/components/inputs";
 import { Check } from "lucide-react-native";
 import { LANGUAGE_OPTIONS, type LanguageCode } from "@/types/settings";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -21,6 +22,7 @@ export function LanguageSelectionForm({
   const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const [filter, setFilter] = useState("");
 
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
@@ -37,13 +39,32 @@ export function LanguageSelectionForm({
     [handlerCache],
   );
 
+  const filtered = useMemo(() => {
+    if (!filter.trim()) return LANGUAGE_OPTIONS;
+    const q = filter.trim().toLowerCase();
+    return LANGUAGE_OPTIONS.filter(
+      (o) =>
+        o.label.toLowerCase().includes(q) ||
+        o.nativeLabel.toLowerCase().includes(q) ||
+        o.code.toLowerCase().includes(q),
+    );
+  }, [filter]);
+
   return (
     <View style={styles.container}>
       <Text style={[styles.title, { color: theme.text.primary }]}>
         {t("settings.language")}
       </Text>
+      <CustomTextInput
+        containerStyle={styles.searchContainer}
+        style={styles.searchInput}
+        placeholder={t("settings.searchLanguage")}
+        value={filter}
+        onChangeText={setFilter}
+        accessibilityLabel={t("settings.searchLanguage")}
+      />
       <View style={styles.list}>
-        {LANGUAGE_OPTIONS.map((option) => {
+        {filtered.map((option) => {
           const isSelected = option.code === selectedLanguage;
           return (
             <CustomButton
@@ -95,6 +116,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     textAlign: "center",
+  },
+  searchContainer: {
+    minHeight: 0,
+  },
+  searchInput: {
+    fontSize: 13,
   },
   list: {
     gap: spacing[8],

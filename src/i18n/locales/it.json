@@ -56,7 +56,12 @@
       "seatUserOversight": "Supervisione utenti",
       "recentViolations": "Violazioni recenti",
       "securityEvents": "Eventi di sicurezza",
-      "policyChanges": "Modifiche alle policy"
+      "policyChanges": "Modifiche alle policy",
+      "profile": "Profilo",
+      "preferences": "Preferenze",
+      "internationalization": "Internazionalizzazione",
+      "organization": "Organizzazione",
+      "dangerZone": "Zona pericolosa"
     }
   },
   "dashboard": {
@@ -67,7 +72,7 @@
     "trends": "Tendenze",
     "runsOverTime": "Esecuzioni nel tempo",
     "costPerDay": "Costo giornaliero",
-    "usageAndAdoption": "Utilizzo e adozione",
+    "activeUsers": "Utenti attivi",
     "usageSubtitle": "Metriche utenti attivi",
     "activeUsersTrend": "Tendenza utenti attivi",
     "outcomes": "Risultati",
@@ -90,7 +95,9 @@
         "waiting": "In attesa del prossimo workflow dell'agente."
       },
       "emptySubtitle": "Le nuove sessioni appariranno automaticamente quando gli sviluppatori avvieranno le esecuzioni."
-    }
+    },
+    "wauTrend": "Utenti attivi settimanali (WAU)",
+    "mauTrend": "Utenti attivi mensili (MAU)"
   },
   "agents": {
     "subtitle": "Affidabilità e prestazioni degli agenti",
@@ -232,6 +239,8 @@
     "slackDescription": "Invia avvisi nel canale Slack",
     "autoRefresh": "Aggiornamento automatico",
     "autoRefreshDescription": "Aggiorna i dati della dashboard ogni 30 secondi",
+    "internationalization": "Internazionalizzazione",
+    "internationalizationSubtitle": "Lingue e valute",
     "organization": "Organizzazione",
     "organizationSubtitle": "Dettagli team e fatturazione",
     "orgId": "ID organizzazione",
@@ -252,6 +261,7 @@
     "currencyDescription": "Valuta di visualizzazione preferita",
     "selectCurrency": "Seleziona valuta",
     "searchCurrency": "Cerca valute...",
+    "searchLanguage": "Cerca lingue...",
     "signOutLabel": "Disconnetti",
     "signOut": {
       "demoMode": "Modalità demo",

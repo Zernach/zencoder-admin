@@ -1,8 +1,9 @@
 export { ChartCard } from "./ChartCard";
 export { BarChart } from "./BarChart";
 export { LineChart } from "./LineChart";
+export { MultiLineChart } from "./MultiLineChart";
 export { PieChart } from "./PieChart";
-export { BreakdownChart } from "./BreakdownChart";
+export { BreakdownChart, type BreakdownChartDatum } from "./BreakdownChart";
 export { DonutChart } from "./DonutChart";
 export { ProviderCostChart } from "./ProviderCostChart";
 export { ProviderTokenCostBarChart } from "./ProviderTokenCostBarChart";

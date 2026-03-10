@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
+import { useSectionRef } from "@/hooks/useRegisterSection";
 import { useTranslation } from "react-i18next";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
@@ -29,7 +30,6 @@ interface SettingToggle {
 const TOGGLES: SettingToggle[] = [
   { label: "Dark Mode", description: "Use dark theme (default)", key: "darkMode", icon: Moon },
   { label: "Email Notifications", description: "Receive email alerts for anomalies", key: "emailNotifs", icon: Mail },
-  { label: "Slack Integration", description: "Post alerts to Slack channel", key: "slackInteg", icon: MessageSquare },
   { label: "Auto-refresh", description: "Refresh dashboard data every 30 seconds", key: "autoRefresh", icon: RefreshCw },
 ];
 
@@ -116,6 +116,8 @@ export default function SettingsScreen() {
   const seatsUsed = 73;
   const seatPercent = Math.round((seatsUsed / seatsPurchased) * 100);
 
+  const refFor = useSectionRef();
+
   const headerProps = useMemo(
     () => ({ title: t("settings.title"), subtitle: t("settings.subtitle") }),
     [t],
@@ -124,7 +126,7 @@ export default function SettingsScreen() {
   return (
     <ScreenWrapper showFilterBar={false} headerProps={headerProps}>
       {/* Profile hero card */}
-      <View style={[styles.profileCard, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
+      <View ref={refFor("profile")} nativeID="profile" style={[styles.profileCard, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
         <View style={[styles.avatarCircle, { backgroundColor: theme.border.brand + "22" }]}>
           <User size={28} color={theme.border.brand} />
         </View>
@@ -138,7 +140,7 @@ export default function SettingsScreen() {
       </View>
 
       {/* Preferences */}
-      <View style={styles.section}>
+      <View ref={refFor("preferences")} nativeID="preferences" style={styles.section}>
         <SectionHeader
           title={t("settings.preferences")}
           subtitle={t("settings.preferencesSubtitle")}
@@ -173,10 +175,20 @@ export default function SettingsScreen() {
             );
           })}
 
+        </View>
+      </View>
+
+      {/* Internationalization */}
+      <View ref={refFor("internationalization")} nativeID="internationalization" style={styles.section}>
+        <SectionHeader
+          title={t("settings.internationalization")}
+          subtitle={t("settings.internationalizationSubtitle")}
+        />
+        <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
           {/* Language preference row */}
           <CustomButton
             onPress={handleOpenLanguageSelection}
-            style={[styles.row, styles.rowDivider]}
+            style={styles.row}
             accessibilityRole="button"
             accessibilityLabel={t("settings.selectLanguage")}
           >
@@ -216,13 +228,27 @@ export default function SettingsScreen() {
       </View>
 
       {/* Organization */}
-      <View style={styles.section}>
+      <View ref={refFor("organization")} nativeID="organization" style={styles.section}>
         <SectionHeader
           title={t("settings.organization")}
           subtitle={t("settings.organizationSubtitle")}
         />
         <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
-          <View style={styles.infoRow}>
+          <View style={styles.row}>
+            <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
+              <MessageSquare size={16} color={theme.text.secondary} />
+            </View>
+            <View style={styles.rowText}>
+              <Text style={[styles.label, { color: theme.text.primary }]}>{t(TOGGLE_LABEL_KEYS.slackInteg)}</Text>
+              <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t(TOGGLE_DESC_KEYS.slackInteg)}</Text>
+            </View>
+            <CustomSwitch
+              value={settings.slackInteg}
+              onValueChange={getToggleHandler("slackInteg")}
+              accessibilityLabel={t(TOGGLE_LABEL_KEYS.slackInteg)}
+            />
+          </View>
+          <View style={[styles.infoRow, styles.rowDivider]}>
             <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>{t("settings.orgId")}</Text>
             <Text style={[styles.infoValueMono, { color: theme.text.primary }]}>org_zencoder_001</Text>
           </View>
@@ -254,7 +280,7 @@ export default function SettingsScreen() {
       </View>
 
       {/* Danger Zone */}
-      <View style={styles.section}>
+      <View ref={refFor("danger-zone")} nativeID="danger-zone" style={styles.section}>
         <SectionHeader
           title={t("settings.dangerZone")}
           subtitle={t("settings.dangerZoneSubtitle")}
@@ -283,11 +309,11 @@ export default function SettingsScreen() {
             onPress={handleOpenSignOut}
             style={[styles.signOutBtn, { borderColor: theme.border.default, backgroundColor: theme.bg.surface }]}
             accessibilityRole="button"
-            accessibilityLabel={t("settings.signOut")}
+            accessibilityLabel={t("settings.signOutLabel")}
           >
             <View style={styles.btnRow}>
               <LogOut size={15} color={theme.text.primary} />
-              <Text style={[styles.signOutText, { color: theme.text.primary }]}>{t("settings.signOut")}</Text>
+              <Text style={[styles.signOutText, { color: theme.text.primary }]}>{t("settings.signOutLabel")}</Text>
             </View>
           </CustomButton>
         </View>

@@ -122,6 +122,7 @@ describe("SettingsScreen", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
     expect(getByText("settings.preferences")).toBeTruthy();
+    expect(getByText("settings.internationalization")).toBeTruthy();
     expect(getByText("settings.organization")).toBeTruthy();
     expect(getByText("settings.dangerZone")).toBeTruthy();
   });
@@ -137,7 +138,7 @@ describe("SettingsScreen", () => {
   it("renders Sign Out button", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
-    expect(getByText("settings.signOut")).toBeTruthy();
+    expect(getByText("settings.signOutLabel")).toBeTruthy();
   });
 
   it("shows demo notice when Sign Out is pressed", () => {
@@ -145,7 +146,7 @@ describe("SettingsScreen", () => {
 
     expect(queryByText("settings.signOut.demoMessage")).toBeNull();
 
-    fireEvent.press(getByText("settings.signOut"));
+    fireEvent.press(getByText("settings.signOutLabel"));
 
     expect(getByText("settings.signOut.demoMessage")).toBeTruthy();
     expect(getByText("settings.signOut.demoMode")).toBeTruthy();
@@ -154,7 +155,7 @@ describe("SettingsScreen", () => {
   it("dismisses demo notice when Dismiss is pressed", () => {
     const { getByText, queryByText } = renderWithStore(<SettingsScreen />);
 
-    fireEvent.press(getByText("settings.signOut"));
+    fireEvent.press(getByText("settings.signOutLabel"));
     expect(getByText("settings.signOut.demoMessage")).toBeTruthy();
 
     fireEvent.press(getByText("settings.signOut.dismiss"));

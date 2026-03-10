@@ -183,8 +183,8 @@ function createGovernanceData(): GovernanceResponse {
     blockedNetworkAttempts: 2,
     auditEventsCount: 12,
     violationsByTeam: [
-      { key: "Team Alpha", value: 3 },
-      { key: "Team Beta", value: 2 },
+      { teamName: "Team Alpha", totalViolations: 3, reasonBreakdown: [{ key: "PII Detection", value: 2 }, { key: "Rate Limit Exceeded", value: 1 }] },
+      { teamName: "Team Beta", totalViolations: 2, reasonBreakdown: [{ key: "Content Policy Violation", value: 1 }, { key: "Credential Exposure", value: 1 }] },
     ],
     recentViolations: [
       { id: "v1", timestampIso: "2026-03-03T10:00:00.000Z", agentId: "a1", agentName: "Agent A", reason: "Blocked", severity: "HIGH" },

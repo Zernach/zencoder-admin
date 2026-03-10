@@ -157,8 +157,8 @@ function createAgentsHubData(): AgentsHubResponse {
     p95QueueWaitMs: 250,
     peakConcurrency: 18,
     failureCategoryBreakdown: [
-      { key: "Timeout", value: 10 },
-      { key: "Tool Error", value: 6 },
+      { key: "Timeout", value: 10, agentBreakdown: [{ key: "CodeBot", value: 6 }, { key: "TestRunner", value: 4 }] },
+      { key: "Tool Error", value: 6, agentBreakdown: [{ key: "CodeBot", value: 4 }, { key: "Reviewer", value: 2 }] },
     ],
     reliabilityTrend: [
       { tsIso: "2026-03-01T00:00:00.000Z", value: 94 },

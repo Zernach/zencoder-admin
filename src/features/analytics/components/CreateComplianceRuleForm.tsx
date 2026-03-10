@@ -90,7 +90,7 @@ export function CreateComplianceRuleForm({ onSubmit, loading }: CreateCompliance
 
   return (
     <InputForm
-      title={t("modals.createComplianceRule")}
+      title={t("modals.createComplianceRuleTitle")}
       items={items}
       footer={
         <CustomButton

@@ -6,6 +6,7 @@ import type {
   AgentBreakdownRow,
   ProjectBreakdownRow,
   KeyValueMetric,
+  FailureCategoryMetric,
 } from "@/features/analytics/types";
 import { round2, round4 } from "../../utils/metricFormulas";
 import { groupBy, countBy, sumField, safeRate, countSucceeded } from "./helpers";
@@ -71,9 +72,24 @@ export function buildProjectBreakdown(
     .sort((a, b) => b.totalRuns - a.totalRuns);
 }
 
-export function buildFailureCategoryBreakdown(runs: RunListRow[]): KeyValueMetric[] {
-  const counts = countBy(runs, (r) => r.failureCategory);
-  return Array.from(counts.entries()).map(([key, value]) => ({ key, value }));
+export function buildFailureCategoryBreakdown(
+  runs: RunListRow[],
+  agents: Agent[],
+): FailureCategoryMetric[] {
+  const agentMap = new Map(agents.map((a) => [a.id, a.name]));
+  const categoryRuns = groupBy(runs, (r) => r.failureCategory ?? "none");
+  return Array.from(categoryRuns.entries())
+    .filter(([key]) => key !== "none")
+    .map(([key, catRuns]) => {
+      const agentCounts = countBy(catRuns, (r) => r.agentId);
+      const agentBreakdown = Array.from(agentCounts.entries())
+        .map(([agentId, count]) => ({
+          key: agentMap.get(agentId) ?? agentId,
+          value: count,
+        }))
+        .sort((a, b) => b.value - a.value);
+      return { key, value: catRuns.length, agentBreakdown };
+    });
 }
 
 export function computePeakConcurrency(runs: RunListRow[]): number {

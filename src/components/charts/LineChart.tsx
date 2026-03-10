@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, View, type GestureResponderEvent } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View, type GestureResponderEvent } from "react-native";
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import { scaleLinear, scaleTime } from "d3-scale";
 import { area, curveMonotoneX, line } from "d3-shape";
@@ -277,6 +277,19 @@ export const LineChart = React.memo(function LineChart({
     setActivePointIndex(null);
   }, []);
 
+  const handleMouseMove = useCallback(
+    (event: { nativeEvent: { offsetX: number } }): void => {
+      setActivePointFromLocation(event.nativeEvent.offsetX);
+    },
+    [setActivePointFromLocation],
+  );
+
+  const handleMouseLeave = useCallback((): void => {
+    setActivePointIndex(null);
+  }, []);
+
+  const isWeb = Platform.OS === "web";
+
   const modeToggle = useMemo(
     () =>
       showModeToggle ? (
@@ -515,12 +528,19 @@ export const LineChart = React.memo(function LineChart({
               height: innerH,
             },
           ]}
-          onStartShouldSetResponder={() => chartMode === "line"}
-          onMoveShouldSetResponder={() => chartMode === "line"}
-          onResponderGrant={handleChartInteractionStart}
-          onResponderMove={handleChartInteractionMove}
-          onResponderRelease={handleChartInteractionEnd}
-          onResponderTerminate={handleChartInteractionEnd}
+          {...(isWeb
+            ? {
+                onMouseMove: handleMouseMove,
+                onMouseLeave: handleMouseLeave,
+              }
+            : {
+                onStartShouldSetResponder: () => chartMode === "line",
+                onMoveShouldSetResponder: () => chartMode === "line",
+                onResponderGrant: handleChartInteractionStart,
+                onResponderMove: handleChartInteractionMove,
+                onResponderRelease: handleChartInteractionEnd,
+                onResponderTerminate: handleChartInteractionEnd,
+              })}
         />
         {activePoint && tooltipPosition ? (
           <View

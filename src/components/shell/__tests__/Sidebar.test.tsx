@@ -127,7 +127,7 @@ describe("Sidebar — subsection rendering", () => {
     mockPathname = ROUTES.GOVERNANCE;
     const { getByLabelText } = renderSidebar(true);
 
-    const subsectionList = getByLabelText("navigation.subsections");
+    const subsectionList = getByLabelText("navigation.subsectionsLabel");
     expect(subsectionList).toBeTruthy();
 
     const expectedLabels = [

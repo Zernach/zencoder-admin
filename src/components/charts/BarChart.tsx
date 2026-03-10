@@ -6,6 +6,7 @@ import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { fontFamilies, radius, spacing } from "@/theme/tokens";
+import { clampTooltipPosition } from "./tooltipUtils";
 
 export type BarChartOrientation = "horizontal" | "vertical";
 
@@ -124,13 +125,15 @@ export const BarChart = React.memo(function BarChart({
   const [activeTooltipIndex, setActiveTooltipIndex] = useState<number | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const containerRef = useRef<View>(null);
+  const containerSizeRef = useRef({ width: 0, height: 0 });
   const tooltipOpacity = useRef(new Animated.Value(0)).current;
 
   const handlePointerMove = useCallback((event: RNPointerEvent) => {
     const container = containerRef.current;
     if (!container || Platform.OS !== "web") return;
     (container as unknown as { measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => void })
-      .measureInWindow((cx, cy) => {
+      .measureInWindow((cx, cy, cw, ch) => {
+        containerSizeRef.current = { width: cw, height: ch };
         setMousePos({
           x: (event.nativeEvent as unknown as { pageX: number }).pageX - cx,
           y: (event.nativeEvent as unknown as { pageY: number }).pageY - cy,
@@ -208,6 +211,11 @@ export const BarChart = React.memo(function BarChart({
     ? data[activeTooltipIndex]?.tooltipRows
     : undefined;
 
+  const tooltipPos = clampTooltipPosition(
+    mousePos.x, mousePos.y,
+    containerSizeRef.current.width, containerSizeRef.current.height,
+  );
+
   const tooltipBubble = activeTooltipRows && activeTooltipRows.length > 0 ? (
     <Animated.View
       pointerEvents="none"
@@ -215,8 +223,8 @@ export const BarChart = React.memo(function BarChart({
       style={[
         styles.tooltipBubble,
         {
-          left: mousePos.x + 12,
-          top: mousePos.y - 8,
+          left: tooltipPos.left,
+          top: tooltipPos.top,
           backgroundColor: theme.bg.surface,
           borderColor: theme.border.default,
           shadowColor: mode === "dark" ? "#000000" : "#0f1720",

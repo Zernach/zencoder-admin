@@ -161,7 +161,7 @@ export const Sidebar = React.memo(function Sidebar() {
                 onPress={getNavPressHandler(item.route)}
               />
               {active && expanded && hasSubsections(item.route) && (
-                <View accessibilityRole="list" accessibilityLabel={t("navigation.subsections", { label: t(item.label) })}>
+                <View accessibilityRole="list" accessibilityLabel={t("navigation.subsectionsLabel", { label: t(item.label) })}>
                   {getSubsections(item.route).map((sub) => (
                     <SidebarSubsectionItem
                       key={sub.id}

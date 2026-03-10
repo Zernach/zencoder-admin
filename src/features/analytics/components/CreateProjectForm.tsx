@@ -78,7 +78,7 @@ export function CreateProjectForm({ onSubmit, loading, error }: CreateProjectFor
 
   return (
     <InputForm
-      title={t("modals.createProject")}
+      title={t("modals.createProjectTitle")}
       items={items}
       footer={
         <>

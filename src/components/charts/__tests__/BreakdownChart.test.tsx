@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { fireEvent, render, within } from "@testing-library/react-native";
 import { BreakdownChart, type BreakdownChartDatum } from "../BreakdownChart";
-import { getOrangeBarShade } from "../palette";
+import { getOrangeBarShade, getOrangeBarShadesStepped } from "../palette";
 
 const longNameData: BreakdownChartDatum[] = [
   { key: "Enterprise Cloud Migration Platform", value: 500 },
@@ -101,9 +101,35 @@ describe("BreakdownChart", () => {
     expect(getAllByText("80").length).toBeGreaterThanOrEqual(1);
   });
 
-  it("uses darker orange for higher values and lighter orange for lower values in horizontal bars", () => {
+  it("uses stepped shading by default (distinct colors per bar) in horizontal bars", () => {
     const { getByTestId } = render(
       <BreakdownChart data={shortNameData} variant="horizontal-bar" />
+    );
+
+    const shades = getOrangeBarShadesStepped(2);
+    const firstFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-0").props.style);
+    const secondFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-1").props.style);
+
+    expect(firstFill.backgroundColor).toBe(shades[0]);
+    expect(secondFill.backgroundColor).toBe(shades[1]);
+  });
+
+  it("uses stepped shading by default (distinct colors per bar) in vertical bars", () => {
+    const { getByTestId } = render(
+      <BreakdownChart data={shortNameData} variant="bar" />
+    );
+
+    const shades = getOrangeBarShadesStepped(2);
+    const firstBar = StyleSheet.flatten(getByTestId("breakdown-vertical-bar-0").props.style);
+    const secondBar = StyleSheet.flatten(getByTestId("breakdown-vertical-bar-1").props.style);
+
+    expect(firstBar.backgroundColor).toBe(shades[0]);
+    expect(secondBar.backgroundColor).toBe(shades[1]);
+  });
+
+  it("uses scaled shading (continuous by value) when colorScale='scaled'", () => {
+    const { getByTestId } = render(
+      <BreakdownChart data={shortNameData} variant="horizontal-bar" colorScale="scaled" />
     );
 
     const firstFill = StyleSheet.flatten(getByTestId("breakdown-bar-fill-0").props.style);
@@ -111,18 +137,6 @@ describe("BreakdownChart", () => {
 
     expect(firstFill.backgroundColor).toBe(getOrangeBarShade(100, 80, 100));
     expect(secondFill.backgroundColor).toBe(getOrangeBarShade(80, 80, 100));
-  });
-
-  it("uses darker orange for higher values and lighter orange for lower values in vertical bars", () => {
-    const { getByTestId } = render(
-      <BreakdownChart data={shortNameData} variant="bar" />
-    );
-
-    const firstBar = StyleSheet.flatten(getByTestId("breakdown-vertical-bar-0").props.style);
-    const secondBar = StyleSheet.flatten(getByTestId("breakdown-vertical-bar-1").props.style);
-
-    expect(firstBar.backgroundColor).toBe(getOrangeBarShade(100, 80, 100));
-    expect(secondBar.backgroundColor).toBe(getOrangeBarShade(80, 80, 100));
   });
 
   it("shows and hides hover details bubble on label interaction", () => {

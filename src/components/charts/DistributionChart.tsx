@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { StyleSheet } from "react-native";
 import { bin } from "d3-array";
 import { BarChart, type BarChartDatum } from "./BarChart";
-import { getOrangeBarShade } from "./palette";
+import { getOrangeBarShade, getOrangeBarShadesStepped } from "./palette";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing, radius } from "@/theme/tokens";
@@ -12,6 +12,9 @@ interface DistributionChartProps {
   bins?: number;
   xLabel?: string;
   height?: number;
+  /** Color scale for bars. "stepped" (default) assigns equally-spaced distinct colors.
+   *  "scaled" maps bar color continuously based on the numeric value. */
+  colorScale?: "stepped" | "scaled";
 }
 
 export const DistributionChart = React.memo(function DistributionChart({
@@ -19,6 +22,7 @@ export const DistributionChart = React.memo(function DistributionChart({
   bins: binCount = 10,
   xLabel,
   height = 200,
+  colorScale = "stepped",
 }: DistributionChartProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -29,6 +33,18 @@ export const DistributionChart = React.memo(function DistributionChart({
     const counts = hist.map((b) => b.length);
     const min = counts.length > 0 ? Math.min(...counts) : 0;
     const max = counts.length > 0 ? Math.max(...counts) : 1;
+
+    const sortedForStepped = colorScale === "stepped"
+      ? [...counts].map((c, i) => ({ count: c, index: i })).sort((a, b) => b.count - a.count)
+      : null;
+    const steppedShades = sortedForStepped ? getOrangeBarShadesStepped(sortedForStepped.length) : null;
+    const steppedColorMap = new Map<number, string>();
+    if (sortedForStepped && steppedShades) {
+      sortedForStepped.forEach((entry, rank) => {
+        steppedColorMap.set(entry.index, steppedShades[rank] ?? getOrangeBarShade(entry.count, min, max));
+      });
+    }
+
     return hist.map((bucket, index) => {
       const label =
         bucket.x0 != null && bucket.x1 != null
@@ -39,7 +55,7 @@ export const DistributionChart = React.memo(function DistributionChart({
         label,
         value: bucket.length,
         valueLabel: String(bucket.length),
-        color: getOrangeBarShade(bucket.length, min, max),
+        color: steppedColorMap.get(index) ?? getOrangeBarShade(bucket.length, min, max),
         barTestID: `distribution-bar-${index}`,
         tooltipRows: [
           { label: "Range", value: label },
@@ -47,7 +63,7 @@ export const DistributionChart = React.memo(function DistributionChart({
         ],
       };
     });
-  }, [data, binCount]);
+  }, [data, binCount, colorScale]);
 
   if (chartData.length === 0) return null;
 

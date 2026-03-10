@@ -56,7 +56,12 @@
       "seatUserOversight": "Supervision des utilisateurs",
       "recentViolations": "Violations récentes",
       "securityEvents": "Événements de sécurité",
-      "policyChanges": "Modifications de politique"
+      "policyChanges": "Modifications de politique",
+      "profile": "Profil",
+      "preferences": "Préférences",
+      "internationalization": "Internationalisation",
+      "organization": "Organisation",
+      "dangerZone": "Zone de danger"
     }
   },
   "dashboard": {
@@ -67,7 +72,7 @@
     "trends": "Tendances",
     "runsOverTime": "Exécutions dans le temps",
     "costPerDay": "Coût par jour",
-    "usageAndAdoption": "Utilisation et adoption",
+    "activeUsers": "Utilisateurs actifs",
     "usageSubtitle": "Métriques des utilisateurs actifs",
     "activeUsersTrend": "Tendance des utilisateurs actifs",
     "outcomes": "Résultats",
@@ -90,7 +95,9 @@
         "waiting": "En attente du prochain workflow d'agent."
       },
       "emptySubtitle": "Les nouvelles sessions apparaîtront automatiquement lorsque les développeurs lanceront des exécutions."
-    }
+    },
+    "wauTrend": "Utilisateurs actifs hebdomadaires (WAU)",
+    "mauTrend": "Utilisateurs actifs mensuels (MAU)"
   },
   "agents": {
     "subtitle": "Fiabilité et performance des agents",
@@ -232,6 +239,8 @@
     "slackDescription": "Envoyer les alertes dans un canal Slack",
     "autoRefresh": "Actualisation automatique",
     "autoRefreshDescription": "Actualiser les données du tableau de bord toutes les 30 secondes",
+    "internationalization": "Internationalisation",
+    "internationalizationSubtitle": "Langues et devises",
     "organization": "Organisation",
     "organizationSubtitle": "Détails de l'équipe et de la facturation",
     "orgId": "ID de l'organisation",
@@ -252,6 +261,7 @@
     "currencyDescription": "Devise d'affichage préférée",
     "selectCurrency": "Sélectionner la devise",
     "searchCurrency": "Rechercher des devises...",
+    "searchLanguage": "Rechercher des langues...",
     "signOutLabel": "Déconnexion",
     "signOut": {
       "demoMode": "Mode démo",

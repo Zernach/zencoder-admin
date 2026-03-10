@@ -30,6 +30,9 @@ export interface AnalyticsFilters {
 // ─── Shared Data Primitives ─────────────────────────────
 export interface TimeSeriesPoint { tsIso: string; value: number; }
 export interface KeyValueMetric  { key: string;   value: number; }
+export interface FailureCategoryMetric extends KeyValueMetric {
+  agentBreakdown: KeyValueMetric[];
+}
 
 // ─── Entities ───────────────────────────────────────────
 export interface Team    { id: string; name: string; }
@@ -140,6 +143,12 @@ export interface PolicyViolationRow {
   reason: string; severity: Severity;
 }
 
+export interface TeamViolationMetric {
+  teamName: string;
+  totalViolations: number;
+  reasonBreakdown: KeyValueMetric[];
+}
+
 export interface SecurityEventRow {
   id: string; type: string; description: string; timestampIso: string;
 }
@@ -201,6 +210,8 @@ export interface UsageResponse {
   wau: number; mau: number; activeSeats30d: number;
   seatAdoptionRate: number;
   activeUsersTrend: TimeSeriesPoint[];
+  wauTrend: TimeSeriesPoint[];
+  mauTrend: TimeSeriesPoint[];
   runsPerUserDistribution: KeyValueMetric[];
   breakdownByTeam: UsageBreakdownRow[];
 }
@@ -226,7 +237,7 @@ export interface ReliabilityResponse {
   runSuccessRate: number; errorRate: number;
   p50RunDurationMs: number; p95RunDurationMs: number;
   p95QueueWaitMs: number; peakConcurrency: number;
-  failureCategoryBreakdown: KeyValueMetric[];
+  failureCategoryBreakdown: FailureCategoryMetric[];
   reliabilityTrend: TimeSeriesPoint[];
   agentBreakdown: AgentBreakdownRow[];
 }
@@ -239,7 +250,7 @@ export interface AgentsHubResponse {
   p95RunDurationMs: number;
   p95QueueWaitMs: number;
   peakConcurrency: number;
-  failureCategoryBreakdown: KeyValueMetric[];
+  failureCategoryBreakdown: FailureCategoryMetric[];
   reliabilityTrend: TimeSeriesPoint[];
   p50DurationTrend: TimeSeriesPoint[];
   p95DurationTrend: TimeSeriesPoint[];
@@ -260,7 +271,7 @@ export interface AgentsHubResponse {
 export interface GovernanceResponse {
   policyViolationCount: number; policyViolationRate: number;
   blockedNetworkAttempts: number; auditEventsCount: number;
-  violationsByTeam: KeyValueMetric[];
+  violationsByTeam: TeamViolationMetric[];
   recentViolations: PolicyViolationRow[];
   securityEvents: SecurityEventRow[];
   complianceItems: ComplianceItem[];

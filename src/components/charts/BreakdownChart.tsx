@@ -4,10 +4,11 @@ import type { PointerEvent as RNPointerEvent } from "react-native";
 import type { KeyValueMetric } from "@/features/analytics/types";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import { BarChart, type BarChartDatum } from "./BarChart";
-import { getOrangeBarShade } from "./palette";
+import { getOrangeBarShade, getOrangeBarShadesStepped } from "./palette";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing, radius } from "@/theme/tokens";
+import { clampTooltipPosition } from "./tooltipUtils";
 
 export interface BreakdownChartHoverRow {
   label: string;
@@ -26,6 +27,9 @@ interface BreakdownChartProps {
   truncateLabels?: boolean;
   formatValue?: (value: number) => string;
   xLabel?: string;
+  /** Color scale for bars. "stepped" (default) assigns equally-spaced distinct colors.
+   *  "scaled" maps bar color continuously based on the numeric value. */
+  colorScale?: "stepped" | "scaled";
 }
 
 export const BreakdownChart = React.memo(function BreakdownChart({
@@ -36,6 +40,7 @@ export const BreakdownChart = React.memo(function BreakdownChart({
   truncateLabels = true,
   formatValue = formatCompactNumber,
   xLabel,
+  colorScale = "stepped",
 }: BreakdownChartProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -46,12 +51,14 @@ export const BreakdownChart = React.memo(function BreakdownChart({
   const tooltipOpacity = useRef(new Animated.Value(0)).current;
   const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const containerRef = useRef<View>(null);
+  const containerSizeRef = useRef({ width: 0, height: 0 });
 
   const handlePointerMove = useCallback((event: RNPointerEvent) => {
     const container = containerRef.current;
     if (!container || Platform.OS !== "web") return;
     (container as unknown as { measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => void })
-      .measureInWindow((cx, cy) => {
+      .measureInWindow((cx, cy, cw, ch) => {
+        containerSizeRef.current = { width: cw, height: ch };
         setMousePos({
           x: (event.nativeEvent as unknown as { pageX: number }).pageX - cx,
           y: (event.nativeEvent as unknown as { pageY: number }).pageY - cy,
@@ -79,12 +86,21 @@ export const BreakdownChart = React.memo(function BreakdownChart({
     }
 
     const minTrackWidth = 56;
-    const valueWidth = showValues ? 48 : 0;
+    const resolvedValueWidth = showValues ? (measuredValueWidth > 0 ? measuredValueWidth : 48) : 0;
     const gapCount = showValues ? 2 : 1;
     const horizontalGaps = gapCount * 8;
-    const maxAllowedLabelWidth = Math.max(80, containerWidth - valueWidth - horizontalGaps - minTrackWidth);
+    const maxAllowedLabelWidth = Math.max(80, containerWidth - resolvedValueWidth - horizontalGaps - minTrackWidth);
     return Math.min(measuredLabelWidth, maxAllowedLabelWidth);
-  }, [truncateLabels, measuredLabelWidth, containerWidth, showValues]);
+  }, [truncateLabels, measuredLabelWidth, containerWidth, showValues, measuredValueWidth]);
+
+  const effectiveSorted = useMemo(() => {
+    return sorted.map((item) => ({
+      ...item,
+      hoverRows: item.hoverRows && item.hoverRows.length > 0
+        ? item.hoverRows
+        : [{ label: item.key, value: formatValue(item.value) }],
+    }));
+  }, [sorted, formatValue]);
 
   const handleLongestLabelLayout = useCallback((width: number): void => {
     if (width > measuredLabelWidth) {
@@ -157,20 +173,26 @@ export const BreakdownChart = React.memo(function BreakdownChart({
     setActiveTooltipIndex((current) => (current === index ? null : current));
   }, []);
 
-  const chartData = useMemo<BarChartDatum[]>(
-    () =>
-      sorted.map((item, index) => ({
-        id: `${item.key}-${index}`,
-        label: item.key,
-        value: item.value,
-        valueLabel: formatValue(item.value),
-        color: getOrangeBarShade(item.value, minVal, maxVal),
-        barTestID:
-          variant === "horizontal-bar"
-            ? `breakdown-bar-fill-${index}`
-            : `breakdown-vertical-bar-${index}`,
-      })),
-    [maxVal, minVal, sorted, variant, formatValue],
+  const chartData = useMemo<BarChartDatum[]>(() => {
+    const steppedShades = colorScale === "stepped" ? getOrangeBarShadesStepped(sorted.length) : null;
+    return sorted.map((item, index) => ({
+      id: `${item.key}-${index}`,
+      label: item.key,
+      value: item.value,
+      valueLabel: formatValue(item.value),
+      color: steppedShades ? steppedShades[index] ?? getOrangeBarShade(item.value, minVal, maxVal) : getOrangeBarShade(item.value, minVal, maxVal),
+      barTestID:
+        variant === "horizontal-bar"
+          ? `breakdown-bar-fill-${index}`
+          : `breakdown-vertical-bar-${index}`,
+      tooltipRows: (effectiveSorted[index]?.hoverRows ?? [{ label: item.key, value: formatValue(item.value) }])
+        .map((r) => ({ label: r.label, value: r.value })),
+    }));
+  }, [colorScale, maxVal, minVal, sorted, effectiveSorted, variant, formatValue]);
+
+  const breakdownTooltipPos = clampTooltipPosition(
+    mousePos.x, mousePos.y,
+    containerSizeRef.current.width, containerSizeRef.current.height,
   );
 
   if (variant === "horizontal-bar") {
@@ -206,7 +228,7 @@ export const BreakdownChart = React.memo(function BreakdownChart({
           onBarHoverOut={handleTooltipHide}
           horizontalOptions={{
             labelNumberOfLines: truncateLabels ? 1 : undefined,
-            labelWidth: !truncateLabels ? effectiveLabelWidth : undefined,
+            labelWidth: truncateLabels ? 80 : effectiveLabelWidth,
             valueWidth: measuredValueWidth > 0 ? measuredValueWidth : undefined,
             trackMinWidth: 56,
             trackHeight: 16,
@@ -229,7 +251,7 @@ export const BreakdownChart = React.memo(function BreakdownChart({
             value: [styles.hBarValue, { color: theme.text.primary }],
           }}
           renderHorizontalLabel={({ item, index, style, numberOfLines }) => {
-            const hoverRows = sorted[index]?.hoverRows;
+            const hoverRows = effectiveSorted[index]?.hoverRows;
             const hasHoverRows = Boolean(hoverRows && hoverRows.length > 0);
 
             return (
@@ -258,15 +280,15 @@ export const BreakdownChart = React.memo(function BreakdownChart({
             );
           }}
         />
-        {activeTooltipIndex !== null && sorted[activeTooltipIndex]?.hoverRows?.length ? (
+        {activeTooltipIndex !== null && effectiveSorted[activeTooltipIndex]?.hoverRows?.length ? (
           <Animated.View
             pointerEvents="none"
             testID={`breakdown-hover-bubble-${activeTooltipIndex}`}
             style={[
               styles.tooltipBubble,
               {
-                left: mousePos.x + 12,
-                top: mousePos.y - 8,
+                left: breakdownTooltipPos.left,
+                top: breakdownTooltipPos.top,
                 backgroundColor: theme.bg.surface,
                 borderColor: theme.border.default,
                 shadowColor: mode === "dark" ? "#000000" : "#0f1720",
@@ -274,7 +296,7 @@ export const BreakdownChart = React.memo(function BreakdownChart({
               tooltipAnimatedStyle,
             ]}
           >
-            {sorted[activeTooltipIndex].hoverRows?.map((row, rowIndex) => (
+            {effectiveSorted[activeTooltipIndex].hoverRows?.map((row, rowIndex) => (
               <View key={`${row.label}-${rowIndex}`} style={styles.tooltipRow}>
                 <Text style={[styles.tooltipLabel, { color: theme.text.tertiary }]}>
                   {row.label}
@@ -336,7 +358,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   hBarLabel: {
-    width: 80,
     fontSize: 11,
     fontWeight: "500",
   },

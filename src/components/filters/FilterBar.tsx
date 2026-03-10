@@ -126,7 +126,7 @@ export const FilterBar = React.memo(function FilterBar({ visibleFilters }: Filte
       {
         category: "provider",
         singularLabel: t("filters.provider"),
-        pluralLabel: t("filters.providers_plural"),
+        pluralLabel: t("filters.providersLabel"),
         options: providerOptions,
         selected: filters.providers ?? [],
         onToggle: (v) =>
@@ -139,7 +139,7 @@ export const FilterBar = React.memo(function FilterBar({ visibleFilters }: Filte
       {
         category: "status",
         singularLabel: t("filters.status"),
-        pluralLabel: t("filters.statuses_plural"),
+        pluralLabel: t("filters.statusesLabel"),
         options: statusOptions,
         selected: filters.statuses ?? [],
         onToggle: (v) =>

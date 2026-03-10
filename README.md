@@ -1,130 +1,159 @@
-# 📊 Zencoder Admin Dashboard
+# Zencoder Admin Dashboard
 
 <p>
   <img src="src/assets/images/zencoder-text-dark-bg.png" width="300" alt="Zencoder Admin icon">
 </p>
 
-Enterprise organizational analytics dashboard for monitoring AI coding agents — built with React Native & Expo.
+Cross-platform admin dashboard for AI coding agent analytics, built with Expo + React Native + TypeScript.
 
-## ⚙️ Introduction
+## Overview
 
-**Zencoder Admin** gives engineering leaders, FinOps teams, and security officers a single place to understand whether AI agent usage across their organization is adopted, delivering outcomes, reliable, cost-efficient, and governed under policy.
-
-The app supports organization-level reporting and drill-down to team, user, project, and individual run detail — all from one cross-platform codebase:
+This app supports all platforms from one codebase:
 
 - ✅ iOS
 - ✅ Android
 - ✅ Web
+- ⚠️ Desktop (coming soon!)
 
-## ⚙️ Getting Started
+This repository is frontend-first and currently uses a fully stubbed analytics backend. All dashboard data comes from deterministic seed fixtures through typed interfaces, so real APIs can be swapped in later without changing screen code.
+
+## Product Areas
+
+Main tabs:
+
+| Tab | Primary Focus | Key Implemented Sections |
+|---|---|---|
+| `Home` | Org-level dashboard and trend monitoring | Live agent sessions, KPI cards, runs/cost trends, usage + outcomes blocks, reliability/provider mix, anomaly cards |
+| `Agents` | Reliability and execution performance | Reliability KPIs + charts, agent performance table, project breakdown table, recent runs table, create agent/project flows |
+| `Costs` | Spend analysis and forecasting | Budget forecast, cost per project, cost trend, avg cost KPIs, provider cost + token cost views, project cost breakdown |
+| `Governance` | Compliance and operational risk | Governance KPI overview, violations by team, team performance comparison, seat user oversight, recent violations, security events, policy changes, create rule/team/user flows |
+| `Settings` | User/org preferences and account actions | Theme toggle, notification toggles, language + currency selection, org plan/seat usage, cache action, sign-out modal |
+
+Navigation is responsive:
+
+- Desktop/tablet: collapsible sidebar
+- Mobile: bottom tab bar
+
+Global UX available across dashboard screens:
+
+- Top search with autocomplete and entity deep-linking
+- Time range presets (`24h`, `7d`, `30d`, `90d`)
+- Per-tab entity detail routes (`/dashboard/agent/:agentId`, `/agents/run/:runId`, etc.)
+
+## Architecture
+
+Primary data flow:
+
+1. Screen components (`src/app/...`) compose UI only.
+2. Feature hooks prepare view state.
+3. RTK Query endpoints call `AnalyticsService`.
+4. `AnalyticsService` depends on `IAnalyticsApi`.
+5. `StubAnalyticsApi` returns typed fake data with simulated latency.
+
+Dependency injection:
+
+- `AppDependenciesProvider` wires `StubAnalyticsApi` + `AnalyticsService`.
+- `initializeService(...)` registers the active service for RTK Query.
+
+Shared contracts:
+
+- All API/domain contracts are defined in `src/features/analytics/types/contracts.ts`.
+- The same types are consumed by UI hooks, service layer, and stub API.
+
+## Project Structure
+
+```text
+src/
+  app/                     Expo Router routes (tabs + entity detail wrappers)
+  components/              Reusable UI (shell, charts, tables, forms, modals, etc.)
+  constants/               Routes, navigation metadata, platform helpers
+  core/di/                 Dependency injection context and wiring
+  features/
+    analytics/
+      api/                 IAnalyticsApi + StubAnalyticsApi
+      components/          Feature-specific modals/forms
+      fixtures/            Seed data generator
+      hooks/               Screen/view-model hooks
+      mappers/             API -> view model mapping
+      services/            AnalyticsService + interface
+      types/               Shared contracts
+      utils/               Formatting and metric helpers
+    search/                Entity detail screens + hooks + nav helpers
+  hooks/                   Shared app hooks
+  i18n/                    i18next setup and locale JSON files
+  providers/               AppProviders and ThemeProvider
+  store/                   Redux Toolkit store, RTK Query API slice, UI slices
+  theme/                   Tokens, theme objects, typography, breakpoints
+```
+
+## Tech Stack
+
+- Expo 55
+- React 19
+- React Native 0.83
+- TypeScript (strict mode)
+- Expo Router
+- Redux Toolkit + RTK Query
+- i18next / react-i18next
+- React Native Reanimated + Moti
+- Victory Native + D3 + react-native-svg
+- Jest + React Native Testing Library
+- Playwright (web E2E)
+- Cloudflare Pages (Wrangler)
+
+## Getting Started
 
 ### Prerequisites
 
-- **Node.js** 22.x (LTS)
-- **Xcode** (for iOS simulator)
-- **Android Studio** (for Android emulator)
+- Node.js `>=22 <24`
+- npm
+- Xcode (iOS local runs)
+- Android Studio (Android local runs)
 
-### Install & Run
+### Install
 
 ```bash
 npm install
 ```
 
-```bash
-npm start        # Expo dev server (press w/i/a for web/iOS/Android)
-npm run web      # Web only
-npm run ios      # iOS simulator
-npm run android  # Android emulator
-```
-
-### Other Commands
+### Run
 
 ```bash
-npm run typecheck   # TypeScript strict check
-npm run lint        # ESLint
-npm test            # Jest unit tests
-npm run test:e2e    # Playwright end-to-end (web)
-npm run build       # Export for web
-npm run deploy      # Build & deploy to Cloudflare Pages
-npm run clean       # Full clean rebuild
+npm start        # Expo dev server
+npm run web      # Web
+npm run ios      # iOS
+npm run android  # Android
 ```
 
-## ⚙️ App Tabs
+## Scripts
 
-The dashboard is organized into five main tabs — a sidebar on desktop/tablet and a bottom tab bar on mobile:
-
-| # | Tab | Icon | Purpose | Key Features |
-|---|-----|------|---------|--------------|
-| 1 | **Home** | 🏠 | Organization overview at a glance | Live agent sessions, 4 KPI cards (adoption rate, success rate, total cost, provider mix), trend charts, anomaly detection |
-| 2 | **Agents** | 🤖 | Agent performance & reliability deep-dive | Reliability KPIs (P50/P95 duration, error rate, queue wait), agent breakdown table, project breakdown, recent runs list, failure category charts |
-| 3 | **Costs** | 💰 | Spending trends & budget tracking | Cost trend area chart, cost-by-project donut, provider cost breakdown, budget forecast with month-end projections, project-level horizontal bar chart |
-| 4 | **Governance** | 🛡️ | Policy enforcement & compliance monitoring | Violation tracking, blocked network attempts, audit events, compliance status cards, seat user oversight, security events & policy change tables |
-| 5 | **Settings** | ⚙️ | Preferences & organization info | Dark/light mode toggle, notification preferences, Slack integration, auto-refresh, org details, cache management |
-
-## ⚙️ Architecture
-
-```
-src/
-├── app/                    # Expo Router file-based routes
-│   └── (dashboard)/        # Tab screens (dashboard, agents, costs, governance, settings)
-├── features/analytics/     # Core business domain
-│   ├── types/              # Shared TypeScript contracts (single source of truth)
-│   ├── api/                # IAnalyticsApi interface + StubAnalyticsApi implementation
-│   ├── services/           # AnalyticsService (depends on interface, not implementation)
-│   ├── hooks/              # Screen-level hooks (useOverviewDashboard, useCostDashboard, etc.)
-│   ├── fixtures/           # Deterministic seed data
-│   ├── mappers/            # Data transformation utilities
-│   └── utils/              # Formatters, metric formulas
-├── components/
-│   ├── shell/              # DashboardShell, Sidebar, BottomTabs, TopBar
-│   ├── dashboard/          # KpiCard, SectionHeader, CardGrid, StatusBadge, LoadingSkeleton
-│   ├── charts/             # TrendChart, DonutChart, BreakdownChart, ProviderCostChart
-│   ├── tables/             # DataTable, SortableHeader, DataList
-│   └── filters/            # FilterBar (sticky search + filters)
-├── core/di/                # Dependency injection (AppDependencies context)
-├── store/                  # Redux Toolkit + Redux Saga (filters, sidebar, loading state)
-├── providers/              # AppProviders, ThemeProvider, QueryProvider
-├── theme/                  # Design tokens, dark/light themes, typography, breakpoints
-└── assets/images/          # App icons & logos
+```bash
+npm run typecheck   # TypeScript check
+npm run lint        # ESLint on src/
+npm test            # Jest tests
+npm run test:e2e    # Playwright E2E (starts Expo web on :8085)
+npm run build       # Expo web export to dist/
+npm run deploy      # Build + deploy dist/ to Cloudflare Pages
+npm run clean       # Remove generated artifacts + reinstall deps
+npm run figma:sync  # Sync/clean Figma spec data into docs/designs/out
+npm run ralph -- -p 0   # Run Ralph loop prompt script
 ```
 
-### Design Principles
+Notes:
 
-- **Stubbed APIs behind interfaces** — swap in real backends without touching UI code
-- **Shared TypeScript types** — one source of truth for API contracts between frontend and stubs
-- **Clean separation** — Screens → Hooks → Services → API Interfaces → Stub Implementations
-- **Dependency injection** — services are provided via React context for easy testing and swapping
-- **Responsive layout** — sidebar nav on desktop/tablet, bottom tabs on mobile, adaptive grids
+- `figma:sync` expects `FIGMA_TOKEN` in your environment (or `.env`).
+- `ralph` expects the `claude` CLI to be installed and accessible in your shell.
 
-## ⚙️ Tech Stack
+## Internationalization and Preferences
 
-| Category | Technologies |
-|----------|-------------|
-| **Framework** | React Native 0.83, Expo 55, React 19, TypeScript 5.9 |
-| **Routing** | Expo Router (file-based) |
-| **State** | Redux Toolkit + Redux Saga, TanStack React Query |
-| **UI System** | Tamagui, React Native Reanimated, Moti |
-| **Charts** | Victory Native, D3 (scale, array, shape), React Native SVG |
-| **Icons** | Lucide React Native |
-| **Lists** | Shopify Flash List |
-| **Testing** | Jest, React Native Testing Library, Playwright, MSW |
-| **Deploy** | Cloudflare Pages (via Wrangler) |
+- Locales currently included: `en`, `ru`, `de`, `fr`, `it`
+- Theme mode support: dark/light
+- Currency and language preferences are managed in Redux settings state
 
-## ⚙️ AI Coding Techniques
+## Deployment
 
-In general, we are following the `0000-task-manager.md` to catalogue the list of `pull_requests` files to show most of the work that I completed for this app.
+`npm run deploy` exports the web build and deploys `dist/` to Cloudflare Pages using Wrangler (`zencoder-submission`).
 
-The following command will run the `0.txt` file in the `loops` directory, which refers to the task manager, and uses Claude + Ralph plugin to run prompt loops over the content in the text file.
+## License
 
-```sh
-npm run ralph -- -p 0
-```
-
-**Important:** Run this from a **terminal** (not from within Cursor's agent). The shell script loops after each Claude run; the plugin only stops when Claude outputs the exact string `DONE`. Avoid saying "finished" or "done" in natural language—use the literal token `DONE` only when the task is complete.
-
-To create another Ralph loop, simply create a new text file in the `loops` directory, and then run the above command with the number of the text file that you created.
-
-
-## ⚙️ License
-
-Private — all rights reserved.
+Private repository. All rights reserved.

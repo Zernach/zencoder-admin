@@ -38,7 +38,7 @@ export interface SubsectionItem {
   label: string;
 }
 
-export type SubsectionRoute = ROUTES.AGENTS | ROUTES.COSTS | ROUTES.GOVERNANCE;
+export type SubsectionRoute = ROUTES.AGENTS | ROUTES.COSTS | ROUTES.GOVERNANCE | ROUTES.SETTINGS;
 
 export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
   [ROUTES.AGENTS]: [
@@ -60,6 +60,13 @@ export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
     { id: "recent-violations", label: "navigation.subsections.recentViolations" },
     { id: "security-events", label: "navigation.subsections.securityEvents" },
     { id: "policy-changes", label: "navigation.subsections.policyChanges" },
+  ],
+  [ROUTES.SETTINGS]: [
+    { id: "profile", label: "navigation.subsections.profile" },
+    { id: "preferences", label: "navigation.subsections.preferences" },
+    { id: "internationalization", label: "navigation.subsections.internationalization" },
+    { id: "organization", label: "navigation.subsections.organization" },
+    { id: "danger-zone", label: "navigation.subsections.dangerZone" },
   ],
 };
 

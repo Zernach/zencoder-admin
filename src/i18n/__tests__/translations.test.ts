@@ -3,6 +3,21 @@ import ru from "../locales/ru.json";
 import de from "../locales/de.json";
 import fr from "../locales/fr.json";
 import itTranslation from "../locales/it.json";
+import es from "../locales/es.json";
+import pl from "../locales/pl.json";
+import uk from "../locales/uk.json";
+import ro from "../locales/ro.json";
+import nl from "../locales/nl.json";
+import tr from "../locales/tr.json";
+import el from "../locales/el.json";
+import hu from "../locales/hu.json";
+import pt from "../locales/pt.json";
+import cs from "../locales/cs.json";
+import sv from "../locales/sv.json";
+import sr from "../locales/sr.json";
+import bg from "../locales/bg.json";
+import hr from "../locales/hr.json";
+import da from "../locales/da.json";
 
 type TranslationMap = Record<string, unknown>;
 
@@ -22,7 +37,27 @@ function getKeys(obj: TranslationMap, prefix = ""): string[] {
 
 const enKeys = getKeys(en);
 
-const translations: Record<string, TranslationMap> = { ru, de, fr, it: itTranslation };
+const translations: Record<string, TranslationMap> = {
+  ru,
+  de,
+  fr,
+  it: itTranslation,
+  es,
+  pl,
+  uk,
+  ro,
+  nl,
+  tr,
+  el,
+  hu,
+  pt,
+  cs,
+  sv,
+  sr,
+  bg,
+  hr,
+  da,
+};
 
 describe("Translation completeness", () => {
   it("en.json has keys", () => {

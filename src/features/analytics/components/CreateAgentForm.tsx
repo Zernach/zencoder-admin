@@ -78,7 +78,7 @@ export function CreateAgentForm({ onSubmit, loading, error }: CreateAgentFormPro
 
   return (
     <InputForm
-      title={t("modals.createAgent")}
+      title={t("modals.createAgentTitle")}
       items={items}
       footer={
         <>
