@@ -1,6 +1,7 @@
 import {
   formatCurrency,
   formatCostPerToken,
+  formatCompactCurrency,
   formatPercent,
   formatNumber,
   formatCompactNumber,
@@ -10,32 +11,76 @@ import {
 } from "../formatters";
 
 describe("formatCurrency", () => {
-  it("zero", () => {
-    expect(formatCurrency(0)).toBe("$0.00");
+  describe("defaults to EUR", () => {
+    it("zero", () => {
+      expect(formatCurrency(0)).toBe("€0.00");
+    });
+    it("normal", () => {
+      expect(formatCurrency(47823)).toBe("€47,823.00");
+    });
+    it("with cents", () => {
+      expect(formatCurrency(1234.56)).toBe("€1,234.56");
+    });
+    it("large", () => {
+      expect(formatCurrency(1000000)).toBe("€1,000,000.00");
+    });
+    it("small decimal", () => {
+      expect(formatCurrency(3.06)).toBe("€3.06");
+    });
+    it("negative value", () => {
+      expect(formatCurrency(-50)).toBe("€-50.00");
+    });
   });
-  it("normal", () => {
-    expect(formatCurrency(47823)).toBe("$47,823.00");
-  });
-  it("with cents", () => {
-    expect(formatCurrency(1234.56)).toBe("$1,234.56");
-  });
-  it("large", () => {
-    expect(formatCurrency(1000000)).toBe("$1,000,000.00");
-  });
-  it("small decimal", () => {
-    expect(formatCurrency(3.06)).toBe("$3.06");
-  });
-  it("negative value", () => {
-    expect(formatCurrency(-50)).toBe("$-50.00");
+
+  describe("with explicit currency codes", () => {
+    it("USD shows $ with 2 decimals", () => {
+      expect(formatCurrency(100, "USD")).toBe("$100.00");
+    });
+    it("EUR shows € with 2 decimals", () => {
+      expect(formatCurrency(100, "EUR")).toBe("€100.00");
+    });
+    it("JPY shows ¥ with 0 decimals", () => {
+      expect(formatCurrency(100, "JPY")).toBe("¥100");
+    });
+    it("KRW shows ₩ with 0 decimals", () => {
+      expect(formatCurrency(1500, "KRW")).toBe("₩1,500");
+    });
+    it("GBP shows £ with 2 decimals", () => {
+      expect(formatCurrency(99.99, "GBP")).toBe("£99.99");
+    });
+    it("BRL shows R$", () => {
+      expect(formatCurrency(250, "BRL")).toBe("R$250.00");
+    });
   });
 });
 
 describe("formatCostPerToken", () => {
-  it("formats in ten-thousandths of a cent per token", () => {
-    expect(formatCostPerToken(0.123456)).toBe("123,456 ten-thousandths of a penny per token");
+  it("formats with EUR symbol by default", () => {
+    const result = formatCostPerToken(0.123456);
+    expect(result).toContain("€");
+    expect(result).toContain("micro-units/token");
   });
-  it("keeps small values visible", () => {
-    expect(formatCostPerToken(0.000031)).toBe("31 ten-thousandths of a penny per token");
+  it("formats with USD symbol", () => {
+    const result = formatCostPerToken(0.000031, "USD");
+    expect(result).toBe("$31 micro-units/token");
+  });
+});
+
+describe("formatCompactCurrency", () => {
+  it("millions", () => {
+    expect(formatCompactCurrency(2800000, "USD")).toBe("$2.8M");
+  });
+  it("thousands", () => {
+    expect(formatCompactCurrency(15623, "EUR")).toBe("€15.6K");
+  });
+  it("small", () => {
+    expect(formatCompactCurrency(42.5, "GBP")).toBe("£42.50");
+  });
+  it("JPY small (no decimals)", () => {
+    expect(formatCompactCurrency(500, "JPY")).toBe("¥500");
+  });
+  it("defaults to EUR", () => {
+    expect(formatCompactCurrency(1500)).toBe("€1.5K");
   });
 });
 
