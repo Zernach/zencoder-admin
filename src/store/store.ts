@@ -3,6 +3,7 @@ import { filtersSlice } from "./slices/filtersSlice";
 import { sidebarSlice } from "./slices/sidebarSlice";
 import { navigationHistorySlice } from "./slices/navigationHistorySlice";
 import { modalSlice } from "./slices/modalSlice";
+import { settingsSlice } from "./slices/settingsSlice";
 import { analyticsApi } from "./api/analyticsApi";
 
 export const store = configureStore({
@@ -11,6 +12,7 @@ export const store = configureStore({
     sidebar: sidebarSlice.reducer,
     navigationHistory: navigationHistorySlice.reducer,
     modal: modalSlice.reducer,
+    settings: settingsSlice.reducer,
     [analyticsApi.reducerPath]: analyticsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

@@ -6,6 +6,7 @@ import { Provider as ReduxProvider } from "react-redux";
 import { ThemeProvider } from "./ThemeProvider";
 import { AppDependenciesProvider } from "@/core/di";
 import { store } from "@/store";
+import "@/i18n/config";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (

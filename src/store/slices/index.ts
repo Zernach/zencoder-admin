@@ -30,3 +30,14 @@ export {
   ModalName,
   type ModalState,
 } from "./modalSlice";
+
+export {
+  settingsSlice,
+  setLanguage,
+  setCurrency,
+  setDeviceDefaultLanguage,
+  selectSelectedLanguage,
+  selectDeviceDefaultLanguage,
+  selectSelectedCurrency,
+  type SettingsState,
+} from "./settingsSlice";

@@ -20,8 +20,15 @@ export {
   closeModal,
   selectModalVisible,
   ModalName,
+  settingsSlice,
+  setLanguage,
+  setCurrency,
+  setDeviceDefaultLanguage,
+  selectSelectedLanguage,
+  selectDeviceDefaultLanguage,
+  selectSelectedCurrency,
 } from "./slices";
-export type { SidebarState, NavigationHistoryState, ModalState } from "./slices";
+export type { SidebarState, NavigationHistoryState, ModalState, SettingsState } from "./slices";
 export {
   analyticsApi,
   useGetOverviewQuery,
