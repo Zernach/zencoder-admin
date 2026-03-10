@@ -8,6 +8,7 @@ import { DataTable } from "@/components/tables";
 import type { ColumnDef } from "@/components/tables/DataTable";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { cellText } from "@/components/tables/cellStyles";
+import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { spacing } from "@/theme/tokens";
 
 interface RunDetailScreenProps {
@@ -24,6 +25,7 @@ export function RunDetailScreen({ runId }: RunDetailScreenProps) {
   const { data, loading, error, refetch } = useRunDetailScreen(runId);
   const { mode } = useThemeMode();
   const ct = cellText(mode);
+  const { formatCurrency } = useCurrencyFormatter();
 
   const detailColumns = useMemo<ColumnDef<DetailRow>[]>(
     () => [
@@ -44,7 +46,7 @@ export function RunDetailScreen({ runId }: RunDetailScreenProps) {
     { label: t("entityDetail.runFields.provider"), value: run.provider },
     { label: t("entityDetail.runFields.model"), value: run.modelId },
     { label: t("entityDetail.runFields.duration"), value: `${(run.durationMs / 1000).toFixed(1)}s` },
-    { label: t("entityDetail.runFields.cost"), value: `$${run.costUsd.toFixed(2)}` },
+    { label: t("entityDetail.runFields.cost"), value: formatCurrency(run.costUsd) },
     { label: t("entityDetail.runFields.tokens"), value: run.totalTokens.toLocaleString() },
     { label: t("entityDetail.runFields.inputTokens"), value: run.inputTokens.toLocaleString() },
     { label: t("entityDetail.runFields.outputTokens"), value: run.outputTokens.toLocaleString() },

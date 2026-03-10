@@ -10,6 +10,7 @@ import type { User, Project } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { cellText, getSuccessRateColor } from "@/components/tables/cellStyles";
+import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { spacing } from "@/theme/tokens";
 
 interface TeamDetailScreenProps {
@@ -22,6 +23,7 @@ export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
+  const { formatCurrency } = useCurrencyFormatter();
 
   const memberColumns = useMemo<ColumnDef<User>[]>(
     () => [
@@ -56,7 +58,7 @@ export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
             theme={theme}
             valueColor={getSuccessRateColor(data.successRate, mode)}
           />
-          <StatItem label={t("entityDetail.cost")} value={`$${data.totalCostUsd.toFixed(2)}`} theme={theme} />
+          <StatItem label={t("entityDetail.cost")} value={formatCurrency(data.totalCostUsd)} theme={theme} />
         </View>
 
         <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.members")}</Text>

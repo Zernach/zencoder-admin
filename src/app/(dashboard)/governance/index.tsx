@@ -7,7 +7,8 @@ import { useGovernanceDashboard } from "@/features/analytics/hooks/useGovernance
 import { SectionHeader, CardGrid, KpiCard, StatusBadge, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
-import { formatCompactNumber, formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
+import { formatCompactNumber, formatPercent } from "@/features/analytics/utils/formatters";
+import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import type {
   PolicyViolationRow,
   SecurityEventRow,
@@ -40,6 +41,7 @@ export default function GovernanceScreen() {
   const { mode } = useThemeMode();
   const ct = cellText(mode);
   const { data, loading, error, refetch } = useGovernanceDashboard();
+  const { formatCurrency } = useCurrencyFormatter();
   const refFor = useSectionRef();
   const dispatch = useAppDispatch();
   const router = useRouter();

@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import type { ProviderCostRow } from "@/features/analytics/types";
-import { formatCompactNumber, formatCurrency, formatPercent } from "@/features/analytics/utils/formatters";
+import { formatCompactNumber, formatPercent } from "@/features/analytics/utils/formatters";
+import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { BreakdownChart, type BreakdownChartDatum } from "./BreakdownChart";
 
 interface ProviderTokenCostBarChartProps {
@@ -25,6 +26,7 @@ function formatTenThousandths(usdPerToken: number): string {
 export const ProviderTokenCostBarChart = React.memo(function ProviderTokenCostBarChart({
   data,
 }: ProviderTokenCostBarChartProps) {
+  const { formatCurrency } = useCurrencyFormatter();
   const chartData = useMemo<BreakdownChartDatum[]>(() => {
     return data.map((row) => {
       const costPerToken = computeCostPerToken(row);
@@ -40,7 +42,7 @@ export const ProviderTokenCostBarChart = React.memo(function ProviderTokenCostBa
         ],
       };
     });
-  }, [data]);
+  }, [data, formatCurrency]);
 
   return (
     <BreakdownChart

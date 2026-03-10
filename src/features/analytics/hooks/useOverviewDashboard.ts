@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 import { useGetOverviewQuery, useGetUsageQuery, useGetOutcomesQuery } from "@/store/api";
 import { useDashboardFilters } from "./useDashboardFilters";
+import { useCurrencyFormatter } from "./useCurrencyFormatter";
 import { mapOverviewToViewModel } from "../mappers/overviewMappers";
 
 export function useOverviewDashboard() {
   const { filters } = useDashboardFilters();
+  const { formatCurrency } = useCurrencyFormatter();
 
   const overviewQuery = useGetOverviewQuery(filters);
   const usageQuery = useGetUsageQuery(filters);
@@ -13,9 +15,9 @@ export function useOverviewDashboard() {
   const data = useMemo(
     () =>
       overviewQuery.data
-        ? mapOverviewToViewModel(overviewQuery.data, usageQuery.data, outcomesQuery.data)
+        ? mapOverviewToViewModel(overviewQuery.data, usageQuery.data, outcomesQuery.data, formatCurrency)
         : undefined,
-    [overviewQuery.data, usageQuery.data, outcomesQuery.data],
+    [overviewQuery.data, usageQuery.data, outcomesQuery.data, formatCurrency],
   );
 
   return {

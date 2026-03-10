@@ -15,6 +15,7 @@ import type { RunListRow } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { cellText, getSuccessRateColor } from "@/components/tables/cellStyles";
+import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { spacing, radius, borderWidth } from "@/theme/tokens";
 import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
 
@@ -29,6 +30,7 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
+  const { formatCurrency } = useCurrencyFormatter();
   const router = useRouter();
   const pathname = usePathname();
   const [isEditing, setIsEditing] = useState(false);
@@ -85,11 +87,11 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
         header: t("entityDetail.table.cost"),
         width: 80,
         align: "right",
-        render: (r) => <Text style={ct.primary}>${r.costUsd.toFixed(2)}</Text>,
+        render: (r) => <Text style={ct.primary}>{formatCurrency(r.costUsd)}</Text>,
         sortAccessor: (r) => r.costUsd,
       },
     ],
-    [ct, navigateTo, userMap, t],
+    [ct, navigateTo, userMap, t, formatCurrency],
   );
 
   const handleEditPress = useCallback(() => {
@@ -127,7 +129,7 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
             valueColor={getSuccessRateColor(data.successRate, mode)}
           />
           <StatItem label={t("entityDetail.avgDuration")} value={`${(data.avgDurationMs / 1000).toFixed(1)}s`} theme={theme} />
-          <StatItem label={t("entityDetail.cost")} value={`$${data.totalCostUsd.toFixed(2)}`} theme={theme} />
+          <StatItem label={t("entityDetail.cost")} value={formatCurrency(data.totalCostUsd)} theme={theme} />
         </View>
 
         <View style={[styles.descriptionSection, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }]}>

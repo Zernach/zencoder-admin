@@ -80,6 +80,16 @@ jest.mock("@/theme/themes", () => ({
   },
 }));
 
+jest.mock("@/features/analytics/hooks/useCurrencyFormatter", () => ({
+  useCurrencyFormatter: () => ({
+    formatCurrency: (n: number) => `€${n.toFixed(2)}`,
+    formatCostPerToken: (n: number) => `€${Math.round(n * 1000000)} micro-units/token`,
+    formatCompactCurrency: (n: number) => `€${n.toFixed(2)}`,
+    currencyCode: "EUR",
+    currencySymbol: "€",
+  }),
+}));
+
 jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
 
 const CostAnalyticsScreen = require("../costs").default;

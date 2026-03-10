@@ -8,6 +8,16 @@ import { RunDetailScreen } from "../RunDetailScreen";
 
 jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
 
+jest.mock("@/features/analytics/hooks/useCurrencyFormatter", () => ({
+  useCurrencyFormatter: () => ({
+    formatCurrency: (n: number) => `€${n.toFixed(2)}`,
+    formatCostPerToken: (n: number) => `€${Math.round(n * 1000000)} micro-units/token`,
+    formatCompactCurrency: (n: number) => `€${n.toFixed(2)}`,
+    currencyCode: "EUR",
+    currencySymbol: "€",
+  }),
+}));
+
 // Mock all dependencies
 jest.mock("@/providers/ThemeProvider", () => ({
   useThemeMode: () => ({ mode: "dark", setMode: jest.fn(), toggleMode: jest.fn() }),
@@ -205,7 +215,7 @@ describe("Entity detail screens", () => {
     const { getByText } = render(<AgentDetailScreen agentId="a1" />);
     expect(getByText("Test Agent")).toBeTruthy();
     expect(getByText("42")).toBeTruthy();
-    expect(getByText("$123.45")).toBeTruthy();
+    expect(getByText("€123.45")).toBeTruthy();
     expect(getByText("Classifies incoming tickets")).toBeTruthy();
     expect(getByText("entityDetail.promptDescription")).toBeTruthy();
   });
@@ -225,7 +235,7 @@ describe("Entity detail screens", () => {
   it("HumanDetailScreen renders human data", () => {
     const { getByText } = render(<HumanDetailScreen humanId="u1" />);
     expect(getByText("Jane Doe")).toBeTruthy();
-    expect(getByText("$75.50")).toBeTruthy();
+    expect(getByText("€75.50")).toBeTruthy();
   });
 
   it("RunDetailScreen renders run data", () => {

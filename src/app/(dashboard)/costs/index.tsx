@@ -6,7 +6,7 @@ import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@
 import { ChartCard, LineChart, BreakdownChart, DonutChart, ProviderCostChart, ProviderTokenCostBarChart } from "@/components/charts";
 import type { BreakdownChartDatum } from "@/components/charts/BreakdownChart";
 import { CustomList } from "@/components/lists";
-import { formatCurrency } from "@/features/analytics/utils/formatters";
+import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import type { CostBreakdownRow, BudgetSummary } from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
@@ -30,11 +30,12 @@ const CostDonutMemo = React.memo(function CostDonutMemo({
   height?: number;
 }) {
   const { t } = useTranslation();
+  const { formatCurrency } = useCurrencyFormatter();
   const donutData = useMemo(
     () => costBreakdown.slice(0, 6).map(r => ({ key: r.key, value: r.totalCostUsd })),
     [costBreakdown],
   );
-  const centerValue = useMemo(() => formatCurrency(totalCostUsd), [totalCostUsd]);
+  const centerValue = useMemo(() => formatCurrency(totalCostUsd), [totalCostUsd, formatCurrency]);
   return <DonutChart data={donutData} centerLabel={t("common.total")} centerValue={centerValue} height={height} />;
 });
 
@@ -45,6 +46,7 @@ const BudgetForecastBarMemo = React.memo(function BudgetForecastBarMemo({
   budget: BudgetSummary;
 }) {
   const { t } = useTranslation();
+  const { formatCurrency } = useCurrencyFormatter();
   const chartData = useMemo<BreakdownChartDatum[]>(() => {
     const remaining = budget.budgetUsd - budget.spentUsd;
     const utilization = budget.budgetUsd > 0 ? (budget.spentUsd / budget.budgetUsd) * 100 : 0;
@@ -73,7 +75,7 @@ const BudgetForecastBarMemo = React.memo(function BudgetForecastBarMemo({
         ],
       },
     ];
-  }, [budget, t]);
+  }, [budget, t, formatCurrency]);
   return <BreakdownChart data={chartData} variant="horizontal-bar" formatValue={formatCurrency} />;
 });
 
@@ -95,13 +97,14 @@ export default function CostAnalyticsScreen() {
   const bp = useBreakpoint();
   const isLargeLayout = bp === "desktop" || bp === "tablet";
   const { data, loading, error, refetch } = useCostDashboard();
+  const { formatCurrency } = useCurrencyFormatter();
   const refFor = useSectionRef();
   const filteredCostBreakdown = useSearchFilter(data?.costBreakdown ?? [], COST_BREAKDOWN_SEARCH_KEYS);
 
   const subtitle = useMemo(() => data
     ? t("costs.subtitleWithData", { totalCost: formatCurrency(data.totalCostUsd), projectCount: data.costBreakdown.length })
     : t("costs.subtitle"),
-    [data, t],
+    [data, t, formatCurrency],
   );
 
   const headerProps = useMemo(

@@ -8,7 +8,8 @@ import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
 import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
 import { ChartCard, LineChart, BreakdownChart } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
-import { formatPercent, formatDuration, formatCurrency, formatCompactNumber } from "@/features/analytics/utils/formatters";
+import { formatPercent, formatDuration, formatCompactNumber } from "@/features/analytics/utils/formatters";
+import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import type { AgentBreakdownRow, ProjectBreakdownRow, RunListRow } from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
@@ -37,6 +38,7 @@ export default function AgentsScreen() {
   const { mode } = useThemeMode();
   const ct = cellText(mode);
   const { data, loading, error, refetch } = useAgentsHub();
+  const { formatCurrency } = useCurrencyFormatter();
   const refFor = useSectionRef();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -157,8 +159,6 @@ export default function AgentsScreen() {
         ) : data ? (
           <>
             <CardGrid columns={4}>
-              <KpiCard title={t("agents.successRate")} value={formatPercent(data.runSuccessRate * 100)} />
-              <KpiCard title={t("agents.errorRate")} value={formatPercent(data.errorRate * 100)} deltaPolarity="negative-good" />
               <KpiCard title={t("agents.p50Duration")} value={formatDuration(data.p50RunDurationMs)} />
               <KpiCard title={t("agents.p95Duration")} value={formatDuration(data.p95RunDurationMs)} />
             </CardGrid>

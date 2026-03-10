@@ -77,10 +77,10 @@
 | ✅ | [0069](./0069-i18n-app-wide-string-extraction.md) | i18n App-Wide String Extraction & Translation Integration | i18n |
 | ✅ | [0070](./0070-currency-conversion-engine-and-redux-state.md) | Currency Conversion Engine, Redux State & Formatter Updates | Settings |
 | ✅ | [0071](./0071-currency-selection-modal-and-settings-integration.md) | Currency Selection Modal & Form + Settings Integration | Settings |
-| ⬜ | [0072](./0072-currency-app-wide-integration.md) | Currency App-Wide Integration: Tables, Charts & Visualizations | Currency |
+| ✅ | [0072](./0072-currency-app-wide-integration.md) | Currency App-Wide Integration: Tables, Charts & Visualizations | Currency |
 | ⬜ | [0073](./0073-language-currency-preferences-test-coverage.md) | Language & Currency Preferences Full Test Coverage | Testing |
 | ⬜ | [0074](./0074-agents-kpi-to-line-charts-time-series.md) | Agents Screen: Replace KPI Cards with Time-Series Line Charts | Screens |
 
 ---
 
-**Progress: 71 / 74**
+**Progress: 72 / 74**

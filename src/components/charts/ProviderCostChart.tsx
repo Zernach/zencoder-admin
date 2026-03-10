@@ -3,9 +3,9 @@ import { View, Text, StyleSheet } from "react-native";
 import type { ProviderCostRow } from "@/features/analytics/types";
 import {
   formatCompactNumber,
-  formatCurrency,
   formatPercent,
 } from "@/features/analytics/utils/formatters";
+import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { spacing, radius } from "@/theme/tokens";
 import { typography } from "@/theme/typography";
 import { getOrangePieColorsByValue } from "./palette";
@@ -32,6 +32,7 @@ export const ProviderCostChart = React.memo(function ProviderCostChart({
 }: ProviderCostChartProps) {
   const { mode } = useThemeMode();
   const textColors = semanticThemes[mode].text;
+  const { formatCurrency } = useCurrencyFormatter();
   const size = Math.min(height, 180);
 
   const { sorted, providerMetrics, providerColors, pieData } = useMemo(() => {
@@ -72,7 +73,7 @@ export const ProviderCostChart = React.memo(function ProviderCostChart({
       providerColors: providerColorMap,
       pieData: slices,
     };
-  }, [data]);
+  }, [data, formatCurrency]);
 
   return (
     <View style={styles.container}>

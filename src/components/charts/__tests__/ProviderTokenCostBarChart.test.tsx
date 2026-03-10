@@ -7,6 +7,16 @@ import type { ProviderCostRow } from "@/features/analytics/types";
 
 jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
 
+jest.mock("@/features/analytics/hooks/useCurrencyFormatter", () => ({
+  useCurrencyFormatter: () => ({
+    formatCurrency: (n: number) => `€${n.toFixed(2)}`,
+    formatCostPerToken: (n: number) => `€${Math.round(n * 1000000)} micro-units/token`,
+    formatCompactCurrency: (n: number) => `€${n.toFixed(2)}`,
+    currencyCode: "EUR",
+    currencySymbol: "€",
+  }),
+}));
+
 const providerData: ProviderCostRow[] = [
   { provider: "codex", totalCostUsd: 6500, runCount: 300, totalTokens: 500_000_000, percentOfTotal: 0.52 },
   { provider: "claude", totalCostUsd: 4000, runCount: 200, totalTokens: 500_000_000, percentOfTotal: 0.32 },

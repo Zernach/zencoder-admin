@@ -12,6 +12,7 @@ import type { RunListRow } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { cellText } from "@/components/tables/cellStyles";
+import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { spacing } from "@/theme/tokens";
 import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
 
@@ -25,6 +26,7 @@ export function HumanDetailScreen({ humanId }: HumanDetailScreenProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
+  const { formatCurrency } = useCurrencyFormatter();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -65,11 +67,11 @@ export function HumanDetailScreen({ humanId }: HumanDetailScreenProps) {
         header: t("entityDetail.table.cost"),
         width: 80,
         align: "right",
-        render: (r) => <Text style={ct.primary}>${r.costUsd.toFixed(2)}</Text>,
+        render: (r) => <Text style={ct.primary}>{formatCurrency(r.costUsd)}</Text>,
         sortAccessor: (r) => r.costUsd,
       },
     ],
-    [ct, navigateTo, t],
+    [ct, navigateTo, t, formatCurrency],
   );
 
   if (loading) return <LoadingSkeleton variant="text" />;
@@ -82,7 +84,7 @@ export function HumanDetailScreen({ humanId }: HumanDetailScreenProps) {
         <View style={styles.statsRow}>
           <StatItem label={t("entityDetail.runs")} value={String(data.totalRuns)} theme={theme} />
           <StatItem label={t("entityDetail.tokens")} value={data.totalTokens.toLocaleString()} theme={theme} />
-          <StatItem label={t("entityDetail.cost")} value={`$${data.totalCostUsd.toFixed(2)}`} theme={theme} />
+          <StatItem label={t("entityDetail.cost")} value={formatCurrency(data.totalCostUsd)} theme={theme} />
         </View>
         <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.recentRuns")}</Text>
         <DataTable

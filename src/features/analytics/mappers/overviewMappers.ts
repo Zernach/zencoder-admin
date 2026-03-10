@@ -1,5 +1,5 @@
 import type { OverviewResponse, UsageResponse, OutcomesResponse, TimeSeriesPoint, RunAnomaly, DeltaPolarity } from "../types";
-import { formatCurrency, formatPercent, formatCompactNumber } from "../utils/formatters";
+import { formatPercent, formatCompactNumber } from "../utils/formatters";
 import { ROUTES } from "@/constants/routes";
 
 interface KpiCardData {
@@ -25,8 +25,9 @@ export interface OverviewViewModel {
 
 export function mapOverviewToViewModel(
   res: OverviewResponse,
-  usage?: UsageResponse,
-  outcomes?: OutcomesResponse,
+  usage: UsageResponse | undefined,
+  outcomes: OutcomesResponse | undefined,
+  formatCurrency: (amount: number) => string,
 ): OverviewViewModel {
   const k = res.kpis;
   const d = res.deltas;
