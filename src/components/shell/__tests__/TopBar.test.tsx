@@ -9,6 +9,8 @@ import { TopBar } from "../TopBar";
 
 let mockBreakpoint: "mobile" | "tablet" | "desktop" = "desktop";
 
+jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
+
 jest.mock("@/hooks/useBreakpoint", () => ({
   useBreakpoint: () => mockBreakpoint,
 }));
@@ -82,34 +84,34 @@ describe("TopBar", () => {
   it("opens time range overlay when clock button is pressed", () => {
     const { getByLabelText, getByText } = renderTopBar();
 
-    fireEvent.press(getByLabelText("Open time range selector"));
+    fireEvent.press(getByLabelText("timeRange.openSelector"));
 
-    expect(getByText("24h")).toBeTruthy();
-    expect(getByText("7d")).toBeTruthy();
-    expect(getByText("30d")).toBeTruthy();
-    expect(getByText("90d")).toBeTruthy();
+    expect(getByText("timeRange.short24h")).toBeTruthy();
+    expect(getByText("timeRange.short7d")).toBeTruthy();
+    expect(getByText("timeRange.short30d")).toBeTruthy();
+    expect(getByText("timeRange.short90d")).toBeTruthy();
   });
 
   it("updates preset when selecting a time range in overlay", () => {
     const { getByLabelText, getByText, store } = renderTopBar();
 
-    fireEvent.press(getByLabelText("Open time range selector"));
-    fireEvent.press(getByLabelText("Set time range to Last 7 days"));
+    fireEvent.press(getByLabelText("timeRange.openSelector"));
+    fireEvent.press(getByLabelText("timeRange.last7Days"));
 
     expect(store.getState().filters.preset).toBe("7d");
-    expect(getByText("Last 7 days")).toBeTruthy();
+    expect(getByText("timeRange.last7Days")).toBeTruthy();
   });
 
   it("shows abbreviated preset label on mobile", () => {
     mockBreakpoint = "mobile";
     const { getByText } = renderTopBar();
 
-    expect(getByText("30d")).toBeTruthy();
+    expect(getByText("timeRange.short30d")).toBeTruthy();
   });
 
   it("calls autocomplete setQuery when typing", () => {
     const { getByLabelText } = renderTopBar();
-    const input = getByLabelText("Search");
+    const input = getByLabelText("search.searchLabel");
 
     fireEvent.changeText(input, "test query");
 
@@ -118,17 +120,17 @@ describe("TopBar", () => {
 
   it("calls autocomplete clear when clearing search", () => {
     const { getByLabelText } = renderTopBar();
-    const input = getByLabelText("Search");
+    const input = getByLabelText("search.searchLabel");
 
     fireEvent.changeText(input, "something");
-    fireEvent.press(getByLabelText("Clear search"));
+    fireEvent.press(getByLabelText("search.clearSearch"));
 
     expect(mockClear).toHaveBeenCalled();
   });
 
   it("does not dispatch setSearchQuery to Redux while typing", () => {
     const { getByLabelText, store } = renderTopBar();
-    const input = getByLabelText("Search");
+    const input = getByLabelText("search.searchLabel");
 
     fireEvent.changeText(input, "test");
 

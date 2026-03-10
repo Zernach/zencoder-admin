@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { Inbox } from "lucide-react-native";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -13,17 +14,20 @@ interface EmptyStateProps {
 }
 
 export const EmptyState = React.memo(function EmptyState({
-  message = "No data matches your current filters.",
+  message,
   activeFilters,
   onClearFilters,
 }: EmptyStateProps) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+
+  const displayMessage = message ?? t("common.noDataMatchesFilters");
 
   return (
     <View style={styles.container}>
       <Inbox size={32} color={theme.text.tertiary} />
-      <Text style={[styles.message, { color: theme.text.secondary }]}>{message}</Text>
+      <Text style={[styles.message, { color: theme.text.secondary }]}>{displayMessage}</Text>
       {activeFilters && activeFilters.length > 0 && (
         <View style={styles.filterList}>
           {activeFilters.map((f) => (
@@ -39,9 +43,9 @@ export const EmptyState = React.memo(function EmptyState({
           style={styles.button}
           buttonMode="primary"
           buttonSize="md"
-          label="Clear Filters"
+          label={t("common.clearFilters")}
           accessibilityRole="button"
-          accessibilityLabel="Clear Filters"
+          accessibilityLabel={t("common.clearFilters")}
         />
       )}
     </View>

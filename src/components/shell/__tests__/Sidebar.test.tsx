@@ -10,6 +10,8 @@ import { sidebarSlice, type SidebarState } from "@/store/slices/sidebarSlice";
 const mockNavigate = jest.fn();
 let mockPathname = ROUTES.DASHBOARD;
 
+jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
+
 jest.mock("expo-router", () => ({
   useRouter: () => ({ navigate: mockNavigate }),
   usePathname: () => mockPathname,
@@ -97,18 +99,18 @@ describe("Sidebar — subsection rendering", () => {
     const { queryByText } = renderSidebar(true);
 
     // Governance subsections should not appear
-    expect(queryByText("Compliance Status")).toBeNull();
-    expect(queryByText("Recent Violations")).toBeNull();
+    expect(queryByText("navigation.subsections.seatUserOversight")).toBeNull();
+    expect(queryByText("navigation.subsections.recentViolations")).toBeNull();
     // Agents subsections should not appear
-    expect(queryByText("Agent Performance")).toBeNull();
+    expect(queryByText("navigation.subsections.agentPerformance")).toBeNull();
   });
 
   it("does not show subsections when sidebar is collapsed", () => {
     mockPathname = ROUTES.GOVERNANCE;
     const { queryByText } = renderSidebar(false);
 
-    expect(queryByText("Compliance Status")).toBeNull();
-    expect(queryByText("Seat User Oversight")).toBeNull();
+    expect(queryByText("navigation.subsections.seatUserOversight")).toBeNull();
+    expect(queryByText("navigation.subsections.recentViolations")).toBeNull();
   });
 
   it("does not show subsections for dashboard or settings", () => {
@@ -116,25 +118,25 @@ describe("Sidebar — subsection rendering", () => {
     const { queryByText } = renderSidebar(true);
 
     // No subsections should appear since Settings has no subsections
-    expect(queryByText("Reliability")).toBeNull();
-    expect(queryByText("Cost Summary")).toBeNull();
-    expect(queryByText("Overview")).toBeNull();
+    expect(queryByText("navigation.subsections.reliability")).toBeNull();
+    expect(queryByText("navigation.subsections.costSummary")).toBeNull();
+    expect(queryByText("navigation.subsections.overview")).toBeNull();
   });
 
   it("governance subsections appear in exact required order", () => {
     mockPathname = ROUTES.GOVERNANCE;
     const { getByLabelText } = renderSidebar(true);
 
-    const subsectionList = getByLabelText("Governance subsections");
+    const subsectionList = getByLabelText("navigation.subsections");
     expect(subsectionList).toBeTruthy();
 
     const expectedLabels = [
-      "Overview",
-      "Compliance Status",
-      "Seat User Oversight",
-      "Recent Violations",
-      "Security Events",
-      "Policy Changes",
+      "navigation.subsections.overview",
+      "navigation.subsections.teamPerformance",
+      "navigation.subsections.seatUserOversight",
+      "navigation.subsections.recentViolations",
+      "navigation.subsections.securityEvents",
+      "navigation.subsections.policyChanges",
     ];
     for (const label of expectedLabels) {
       expect(getByLabelText(label)).toBeTruthy();

@@ -21,6 +21,8 @@ jest.mock("expo-router", () => ({
   usePathname: () => mockPathname,
 }));
 
+jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
+
 jest.mock("lucide-react-native", () => {
   const { View } = require("react-native");
   const Icon = () => <View />;
@@ -52,7 +54,7 @@ describe("BottomTabs", () => {
     mockPathname = ROUTES.DASHBOARD;
     const { getByLabelText } = render(<BottomTabs />);
 
-    fireEvent.press(getByLabelText("Agents"));
+    fireEvent.press(getByLabelText("navigation.agents"));
 
     expect(mockDispatch).toHaveBeenCalledTimes(1);
     expect(mockDispatch).toHaveBeenCalledWith(TabActions.jumpTo(TABS.AGENTS));
@@ -63,7 +65,7 @@ describe("BottomTabs", () => {
     mockPathname = ROUTES.AGENTS;
     const { getByLabelText } = render(<BottomTabs />);
 
-    fireEvent.press(getByLabelText("Agents"));
+    fireEvent.press(getByLabelText("navigation.agents"));
 
     expect(mockDispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
@@ -78,7 +80,7 @@ describe("BottomTabs", () => {
 
     const { getByLabelText } = render(<BottomTabs />);
 
-    fireEvent.press(getByLabelText("Agents"));
+    fireEvent.press(getByLabelText("navigation.agents"));
 
     expect(mockDispatch).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledTimes(1);

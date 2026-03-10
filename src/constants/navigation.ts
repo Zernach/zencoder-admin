@@ -18,11 +18,11 @@ export interface NavItem {
 }
 
 const TOP_NAV_METADATA: Record<TABS, Pick<NavItem, "icon" | "label">> = {
-  [TABS.DASHBOARD]: { icon: Home, label: "Home" },
-  [TABS.AGENTS]: { icon: Bot, label: "Agents" },
-  [TABS.COSTS]: { icon: DollarSign, label: "Costs" },
-  [TABS.GOVERNANCE]: { icon: Shield, label: "Governance" },
-  [TABS.SETTINGS]: { icon: Settings, label: "Settings" },
+  [TABS.DASHBOARD]: { icon: Home, label: "navigation.home" },
+  [TABS.AGENTS]: { icon: Bot, label: "navigation.agents" },
+  [TABS.COSTS]: { icon: DollarSign, label: "navigation.costs" },
+  [TABS.GOVERNANCE]: { icon: Shield, label: "navigation.governance" },
+  [TABS.SETTINGS]: { icon: Settings, label: "navigation.settings" },
 };
 
 export const TOP_NAV_ITEMS: NavItem[] = TAB_ORDER.map((tab) => ({
@@ -42,24 +42,24 @@ export type SubsectionRoute = ROUTES.AGENTS | ROUTES.COSTS | ROUTES.GOVERNANCE;
 
 export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
   [ROUTES.AGENTS]: [
-    { id: "reliability", label: "Reliability" },
-    { id: "agent-performance", label: "Agent Performance" },
-    { id: "project-breakdown", label: "Project Breakdown" },
-    { id: "recent-runs", label: "Recent Runs" },
+    { id: "reliability", label: "navigation.subsections.reliability" },
+    { id: "agent-performance", label: "navigation.subsections.agentPerformance" },
+    { id: "project-breakdown", label: "navigation.subsections.projectBreakdown" },
+    { id: "recent-runs", label: "navigation.subsections.recentRuns" },
   ],
   [ROUTES.COSTS]: [
-    { id: "cost-summary", label: "Cost Summary" },
-    { id: "cost-by-provider", label: "Cost by Provider" },
-    { id: "budget-forecast", label: "Budget Forecast" },
-    { id: "costs-project-breakdown", label: "Project Breakdown" },
+    { id: "cost-summary", label: "navigation.subsections.costSummary" },
+    { id: "cost-by-provider", label: "navigation.subsections.costByProvider" },
+    { id: "budget-forecast", label: "navigation.subsections.budgetForecast" },
+    { id: "costs-project-breakdown", label: "navigation.subsections.projectBreakdown" },
   ],
   [ROUTES.GOVERNANCE]: [
-    { id: "overview", label: "Overview" },
-    { id: "team-performance", label: "Team Performance" },
-    { id: "seat-user-oversight", label: "Seat User Oversight" },
-    { id: "recent-violations", label: "Recent Violations" },
-    { id: "security-events", label: "Security Events" },
-    { id: "policy-changes", label: "Policy Changes" },
+    { id: "overview", label: "navigation.subsections.overview" },
+    { id: "team-performance", label: "navigation.subsections.teamPerformance" },
+    { id: "seat-user-oversight", label: "navigation.subsections.seatUserOversight" },
+    { id: "recent-violations", label: "navigation.subsections.recentViolations" },
+    { id: "security-events", label: "navigation.subsections.securityEvents" },
+    { id: "policy-changes", label: "navigation.subsections.policyChanges" },
   ],
 };
 

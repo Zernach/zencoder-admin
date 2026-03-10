@@ -1,5 +1,6 @@
 import React, { useCallback, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { Check } from "lucide-react-native";
 import { LANGUAGE_OPTIONS, type LanguageCode } from "@/types/settings";
@@ -17,6 +18,7 @@ export function LanguageSelectionForm({
   selectedLanguage,
   onSelect,
 }: LanguageSelectionFormProps) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
@@ -38,7 +40,7 @@ export function LanguageSelectionForm({
   return (
     <View style={styles.container}>
       <Text style={[styles.title, { color: theme.text.primary }]}>
-        Language
+        {t("settings.language")}
       </Text>
       <View style={styles.list}>
         {LANGUAGE_OPTIONS.map((option) => {

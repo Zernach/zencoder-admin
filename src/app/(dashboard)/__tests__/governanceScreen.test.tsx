@@ -162,6 +162,8 @@ jest.mock("@/components/tables", () => {
   };
 });
 
+jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
+
 const GovernanceScreen = require("../governance").default;
 
 function createGovernanceData(): GovernanceResponse {
@@ -232,8 +234,8 @@ describe("GovernanceScreen", () => {
 
     const { getByText } = render(<GovernanceScreen />);
 
-    expect(getByText("Seat Usage by Runs")).toBeTruthy();
-    expect(getByText("AI runs per seat user, sorted by usage")).toBeTruthy();
+    expect(getByText("governance.seatUsageByRuns")).toBeTruthy();
+    expect(getByText("governance.seatUsageSubtitle")).toBeTruthy();
   });
 
   it("renders full-name labels in the seat usage chart", () => {
@@ -261,7 +263,7 @@ describe("GovernanceScreen", () => {
 
     const { getByText } = render(<GovernanceScreen />);
 
-    expect(getByText("Seat User Oversight")).toBeTruthy();
+    expect(getByText("governance.seatUserOversight")).toBeTruthy();
   });
 
   it("removes seat usage table and passes hover details into the chart", () => {
@@ -290,8 +292,8 @@ describe("GovernanceScreen", () => {
 
     const { getByText } = render(<GovernanceScreen />);
 
-    expect(getByText("Team Performance Comparison")).toBeTruthy();
-    expect(getByText("+ Create Team")).toBeTruthy();
+    expect(getByText("governance.teamPerformanceComparison")).toBeTruthy();
+    expect(getByText("governance.createTeam")).toBeTruthy();
   });
 
   it("passes truncateLabels=false to governance horizontal breakdown charts", () => {

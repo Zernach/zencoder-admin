@@ -14,8 +14,15 @@ export const sectionStyles = StyleSheet.create({
     alignSelf: "stretch",
   },
   chartCardFill: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
     minWidth: 0,
+    overflow: "hidden",
+  },
+  chartCardScroll: {
+    flexShrink: 1,
+    maxWidth: 260,
   },
   chartCardViewport: {
     alignSelf: "stretch",

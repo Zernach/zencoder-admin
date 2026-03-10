@@ -241,7 +241,10 @@
     "signOut": "Disconnetti",
     "adminUser": "Utente admin",
     "adminEmail": "admin@zencoder.io",
-    "ownerRole": "Proprietario"
+    "ownerRole": "Proprietario",
+    "language": "Lingua",
+    "languageDescription": "Preferenza lingua di visualizzazione",
+    "selectLanguage": "Seleziona lingua"
   },
   "settings.signOut": {
     "demoMode": "Modalità demo",

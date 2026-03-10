@@ -3,6 +3,8 @@ import { render, fireEvent } from "@testing-library/react-native";
 import { SearchAutocompletePanel } from "../SearchAutocompletePanel";
 import type { SearchSuggestionsResponse } from "@/features/analytics/types";
 
+jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
+
 jest.mock("@/providers/ThemeProvider", () => ({
   useThemeMode: () => ({
     mode: "dark",
@@ -96,7 +98,7 @@ describe("SearchAutocompletePanel", () => {
         visible={true}
       />
     );
-    expect(getByText("Searching...")).toBeTruthy();
+    expect(getByText("search.searching")).toBeTruthy();
   });
 
   it("shows empty state", () => {
@@ -110,7 +112,7 @@ describe("SearchAutocompletePanel", () => {
         visible={true}
       />
     );
-    expect(getByText("No results found")).toBeTruthy();
+    expect(getByText("search.noResultsFound")).toBeTruthy();
   });
 
   it("shows error state", () => {
@@ -138,7 +140,7 @@ describe("SearchAutocompletePanel", () => {
         visible={true}
       />
     );
-    fireEvent.press(getByLabelText("Dismiss search suggestions"));
+    fireEvent.press(getByLabelText("search.dismissSuggestions"));
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 

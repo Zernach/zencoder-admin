@@ -6,6 +6,8 @@ import { TeamDetailScreen } from "../TeamDetailScreen";
 import { HumanDetailScreen } from "../HumanDetailScreen";
 import { RunDetailScreen } from "../RunDetailScreen";
 
+jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
+
 // Mock all dependencies
 jest.mock("@/providers/ThemeProvider", () => ({
   useThemeMode: () => ({ mode: "dark", setMode: jest.fn(), toggleMode: jest.fn() }),
@@ -205,7 +207,7 @@ describe("Entity detail screens", () => {
     expect(getByText("42")).toBeTruthy();
     expect(getByText("$123.45")).toBeTruthy();
     expect(getByText("Classifies incoming tickets")).toBeTruthy();
-    expect(getByText("Prompt Description")).toBeTruthy();
+    expect(getByText("entityDetail.promptDescription")).toBeTruthy();
   });
 
   it("ProjectDetailScreen renders project data", () => {

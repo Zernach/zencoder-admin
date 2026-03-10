@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useRouter, usePathname } from "expo-router";
 import { CustomSpinner } from "@/components/feedback/CustomSpinner";
 import { CustomButton } from "@/components/buttons";
@@ -22,6 +23,7 @@ interface AgentDetailScreenProps {
 }
 
 export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
+  const { t } = useTranslation();
   const { data, loading, error, refetch } = useAgentDetailScreen(agentId);
   const [updateDescription] = useUpdateAgentDescriptionMutation();
   const { mode } = useThemeMode();
@@ -46,14 +48,14 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
 
   const runColumns = useMemo<ColumnDef<RunListRow>[]>(
     () => [
-      { key: "id", header: "Run ID", width: 140, render: (r) => (
+      { key: "id", header: t("entityDetail.table.runId"), width: 140, render: (r) => (
         <CustomButton onPress={() => navigateTo("run", r.id)} accessibilityRole="link" accessibilityLabel={`View run ${r.id}`}>
           <Text style={ct.link} numberOfLines={1}>{r.id.slice(0, 12)}</Text>
         </CustomButton>
       ) },
       {
         key: "userId",
-        header: "Owner",
+        header: t("entityDetail.table.owner"),
         width: 140,
         render: (r) => (
           <CustomButton onPress={() => navigateTo("human", r.userId)} accessibilityRole="link" accessibilityLabel={`View user ${userMap[r.userId] ?? r.userId}`}>
@@ -64,15 +66,15 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
       },
       {
         key: "status",
-        header: "Status",
+        header: t("entityDetail.table.status"),
         width: 100,
         render: (r) => <StatusBadge variant="run-status" status={r.status} />,
       },
-      { key: "startedAtIso", header: "Created", width: 160, render: (r) => <Text style={ct.secondary}>{new Date(r.startedAtIso).toLocaleString()}</Text> },
-      { key: "provider", header: "Provider", width: 100, render: (r) => <Text style={ct.secondary}>{r.provider}</Text> },
+      { key: "startedAtIso", header: t("entityDetail.table.created"), width: 160, render: (r) => <Text style={ct.secondary}>{new Date(r.startedAtIso).toLocaleString()}</Text> },
+      { key: "provider", header: t("entityDetail.table.provider"), width: 100, render: (r) => <Text style={ct.secondary}>{r.provider}</Text> },
       {
         key: "durationMs",
-        header: "Duration",
+        header: t("entityDetail.table.duration"),
         width: 90,
         align: "right",
         render: (r) => <Text style={ct.primary}>{(r.durationMs / 1000).toFixed(1)}s</Text>,
@@ -80,14 +82,14 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
       },
       {
         key: "costUsd",
-        header: "Cost",
+        header: t("entityDetail.table.cost"),
         width: 80,
         align: "right",
         render: (r) => <Text style={ct.primary}>${r.costUsd.toFixed(2)}</Text>,
         sortAccessor: (r) => r.costUsd,
       },
     ],
-    [ct, navigateTo, userMap],
+    [ct, navigateTo, userMap, t],
   );
 
   const handleEditPress = useCallback(() => {
@@ -117,23 +119,23 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
     <ScreenWrapper headerProps={{ title: data.agent.name, subtitle: `${data.projectName} · ${data.teamName}` }} showFilterBar={false}>
       <View style={styles.content}>
         <View style={styles.statsRow}>
-          <StatItem label="Runs" value={String(data.totalRuns)} theme={theme} />
+          <StatItem label={t("entityDetail.runs")} value={String(data.totalRuns)} theme={theme} />
           <StatItem
-            label="Success"
+            label={t("entityDetail.success")}
             value={`${(data.successRate * 100).toFixed(1)}%`}
             theme={theme}
             valueColor={getSuccessRateColor(data.successRate, mode)}
           />
-          <StatItem label="Avg Duration" value={`${(data.avgDurationMs / 1000).toFixed(1)}s`} theme={theme} />
-          <StatItem label="Cost" value={`$${data.totalCostUsd.toFixed(2)}`} theme={theme} />
+          <StatItem label={t("entityDetail.avgDuration")} value={`${(data.avgDurationMs / 1000).toFixed(1)}s`} theme={theme} />
+          <StatItem label={t("entityDetail.cost")} value={`$${data.totalCostUsd.toFixed(2)}`} theme={theme} />
         </View>
 
         <View style={[styles.descriptionSection, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }]}>
           <View style={styles.descriptionHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Prompt Description</Text>
+            <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.promptDescription")}</Text>
             {!isEditing && (
               <CustomButton onPress={handleEditPress} accessibilityLabel="Edit description">
-                <Text style={[styles.editButton, { color: theme.text.brand }]}>Edit</Text>
+                <Text style={[styles.editButton, { color: theme.text.brand }]}>{t("common.edit")}</Text>
               </CustomButton>
             )}
           </View>
@@ -144,21 +146,21 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
                 onChangeText={setDraft}
                 multiline
                 numberOfLines={4}
-                placeholder="Describe what this agent does, its prompt, and purpose..."
+                placeholder={t("entityDetail.descriptionPlaceholder")}
                 style={styles.descriptionInput}
                 inputContainerStyle={styles.descriptionInputContainer}
                 accessibilityLabel="Agent description"
               />
               <View style={styles.descriptionActions}>
                 <CustomButton onPress={handleCancelEdit} accessibilityLabel="Cancel editing">
-                  <Text style={[styles.actionButton, { color: theme.text.secondary }]}>Cancel</Text>
+                  <Text style={[styles.actionButton, { color: theme.text.secondary }]}>{t("common.cancel")}</Text>
                 </CustomButton>
                 <CustomButton onPress={handleSave} accessibilityLabel="Save description">
                   <View style={[styles.saveButton, { backgroundColor: theme.text.brand }]}>
                     {saving ? (
                       <CustomSpinner size={14} color="#fff" />
                     ) : (
-                      <Text style={styles.saveButtonText}>Save</Text>
+                      <Text style={styles.saveButtonText}>{t("common.save")}</Text>
                     )}
                   </View>
                 </CustomButton>
@@ -166,19 +168,19 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
             </View>
           ) : (
             <Text style={[styles.descriptionText, { color: data.agent.description ? theme.text.primary : theme.text.secondary }]}>
-              {data.agent.description || "No description provided. Tap Edit to add one."}
+              {data.agent.description || t("entityDetail.noDescription")}
             </Text>
           )}
         </View>
 
-        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Recent Runs</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.recentRuns")}</Text>
         <DataTable
           columns={runColumns}
           data={data.recentRuns}
           keyExtractor={(r) => r.id}
           initialSortBy="costUsd"
           initialSortDirection="desc"
-          emptyMessage="No runs yet."
+          emptyMessage={t("entityDetail.noRunsYet")}
         />
       </View>
     </ScreenWrapper>

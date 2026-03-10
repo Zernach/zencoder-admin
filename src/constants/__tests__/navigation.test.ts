@@ -39,10 +39,10 @@ describe("SUBSECTIONS", () => {
     const items = SUBSECTIONS[ROUTES.AGENTS];
     expect(items.length).toBe(4);
     expect(items.map((i) => i.label)).toEqual([
-      "Reliability",
-      "Agent Performance",
-      "Project Breakdown",
-      "Recent Runs",
+      "navigation.subsections.reliability",
+      "navigation.subsections.agentPerformance",
+      "navigation.subsections.projectBreakdown",
+      "navigation.subsections.recentRuns",
     ]);
   });
 
@@ -50,10 +50,10 @@ describe("SUBSECTIONS", () => {
     const items = SUBSECTIONS[ROUTES.COSTS];
     expect(items.length).toBe(4);
     expect(items.map((i) => i.label)).toEqual([
-      "Cost Summary",
-      "Cost by Provider",
-      "Budget Forecast",
-      "Project Breakdown",
+      "navigation.subsections.costSummary",
+      "navigation.subsections.costByProvider",
+      "navigation.subsections.budgetForecast",
+      "navigation.subsections.projectBreakdown",
     ]);
   });
 
@@ -61,12 +61,12 @@ describe("SUBSECTIONS", () => {
     const items = SUBSECTIONS[ROUTES.GOVERNANCE];
     expect(items.length).toBe(6);
     expect(items.map((i) => i.label)).toEqual([
-      "Overview",
-      "Team Performance",
-      "Seat User Oversight",
-      "Recent Violations",
-      "Security Events",
-      "Policy Changes",
+      "navigation.subsections.overview",
+      "navigation.subsections.teamPerformance",
+      "navigation.subsections.seatUserOversight",
+      "navigation.subsections.recentViolations",
+      "navigation.subsections.securityEvents",
+      "navigation.subsections.policyChanges",
     ]);
   });
 
@@ -94,7 +94,7 @@ describe("getSubsectionById", () => {
   it("finds a subsection by id", () => {
     const item = getSubsectionById(ROUTES.AGENTS, "reliability");
     expect(item).toBeDefined();
-    expect(item!.label).toBe("Reliability");
+    expect(item!.label).toBe("navigation.subsections.reliability");
   });
 
   it("returns undefined for unknown id", () => {

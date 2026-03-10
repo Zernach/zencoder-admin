@@ -479,6 +479,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "600",
     textAlign: "right",
+    flexShrink: 0,
   },
   verticalBars: {
     flex: 1,

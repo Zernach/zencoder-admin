@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { View, Text, StyleSheet } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { CustomButton } from "@/components/buttons";
@@ -35,6 +36,7 @@ const TEAM_PERFORMANCE_SEARCH_KEYS: (keyof TeamPerformanceComparisonRow)[] = ["t
 const POLICY_CHANGE_SEARCH_KEYS: (keyof PolicyChangeEvent)[] = ["action", "target"];
 
 export default function GovernanceScreen() {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const ct = cellText(mode);
   const { data, loading, error, refetch } = useGovernanceDashboard();
@@ -62,27 +64,27 @@ export default function GovernanceScreen() {
   const filteredPolicyChanges = useSearchFilter(data?.policyChanges ?? [], POLICY_CHANGE_SEARCH_KEYS);
 
   const violationCols = useMemo<ColumnDef<PolicyViolationRow>[]>(() => [
-    { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
+    { key: "timestampIso", header: t("governance.table.time"), width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
     {
-      key: "agentName", header: "Agent", width: 140, render: (row) => (
+      key: "agentName", header: t("governance.table.agent"), width: 140, render: (row) => (
         <CustomButton onPress={() => navigateTo("agent", row.agentId)} accessibilityRole="link" accessibilityLabel={`View agent ${row.agentName}`}>
           <Text style={ct.link} numberOfLines={1}>{row.agentName}</Text>
         </CustomButton>
       )
     },
-    { key: "reason", header: "Reason", width: 180 },
-    { key: "severity", header: "Severity", width: 90, render: (row) => <StatusBadge variant="severity" severity={row.severity} /> },
-  ], [ct, navigateTo]);
+    { key: "reason", header: t("governance.table.reason"), width: 180 },
+    { key: "severity", header: t("governance.table.severity"), width: 90, render: (row) => <StatusBadge variant="severity" severity={row.severity} /> },
+  ], [ct, navigateTo, t]);
 
   const securityCols = useMemo<ColumnDef<SecurityEventRow>[]>(() => [
-    { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
-    { key: "type", header: "Type", width: 160 },
-    { key: "description", header: "Description" },
-  ], [ct]);
+    { key: "timestampIso", header: t("governance.table.time"), width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
+    { key: "type", header: t("governance.table.type"), width: 160 },
+    { key: "description", header: t("governance.table.description") },
+  ], [ct, t]);
 
   const teamPerformanceCols = useMemo<ColumnDef<TeamPerformanceComparisonRow>[]>(() => [
     {
-      key: "teamName", header: "Team", width: 210, render: (row) => (
+      key: "teamName", header: t("governance.table.team"), width: 210, render: (row) => (
         <CustomButton onPress={() => navigateTo("team", row.teamId)} accessibilityRole="link" accessibilityLabel={`View team ${row.teamName}`}>
           <Text style={ct.link} numberOfLines={1}>{row.teamName}</Text>
         </CustomButton>
@@ -90,7 +92,7 @@ export default function GovernanceScreen() {
     },
     {
       key: "successRate",
-      header: "Success",
+      header: t("governance.table.success"),
       width: 100,
       align: "right",
       render: (row) => (
@@ -101,57 +103,57 @@ export default function GovernanceScreen() {
     },
     {
       key: "runsCount",
-      header: "Runs",
+      header: t("governance.table.runs"),
       width: 90,
       align: "right",
       render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.runsCount)}</Text>,
     },
     {
       key: "policyViolationCount",
-      header: "Violations",
+      header: t("governance.table.violations"),
       width: 110,
       align: "right",
       render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.policyViolationCount)}</Text>,
     },
     {
       key: "policyViolationRate",
-      header: "Violation Rate",
+      header: t("governance.table.violationRate"),
       width: 130,
       align: "right",
       render: (row) => <Text style={ct.primary}>{formatPercent(row.policyViolationRate * 100)}</Text>,
     },
     {
       key: "totalCostUsd",
-      header: "Cost",
+      header: t("governance.table.cost"),
       width: 100,
       align: "right",
       render: (row) => <Text style={ct.primary}>{formatCurrency(row.totalCostUsd)}</Text>,
     },
-  ], [ct, mode, navigateTo]);
+  ], [ct, mode, navigateTo, t]);
 
   const policyChangeCols = useMemo<ColumnDef<PolicyChangeEvent>[]>(() => [
-    { key: "timestampIso", header: "Time", width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
+    { key: "timestampIso", header: t("governance.table.time"), width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.timestampIso).toLocaleString()}</Text> },
     {
-      key: "actorName", header: "Actor", width: 140, render: (row) => (
+      key: "actorName", header: t("governance.table.actor"), width: 140, render: (row) => (
         <CustomButton onPress={() => navigateTo("human", row.actorUserId)} accessibilityRole="link" accessibilityLabel={`View user ${row.actorName}`}>
           <Text style={ct.link} numberOfLines={1}>{row.actorName}</Text>
         </CustomButton>
       )
     },
-    { key: "action", header: "Action", width: 220 },
+    { key: "action", header: t("governance.table.action"), width: 220 },
     {
-      key: "target", header: "Target", width: 130, render: (row) => (
+      key: "target", header: t("governance.table.target"), width: 130, render: (row) => (
         <CustomButton onPress={() => navigateTo("team", row.targetTeamId)} accessibilityRole="link" accessibilityLabel={`View team ${row.target}`}>
           <Text style={ct.link} numberOfLines={1}>{row.target}</Text>
         </CustomButton>
       )
     },
-  ], [ct, navigateTo]);
+  ], [ct, navigateTo, t]);
 
   const subtitle = useMemo(() => data
-    ? `${data.policyViolationCount} violations, ${data.securityEvents.length} security events`
-    : "Policy enforcement and security monitoring",
-    [data],
+    ? t("governance.subtitleWithData", { violations: data.policyViolationCount, securityEvents: data.securityEvents.length })
+    : t("governance.subtitle"),
+    [data, t],
   );
 
   if (error) return <ErrorState message={error} onRetry={refetch} />;
@@ -161,14 +163,14 @@ export default function GovernanceScreen() {
       key: row.fullName,
       value: row.runsCount,
       hoverRows: [
-        { label: "Full Name", value: row.fullName },
-        { label: "Team", value: row.teamName },
-        { label: "Runs", value: formatCompactNumber(row.runsCount) },
-        { label: "Tokens", value: formatCompactNumber(row.totalTokens) },
-        { label: "Cost", value: formatCurrency(row.totalCostUsd) },
+        { label: t("governance.seatUsage.fullName"), value: row.fullName },
+        { label: t("governance.seatUsage.team"), value: row.teamName },
+        { label: t("governance.seatUsage.runs"), value: formatCompactNumber(row.runsCount) },
+        { label: t("governance.seatUsage.tokens"), value: formatCompactNumber(row.totalTokens) },
+        { label: t("governance.seatUsage.cost"), value: formatCurrency(row.totalCostUsd) },
       ],
     }));
-  }, [filteredSeatUsers]);
+  }, [filteredSeatUsers, t]);
 
   const handleOpenCreateSeat = useCallback(
     () => dispatch(openModal(ModalName.CreateSeat)),
@@ -184,14 +186,14 @@ export default function GovernanceScreen() {
   );
 
   const headerProps = useMemo(
-    () => ({ title: "Governance", subtitle, isLoading: loading }),
-    [subtitle, loading],
+    () => ({ title: t("navigation.governance"), subtitle, isLoading: loading }),
+    [subtitle, loading, t],
   );
 
   return (
     <ScreenWrapper headerProps={headerProps}>
       <View ref={refFor("overview")} nativeID="overview" style={sectionStyles.section}>
-        <SectionHeader title="Overview" />
+        <SectionHeader title={t("governance.overview")} />
         {loading ? (
           <CardGrid columns={4}>
             {SKELETON_4.map((_, i) => (
@@ -201,13 +203,13 @@ export default function GovernanceScreen() {
         ) : data ? (
           <>
             <CardGrid columns={4}>
-              <KpiCard title="Violations" value={formatCompactNumber(data.policyViolationCount)} />
-              <KpiCard title="Blocked Network" value={formatCompactNumber(data.blockedNetworkAttempts)} />
-              <KpiCard title="Audit Events" value={formatCompactNumber(data.auditEventsCount)} />
-              <KpiCard title="Violation Rate" value={`${(data.policyViolationRate * 100).toFixed(1)}%`} />
+              <KpiCard title={t("governance.violations")} value={formatCompactNumber(data.policyViolationCount)} />
+              <KpiCard title={t("governance.blockedNetwork")} value={formatCompactNumber(data.blockedNetworkAttempts)} />
+              <KpiCard title={t("governance.auditEvents")} value={formatCompactNumber(data.auditEventsCount)} />
+              <KpiCard title={t("governance.violationRate")} value={`${(data.policyViolationRate * 100).toFixed(1)}%`} />
             </CardGrid>
 
-            <ChartCard title="Violations by Team">
+            <ChartCard title={t("governance.violationsByTeam")}>
               <BreakdownChart
                 data={data.violationsByTeam}
                 variant="horizontal-bar"
@@ -223,8 +225,8 @@ export default function GovernanceScreen() {
           <View style={localStyles.sectionRow}>
             <View style={localStyles.sectionHeaderWrap}>
               <SectionHeader
-                title="Team Performance Comparison"
-                subtitle="Compare performance metrics across teams"
+                title={t("governance.teamPerformanceComparison")}
+                subtitle={t("governance.teamPerformanceSubtitle")}
               />
             </View>
             <CustomButton
@@ -232,10 +234,10 @@ export default function GovernanceScreen() {
               style={localStyles.createButton}
               buttonMode="secondary"
               buttonSize="compact"
-              label="+ Create Team"
+              label={t("governance.createTeam")}
               textStyle={localStyles.createButtonText}
               accessibilityRole="button"
-              accessibilityLabel="Create Team"
+              accessibilityLabel={t("modals.createTeam")}
             />
           </View>
           <DataTable
@@ -243,7 +245,7 @@ export default function GovernanceScreen() {
             data={filteredTeamPerformance}
             initialSortBy="successRate"
             initialSortDirection="desc"
-            emptyMessage="No team performance data for the selected time range."
+            emptyMessage={t("governance.noTeamPerformanceData")}
             keyExtractor={keyExtractors.byTeamId}
           />
         </View>
@@ -254,8 +256,8 @@ export default function GovernanceScreen() {
           <View style={localStyles.sectionRow}>
             <View style={localStyles.sectionHeaderWrap}>
               <SectionHeader
-                title="Seat User Oversight"
-                subtitle="Full names of active seat users and AI usage by account seat"
+                title={t("governance.seatUserOversight")}
+                subtitle={t("governance.seatUserSubtitle")}
               />
             </View>
             <CustomButton
@@ -263,15 +265,15 @@ export default function GovernanceScreen() {
               style={localStyles.createButton}
               buttonMode="secondary"
               buttonSize="compact"
-              label="+ Create User"
+              label={t("governance.createUser")}
               textStyle={localStyles.createButtonText}
               accessibilityRole="button"
-              accessibilityLabel="Create User"
+              accessibilityLabel={t("modals.addUser")}
             />
           </View>
           <ChartCard
-            title="Seat Usage by Runs"
-            subtitle="AI runs per seat user, sorted by usage"
+            title={t("governance.seatUsageByRuns")}
+            subtitle={t("governance.seatUsageSubtitle")}
           >
             <BreakdownChart
               data={seatUsageChartData}
@@ -286,17 +288,17 @@ export default function GovernanceScreen() {
         <View ref={refFor("recent-violations")} nativeID="recent-violations" style={sectionStyles.section}>
           <View style={localStyles.sectionRow}>
             <View style={localStyles.sectionHeaderWrap}>
-              <SectionHeader title="Recent Violations" />
+              <SectionHeader title={t("governance.recentViolations")} />
             </View>
             <CustomButton
               onPress={handleOpenCreateRule}
               style={localStyles.createButton}
               buttonMode="secondary"
               buttonSize="compact"
-              label="+ Create Rule"
+              label={t("governance.createRule")}
               textStyle={localStyles.createButtonText}
               accessibilityRole="button"
-              accessibilityLabel="Create Compliance Rule"
+              accessibilityLabel={t("modals.createComplianceRule")}
             />
           </View>
           <DataTable
@@ -309,7 +311,7 @@ export default function GovernanceScreen() {
 
       {data && (
         <View ref={refFor("security-events")} nativeID="security-events" style={sectionStyles.section}>
-          <SectionHeader title="Security Events" />
+          <SectionHeader title={t("governance.securityEvents")} />
           <DataTable
             columns={securityCols}
             data={filteredSecurityEvents}
@@ -320,7 +322,7 @@ export default function GovernanceScreen() {
 
       {data && (
         <View ref={refFor("policy-changes")} nativeID="policy-changes" style={sectionStyles.section}>
-          <SectionHeader title="Policy Changes" subtitle="Audit trail of policy modifications" />
+          <SectionHeader title={t("governance.policyChanges")} subtitle={t("governance.policyChangesSubtitle")} />
           <DataTable
             columns={policyChangeCols}
             data={filteredPolicyChanges}

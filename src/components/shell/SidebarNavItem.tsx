@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useMemo } from "react";
 import { Text, View, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import Animated, {
   useSharedValue,
@@ -32,8 +33,10 @@ export const SidebarNavItem = memo(function SidebarNavItem({
   expanded,
   onPress,
 }: SidebarNavItemProps) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const translatedLabel = t(label);
   const labelOpacity = useSharedValue(expanded ? 1 : 0);
   const labelTranslateX = useSharedValue(expanded ? 0 : -8);
 
@@ -72,7 +75,7 @@ export const SidebarNavItem = memo(function SidebarNavItem({
       onPress={onPress}
       style={itemStyle}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={translatedLabel}
       accessibilityState={{ selected: active }}
     >
       {active && <View style={activeBorderStyle} />}
@@ -83,7 +86,7 @@ export const SidebarNavItem = memo(function SidebarNavItem({
             style={textStyle}
             numberOfLines={1}
           >
-            {label}
+            {translatedLabel}
           </Text>
         </Animated.View>
       )}

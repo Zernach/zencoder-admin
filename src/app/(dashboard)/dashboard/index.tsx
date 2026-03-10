@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { View, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
 import { useOverviewDashboard } from "@/features/analytics/hooks/useOverviewDashboard";
@@ -28,8 +29,9 @@ const SKELETON_4 = Array.from({ length: 4 });
 const SKELETON_3 = Array.from({ length: 3 });
 
 export default function OverviewDashboardScreen() {
+  const { t } = useTranslation();
   const bp = useBreakpoint();
-  const isLargeLayout = bp === "desktop";
+  const isLargeLayout = bp === "desktop" || bp === "tablet";
   const { width: viewportWidth } = useWindowDimensions();
   const { data, loading, error, refetch } = useOverviewDashboard();
   const {
@@ -71,15 +73,15 @@ export default function OverviewDashboardScreen() {
   }, [kpiPressCache]);
 
   const subtitle = useMemo(() => {
-    if (!data) return "Organization-level analytics for cloud agent operations";
+    if (!data) return t("dashboard.subtitle");
     const totalRuns = data.runsTrend.reduce((s, p) => s + p.value, 0);
     const days = data.runsTrend.length;
-    return `${totalRuns.toLocaleString()} runs across ${days} days (${preset})`;
-  }, [data, preset]);
+    return t("dashboard.subtitleWithData", { totalRuns: totalRuns.toLocaleString(), days, preset });
+  }, [data, preset, t]);
 
   const headerProps = useMemo(
-    () => ({ title: "Home", subtitle, isLoading: loading }),
-    [subtitle, loading],
+    () => ({ title: t("navigation.home"), subtitle, isLoading: loading }),
+    [subtitle, loading, t],
   );
 
   const trendScrollProps = useMemo(() => ({
@@ -90,10 +92,9 @@ export default function OverviewDashboardScreen() {
 
   const trendCardStyle = useMemo(() => {
     if (isLargeLayout) return styles.chartCardFill;
-    const horizontalPadding = bp === "tablet" ? 16 : 12;
     return [
       styles.chartCardViewport,
-      { width: Math.max(280, viewportWidth - horizontalPadding * 2) },
+      { width: Math.max(280, viewportWidth - 12 * 2) },
     ];
   }, [bp, isLargeLayout, viewportWidth]);
 
@@ -111,7 +112,7 @@ export default function OverviewDashboardScreen() {
 
       {/* Section 1 -- Key Metrics */}
       <View style={styles.section}>
-        <SectionHeader title="Key Metrics" subtitle="At a glance" />
+        <SectionHeader title={t("dashboard.keyMetrics")} subtitle={t("dashboard.keyMetricsSubtitle")} />
         {loading ? (
           <CardGrid columns={4}>
             {SKELETON_4.map((_, i) => (
@@ -141,9 +142,9 @@ export default function OverviewDashboardScreen() {
 
       {/* Section 2 -- Trends */}
       <View style={styles.section}>
-        <SectionHeader title="Trends" />
+        <SectionHeader title={t("dashboard.trends")} />
         <CustomList scrollViewProps={trendScrollProps}>
-          <ChartCard title="Runs Over Time" loading={loading} style={trendCardStyle}>
+          <ChartCard title={t("dashboard.runsOverTime")} loading={loading} style={trendCardStyle}>
             {data && (
               <LineChart
                 data={data.runsTrend}
@@ -152,7 +153,7 @@ export default function OverviewDashboardScreen() {
               />
             )}
           </ChartCard>
-          <ChartCard title="Cost per Day" loading={loading} style={trendCardStyle}>
+          <ChartCard title={t("dashboard.costPerDay")} loading={loading} style={trendCardStyle}>
             {data && (
               <LineChart
                 data={data.costTrend}
@@ -166,7 +167,7 @@ export default function OverviewDashboardScreen() {
       {/* Section 3 -- Usage & Adoption */}
       {data && data.usageKpis.length > 0 && (
         <View style={styles.section}>
-          <SectionHeader title="Usage & Adoption" subtitle="Active user metrics" />
+          <SectionHeader title={t("dashboard.usageAndAdoption")} subtitle={t("dashboard.usageSubtitle")} />
           <CardGrid columns={3}>
             {data.usageKpis.map((kpi) => (
               <KpiCard
@@ -178,7 +179,7 @@ export default function OverviewDashboardScreen() {
             ))}
           </CardGrid>
           {data.activeUsersTrend && data.activeUsersTrend.length > 0 && (
-            <ChartCard title="Active Users Trend">
+            <ChartCard title={t("dashboard.activeUsersTrend")}>
               <LineChart data={data.activeUsersTrend} variant="area" height={180} />
             </ChartCard>
           )}
@@ -188,7 +189,7 @@ export default function OverviewDashboardScreen() {
       {/* Section 4 -- Outcomes */}
       {data && data.outcomesKpis.length > 0 && (
         <View style={styles.section}>
-          <SectionHeader title="Outcomes" subtitle="Code quality & delivery" />
+          <SectionHeader title={t("dashboard.outcomes")} subtitle={t("dashboard.outcomesSubtitle")} />
           <CardGrid columns={3}>
             {data.outcomesKpis.map((kpi) => (
               <KpiCard
@@ -200,7 +201,7 @@ export default function OverviewDashboardScreen() {
             ))}
           </CardGrid>
           {data.outcomesTrend && data.outcomesTrend.length > 0 && (
-            <ChartCard title="Automated Merge Requests per Day">
+            <ChartCard title={t("dashboard.automatedMergeRequestsPerDay")}>
               <LineChart data={data.outcomesTrend} height={180} variant="area" />
             </ChartCard>
           )}
@@ -209,7 +210,7 @@ export default function OverviewDashboardScreen() {
 
       {/* Section 5 -- Reliability & Provider Mix */}
       <View style={styles.section}>
-        <SectionHeader title="Reliability & Provider Mix" />
+        <SectionHeader title={t("dashboard.reliabilityAndProviderMix")} />
         {loading ? (
           <CardGrid columns={3}>
             {SKELETON_3.map((_, i) => (
@@ -235,14 +236,14 @@ export default function OverviewDashboardScreen() {
       {/* Section 6 -- Anomalies */}
       {data && data.anomalies.length > 0 && (
         <View style={styles.section}>
-          <SectionHeader title="Anomalies" subtitle="Notable outliers" />
+          <SectionHeader title={t("dashboard.anomalies")} subtitle={t("dashboard.anomaliesSubtitle")} />
           <CardGrid columns={3}>
             {data.anomalies.map((a) => (
               <KpiCard
                 key={a.runId}
                 title={a.type.replace(/_/g, " ")}
                 value={a.label}
-                caption="Run "
+                caption={t("dashboard.run")}
                 captionLink={{
                   text: a.runId,
                   onPress: () => router.push(`/dashboard/run/${a.runId}` as never),

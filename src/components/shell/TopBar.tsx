@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { View, Text, StyleSheet, Modal } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
+import { CustomModal } from "@/components/modals";
 import type { TextInput as TextInputHandle } from "react-native";
 import { Search, Clock, X } from "lucide-react-native";
 import { useRouter } from "expo-router";
@@ -21,29 +23,29 @@ type SelectableTimeRangePreset = Exclude<TimeRangePreset, "custom">;
 
 const TIME_PRESET_OPTIONS: {
   value: SelectableTimeRangePreset;
-  label: string;
-  fullLabel: string;
+  labelKey: string;
+  fullLabelKey: string;
 }[] = [
-  { value: "24h", label: "24h", fullLabel: "Last 24 hours" },
-  { value: "7d", label: "7d", fullLabel: "Last 7 days" },
-  { value: "30d", label: "30d", fullLabel: "Last 30 days" },
-  { value: "90d", label: "90d", fullLabel: "Last 90 days" },
+  { value: "24h", labelKey: "timeRange.short24h", fullLabelKey: "timeRange.last24Hours" },
+  { value: "7d", labelKey: "timeRange.short7d", fullLabelKey: "timeRange.last7Days" },
+  { value: "30d", labelKey: "timeRange.short30d", fullLabelKey: "timeRange.last30Days" },
+  { value: "90d", labelKey: "timeRange.short90d", fullLabelKey: "timeRange.last90Days" },
 ];
 
-const PRESET_LABELS: Record<TimeRangePreset, string> = {
-  "24h": "Last 24 hours",
-  "7d": "Last 7 days",
-  "30d": "Last 30 days",
-  "90d": "Last 90 days",
-  custom: "Custom range",
+const PRESET_LABEL_KEYS: Record<TimeRangePreset, string> = {
+  "24h": "timeRange.last24Hours",
+  "7d": "timeRange.last7Days",
+  "30d": "timeRange.last30Days",
+  "90d": "timeRange.last90Days",
+  custom: "timeRange.customRange",
 };
 
-const PRESET_SHORT_LABELS: Record<TimeRangePreset, string> = {
-  "24h": "24h",
-  "7d": "7d",
-  "30d": "30d",
-  "90d": "90d",
-  custom: "Custom",
+const PRESET_SHORT_LABEL_KEYS: Record<TimeRangePreset, string> = {
+  "24h": "timeRange.short24h",
+  "7d": "timeRange.short7d",
+  "30d": "timeRange.short30d",
+  "90d": "timeRange.short90d",
+  custom: "timeRange.shortCustom",
 };
 
 const CONTROL_HORIZONTAL_PADDING = 12;
@@ -51,6 +53,7 @@ const CONTROL_TEXT_SIZE = 13;
 const CONTROL_HEIGHT = 36;
 
 export const TopBar = React.memo(function TopBar() {
+  const { t } = useTranslation();
   const breakpoint = useBreakpoint();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -140,7 +143,7 @@ export const TopBar = React.memo(function TopBar() {
   }, [timeRangeHandlerCache]);
 
   const presetButtonLabel =
-    breakpoint === "mobile" ? PRESET_SHORT_LABELS[preset] : PRESET_LABELS[preset];
+    breakpoint === "mobile" ? t(PRESET_SHORT_LABEL_KEYS[preset]) : t(PRESET_LABEL_KEYS[preset]);
   const hasQuery = localQuery.length > 0;
 
   const containerStyle = useMemo(
@@ -166,11 +169,11 @@ export const TopBar = React.memo(function TopBar() {
             containerStyle={styles.searchInputWrapper}
             showInputContainer={false}
             style={[styles.searchInput, isIos ? styles.searchInputIos : undefined]}
-            placeholder="Search agents, projects, runs..."
+            placeholder={t("search.placeholder")}
             value={localQuery}
             onChangeText={handleSearchChange}
-            accessibilityLabel="Search"
-            accessibilityHint="Filter dashboard data by keyword"
+            accessibilityLabel={t("search.searchLabel")}
+            accessibilityHint={t("search.searchHint")}
           />
           {hasQuery && (
             <CustomButton
@@ -179,7 +182,7 @@ export const TopBar = React.memo(function TopBar() {
               buttonMode="ghost"
               buttonSize="iconSm"
               accessibilityRole="button"
-              accessibilityLabel="Clear search"
+              accessibilityLabel={t("search.clearSearch")}
               style={styles.clearButton}
             >
               <X size={14} color={theme.icon.secondary} />
@@ -200,7 +203,7 @@ export const TopBar = React.memo(function TopBar() {
           style={presetBtnStyle}
           buttonMode="surface"
           accessibilityRole="button"
-          accessibilityLabel="Open time range selector"
+          accessibilityLabel={t("timeRange.openSelector")}
           onPress={openTimeRangeOverlay}
         >
           <Clock size={14} color={theme.text.secondary} />
@@ -212,65 +215,44 @@ export const TopBar = React.memo(function TopBar() {
           </Text>
         </CustomButton>
       </View>
-      <Modal
-        transparent
+      <CustomModal
         visible={isTimeRangeOverlayVisible}
-        animationType="fade"
-        onRequestClose={closeTimeRangeOverlay}
+        onClose={closeTimeRangeOverlay}
+        accessibilityLabel="Close time range selector"
+        title={t("timeRange.selectTimeRange")}
+        panelWidth={320}
+        panelStyle={styles.timeRangePanel}
       >
-        <View style={[styles.modalOverlay, { backgroundColor: theme.bg.overlay }]}>
-          <CustomButton
-            style={StyleSheet.absoluteFillObject}
-            onPress={closeTimeRangeOverlay}
-            accessibilityRole="button"
-            accessibilityLabel="Close time range selector"
-          />
-          <View style={[styles.overlayPanel, { backgroundColor: theme.bg.subtle, borderColor: theme.border.default }]}>
-            <View style={styles.overlayHeader}>
-              <Text style={[styles.overlayTitle, { color: theme.text.primary }]}>Select Time Range</Text>
+        <View style={styles.overlayOptions}>
+          {TIME_PRESET_OPTIONS.map((option) => {
+            const isSelected = preset === option.value;
+            return (
               <CustomButton
-                onPress={closeTimeRangeOverlay}
-                hitSlop={8}
-                buttonMode="ghost"
-                buttonSize="iconSm"
+                key={option.value}
+                style={[
+                  styles.overlayOptionButton,
+                  { backgroundColor: theme.bg.surface, borderColor: theme.border.default },
+                  isSelected && { borderColor: theme.border.brand, backgroundColor: theme.bg.brandSubtle },
+                ]}
+                onPress={getTimeRangeHandler(option.value)}
                 accessibilityRole="button"
-                accessibilityLabel="Close overlay"
+                accessibilityLabel={t(option.fullLabelKey)}
+                accessibilityState={{ selected: isSelected }}
               >
-                <X size={16} color={theme.text.secondary} />
+                <Text
+                  style={[
+                    styles.overlayOptionText,
+                    { color: theme.text.secondary },
+                    isSelected && { color: theme.text.brand },
+                  ]}
+                >
+                  {t(option.labelKey)}
+                </Text>
               </CustomButton>
-            </View>
-            <View style={styles.overlayOptions}>
-              {TIME_PRESET_OPTIONS.map((option) => {
-                const isSelected = preset === option.value;
-                return (
-                  <CustomButton
-                    key={option.value}
-                    style={[
-                      styles.overlayOptionButton,
-                      { backgroundColor: theme.bg.surface, borderColor: theme.border.default },
-                      isSelected && { borderColor: theme.border.brand, backgroundColor: theme.bg.brandSubtle },
-                    ]}
-                    onPress={getTimeRangeHandler(option.value)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Set time range to ${option.fullLabel}`}
-                    accessibilityState={{ selected: isSelected }}
-                  >
-                    <Text
-                      style={[
-                        styles.overlayOptionText,
-                        { color: theme.text.secondary },
-                        isSelected && { color: theme.text.brand },
-                      ]}
-                    >
-                      {option.label}
-                    </Text>
-                  </CustomButton>
-                );
-              })}
-            </View>
-          </View>
+            );
+          })}
         </View>
-      </Modal>
+      </CustomModal>
     </View>
   );
 });
@@ -351,30 +333,8 @@ const styles = StyleSheet.create({
   presetText: {
     fontSize: CONTROL_TEXT_SIZE,
   },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: spacing[20],
-  },
-  overlayPanel: {
-    width: 320,
-    maxWidth: "100%",
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    paddingHorizontal: spacing[12],
-    paddingTop: spacing[12],
-    paddingBottom: spacing[12],
-    gap: spacing[12],
-  },
-  overlayHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  overlayTitle: {
-    fontSize: 14,
-    fontWeight: "600",
+  timeRangePanel: {
+    padding: spacing[12],
   },
   overlayOptions: {
     gap: spacing[8],

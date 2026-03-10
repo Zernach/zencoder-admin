@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import { Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -11,18 +12,20 @@ interface SidebarSubsectionItemProps {
 }
 
 export const SidebarSubsectionItem = memo(function SidebarSubsectionItem({ label, onPress }: SidebarSubsectionItemProps) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const translatedLabel = t(label);
 
   return (
     <CustomButton
       onPress={onPress}
       style={styles.item}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={translatedLabel}
     >
       <Text style={[styles.label, { color: theme.text.tertiary }]} numberOfLines={1}>
-        {label}
+        {translatedLabel}
       </Text>
     </CustomButton>
   );

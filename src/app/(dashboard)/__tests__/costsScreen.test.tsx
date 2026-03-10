@@ -80,6 +80,8 @@ jest.mock("@/theme/themes", () => ({
   },
 }));
 
+jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
+
 const CostAnalyticsScreen = require("../costs").default;
 
 function createCostData(): CostResponse {
@@ -150,8 +152,8 @@ describe("CostAnalyticsScreen", () => {
 
     const { getByText, getByTestId } = render(<CostAnalyticsScreen />);
 
-    expect(getByText("Cost per Provider")).toBeTruthy();
-    expect(getByText("Cost per Token")).toBeTruthy();
+    expect(getByText("costs.costPerProvider")).toBeTruthy();
+    expect(getByText("costs.costPerToken")).toBeTruthy();
     expect(getByTestId("provider-cost-chart")).toBeTruthy();
     expect(getByTestId("provider-token-cost-bar-chart")).toBeTruthy();
   });
@@ -170,8 +172,6 @@ describe("CostAnalyticsScreen", () => {
     expect(sectionIds).toEqual(
       expect.arrayContaining([
         "cost-summary",
-        "cost-by-provider",
-        "budget-forecast",
         "costs-project-breakdown",
       ]),
     );

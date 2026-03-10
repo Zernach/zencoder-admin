@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists";
 import type { SearchSuggestionsResponse, SearchSuggestion } from "@/features/analytics/types";
@@ -24,6 +25,7 @@ export function SearchAutocompletePanel({
   onDismiss,
   visible,
 }: SearchAutocompletePanelProps) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
@@ -38,7 +40,7 @@ export function SearchAutocompletePanel({
         style={styles.backdrop}
         onPress={onDismiss}
         accessibilityRole="button"
-        accessibilityLabel="Dismiss search suggestions"
+        accessibilityLabel={t("search.dismissSuggestions")}
       />
       <View
         style={[
@@ -49,7 +51,7 @@ export function SearchAutocompletePanel({
           },
         ]}
         accessibilityRole="list"
-        accessibilityLabel="Search suggestions"
+        accessibilityLabel={t("search.suggestionsLabel")}
       >
         <CustomList
           scrollViewProps={{
@@ -59,13 +61,13 @@ export function SearchAutocompletePanel({
           }}
         >
           {loading && !hasGroups && (
-            <Text style={[styles.stateText, { color: theme.text.secondary }]}>Searching...</Text>
+            <Text style={[styles.stateText, { color: theme.text.secondary }]}>{t("search.searching")}</Text>
           )}
           {error && (
             <Text style={[styles.stateText, { color: theme.state.error }]}>{error}</Text>
           )}
           {isEmpty && !error && (
-            <Text style={[styles.stateText, { color: theme.text.secondary }]}>No results found</Text>
+            <Text style={[styles.stateText, { color: theme.text.secondary }]}>{t("search.noResultsFound")}</Text>
           )}
           {hasGroups &&
             suggestions.groups.map((group) => (

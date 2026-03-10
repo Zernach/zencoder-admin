@@ -92,93 +92,95 @@ jest.mock("@/components/buttons", () => {
   };
 });
 
+jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
+
 const SettingsScreen = require("../settings").default;
 
 describe("SettingsScreen", () => {
   it("renders screen sections", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
-    expect(getByText("Preferences")).toBeTruthy();
-    expect(getByText("Organization")).toBeTruthy();
-    expect(getByText("Danger Zone")).toBeTruthy();
+    expect(getByText("settings.preferences")).toBeTruthy();
+    expect(getByText("settings.organization")).toBeTruthy();
+    expect(getByText("settings.dangerZone")).toBeTruthy();
   });
 
   it("renders profile hero card", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
-    expect(getByText("Admin User")).toBeTruthy();
-    expect(getByText("admin@zencoder.io")).toBeTruthy();
-    expect(getByText("Owner")).toBeTruthy();
+    expect(getByText("settings.adminUser")).toBeTruthy();
+    expect(getByText("settings.adminEmail")).toBeTruthy();
+    expect(getByText("settings.ownerRole")).toBeTruthy();
   });
 
   it("renders Sign Out button", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
-    expect(getByText("Sign Out")).toBeTruthy();
+    expect(getByText("settings.signOut")).toBeTruthy();
   });
 
   it("shows demo notice when Sign Out is pressed", () => {
     const { getByText, queryByText } = renderWithStore(<SettingsScreen />);
 
-    expect(queryByText("This is a dashboard demo, so you are unable to sign out.")).toBeNull();
+    expect(queryByText("settings.signOut.demoMessage")).toBeNull();
 
-    fireEvent.press(getByText("Sign Out"));
+    fireEvent.press(getByText("settings.signOut"));
 
-    expect(getByText("This is a dashboard demo, so you are unable to sign out.")).toBeTruthy();
-    expect(getByText("Demo Mode")).toBeTruthy();
+    expect(getByText("settings.signOut.demoMessage")).toBeTruthy();
+    expect(getByText("settings.signOut.demoMode")).toBeTruthy();
   });
 
   it("dismisses demo notice when Dismiss is pressed", () => {
     const { getByText, queryByText } = renderWithStore(<SettingsScreen />);
 
-    fireEvent.press(getByText("Sign Out"));
-    expect(getByText("This is a dashboard demo, so you are unable to sign out.")).toBeTruthy();
+    fireEvent.press(getByText("settings.signOut"));
+    expect(getByText("settings.signOut.demoMessage")).toBeTruthy();
 
-    fireEvent.press(getByText("Dismiss"));
-    expect(queryByText("This is a dashboard demo, so you are unable to sign out.")).toBeNull();
+    fireEvent.press(getByText("settings.signOut.dismiss"));
+    expect(queryByText("settings.signOut.demoMessage")).toBeNull();
   });
 
   it("renders theme toggle and other setting toggles", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
-    expect(getByText(/Dark Mode/)).toBeTruthy();
-    expect(getByText("Email Notifications")).toBeTruthy();
-    expect(getByText("Slack Integration")).toBeTruthy();
-    expect(getByText("Auto-refresh")).toBeTruthy();
+    expect(getByText(/settings\.darkModeLabel/)).toBeTruthy();
+    expect(getByText("settings.emailNotifications")).toBeTruthy();
+    expect(getByText("settings.slackIntegration")).toBeTruthy();
+    expect(getByText("settings.autoRefresh")).toBeTruthy();
   });
 
   it("does not render Create Team button in settings", () => {
     const { queryByText } = renderWithStore(<SettingsScreen />);
 
-    expect(queryByText("+ Create Team")).toBeNull();
+    expect(queryByText("governance.createTeam")).toBeNull();
   });
 
   it("renders Clear Cache button", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
-    expect(getByText("Clear Cache")).toBeTruthy();
+    expect(getByText("common.clearCache")).toBeTruthy();
   });
 
   it("renders org info rows with seat progress", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
     expect(getByText("org_zencoder_001")).toBeTruthy();
-    expect(getByText("ENTERPRISE")).toBeTruthy();
+    expect(getByText("settings.enterprise")).toBeTruthy();
     expect(getByText("73 / 100")).toBeTruthy();
-    expect(getByText("73% of seats used")).toBeTruthy();
+    expect(getByText(/settings\.seatsUsed/)).toBeTruthy();
   });
 
   it("renders Language row with current language name", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
-    expect(getByText("Language")).toBeTruthy();
+    expect(getByText("settings.language")).toBeTruthy();
     expect(getByText("English")).toBeTruthy();
   });
 
   it("dispatches openModal for LanguageSelection when Language row is pressed", () => {
     const { getByLabelText, store } = renderWithStore(<SettingsScreen />);
 
-    fireEvent.press(getByLabelText("Select language"));
+    fireEvent.press(getByLabelText("settings.selectLanguage"));
 
     expect(store.getState().modal.visible[ModalName.LanguageSelection]).toBe(true);
   });

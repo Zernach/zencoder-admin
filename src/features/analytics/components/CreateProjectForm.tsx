@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { InputForm } from "@/components/forms";
@@ -27,13 +28,14 @@ interface FormErrors {
 const INITIAL_FIELDS: FormFields = { name: "", teamId: "" };
 
 export function CreateProjectForm({ onSubmit, loading, error }: CreateProjectFormProps) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
   const validate = useCallback((fields: FormFields) => {
     const errors: FormErrors = {};
-    if (!fields.name.trim()) errors.name = "Project name is required";
-    if (!fields.teamId.trim()) errors.teamId = "Team ID is required";
+    if (!fields.name.trim()) errors.name = t("modals.createProject.projectNameRequired");
+    if (!fields.teamId.trim()) errors.teamId = t("modals.createProject.teamIdRequired");
     const hasErrors = Object.keys(errors).length > 0;
     return {
       errors,
@@ -41,7 +43,7 @@ export function CreateProjectForm({ onSubmit, loading, error }: CreateProjectFor
         ? undefined
         : { name: fields.name.trim(), teamId: fields.teamId.trim() },
     };
-  }, []);
+  }, [t]);
 
   const { formFieldsRef, errorsRef, updateFormFields, onPressSubmit } = useFormFields({
     initialFields: INITIAL_FIELDS,
@@ -54,29 +56,29 @@ export function CreateProjectForm({ onSubmit, loading, error }: CreateProjectFor
       key: "name",
       type: "input",
       inputProps: {
-        label: "Project Name",
+        label: t("modals.createProject.projectName"),
         defaultValue: formFieldsRef.current.name,
         onChangeText: (text: string) => updateFormFields({ name: text }),
         error: errorsRef.current.name,
-        placeholder: "e.g. Frontend Dashboard",
+        placeholder: t("modals.createProject.projectNamePlaceholder"),
       },
     },
     {
       key: "teamId",
       type: "input",
       inputProps: {
-        label: "Team ID",
+        label: t("modals.createProject.teamId"),
         defaultValue: formFieldsRef.current.teamId,
         onChangeText: (text: string) => updateFormFields({ teamId: text }),
         error: errorsRef.current.teamId,
-        placeholder: "e.g. team_engineering",
+        placeholder: t("modals.createProject.teamIdPlaceholder"),
       },
     },
   ];
 
   return (
     <InputForm
-      title="Create Project"
+      title={t("modals.createProject")}
       items={items}
       footer={
         <>
@@ -86,9 +88,9 @@ export function CreateProjectForm({ onSubmit, loading, error }: CreateProjectFor
             style={styles.submitButton}
             buttonMode="primary"
             buttonSize="lg"
-            label="Submit"
+            label={t("common.submit")}
             accessibilityRole="button"
-            accessibilityLabel="Submit"
+            accessibilityLabel={t("common.submit")}
             disabled={loading}
           />
         </>

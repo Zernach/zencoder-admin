@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { View, Image, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import {
   PanelLeftClose,
@@ -25,6 +26,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { selectSidebarExpanded, toggleSidebar } from "@/store/slices/sidebarSlice";
 
 export const Sidebar = React.memo(function Sidebar() {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
@@ -136,7 +138,7 @@ export const Sidebar = React.memo(function Sidebar() {
           buttonMode="ghost"
           buttonSize="iconSm"
           accessibilityRole="button"
-          accessibilityLabel={expanded ? "Collapse sidebar" : "Expand sidebar"}
+          accessibilityLabel={expanded ? t("navigation.collapseSidebar") : t("navigation.expandSidebar")}
         >
           {expanded ? (
             <PanelLeftClose size={18} color={theme.text.secondary} />
@@ -159,7 +161,7 @@ export const Sidebar = React.memo(function Sidebar() {
                 onPress={getNavPressHandler(item.route)}
               />
               {active && expanded && hasSubsections(item.route) && (
-                <View accessibilityRole="list" accessibilityLabel={`${item.label} subsections`}>
+                <View accessibilityRole="list" accessibilityLabel={t("navigation.subsections", { label: t(item.label) })}>
                   {getSubsections(item.route).map((sub) => (
                     <SidebarSubsectionItem
                       key={sub.id}

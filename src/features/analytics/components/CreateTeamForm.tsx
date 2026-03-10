@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { InputForm } from "@/components/forms";
@@ -25,18 +26,19 @@ interface FormErrors {
 const INITIAL_FIELDS: FormFields = { name: "" };
 
 export function CreateTeamForm({ onSubmit, loading, error }: CreateTeamFormProps) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
   const validate = useCallback((fields: FormFields) => {
     const errors: FormErrors = {};
-    if (!fields.name.trim()) errors.name = "Team name is required";
+    if (!fields.name.trim()) errors.name = t("modals.createTeam.teamNameRequired");
     const hasErrors = Object.keys(errors).length > 0;
     return {
       errors,
       values: hasErrors ? undefined : { name: fields.name.trim() },
     };
-  }, []);
+  }, [t]);
 
   const { formFieldsRef, errorsRef, updateFormFields, onPressSubmit } = useFormFields({
     initialFields: INITIAL_FIELDS,
@@ -49,18 +51,18 @@ export function CreateTeamForm({ onSubmit, loading, error }: CreateTeamFormProps
       key: "name",
       type: "input",
       inputProps: {
-        label: "Team Name",
+        label: t("modals.createTeam.teamName"),
         defaultValue: formFieldsRef.current.name,
         onChangeText: (text: string) => updateFormFields({ name: text }),
         error: errorsRef.current.name,
-        placeholder: "e.g. Platform Engineering",
+        placeholder: t("modals.createTeam.teamNamePlaceholder"),
       },
     },
   ];
 
   return (
     <InputForm
-      title="Create Team"
+      title={t("modals.createTeam")}
       items={items}
       footer={
         <>
@@ -70,9 +72,9 @@ export function CreateTeamForm({ onSubmit, loading, error }: CreateTeamFormProps
             style={styles.submitButton}
             buttonMode="primary"
             buttonSize="lg"
-            label="Submit"
+            label={t("common.submit")}
             accessibilityRole="button"
-            accessibilityLabel="Submit"
+            accessibilityLabel={t("common.submit")}
             disabled={loading}
           />
         </>

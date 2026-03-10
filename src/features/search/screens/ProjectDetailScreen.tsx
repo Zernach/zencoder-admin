@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useProjectDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
@@ -16,6 +17,7 @@ interface ProjectDetailScreenProps {
 }
 
 export function ProjectDetailScreen({ projectId }: ProjectDetailScreenProps) {
+  const { t } = useTranslation();
   const { data, loading, error, refetch } = useProjectDetailScreen(projectId);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -23,33 +25,33 @@ export function ProjectDetailScreen({ projectId }: ProjectDetailScreenProps) {
 
   const agentColumns = useMemo<ColumnDef<Agent>[]>(
     () => [
-      { key: "name", header: "Agent Name", render: (a) => <Text style={ct.primary}>{a.name}</Text> },
-      { key: "id", header: "ID", width: 140, render: (a) => <Text style={ct.secondary}>{a.id.slice(0, 12)}</Text> },
+      { key: "name", header: t("entityDetail.table.agentName"), render: (a) => <Text style={ct.primary}>{a.name}</Text> },
+      { key: "id", header: t("entityDetail.table.id"), width: 140, render: (a) => <Text style={ct.secondary}>{a.id.slice(0, 12)}</Text> },
     ],
-    [ct],
+    [ct, t],
   );
 
   const runColumns = useMemo<ColumnDef<RunListRow>[]>(
     () => [
-      { key: "id", header: "Run ID", width: 140, render: (r) => <Text style={ct.primary}>{r.id.slice(0, 12)}</Text> },
+      { key: "id", header: t("entityDetail.table.runId"), width: 140, render: (r) => <Text style={ct.primary}>{r.id.slice(0, 12)}</Text> },
       {
         key: "status",
-        header: "Status",
+        header: t("entityDetail.table.status"),
         width: 100,
         render: (r) => <StatusBadge variant="run-status" status={r.status} />,
       },
-      { key: "startedAtIso", header: "Created", width: 160, render: (r) => <Text style={ct.secondary}>{new Date(r.startedAtIso).toLocaleString()}</Text> },
-      { key: "provider", header: "Provider", width: 100, render: (r) => <Text style={ct.secondary}>{r.provider}</Text> },
+      { key: "startedAtIso", header: t("entityDetail.table.created"), width: 160, render: (r) => <Text style={ct.secondary}>{new Date(r.startedAtIso).toLocaleString()}</Text> },
+      { key: "provider", header: t("entityDetail.table.provider"), width: 100, render: (r) => <Text style={ct.secondary}>{r.provider}</Text> },
       {
         key: "costUsd",
-        header: "Cost",
+        header: t("entityDetail.table.cost"),
         width: 80,
         align: "right",
         render: (r) => <Text style={ct.primary}>${r.costUsd.toFixed(2)}</Text>,
         sortAccessor: (r) => r.costUsd,
       },
     ],
-    [ct],
+    [ct, t],
   );
 
   if (loading) return <LoadingSkeleton variant="text" />;
@@ -60,33 +62,33 @@ export function ProjectDetailScreen({ projectId }: ProjectDetailScreenProps) {
     <ScreenWrapper headerProps={{ title: data.project.name, subtitle: data.teamName }} showFilterBar={false}>
       <View style={styles.content}>
         <View style={styles.statsRow}>
-          <StatItem label="Agents" value={String(data.agentCount)} theme={theme} />
-          <StatItem label="Runs" value={String(data.totalRuns)} theme={theme} />
+          <StatItem label={t("entityDetail.agents")} value={String(data.agentCount)} theme={theme} />
+          <StatItem label={t("entityDetail.runs")} value={String(data.totalRuns)} theme={theme} />
           <StatItem
-            label="Success"
+            label={t("entityDetail.success")}
             value={`${(data.successRate * 100).toFixed(1)}%`}
             theme={theme}
             valueColor={getSuccessRateColor(data.successRate, mode)}
           />
-          <StatItem label="Cost" value={`$${data.totalCostUsd.toFixed(2)}`} theme={theme} />
+          <StatItem label={t("entityDetail.cost")} value={`$${data.totalCostUsd.toFixed(2)}`} theme={theme} />
         </View>
 
-        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Agents</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.agents")}</Text>
         <DataTable
           columns={agentColumns}
           data={data.agents}
           keyExtractor={(a) => a.id}
-          emptyMessage="No agents."
+          emptyMessage={t("entityDetail.noAgents")}
         />
 
-        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Recent Runs</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.recentRuns")}</Text>
         <DataTable
           columns={runColumns}
           data={data.recentRuns}
           keyExtractor={(r) => r.id}
           initialSortBy="costUsd"
           initialSortDirection="desc"
-          emptyMessage="No runs yet."
+          emptyMessage={t("entityDetail.noRunsYet")}
         />
       </View>
     </ScreenWrapper>

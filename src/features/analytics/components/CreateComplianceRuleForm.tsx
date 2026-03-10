@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { InputForm } from "@/components/forms";
@@ -29,11 +30,13 @@ const INITIAL_FIELDS: FormFields = { name: "", description: "", severity: "MEDIU
 const SEVERITY_OPTIONS: Severity[] = ["HIGH", "MEDIUM", "LOW"];
 
 export function CreateComplianceRuleForm({ onSubmit, loading }: CreateComplianceRuleFormProps) {
+  const { t } = useTranslation();
+
   const validate = useCallback((fields: FormFields) => {
     const errors: FormErrors = {};
-    if (!fields.name.trim()) errors.name = "Name is required";
-    if (!fields.description.trim()) errors.description = "Description is required";
-    if (!SEVERITY_OPTIONS.includes(fields.severity as Severity)) errors.severity = "Invalid severity";
+    if (!fields.name.trim()) errors.name = t("modals.createComplianceRule.ruleNameRequired");
+    if (!fields.description.trim()) errors.description = t("modals.createComplianceRule.descriptionRequired");
+    if (!SEVERITY_OPTIONS.includes(fields.severity as Severity)) errors.severity = t("modals.createComplianceRule.severityInvalid");
     const hasErrors = Object.keys(errors).length > 0;
     return {
       errors,
@@ -41,7 +44,7 @@ export function CreateComplianceRuleForm({ onSubmit, loading }: CreateCompliance
         ? undefined
         : { name: fields.name.trim(), description: fields.description.trim(), severity: fields.severity as Severity },
     };
-  }, []);
+  }, [t]);
 
   const { formFieldsRef, errorsRef, updateFormFields, onPressSubmit } = useFormFields({
     initialFields: INITIAL_FIELDS,
@@ -54,40 +57,40 @@ export function CreateComplianceRuleForm({ onSubmit, loading }: CreateCompliance
       key: "name",
       type: "input",
       inputProps: {
-        label: "Rule Name",
+        label: t("modals.createComplianceRule.ruleName"),
         defaultValue: formFieldsRef.current.name,
         onChangeText: (text: string) => updateFormFields({ name: text }),
         error: errorsRef.current.name,
-        placeholder: "e.g. Max token limit exceeded",
+        placeholder: t("modals.createComplianceRule.ruleNamePlaceholder"),
       },
     },
     {
       key: "description",
       type: "input",
       inputProps: {
-        label: "Description",
+        label: t("modals.createComplianceRule.description"),
         defaultValue: formFieldsRef.current.description,
         onChangeText: (text: string) => updateFormFields({ description: text }),
         error: errorsRef.current.description,
-        placeholder: "Describe when this rule triggers",
+        placeholder: t("modals.createComplianceRule.descriptionPlaceholder"),
       },
     },
     {
       key: "severity",
       type: "input",
       inputProps: {
-        label: "Severity (HIGH, MEDIUM, LOW)",
+        label: t("modals.createComplianceRule.severityLabel"),
         defaultValue: formFieldsRef.current.severity,
         onChangeText: (text: string) => updateFormFields({ severity: text }),
         error: errorsRef.current.severity,
-        placeholder: "MEDIUM",
+        placeholder: t("modals.createComplianceRule.severityPlaceholder"),
       },
     },
   ];
 
   return (
     <InputForm
-      title="Create Compliance Rule"
+      title={t("modals.createComplianceRule")}
       items={items}
       footer={
         <CustomButton
@@ -95,9 +98,9 @@ export function CreateComplianceRuleForm({ onSubmit, loading }: CreateCompliance
           style={styles.submitButton}
           buttonMode="primary"
           buttonSize="lg"
-          label="Submit"
+          label={t("common.submit")}
           accessibilityRole="button"
-          accessibilityLabel="Submit"
+          accessibilityLabel={t("common.submit")}
           disabled={loading}
         />
       }

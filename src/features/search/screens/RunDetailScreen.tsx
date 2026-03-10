@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useRunDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
@@ -19,6 +20,7 @@ interface DetailRow {
 }
 
 export function RunDetailScreen({ runId }: RunDetailScreenProps) {
+  const { t } = useTranslation();
   const { data, loading, error, refetch } = useRunDetailScreen(runId);
   const { mode } = useThemeMode();
   const ct = cellText(mode);
@@ -38,20 +40,20 @@ export function RunDetailScreen({ runId }: RunDetailScreenProps) {
   const { run } = data;
 
   const detailRows: DetailRow[] = [
-    { label: "Status", value: run.status },
-    { label: "Provider", value: run.provider },
-    { label: "Model", value: run.modelId },
-    { label: "Duration", value: `${(run.durationMs / 1000).toFixed(1)}s` },
-    { label: "Cost", value: `$${run.costUsd.toFixed(2)}` },
-    { label: "Tokens", value: run.totalTokens.toLocaleString() },
-    { label: "Input Tokens", value: run.inputTokens.toLocaleString() },
-    { label: "Output Tokens", value: run.outputTokens.toLocaleString() },
-    { label: "Agent", value: data.agentName },
-    { label: "Project", value: data.projectName },
-    { label: "Team", value: data.teamName },
-    { label: "User", value: data.userName },
-    { label: "Started", value: run.startedAtIso },
-    ...(run.completedAtIso ? [{ label: "Completed", value: run.completedAtIso }] : []),
+    { label: t("entityDetail.runFields.status"), value: run.status },
+    { label: t("entityDetail.runFields.provider"), value: run.provider },
+    { label: t("entityDetail.runFields.model"), value: run.modelId },
+    { label: t("entityDetail.runFields.duration"), value: `${(run.durationMs / 1000).toFixed(1)}s` },
+    { label: t("entityDetail.runFields.cost"), value: `$${run.costUsd.toFixed(2)}` },
+    { label: t("entityDetail.runFields.tokens"), value: run.totalTokens.toLocaleString() },
+    { label: t("entityDetail.runFields.inputTokens"), value: run.inputTokens.toLocaleString() },
+    { label: t("entityDetail.runFields.outputTokens"), value: run.outputTokens.toLocaleString() },
+    { label: t("entityDetail.runFields.agent"), value: data.agentName },
+    { label: t("entityDetail.runFields.project"), value: data.projectName },
+    { label: t("entityDetail.runFields.team"), value: data.teamName },
+    { label: t("entityDetail.runFields.user"), value: data.userName },
+    { label: t("entityDetail.runFields.started"), value: run.startedAtIso },
+    ...(run.completedAtIso ? [{ label: t("entityDetail.runFields.completed"), value: run.completedAtIso }] : []),
   ];
 
   return (
@@ -61,7 +63,7 @@ export function RunDetailScreen({ runId }: RunDetailScreenProps) {
           columns={detailColumns}
           data={detailRows}
           keyExtractor={(r) => r.label}
-          emptyMessage="No details."
+          emptyMessage={t("entityDetail.noDetails")}
         />
       </View>
     </ScreenWrapper>

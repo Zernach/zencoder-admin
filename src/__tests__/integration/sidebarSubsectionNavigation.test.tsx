@@ -5,6 +5,8 @@ import { ROUTES } from "@/constants/routes";
 import { SidebarSubsectionItem } from "@/components/shell/SidebarSubsectionItem";
 import { SectionScrollProvider, useSectionScroll } from "@/hooks/useSectionScroll";
 
+jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
+
 // ─── Contract tests (from PR 0053) ──────────────────────
 
 describe("Sidebar Subsection Navigation — contract", () => {
@@ -22,10 +24,9 @@ describe("Sidebar Subsection Navigation — contract", () => {
 
   it("governance subsections exactly match required entries in order", () => {
     const govSubs = SUBSECTIONS[ROUTES.GOVERNANCE];
-    expect(govSubs.length).toBe(7);
+    expect(govSubs.length).toBe(6);
     expect(govSubs.map((s) => s.id)).toEqual([
       "overview",
-      "compliance-status",
       "team-performance",
       "seat-user-oversight",
       "recent-violations",
@@ -33,13 +34,12 @@ describe("Sidebar Subsection Navigation — contract", () => {
       "policy-changes",
     ]);
     expect(govSubs.map((s) => s.label)).toEqual([
-      "Overview",
-      "Compliance Status",
-      "Team Performance",
-      "Seat User Oversight",
-      "Recent Violations",
-      "Security Events",
-      "Policy Changes",
+      "navigation.subsections.overview",
+      "navigation.subsections.teamPerformance",
+      "navigation.subsections.seatUserOversight",
+      "navigation.subsections.recentViolations",
+      "navigation.subsections.securityEvents",
+      "navigation.subsections.policyChanges",
     ]);
   });
 
@@ -195,13 +195,12 @@ describe("Sidebar subsection press → scrollToSection integration", () => {
 
 describe("Governance subsection order and labels (strict)", () => {
   const REQUIRED_GOVERNANCE_SUBSECTIONS = [
-    { id: "overview", label: "Overview" },
-    { id: "compliance-status", label: "Compliance Status" },
-    { id: "team-performance", label: "Team Performance" },
-    { id: "seat-user-oversight", label: "Seat User Oversight" },
-    { id: "recent-violations", label: "Recent Violations" },
-    { id: "security-events", label: "Security Events" },
-    { id: "policy-changes", label: "Policy Changes" },
+    { id: "overview", label: "navigation.subsections.overview" },
+    { id: "team-performance", label: "navigation.subsections.teamPerformance" },
+    { id: "seat-user-oversight", label: "navigation.subsections.seatUserOversight" },
+    { id: "recent-violations", label: "navigation.subsections.recentViolations" },
+    { id: "security-events", label: "navigation.subsections.securityEvents" },
+    { id: "policy-changes", label: "navigation.subsections.policyChanges" },
   ];
 
   it("governance has exactly the required subsections in order", () => {
@@ -219,7 +218,7 @@ describe("Governance subsection order and labels (strict)", () => {
     );
 
     const buttons = getAllByRole("button");
-    expect(buttons.length).toBe(7);
+    expect(buttons.length).toBe(6);
     REQUIRED_GOVERNANCE_SUBSECTIONS.forEach((sub, i) => {
       expect(buttons[i]).toHaveProp("accessibilityLabel", sub.label);
     });

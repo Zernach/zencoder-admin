@@ -59,16 +59,20 @@ export const BreakdownChart = React.memo(function BreakdownChart({
       });
   }, []);
 
-  const { sorted, minVal, maxVal, longestLabel } = useMemo(() => {
+  const [measuredValueWidth, setMeasuredValueWidth] = useState<number>(0);
+
+  const { sorted, minVal, maxVal, longestLabel, longestFormattedValue } = useMemo(() => {
     const s = [...data].sort((a, b) => b.value - a.value);
     const values = s.map((item) => item.value);
+    const formatted = s.map((item) => formatValue(item.value));
     return {
       sorted: s,
       minVal: values.length > 0 ? Math.min(...values) : 0,
       maxVal: values.length > 0 ? Math.max(...values) : 0,
       longestLabel: s.reduce((longest, item) => (item.key.length > longest.length ? item.key : longest), ""),
+      longestFormattedValue: formatted.reduce((longest, v) => (v.length > longest.length ? v : longest), ""),
     };
-  }, [data]);
+  }, [data, formatValue]);
   const effectiveLabelWidth = useMemo(() => {
     if (truncateLabels || measuredLabelWidth <= 0 || containerWidth <= 0) {
       return measuredLabelWidth > 0 ? measuredLabelWidth : undefined;
@@ -87,6 +91,13 @@ export const BreakdownChart = React.memo(function BreakdownChart({
       setMeasuredLabelWidth(width);
     }
   }, [measuredLabelWidth]);
+
+  const handleLongestValueLayout = useCallback((event: { nativeEvent: { layout: { width: number } } }): void => {
+    const w = event.nativeEvent.layout.width;
+    if (w > measuredValueWidth) {
+      setMeasuredValueWidth(w);
+    }
+  }, [measuredValueWidth]);
 
   const handleRowHeightLayout = useCallback((height: number): void => {
     if (height > measuredRowHeight) {
@@ -178,6 +189,14 @@ export const BreakdownChart = React.memo(function BreakdownChart({
             {longestLabel}
           </Text>
         ) : null}
+        {showValues && longestFormattedValue.length > 0 ? (
+          <Text
+            style={[styles.hBarValue, styles.measureLabel, { color: theme.text.primary }]}
+            onLayout={handleLongestValueLayout}
+          >
+            {longestFormattedValue}
+          </Text>
+        ) : null}
         <BarChart
           data={chartData}
           orientation="horizontal"
@@ -188,7 +207,7 @@ export const BreakdownChart = React.memo(function BreakdownChart({
           horizontalOptions={{
             labelNumberOfLines: truncateLabels ? 1 : undefined,
             labelWidth: !truncateLabels ? effectiveLabelWidth : undefined,
-            valueWidth: showValues ? 48 : undefined,
+            valueWidth: measuredValueWidth > 0 ? measuredValueWidth : undefined,
             trackMinWidth: 56,
             trackHeight: 16,
             trackColor: theme.bg.surfaceElevated,
@@ -341,10 +360,10 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
   },
   hBarValue: {
-    width: 48,
+    flexShrink: 0,
     fontSize: 11,
     fontWeight: "600",
-    textAlign: "right",
+    textAlign: "left",
   },
   tooltipBubble: {
     position: "absolute",

@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomSwitch } from "@/components/inputs";
@@ -37,7 +38,22 @@ const INITIAL_SETTINGS: Record<NonThemeSettingKey, boolean> = {
   autoRefresh: true,
 };
 
+const TOGGLE_LABEL_KEYS: Record<SettingToggleKey, string> = {
+  darkMode: "settings.darkMode",
+  emailNotifs: "settings.emailNotifications",
+  slackInteg: "settings.slackIntegration",
+  autoRefresh: "settings.autoRefresh",
+};
+
+const TOGGLE_DESC_KEYS: Record<SettingToggleKey, string> = {
+  darkMode: "settings.darkModeDescription",
+  emailNotifs: "settings.emailDescription",
+  slackInteg: "settings.slackDescription",
+  autoRefresh: "settings.autoRefreshDescription",
+};
+
 export default function SettingsScreen() {
+  const { t } = useTranslation();
   const { mode, setMode, toggleMode } = useThemeMode();
   const theme = semanticThemes[mode];
   const dispatch = useAppDispatch();
@@ -86,8 +102,8 @@ export default function SettingsScreen() {
   const seatPercent = Math.round((seatsUsed / seatsPurchased) * 100);
 
   const headerProps = useMemo(
-    () => ({ title: "Settings" as const, subtitle: "Configure your dashboard preferences" as const }),
-    [],
+    () => ({ title: t("settings.title"), subtitle: t("settings.subtitle") }),
+    [t],
   );
 
   return (
@@ -98,10 +114,10 @@ export default function SettingsScreen() {
           <User size={28} color={theme.border.brand} />
         </View>
         <View style={styles.profileInfo}>
-          <Text style={[styles.profileName, { color: theme.text.primary }]}>Admin User</Text>
-          <Text style={[styles.profileEmail, { color: theme.text.secondary }]}>admin@zencoder.io</Text>
+          <Text style={[styles.profileName, { color: theme.text.primary }]}>{t("settings.adminUser")}</Text>
+          <Text style={[styles.profileEmail, { color: theme.text.secondary }]}>{t("settings.adminEmail")}</Text>
           <View style={[styles.roleBadge, { backgroundColor: theme.border.brand + "1A" }]}>
-            <Text style={[styles.roleBadgeText, { color: theme.text.brand }]}>Owner</Text>
+            <Text style={[styles.roleBadgeText, { color: theme.text.brand }]}>{t("settings.ownerRole")}</Text>
           </View>
         </View>
       </View>
@@ -109,29 +125,33 @@ export default function SettingsScreen() {
       {/* Preferences */}
       <View style={styles.section}>
         <SectionHeader
-          title="Preferences"
-          subtitle="Appearance and notifications"
+          title={t("settings.preferences")}
+          subtitle={t("settings.preferencesSubtitle")}
         />
         <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
-          {TOGGLES.map((t, i) => {
-            const IconComp = t.icon;
-            const isEnabled = t.key === "darkMode" ? mode === "dark" : settings[t.key];
+          {TOGGLES.map((tog, i) => {
+            const IconComp = tog.icon;
+            const isEnabled = tog.key === "darkMode" ? mode === "dark" : settings[tog.key];
             return (
-              <View key={t.key} style={[styles.row, i > 0 && styles.rowDivider]}>
+              <View key={tog.key} style={[styles.row, i > 0 && styles.rowDivider]}>
                 <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
                   <IconComp size={16} color={theme.text.secondary} />
                 </View>
                 <View style={styles.rowText}>
                   <Text style={[styles.label, { color: theme.text.primary }]}>
-                    {t.key === "darkMode" ? `${t.label}: ${mode === "dark" ? "Dark" : "Light"}` : t.label}
+                    {tog.key === "darkMode"
+                      ? t("settings.darkModeLabel", { mode: t(mode === "dark" ? "settings.dark" : "settings.light") })
+                      : t(TOGGLE_LABEL_KEYS[tog.key])}
                   </Text>
-                  <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t.description}</Text>
+                  <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t(TOGGLE_DESC_KEYS[tog.key])}</Text>
                 </View>
                 <CustomSwitch
                   value={isEnabled}
-                  onValueChange={getToggleHandler(t.key)}
+                  onValueChange={getToggleHandler(tog.key)}
                   accessibilityLabel={
-                    t.key === "darkMode" ? `Theme mode ${mode === "dark" ? "Dark" : "Light"}` : t.label
+                    tog.key === "darkMode"
+                      ? t("settings.themeModeLabel", { mode: t(mode === "dark" ? "settings.dark" : "settings.light") })
+                      : t(TOGGLE_LABEL_KEYS[tog.key])
                   }
                 />
               </View>
@@ -143,14 +163,14 @@ export default function SettingsScreen() {
             onPress={handleOpenLanguageSelection}
             style={[styles.row, styles.rowDivider]}
             accessibilityRole="button"
-            accessibilityLabel="Select language"
+            accessibilityLabel={t("settings.selectLanguage")}
           >
             <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
               <Globe size={16} color={theme.text.secondary} />
             </View>
             <View style={styles.rowText}>
-              <Text style={[styles.label, { color: theme.text.primary }]}>Language</Text>
-              <Text style={[styles.desc, { color: theme.text.tertiary }]}>Display language preference</Text>
+              <Text style={[styles.label, { color: theme.text.primary }]}>{t("settings.language")}</Text>
+              <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t("settings.languageDescription")}</Text>
             </View>
             <View style={styles.langValue}>
               <Text style={[styles.langValueText, { color: theme.text.secondary }]}>{selectedLanguageLabel}</Text>
@@ -163,22 +183,22 @@ export default function SettingsScreen() {
       {/* Organization */}
       <View style={styles.section}>
         <SectionHeader
-          title="Organization"
-          subtitle="Team and billing details"
+          title={t("settings.organization")}
+          subtitle={t("settings.organizationSubtitle")}
         />
         <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
           <View style={styles.infoRow}>
-            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Org ID</Text>
+            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>{t("settings.orgId")}</Text>
             <Text style={[styles.infoValueMono, { color: theme.text.primary }]}>org_zencoder_001</Text>
           </View>
           <View style={[styles.infoRow, styles.rowDivider]}>
-            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Plan</Text>
+            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>{t("settings.plan")}</Text>
             <View style={[styles.planBadge, { backgroundColor: theme.bg.brandSubtle }]}>
-              <Text style={[styles.planBadgeText, { color: theme.text.brand }]}>ENTERPRISE</Text>
+              <Text style={[styles.planBadgeText, { color: theme.text.brand }]}>{t("settings.enterprise")}</Text>
             </View>
           </View>
           <View style={[styles.infoRow, styles.rowDivider]}>
-            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>Seats</Text>
+            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>{t("settings.seats")}</Text>
             <Text style={[styles.infoValue, { color: theme.text.primary }]}>{seatsUsed} / {seatsPurchased}</Text>
           </View>
           <View style={styles.seatBarOuter}>
@@ -193,7 +213,7 @@ export default function SettingsScreen() {
             />
           </View>
           <Text style={[styles.seatCaption, { color: theme.text.tertiary }]}>
-            {seatPercent}% of seats used
+            {t("settings.seatsUsed", { percent: seatPercent })}
           </Text>
         </View>
       </View>
@@ -201,8 +221,8 @@ export default function SettingsScreen() {
       {/* Danger Zone */}
       <View style={styles.section}>
         <SectionHeader
-          title="Danger Zone"
-          subtitle="Irreversible and destructive actions"
+          title={t("settings.dangerZone")}
+          subtitle={t("settings.dangerZoneSubtitle")}
         />
         <View
           style={[
@@ -216,11 +236,11 @@ export default function SettingsScreen() {
           <CustomButton
             style={[styles.dangerBtn, { borderColor: theme.border.brand, backgroundColor: theme.bg.brandSubtle }]}
             accessibilityRole="button"
-            accessibilityLabel="Clear all cached data"
+            accessibilityLabel={t("settings.clearCacheLabel")}
           >
             <View style={styles.btnRow}>
               <Trash2 size={15} color={theme.border.brand} />
-              <Text style={[styles.dangerText, { color: theme.border.brand }]}>Clear Cache</Text>
+              <Text style={[styles.dangerText, { color: theme.border.brand }]}>{t("common.clearCache")}</Text>
             </View>
           </CustomButton>
 
@@ -228,11 +248,11 @@ export default function SettingsScreen() {
             onPress={handleOpenSignOut}
             style={[styles.signOutBtn, { borderColor: theme.border.default, backgroundColor: theme.bg.surface }]}
             accessibilityRole="button"
-            accessibilityLabel="Sign Out"
+            accessibilityLabel={t("settings.signOut")}
           >
             <View style={styles.btnRow}>
               <LogOut size={15} color={theme.text.primary} />
-              <Text style={[styles.signOutText, { color: theme.text.primary }]}>Sign Out</Text>
+              <Text style={[styles.signOutText, { color: theme.text.primary }]}>{t("settings.signOut")}</Text>
             </View>
           </CustomButton>
         </View>

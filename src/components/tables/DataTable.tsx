@@ -2,6 +2,7 @@ import { memo, useCallback, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { DimensionValue } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { LoadingSkeleton, EmptyState } from "@/components/dashboard";
 import { CustomList } from "@/components/lists";
@@ -172,6 +173,7 @@ function DataTableInner<T>({
   emptyMessage,
   keyExtractor,
 }: DataTableProps<T>) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const [internalSort, setInternalSort] = useState<{
@@ -240,7 +242,7 @@ function DataTableInner<T>({
 
   if (loading) return <LoadingSkeleton variant="table" rows={5} />;
   if (sortedData.length === 0)
-    return <EmptyState message={emptyMessage ?? "No data available."} />;
+    return <EmptyState message={emptyMessage ?? t("common.noDataAvailable")} />;
 
   return (
     <CustomList scrollViewProps={HORIZONTAL_SCROLL_PROPS}>

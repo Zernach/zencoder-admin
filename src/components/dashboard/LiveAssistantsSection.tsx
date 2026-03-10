@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated as RNAnimated, Easing, Pressable, StyleSheet, Text, View, type ListRenderItemInfo, } from "react-native";
+import { useTranslation } from "react-i18next";
 import Svg, { Circle } from "react-native-svg";
 import { Check } from "lucide-react-native";
 import Reanimated, {
@@ -18,11 +19,11 @@ import { SectionHeader } from "./SectionHeader";
 
 
 
-const EMPTY_STATE_MESSAGES = [
-  "Agents are resting right now.",
-  "It's quiet in here.",
-  "No team members are running agents right now.",
-  "Waiting for the next agent workflow.",
+const EMPTY_STATE_MESSAGE_KEYS = [
+  "dashboard.live.emptyMessages.resting",
+  "dashboard.live.emptyMessages.quiet",
+  "dashboard.live.emptyMessages.noMembers",
+  "dashboard.live.emptyMessages.waiting",
 ] as const;
 
 const PROGRESS_TICK_MS = 280;
@@ -115,6 +116,7 @@ function createCardState(session: LiveAgentSession): SessionCardState {
 }
 
 function LiveBadge({ reducedMotion, theme }: { reducedMotion: boolean; theme: ThemeColors }) {
+  const { t } = useTranslation();
   const pulse = useRef(new RNAnimated.Value(0)).current;
 
   useEffect(() => {
@@ -164,7 +166,7 @@ function LiveBadge({ reducedMotion, theme }: { reducedMotion: boolean; theme: Th
         <RNAnimated.View style={[styles.liveDotPulse, { backgroundColor: theme.state.success }, animatedStyle]} />
         <View style={[styles.liveDotCore, { backgroundColor: theme.state.success }]} />
       </View>
-      <Text style={[styles.liveBadgeLabel, { color: theme.state.success }]}>LIVE</Text>
+      <Text style={[styles.liveBadgeLabel, { color: theme.state.success }]}>{t("common.live")}</Text>
     </View>
   );
 }
@@ -307,6 +309,7 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
   theme: ThemeColors;
   onPress?: () => void;
 }) {
+  const { t } = useTranslation();
   const statusColor =
     card.phase === "completed"
       ? theme.state.success
@@ -320,10 +323,10 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
   const elapsedClock = formatElapsedClock(card.session.startedAtIso);
   const statusLabel =
     card.phase === "completed"
-      ? "Succeeded"
+      ? t("dashboard.live.succeeded")
       : card.session.status === "queued"
-        ? "Queued"
-        : "Running";
+        ? t("dashboard.live.queued")
+        : t("dashboard.live.running");
 
   return (
     <Pressable
@@ -360,7 +363,7 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
       <View style={styles.metaRow}>
         <Text style={[styles.meta, { color: statusLabelColor }]} numberOfLines={1}>
           {statusLabel}
-          <Text style={{ color: theme.text.tertiary }}> by </Text>
+          <Text style={{ color: theme.text.tertiary }}> {t("common.by")} </Text>
           <Text style={{ color: theme.text.tertiary, fontWeight: "500" }}>{card.session.userName}</Text>
         </Text>
         <Text style={[styles.elapsedTime, { color: theme.text.secondary }]}>{elapsedClock}</Text>
@@ -370,12 +373,13 @@ const LiveAssistantCard = memo(function LiveAssistantCard({
 });
 
 function EmptyLiveState({ theme }: { theme: ThemeColors }) {
-  const messageIndex = Math.floor(Date.now() / 60_000) % EMPTY_STATE_MESSAGES.length;
+  const { t } = useTranslation();
+  const messageIndex = Math.floor(Date.now() / 60_000) % EMPTY_STATE_MESSAGE_KEYS.length;
   return (
     <View style={[styles.emptyState, { borderColor: theme.border.subtle, backgroundColor: theme.bg.subtle }]}>
-      <Text style={[styles.emptyTitle, { color: theme.text.primary }]}>{EMPTY_STATE_MESSAGES[messageIndex]}</Text>
+      <Text style={[styles.emptyTitle, { color: theme.text.primary }]}>{t(EMPTY_STATE_MESSAGE_KEYS[messageIndex]!)}</Text>
       <Text style={[styles.emptySubtitle, { color: theme.text.tertiary }]}>
-        New live sessions will appear automatically as engineers start runs.
+        {t("dashboard.live.emptySubtitle")}
       </Text>
     </View>
   );
@@ -388,6 +392,7 @@ export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
   onRetry,
   onCardPress,
 }: LiveAssistantsSectionProps) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const reducedMotion = useReducedMotion();
@@ -510,8 +515,8 @@ export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
   return (
     <View style={styles.section}>
       <SectionHeader
-        title="Live"
-        subtitle="AI Assistants in Action"
+        title={t("dashboard.live.title")}
+        subtitle={t("dashboard.live.subtitle")}
         action={<LiveBadge reducedMotion={reducedMotion} theme={theme} />}
       />
       {error ? (

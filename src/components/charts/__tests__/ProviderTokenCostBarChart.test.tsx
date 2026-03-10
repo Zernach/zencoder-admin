@@ -5,6 +5,8 @@ import { ProviderTokenCostBarChart } from "../ProviderTokenCostBarChart";
 import { getOrangeBarShade } from "../palette";
 import type { ProviderCostRow } from "@/features/analytics/types";
 
+jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
+
 const providerData: ProviderCostRow[] = [
   { provider: "codex", totalCostUsd: 6500, runCount: 300, totalTokens: 500_000_000, percentOfTotal: 0.52 },
   { provider: "claude", totalCostUsd: 4000, runCount: 200, totalTokens: 500_000_000, percentOfTotal: 0.32 },
@@ -40,16 +42,18 @@ describe("ProviderTokenCostBarChart", () => {
   });
 
   it("shows numeric values per bar and a shared axis label", () => {
-    const { getByText } = render(
+    const { getAllByText, getByText } = render(
       <ProviderTokenCostBarChart data={providerData} />
     );
 
     // 6500 / 500_000_000 = 0.000013 → 13
-    expect(getByText("13")).toBeTruthy();
+    // The longest formatted value is also rendered as a hidden measure label,
+    // so "13" may appear more than once.
+    expect(getAllByText("13").length).toBeGreaterThanOrEqual(1);
     // 4000 / 500_000_000 = 0.000008 → 8
-    expect(getByText("8")).toBeTruthy();
+    expect(getAllByText("8").length).toBeGreaterThanOrEqual(1);
     // 2000 / 500_000_000 = 0.000004 → 4
-    expect(getByText("4")).toBeTruthy();
+    expect(getAllByText("4").length).toBeGreaterThanOrEqual(1);
     // Shared axis label appears once
     expect(getByText("ten-thousandths of a penny per token")).toBeTruthy();
   });
@@ -59,11 +63,11 @@ describe("ProviderTokenCostBarChart", () => {
       { provider: "codex", totalCostUsd: 5000, runCount: 100, totalTokens: 0, percentOfTotal: 1.0 },
     ];
 
-    const { getByText, queryByText } = render(
+    const { getAllByText, getByText, queryByText } = render(
       <ProviderTokenCostBarChart data={zeroTokenData} />
     );
 
-    expect(getByText("0")).toBeTruthy();
+    expect(getAllByText("0").length).toBeGreaterThanOrEqual(1);
     expect(getByText("ten-thousandths of a penny per token")).toBeTruthy();
     expect(queryByText(/NaN/)).toBeNull();
     expect(queryByText(/Infinity/)).toBeNull();

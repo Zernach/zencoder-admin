@@ -93,12 +93,12 @@ describe("BreakdownChart", () => {
   });
 
   it("renders formatted values by default", () => {
-    const { getByText } = render(
+    const { getAllByText } = render(
       <BreakdownChart data={shortNameData} variant="horizontal-bar" />
     );
 
-    expect(getByText("100")).toBeTruthy();
-    expect(getByText("80")).toBeTruthy();
+    expect(getAllByText("100").length).toBeGreaterThanOrEqual(1);
+    expect(getAllByText("80").length).toBeGreaterThanOrEqual(1);
   });
 
   it("uses darker orange for higher values and lighter orange for lower values in horizontal bars", () => {

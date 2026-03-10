@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { InputForm } from "@/components/forms";
@@ -27,13 +28,14 @@ interface FormErrors {
 const INITIAL_FIELDS: FormFields = { name: "", projectId: "" };
 
 export function CreateAgentForm({ onSubmit, loading, error }: CreateAgentFormProps) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
 
   const validate = useCallback((fields: FormFields) => {
     const errors: FormErrors = {};
-    if (!fields.name.trim()) errors.name = "Agent name is required";
-    if (!fields.projectId.trim()) errors.projectId = "Project ID is required";
+    if (!fields.name.trim()) errors.name = t("modals.createAgent.agentNameRequired");
+    if (!fields.projectId.trim()) errors.projectId = t("modals.createAgent.projectIdRequired");
     const hasErrors = Object.keys(errors).length > 0;
     return {
       errors,
@@ -41,7 +43,7 @@ export function CreateAgentForm({ onSubmit, loading, error }: CreateAgentFormPro
         ? undefined
         : { name: fields.name.trim(), projectId: fields.projectId.trim() },
     };
-  }, []);
+  }, [t]);
 
   const { formFieldsRef, errorsRef, updateFormFields, onPressSubmit } = useFormFields({
     initialFields: INITIAL_FIELDS,
@@ -54,29 +56,29 @@ export function CreateAgentForm({ onSubmit, loading, error }: CreateAgentFormPro
       key: "name",
       type: "input",
       inputProps: {
-        label: "Agent Name",
+        label: t("modals.createAgent.agentName"),
         defaultValue: formFieldsRef.current.name,
         onChangeText: (text: string) => updateFormFields({ name: text }),
         error: errorsRef.current.name,
-        placeholder: "e.g. Code Review Bot",
+        placeholder: t("modals.createAgent.agentNamePlaceholder"),
       },
     },
     {
       key: "projectId",
       type: "input",
       inputProps: {
-        label: "Project ID",
+        label: t("modals.createAgent.projectId"),
         defaultValue: formFieldsRef.current.projectId,
         onChangeText: (text: string) => updateFormFields({ projectId: text }),
         error: errorsRef.current.projectId,
-        placeholder: "e.g. proj_dashboard",
+        placeholder: t("modals.createAgent.projectIdPlaceholder"),
       },
     },
   ];
 
   return (
     <InputForm
-      title="Create Agent"
+      title={t("modals.createAgent")}
       items={items}
       footer={
         <>
@@ -86,9 +88,9 @@ export function CreateAgentForm({ onSubmit, loading, error }: CreateAgentFormPro
             style={styles.submitButton}
             buttonMode="primary"
             buttonSize="lg"
-            label="Submit"
+            label={t("common.submit")}
             accessibilityRole="button"
-            accessibilityLabel="Submit"
+            accessibilityLabel={t("common.submit")}
             disabled={loading}
           />
         </>

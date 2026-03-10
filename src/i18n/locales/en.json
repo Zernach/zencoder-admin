@@ -46,8 +46,8 @@
   },
   "navigation.subsections": {
     "reliability": "Reliability",
-    "agentPerformance": "Agent Performance",
-    "projectBreakdown": "Project Breakdown",
+    "agentPerformance": "Agents Breakdown",
+    "projectBreakdown": "Projects Breakdown",
     "recentRuns": "Recent Runs",
     "costSummary": "Cost Summary",
     "costByProvider": "Cost by Provider",
@@ -139,8 +139,8 @@
     "subtitleWithData": "{{totalCost}} spent across {{projectCount}} projects",
     "costSummary": "Cost Summary",
     "totalCost": "Total Cost",
-    "avgPerRun": "Avg / Run",
-    "costPerSuccess": "Cost / Success",
+    "avgPerRun": "Average Cost per Run",
+    "costPerSuccess": "Average Cost per Successful Run",
     "budgetRemaining": "Budget Remaining",
     "ofBudget": "of {{budget}}",
     "costPerProject": "Cost per Project",
@@ -241,7 +241,10 @@
     "signOut": "Sign Out",
     "adminUser": "Admin User",
     "adminEmail": "admin@zencoder.io",
-    "ownerRole": "Owner"
+    "ownerRole": "Owner",
+    "language": "Language",
+    "languageDescription": "Display language preference",
+    "selectLanguage": "Select language"
   },
   "settings.signOut": {
     "demoMode": "Demo Mode",

@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useTeamDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
@@ -16,6 +17,7 @@ interface TeamDetailScreenProps {
 }
 
 export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
+  const { t } = useTranslation();
   const { data, loading, error, refetch } = useTeamDetailScreen(teamId);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -23,18 +25,18 @@ export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
 
   const memberColumns = useMemo<ColumnDef<User>[]>(
     () => [
-      { key: "name", header: "Name", render: (u) => <Text style={ct.primary}>{u.name}</Text> },
-      { key: "email", header: "Email", render: (u) => <Text style={ct.secondary}>{u.email}</Text> },
+      { key: "name", header: t("entityDetail.table.name"), render: (u) => <Text style={ct.primary}>{u.name}</Text> },
+      { key: "email", header: t("entityDetail.table.email"), render: (u) => <Text style={ct.secondary}>{u.email}</Text> },
     ],
-    [ct],
+    [ct, t],
   );
 
   const projectColumns = useMemo<ColumnDef<Project>[]>(
     () => [
-      { key: "name", header: "Project Name", render: (p) => <Text style={ct.primary}>{p.name}</Text> },
-      { key: "id", header: "ID", width: 140, render: (p) => <Text style={ct.secondary}>{p.id.slice(0, 12)}</Text> },
+      { key: "name", header: t("entityDetail.table.projectName"), render: (p) => <Text style={ct.primary}>{p.name}</Text> },
+      { key: "id", header: t("entityDetail.table.id"), width: 140, render: (p) => <Text style={ct.secondary}>{p.id.slice(0, 12)}</Text> },
     ],
-    [ct],
+    [ct, t],
   );
 
   if (loading) return <LoadingSkeleton variant="text" />;
@@ -45,32 +47,32 @@ export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
     <ScreenWrapper headerProps={{ title: data.team.name }} showFilterBar={false}>
       <View style={styles.content}>
         <View style={styles.statsRow}>
-          <StatItem label="Members" value={String(data.memberCount)} theme={theme} />
-          <StatItem label="Projects" value={String(data.projectCount)} theme={theme} />
-          <StatItem label="Runs" value={String(data.totalRuns)} theme={theme} />
+          <StatItem label={t("entityDetail.members")} value={String(data.memberCount)} theme={theme} />
+          <StatItem label={t("entityDetail.projects")} value={String(data.projectCount)} theme={theme} />
+          <StatItem label={t("entityDetail.runs")} value={String(data.totalRuns)} theme={theme} />
           <StatItem
-            label="Success"
+            label={t("entityDetail.success")}
             value={`${(data.successRate * 100).toFixed(1)}%`}
             theme={theme}
             valueColor={getSuccessRateColor(data.successRate, mode)}
           />
-          <StatItem label="Cost" value={`$${data.totalCostUsd.toFixed(2)}`} theme={theme} />
+          <StatItem label={t("entityDetail.cost")} value={`$${data.totalCostUsd.toFixed(2)}`} theme={theme} />
         </View>
 
-        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Members</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.members")}</Text>
         <DataTable
           columns={memberColumns}
           data={data.members}
           keyExtractor={(u) => u.id}
-          emptyMessage="No members."
+          emptyMessage={t("entityDetail.noMembers")}
         />
 
-        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Projects</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.projects")}</Text>
         <DataTable
           columns={projectColumns}
           data={data.projects}
           keyExtractor={(p) => p.id}
-          emptyMessage="No projects."
+          emptyMessage={t("entityDetail.noProjects")}
         />
       </View>
     </ScreenWrapper>

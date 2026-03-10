@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { AlertTriangle } from "lucide-react-native";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -12,24 +13,27 @@ interface ErrorStateProps {
 }
 
 export const ErrorState = React.memo(function ErrorState({
-  message = "Something went wrong. Please try again.",
+  message,
   onRetry,
 }: ErrorStateProps) {
+  const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+
+  const displayMessage = message ?? t("errors.somethingWentWrong");
 
   return (
     <View style={styles.container}>
       <AlertTriangle size={32} color={theme.state.error} />
-      <Text style={[styles.message, { color: theme.text.secondary }]}>{message}</Text>
+      <Text style={[styles.message, { color: theme.text.secondary }]}>{displayMessage}</Text>
       <CustomButton
         onPress={onRetry}
         style={styles.button}
         buttonMode="primary"
         buttonSize="md"
-        label="Retry"
+        label={t("common.retry")}
         accessibilityRole="button"
-        accessibilityLabel="Retry"
+        accessibilityLabel={t("common.retry")}
       />
     </View>
   );
