@@ -20,12 +20,11 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { borderWidth, radius, spacing } from "@/theme/tokens";
 import {
-  getSuggestedPrompts,
-  getSuggestedPromptsFromTopics,
+  getAllSuggestedPrompts,
   getWelcomeTitle,
   getWelcomeSubtitle,
 } from "@/features/chat/constants/suggestedPrompts";
-import { useChatHistory } from "@/features/chat/hooks";
+import { InfiniteHorizontalScrollview } from "@/features/chat/components";
 
 export function CreateChatScreen() {
   const router = useRouter();
@@ -39,11 +38,7 @@ export function CreateChatScreen() {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: chatHistory } = useChatHistory(tab, { scope: "tab" });
-  const suggestedPrompts = useMemo(() => {
-    const topics = [...new Set((chatHistory?.items ?? []).flatMap((item) => item.topics))];
-    return topics.length > 0 ? getSuggestedPromptsFromTopics(topics, t) : getSuggestedPrompts(tab, t);
-  }, [tab, chatHistory?.items, t]);
+  const suggestedPrompts = useMemo(() => getAllSuggestedPrompts(t), [t]);
   const canSubmit = message.trim().length > 0 && !submitting;
 
   const submitMessage = useCallback(
@@ -186,34 +181,11 @@ export function CreateChatScreen() {
           >
             {t("chat.suggestedQuestions")}
           </Text>
-          <View style={styles.suggestionsGrid}>
-            {suggestedPrompts.map((prompt) => (
-              <CustomButton
-                key={prompt.label}
-                onPress={() => handleSuggestionPress(prompt.message)}
-                style={[
-                  styles.suggestionCard,
-                  {
-                    borderColor: theme.border.default,
-                    backgroundColor: theme.bg.surface,
-                  },
-                ]}
-                disabled={submitting}
-                accessibilityLabel={prompt.label}
-                testID={`suggestion-${prompt.label}`}
-              >
-                <Text
-                  style={[
-                    styles.suggestionText,
-                    { color: theme.text.primary },
-                  ]}
-                  numberOfLines={2}
-                >
-                  {prompt.label}
-                </Text>
-              </CustomButton>
-            ))}
-          </View>
+          <InfiniteHorizontalScrollview
+            prompts={suggestedPrompts}
+            onPressPrompt={handleSuggestionPress}
+            disabled={submitting}
+          />
         </View>
       </View>
     </ScreenWrapper>
@@ -261,26 +233,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 0.5,
-  },
-  suggestionsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing[10],
-  },
-  suggestionCard: {
-    borderWidth: borderWidth.hairline,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing[16],
-    paddingVertical: spacing[12],
-    flexBasis: "48%",
-    flexGrow: 1,
-    minWidth: 200,
-    alignItems: "flex-start",
-  },
-  suggestionText: {
-    fontSize: 13,
-    lineHeight: 19,
-    fontWeight: "500",
   },
   composerBar: {
     borderTopWidth: borderWidth.hairline,

@@ -42,6 +42,14 @@ export function getSuggestedPromptsFromTopics(
 
 type PromptTab = Exclude<TABS, TABS.CHAT>;
 
+const PROMPT_TABS: readonly PromptTab[] = [
+  TABS.DASHBOARD,
+  TABS.AGENTS,
+  TABS.COSTS,
+  TABS.GOVERNANCE,
+  TABS.SETTINGS,
+];
+
 const PROMPT_KEYS_BY_TAB: Record<PromptTab, readonly string[]> = {
   [TABS.DASHBOARD]: ["performance", "activity", "teams", "issues"],
   [TABS.AGENTS]: ["errors", "compare", "inactive", "history"],
@@ -50,12 +58,53 @@ const PROMPT_KEYS_BY_TAB: Record<PromptTab, readonly string[]> = {
   [TABS.SETTINGS]: ["addMember", "integrations", "notifications", "configure"],
 };
 
-export function getSuggestedPrompts(tab: TABS, t: TFunction): SuggestedPrompt[] {
-  const promptTab: PromptTab = tab === TABS.CHAT ? TABS.DASHBOARD : tab;
-  return PROMPT_KEYS_BY_TAB[promptTab].map((key) => ({
+function buildTopicPrompt(topic: ChatTopic, t: TFunction): SuggestedPrompt {
+  const topicKey = TOPIC_KEY_MAP[topic];
+  return {
+    label: t(`chat.topics.${topicKey}.label`),
+    message: t(`chat.topics.${topicKey}.message`),
+  };
+}
+
+function buildTabPrompt(promptTab: PromptTab, key: string, t: TFunction): SuggestedPrompt {
+  return {
     label: t(`chat.prompts.${promptTab}.${key}.label`),
     message: t(`chat.prompts.${promptTab}.${key}.message`),
-  }));
+  };
+}
+
+export function getSuggestedPrompts(tab: TABS, t: TFunction): SuggestedPrompt[] {
+  const promptTab: PromptTab = tab === TABS.CHAT ? TABS.DASHBOARD : tab;
+  return PROMPT_KEYS_BY_TAB[promptTab].map((key) =>
+    buildTabPrompt(promptTab, key, t),
+  );
+}
+
+export function getAllSuggestedPrompts(t: TFunction): SuggestedPrompt[] {
+  const prompts: SuggestedPrompt[] = [];
+  const seen = new Set<string>();
+
+  for (const topic of TOPIC_ORDER) {
+    const prompt = buildTopicPrompt(topic, t);
+    const identity = `${prompt.label}::${prompt.message}`;
+    if (!seen.has(identity)) {
+      seen.add(identity);
+      prompts.push(prompt);
+    }
+  }
+
+  for (const promptTab of PROMPT_TABS) {
+    for (const key of PROMPT_KEYS_BY_TAB[promptTab]) {
+      const prompt = buildTabPrompt(promptTab, key, t);
+      const identity = `${prompt.label}::${prompt.message}`;
+      if (!seen.has(identity)) {
+        seen.add(identity);
+        prompts.push(prompt);
+      }
+    }
+  }
+
+  return prompts;
 }
 
 export function getWelcomeTitle(t: TFunction): string {
