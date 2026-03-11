@@ -121,10 +121,10 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[12],
   },
   headerContainerWithTopBar: {
-    paddingTop: Platform.OS === "web" ? spacing[2] : spacing[0],
+    paddingTop: Platform.OS === "web" ? spacing[4] : spacing[2],
   },
   headerContainerStandalone: {
-    paddingTop: Platform.OS === "web" ? spacing[8] : spacing[4],
+    paddingTop: Platform.OS === "web" ? spacing[16] : spacing[12],
   },
   filterBarContainer: {
     paddingTop: spacing[0],

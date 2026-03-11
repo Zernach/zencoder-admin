@@ -185,7 +185,7 @@
     }
   },
   "governance": {
-    "subtitle": "Policy enforcement and security monitoring",
+    "subtitle": "Manage Teams, Users & Rules",
     "subtitleWithData": "{{violations}} violations, {{securityEvents}} security events",
     "overview": "Overview",
     "violations": "Violations",

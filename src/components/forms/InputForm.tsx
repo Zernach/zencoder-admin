@@ -158,7 +158,8 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    gap: spacing[8],
-    marginTop: spacing[4],
+    alignItems: "center",
+    gap: spacing[12],
+    marginTop: spacing[8],
   },
 });

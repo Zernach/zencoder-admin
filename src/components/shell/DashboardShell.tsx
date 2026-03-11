@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
+import { usePathname } from "expo-router";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useAppDispatch } from "@/store";
 import { setSidebarExpanded } from "@/store/slices/sidebarSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { SectionScrollProvider } from "@/hooks/useSectionScroll";
+import { isChatRoute } from "@/constants/routes";
 import { Sidebar } from "./Sidebar";
 import { BottomTabs } from "./BottomTabs";
 
@@ -18,7 +20,9 @@ export const DashboardShell = React.memo(function DashboardShell({ children }: D
   const dispatch = useAppDispatch();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const pathname = usePathname();
   const isMobile = bp === "mobile";
+  const showBottomTabs = isMobile && !isChatRoute(pathname);
 
   useEffect(() => {
     if (bp === "tablet") dispatch(setSidebarExpanded(false));
@@ -38,7 +42,7 @@ export const DashboardShell = React.memo(function DashboardShell({ children }: D
         )}
         <View style={styles.main}>
           {children}
-          {isMobile && <BottomTabs />}
+          {showBottomTabs && <BottomTabs />}
         </View>
       </View>
     </SectionScrollProvider>

@@ -3,10 +3,10 @@ import { CHAT_TOPICS, type ChatConversationSummary, type ChatTopic } from "@/fea
 
 const DEFAULT_TOPIC_FILTERS_BY_TAB: Record<TABS, ChatTopic[]> = {
   [TABS.DASHBOARD]: [],
-  [TABS.AGENTS]: ["Agents"],
-  [TABS.COSTS]: ["Costs"],
-  [TABS.GOVERNANCE]: ["Governance"],
-  [TABS.SETTINGS]: ["Support"],
+  [TABS.AGENTS]: [],
+  [TABS.COSTS]: [],
+  [TABS.GOVERNANCE]: [],
+  [TABS.SETTINGS]: [],
 };
 
 export const CHAT_HISTORY_TOPIC_OPTIONS: readonly ChatTopic[] = CHAT_TOPICS;

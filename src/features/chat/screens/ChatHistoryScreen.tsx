@@ -85,6 +85,7 @@ export function ChatHistoryScreen({ tab, initialTopics }: ChatHistoryScreenProps
         title: "Chat History",
         subtitle: "Your Conversations with AI",
         isLoading: loading,
+        showBackButton: false,
         rightComponent: (
           <CustomButton
             buttonMode="secondary"
@@ -152,15 +153,12 @@ export function ChatHistoryScreen({ tab, initialTopics }: ChatHistoryScreenProps
             >
               <View style={[styles.cardAccentRail, { backgroundColor: statusAccent }]} />
 
-              <View style={styles.cardTagRow}>
-                <Text style={[styles.cardMeta, { color: theme.text.tertiary }]}>
-                  {formatRelativeTime(item.updatedAtIso)}
-                </Text>
-              </View>
-
               <View style={styles.cardHeader}>
                 <Text style={[styles.cardTitle, { color: theme.text.primary }]} numberOfLines={1}>
                   {item.title}
+                </Text>
+                <Text style={[styles.cardMeta, { color: theme.text.tertiary }]}>
+                  {formatRelativeTime(item.updatedAtIso)}
                 </Text>
               </View>
 
@@ -331,11 +329,6 @@ const styles = StyleSheet.create({
     width: 4,
     borderRadius: radius.full,
   },
-  cardTagRow: {
-    position: "absolute",
-    top: spacing[8],
-    right: spacing[16],
-  },
   topicBadge: {
     borderWidth: borderWidth.hairline,
     borderRadius: radius.full,
@@ -349,7 +342,7 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     gap: spacing[10],
     alignItems: "center",
   },
@@ -411,5 +404,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "500",
     letterSpacing: 0.2,
+    flexShrink: 0,
   },
 });

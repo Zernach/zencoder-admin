@@ -208,11 +208,7 @@ export default function GovernanceScreen() {
     },
   ], [ct, navigateTo, t]);
 
-  const subtitle = useMemo(() => data
-    ? t("governance.subtitleWithData", { violations: data.policyViolationCount, securityEvents: data.securityEvents.length })
-    : t("governance.subtitle"),
-    [data, t],
-  );
+  const subtitle = useMemo(() => t("governance.subtitle"), [t]);
 
   const seatUsageChartData = useMemo(() => {
     return filteredSeatUsers.map((row) => ({

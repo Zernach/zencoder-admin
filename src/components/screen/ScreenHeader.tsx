@@ -15,6 +15,8 @@ export interface HeaderProps {
   isLoading?: boolean;
   /** Element rendered on the right side of the header row */
   rightComponent?: ReactNode;
+  /** Override back-button visibility. Defaults to `navigation.canGoBack()`. Set to `false` for primary tab screens. */
+  showBackButton?: boolean;
 }
 
 const ScreenHeader = React.memo(function ScreenHeader({
@@ -22,12 +24,13 @@ const ScreenHeader = React.memo(function ScreenHeader({
   subtitle,
   isLoading,
   rightComponent,
+  showBackButton,
 }: HeaderProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const router = useRouter();
   const navigation = useNavigation();
-  const showBack = navigation.canGoBack();
+  const showBack = showBackButton ?? navigation.canGoBack();
 
   return (
     <View style={styles.container}>
