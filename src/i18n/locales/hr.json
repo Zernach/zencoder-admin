@@ -439,7 +439,7 @@
   },
   "chat": {
     "newChat": "Novi razgovor",
-    "startConversation": "Započni razgovor",
+    "startConversation": "Razgovarajte o temama sa svojom AI",
     "askAnything": "Pitaj bilo što...",
     "messageInput": "Polje za unos poruke",
     "sendMessage": "Pošalji poruku",
@@ -455,7 +455,7 @@
     "noConversationsYet": "Još nema razgovora.",
     "noConversationsMatchTopics": "Nijedan razgovor ne odgovara odabranim temama.",
     "openChat": "Otvori razgovor {{title}}",
-    "welcomeTitle": "Bok! Kako ti mogu pomoći?",
+    "welcomeTitle": "Bok! Kako vam mogu pomoći?",
     "welcomeSubtitle": {
       "dashboard": "Pitaj o performansama agenata, trendovima aktivnosti ili dobij brzu provjeru statusa.",
       "agents": "Istraži zdravlje agenata, usporedi performanse ili otkloni probleme.",

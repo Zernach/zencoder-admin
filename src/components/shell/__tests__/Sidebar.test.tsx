@@ -107,7 +107,7 @@ describe("Sidebar — subsection rendering", () => {
     fireEvent.press(getByLabelText("navigation.settings"));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith("/settings/chat/history");
+    expect(mockNavigate).toHaveBeenCalledWith("/chat");
   });
 
   it("shows agents subsections when agents is active and expanded", () => {

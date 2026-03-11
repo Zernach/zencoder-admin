@@ -4,7 +4,11 @@ import { usePathname, useRouter } from "expo-router";
 import { MessageCircle } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CustomButton } from "@/components/buttons";
-import { buildChatHistoryRoute, resolveTabFromPathname } from "@/constants/routes";
+import {
+  buildChatHistoryRoute,
+  isChatHistoryRoute,
+  resolveTabFromPathname,
+} from "@/constants/routes";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { getShadowStyle } from "@/theme/shadowStyles";
@@ -40,7 +44,7 @@ export const FloatingChatButton = React.memo(function FloatingChatButton() {
       return;
     }
 
-    if (pathname === targetRoute) {
+    if (isChatHistoryRoute(pathname)) {
       return;
     }
 

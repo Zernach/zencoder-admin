@@ -9,6 +9,7 @@ export enum TABS {
   AGENTS = "agents",
   COSTS = "costs",
   GOVERNANCE = "governance",
+  CHAT = "chat",
   SETTINGS = "settings",
 }
 
@@ -18,18 +19,19 @@ export enum ROUTES {
   AGENTS = "/agents",
   COSTS = "/costs",
   GOVERNANCE = "/governance",
+  CHAT = "/chat",
   SETTINGS = "/settings",
 }
 
 export type TabRoute = Exclude<ROUTES, ROUTES.ROOT>;
-export const SETTINGS_CHAT_HISTORY_ROUTE = `${ROUTES.SETTINGS}/chat/history` as const;
-export type NavRoute = ROUTES.ROOT | TabRoute | typeof SETTINGS_CHAT_HISTORY_ROUTE;
+export type NavRoute = ROUTES.ROOT | TabRoute;
 
 export const TAB_ORDER = [
   TABS.DASHBOARD,
   TABS.AGENTS,
   TABS.COSTS,
   TABS.GOVERNANCE,
+  TABS.CHAT,
   TABS.SETTINGS,
 ] as const satisfies readonly TABS[];
 
@@ -38,6 +40,7 @@ export const TAB_ROUTE_BY_TAB = {
   [TABS.AGENTS]: ROUTES.AGENTS,
   [TABS.COSTS]: ROUTES.COSTS,
   [TABS.GOVERNANCE]: ROUTES.GOVERNANCE,
+  [TABS.CHAT]: ROUTES.CHAT,
   [TABS.SETTINGS]: ROUTES.SETTINGS,
 } as const satisfies Record<TABS, TabRoute>;
 
@@ -46,6 +49,7 @@ export const TAB_BY_ROUTE = {
   [ROUTES.AGENTS]: TABS.AGENTS,
   [ROUTES.COSTS]: TABS.COSTS,
   [ROUTES.GOVERNANCE]: TABS.GOVERNANCE,
+  [ROUTES.CHAT]: TABS.CHAT,
   [ROUTES.SETTINGS]: TABS.SETTINGS,
 } as const satisfies Record<TabRoute, TABS>;
 
@@ -85,6 +89,20 @@ export function resolveTabFromPathname(pathname: string): TABS {
   return segment != null && isTab(segment) ? segment : TABS.DASHBOARD;
 }
 
+export function resolveTabFromSegments(segments: readonly string[]): TABS | null {
+  const dashboardStackIndex = segments.indexOf(STACKS.DASHBOARD);
+  const candidateSegments =
+    dashboardStackIndex >= 0 ? segments.slice(dashboardStackIndex + 1) : segments;
+
+  for (const segment of candidateSegments) {
+    if (isTab(segment)) {
+      return segment;
+    }
+  }
+
+  return null;
+}
+
 export function isRouteActive(pathname: string, route: NavRoute): boolean {
   if (route === ROUTES.ROOT) {
     return (
@@ -106,30 +124,43 @@ export function buildEntityRoute(
   entityType: SearchEntityType,
   entityId: string,
 ): string {
+  if (entityType === "chat") {
+    return buildChatThreadRoute(tab, entityId);
+  }
+
   return `${getRouteForTab(tab)}/${ENTITY_SEGMENTS[entityType]}/${encodeURIComponent(entityId)}`;
 }
 
-function buildChatBaseRoute(tab: TABS): string {
-  return `${getRouteForTab(tab)}/chat`;
+function buildChatQuery(
+  tab: TABS,
+  options?: { topics?: readonly string[] },
+): string {
+  const params = new URLSearchParams();
+  if (tab !== TABS.CHAT) {
+    params.set("tab", tab);
+  }
+
+  if (options?.topics && options.topics.length > 0) {
+    params.set("topics", options.topics.join(","));
+  }
+
+  const query = params.toString();
+  return query.length > 0 ? `?${query}` : "";
 }
 
 export function buildChatHistoryRoute(
   tab: TABS,
   options?: { topics?: readonly string[] },
 ): string {
-  const base = `${buildChatBaseRoute(tab)}/history`;
-  if (options?.topics && options.topics.length > 0) {
-    return `${base}?topics=${encodeURIComponent(options.topics.join(","))}`;
-  }
-  return base;
+  return `${ROUTES.CHAT}${buildChatQuery(tab, options)}`;
 }
 
-export function buildCreateChatRoute(tab: TABS): string {
-  return `${buildChatBaseRoute(tab)}/create`;
+export function buildCreateChatRoute(): string {
+  return `${ROUTES.CHAT}/create`;
 }
 
 export function buildChatThreadRoute(tab: TABS, chatId: string): string {
-  return `${buildChatHistoryRoute(tab)}/${encodeURIComponent(chatId)}`;
+  return `${ROUTES.CHAT}/${encodeURIComponent(chatId)}${buildChatQuery(tab)}`;
 }
 
 function getPathSegments(pathname: string): string[] {
@@ -138,15 +169,7 @@ function getPathSegments(pathname: string): string[] {
 
 export function isChatRoute(pathname: string): boolean {
   const segments = getPathSegments(pathname);
-  const tabSegment = segments[0];
-  const routeSegment = segments[1];
-
-  return (
-    tabSegment != null
-    && isTab(tabSegment)
-    && routeSegment === "chat"
-    && segments.length >= 3
-  );
+  return segments[0] === TABS.CHAT;
 }
 
 export function isChatThreadRoute(pathname: string): boolean {
@@ -155,7 +178,7 @@ export function isChatThreadRoute(pathname: string): boolean {
   }
 
   const segments = getPathSegments(pathname);
-  return segments.length === 4 && segments[2] === "history";
+  return segments.length === 2 && segments[1] !== "create" && segments[1] !== "history";
 }
 
 export function isChatHistoryRoute(pathname: string): boolean {
@@ -164,5 +187,5 @@ export function isChatHistoryRoute(pathname: string): boolean {
   }
 
   const segments = getPathSegments(pathname);
-  return segments.length === 3 && segments[2] === "history";
+  return segments.length === 1;
 }

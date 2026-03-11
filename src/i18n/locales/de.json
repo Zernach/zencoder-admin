@@ -439,7 +439,7 @@
   },
   "chat": {
     "newChat": "Neuer Chat",
-    "startConversation": "Gespräch starten",
+    "startConversation": "Themen mit deiner KI besprechen",
     "askAnything": "Fragen Sie etwas...",
     "messageInput": "Chat-Nachricht eingeben",
     "sendMessage": "Nachricht senden",
@@ -455,7 +455,7 @@
     "noConversationsYet": "Noch keine Gespräche.",
     "noConversationsMatchTopics": "Keine Gespräche entsprechen den ausgewählten Themen.",
     "openChat": "Chat öffnen {{title}}",
-    "welcomeTitle": "Hallo! Wie kann ich Ihnen helfen?",
+    "welcomeTitle": "Hallo! Wie kann ich dir helfen?",
     "welcomeSubtitle": {
       "dashboard": "Fragen Sie nach der Agentenleistung, Aktivitätstrends oder erhalten Sie einen schnellen Statusbericht.",
       "agents": "Untersuchen Sie den Agentenzustand, vergleichen Sie Leistungen oder beheben Sie Probleme.",

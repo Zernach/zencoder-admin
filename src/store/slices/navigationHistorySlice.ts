@@ -1,19 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { STACKS, TABS, isTab } from "@/constants/routes";
-
-function parseMostRecentTab(segments: readonly string[]): TABS | null {
-  const dashboardStackIndex = segments.indexOf(STACKS.DASHBOARD);
-  const candidateSegments =
-    dashboardStackIndex >= 0 ? segments.slice(dashboardStackIndex + 1) : segments;
-
-  for (const segment of candidateSegments) {
-    if (isTab(segment)) {
-      return segment;
-    }
-  }
-
-  return null;
-}
+import { TABS, resolveTabFromSegments } from "@/constants/routes";
 
 function areSegmentsEqual(
   currentSegments: readonly string[],
@@ -56,8 +42,8 @@ export const navigationHistorySlice = createSlice({
 
       state.previousSegments = state.currentSegments;
       state.currentSegments = nextSegments;
-      const mostRecentTab = parseMostRecentTab(nextSegments);
-      if (mostRecentTab != null) {
+      const mostRecentTab = resolveTabFromSegments(nextSegments);
+      if (mostRecentTab != null && mostRecentTab !== TABS.CHAT) {
         state.mostRecentTab = mostRecentTab;
       }
     },

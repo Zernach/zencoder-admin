@@ -439,7 +439,7 @@
   },
   "chat": {
     "newChat": "Nuevo chat",
-    "startConversation": "Iniciar una conversación",
+    "startConversation": "Discute temas con tu IA",
     "askAnything": "Pregunta lo que quieras...",
     "messageInput": "Entrada de mensaje de chat",
     "sendMessage": "Enviar mensaje",
@@ -455,7 +455,7 @@
     "noConversationsYet": "Aún no hay conversaciones.",
     "noConversationsMatchTopics": "Ninguna conversación coincide con los temas seleccionados.",
     "openChat": "Abrir chat {{title}}",
-    "welcomeTitle": "¡Hola! ¿En qué puedo ayudarte?",
+    "welcomeTitle": "¡Hola! ¿Cómo puedo ayudarte?",
     "welcomeSubtitle": {
       "dashboard": "Pregunta sobre el rendimiento de los agentes, las tendencias de actividad o solicita un resumen rápido del estado.",
       "agents": "Explora la salud de los agentes, compara rendimientos o soluciona problemas.",

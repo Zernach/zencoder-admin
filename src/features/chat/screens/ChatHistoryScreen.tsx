@@ -90,7 +90,7 @@ export function ChatHistoryScreen({ tab, initialTopics }: ChatHistoryScreenProps
           <CustomButton
             buttonMode="secondary"
             buttonSize="compact"
-            onPress={() => router.push(buildCreateChatRoute(tab) as never)}
+            onPress={() => router.push(buildCreateChatRoute() as never)}
             label="+ Create Chat"
             textStyle={styles.newChatButtonText}
             accessibilityRole="button"

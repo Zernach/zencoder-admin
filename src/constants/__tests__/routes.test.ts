@@ -13,6 +13,7 @@ import {
   isChatHistoryRoute,
   isChatThreadRoute,
   isRouteActive,
+  resolveTabFromSegments,
   resolveTabFromPathname,
   type TabRoute,
 } from "../routes";
@@ -26,6 +27,7 @@ describe("route helpers", () => {
       [ROUTES.AGENTS]: TABS.AGENTS,
       [ROUTES.COSTS]: TABS.COSTS,
       [ROUTES.GOVERNANCE]: TABS.GOVERNANCE,
+      [ROUTES.CHAT]: TABS.CHAT,
       [ROUTES.SETTINGS]: TABS.SETTINGS,
     });
   });
@@ -36,6 +38,7 @@ describe("route helpers", () => {
       TABS.AGENTS,
       TABS.COSTS,
       TABS.GOVERNANCE,
+      TABS.CHAT,
       TABS.SETTINGS,
     ]);
     expect(TAB_ROUTES).toEqual([
@@ -43,6 +46,7 @@ describe("route helpers", () => {
       ROUTES.AGENTS,
       ROUTES.COSTS,
       ROUTES.GOVERNANCE,
+      ROUTES.CHAT,
       ROUTES.SETTINGS,
     ]);
   });
@@ -52,6 +56,7 @@ describe("route helpers", () => {
     [TABS.AGENTS, ROUTES.AGENTS],
     [TABS.COSTS, ROUTES.COSTS],
     [TABS.GOVERNANCE, ROUTES.GOVERNANCE],
+    [TABS.CHAT, ROUTES.CHAT],
     [TABS.SETTINGS, ROUTES.SETTINGS],
   ])("maps %s to %s both ways", (tab, route) => {
     expect(getRouteForTab(tab)).toBe(route);
@@ -63,6 +68,7 @@ describe("route helpers", () => {
     ["/agents", TABS.AGENTS],
     ["/costs", TABS.COSTS],
     ["/governance", TABS.GOVERNANCE],
+    ["/chat", TABS.CHAT],
     ["/settings", TABS.SETTINGS],
     ["/agents/agent/a1", TABS.AGENTS],
     ["/unknown", TABS.DASHBOARD],
@@ -70,6 +76,17 @@ describe("route helpers", () => {
     ["", TABS.DASHBOARD],
   ])("resolves %s to %s", (pathname, tab) => {
     expect(resolveTabFromPathname(pathname)).toBe(tab);
+  });
+
+  it.each([
+    [["(dashboard)", "dashboard", "chat", "history"], TABS.DASHBOARD],
+    [["(dashboard)", "agents", "chat", "history"], TABS.AGENTS],
+    [["chat", "create"], TABS.CHAT],
+    [["settings", "chat", "history"], TABS.SETTINGS],
+    [["auth", "login"], null],
+    [[], null],
+  ])("resolves segments %j to %s", (segments, expected) => {
+    expect(resolveTabFromSegments(segments)).toBe(expected);
   });
 
   it("matches active routes for nested paths", () => {
@@ -95,7 +112,7 @@ describe("buildEntityRoute", () => {
     }
   });
 
-  it("covers the full 5x6 tab/entity matrix", () => {
+  it("covers the full 6x6 tab/entity matrix", () => {
     let count = 0;
 
     for (const tab of TAB_ORDER) {
@@ -106,37 +123,42 @@ describe("buildEntityRoute", () => {
       }
     }
 
-    expect(count).toBe(30);
+    expect(count).toBe(36);
   });
 
   it("encodes special characters in entity IDs", () => {
     const route = buildEntityRoute(TABS.DASHBOARD, "agent", "id with spaces/slashes");
     expect(route).toBe("/dashboard/agent/id%20with%20spaces%2Fslashes");
   });
+
+  it("routes chat entities to the dedicated /chat stack", () => {
+    const route = buildEntityRoute(TABS.AGENTS, "chat", "thread 1/alpha");
+    expect(route).toBe("/chat/thread%201%2Falpha?tab=agents");
+  });
 });
 
 describe("chat route helpers", () => {
   it.each([
-    [TABS.DASHBOARD, "/dashboard/chat/history"],
-    [TABS.AGENTS, "/agents/chat/history"],
-    [TABS.COSTS, "/costs/chat/history"],
-    [TABS.GOVERNANCE, "/governance/chat/history"],
-    [TABS.SETTINGS, "/settings/chat/history"],
+    [TABS.DASHBOARD, "/chat?tab=dashboard"],
+    [TABS.AGENTS, "/chat?tab=agents"],
+    [TABS.COSTS, "/chat?tab=costs"],
+    [TABS.GOVERNANCE, "/chat?tab=governance"],
+    [TABS.CHAT, "/chat"],
+    [TABS.SETTINGS, "/chat?tab=settings"],
   ])("builds chat history route for %s", (tab, expectedRoute) => {
     expect(buildChatHistoryRoute(tab)).toBe(expectedRoute);
   });
 
   it("builds encoded thread route", () => {
     const route = buildChatThreadRoute(TABS.SETTINGS, "thread 1/alpha");
-    expect(route).toBe("/settings/chat/history/thread%201%2Falpha");
+    expect(route).toBe("/chat/thread%201%2Falpha?tab=settings");
   });
 
   it.each([
-    ["/dashboard/chat", false],
-    ["/agents/chat/history", true],
-    ["/costs/chat/history/thread-1", true],
-    ["/costs/chat/thread-1", true],
-    ["/dashboard/chat/create", true],
+    ["/chat", true],
+    ["/chat/create", true],
+    ["/chat/thread-1", true],
+    ["/chat/history", true],
     ["/governance", false],
     ["/", false],
   ])("detects chat routes for %s", (pathname, expected) => {
@@ -144,10 +166,10 @@ describe("chat route helpers", () => {
   });
 
   it.each([
-    ["/dashboard/chat/history/thread-1", true],
-    ["/agents/chat/history", false],
-    ["/costs/chat/history/thread-1", true],
-    ["/costs/chat/thread-1", false],
+    ["/chat/thread-1", true],
+    ["/chat/history", false],
+    ["/chat/create", false],
+    ["/chat", false],
     ["/settings/chat", false],
     ["/settings", false],
   ])("detects chat thread routes for %s", (pathname, expected) => {
@@ -155,9 +177,9 @@ describe("chat route helpers", () => {
   });
 
   it.each([
-    ["/dashboard/chat/history", true],
-    ["/agents/chat/history", true],
-    ["/costs/chat/history/thread-1", false],
+    ["/chat", true],
+    ["/chat/thread-1", false],
+    ["/chat/create", false],
     ["/settings/chat/create", false],
     ["/governance", false],
   ])("detects chat history routes for %s", (pathname, expected) => {

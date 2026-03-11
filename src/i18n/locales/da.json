@@ -439,7 +439,7 @@
   },
   "chat": {
     "newChat": "Ny chat",
-    "startConversation": "Start en samtale",
+    "startConversation": "Diskuter emner med din AI",
     "askAnything": "Spørg om hvad som helst...",
     "messageInput": "Chatbesked-input",
     "sendMessage": "Send besked",
@@ -455,7 +455,7 @@
     "noConversationsYet": "Ingen samtaler endnu.",
     "noConversationsMatchTopics": "Ingen samtaler matcher de valgte emner.",
     "openChat": "Åbn chat {{title}}",
-    "welcomeTitle": "Hej! Hvad kan jeg hjælpe med?",
+    "welcomeTitle": "Hej! Hvordan kan jeg hjælpe dig?",
     "welcomeSubtitle": {
       "dashboard": "Spørg om agentpræstation, aktivitetstendenser eller få et hurtigt statusoverblik.",
       "agents": "Dyk ned i agenthelbred, sammenlign præstationer eller fejlfind problemer.",

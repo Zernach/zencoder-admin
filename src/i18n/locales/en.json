@@ -439,7 +439,7 @@
   },
   "chat": {
     "newChat": "New Chat",
-    "startConversation": "Start a conversation",
+    "startConversation": "Discuss topics with your AI",
     "askAnything": "Ask anything...",
     "messageInput": "Chat message input",
     "sendMessage": "Send message",
@@ -455,7 +455,7 @@
     "noConversationsYet": "No conversations yet.",
     "noConversationsMatchTopics": "No conversations match the selected topics.",
     "openChat": "Open chat {{title}}",
-    "welcomeTitle": "Hi! What can I help you with?",
+    "welcomeTitle": "Hi! How can I help you?",
     "welcomeSubtitle": {
       "dashboard": "Ask about agent performance, activity trends, or get a quick status check.",
       "agents": "Dig into agent health, compare performance, or troubleshoot issues.",

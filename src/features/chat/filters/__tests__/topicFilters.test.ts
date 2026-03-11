@@ -68,6 +68,7 @@ describe("chat history topic filters", () => {
     [TABS.AGENTS, ["Agents"]],
     [TABS.COSTS, ["Costs"]],
     [TABS.GOVERNANCE, ["Governance"]],
+    [TABS.CHAT, []],
     [TABS.SETTINGS, ["Support"]],
   ])("returns default filters for %s", (tab, expected) => {
     expect(getDefaultTopicFiltersForTab(tab)).toEqual(expected);

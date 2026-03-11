@@ -40,7 +40,9 @@ export function getSuggestedPromptsFromTopics(
   return prompts;
 }
 
-const PROMPT_KEYS_BY_TAB: Record<TABS, readonly string[]> = {
+type PromptTab = Exclude<TABS, TABS.CHAT>;
+
+const PROMPT_KEYS_BY_TAB: Record<PromptTab, readonly string[]> = {
   [TABS.DASHBOARD]: ["performance", "activity", "teams", "issues"],
   [TABS.AGENTS]: ["errors", "compare", "inactive", "history"],
   [TABS.COSTS]: ["trending", "breakdown", "unusual", "reduce"],
@@ -49,9 +51,10 @@ const PROMPT_KEYS_BY_TAB: Record<TABS, readonly string[]> = {
 };
 
 export function getSuggestedPrompts(tab: TABS, t: TFunction): SuggestedPrompt[] {
-  return PROMPT_KEYS_BY_TAB[tab].map((key) => ({
-    label: t(`chat.prompts.${tab}.${key}.label`),
-    message: t(`chat.prompts.${tab}.${key}.message`),
+  const promptTab: PromptTab = tab === TABS.CHAT ? TABS.DASHBOARD : tab;
+  return PROMPT_KEYS_BY_TAB[promptTab].map((key) => ({
+    label: t(`chat.prompts.${promptTab}.${key}.label`),
+    message: t(`chat.prompts.${promptTab}.${key}.message`),
   }));
 }
 
@@ -60,5 +63,6 @@ export function getWelcomeTitle(t: TFunction): string {
 }
 
 export function getWelcomeSubtitle(tab: TABS, t: TFunction): string {
-  return t(`chat.welcomeSubtitle.${tab}`);
+  const promptTab: PromptTab = tab === TABS.CHAT ? TABS.DASHBOARD : tab;
+  return t(`chat.welcomeSubtitle.${promptTab}`);
 }

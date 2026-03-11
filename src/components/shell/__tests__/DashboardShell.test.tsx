@@ -92,7 +92,7 @@ describe("DashboardShell chrome", () => {
   });
 
   it("shows bottom tabs on mobile chat history route", () => {
-    mockPathname = "/dashboard/chat/history";
+    mockPathname = "/chat";
 
     const { queryByTestId } = render(
       <DashboardShell>
@@ -104,7 +104,7 @@ describe("DashboardShell chrome", () => {
   });
 
   it("hides bottom tabs on mobile create chat route", () => {
-    mockPathname = "/dashboard/chat/create";
+    mockPathname = "/chat/create";
 
     const { queryByTestId } = render(
       <DashboardShell>

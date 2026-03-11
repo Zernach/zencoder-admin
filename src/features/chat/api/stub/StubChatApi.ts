@@ -422,6 +422,88 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
       ],
     },
   ],
+  [TABS.CHAT]: [
+    {
+      title: "Cross-team rollout plan for assistant usage policy",
+      topics: ["Support", "Governance"],
+      status: "active",
+      unreadCount: 1,
+      startedMinutesAgo: 140,
+      gapMinutes: 12,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Draft a rollout plan for the new assistant usage policy across all departments.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Drafted with a staged rollout by org unit, policy acknowledgement checkpoints, and weekly adoption review milestones.",
+        },
+      ],
+    },
+    {
+      title: "Unified status update for operations leadership",
+      topics: ["Agents", "Costs", "Governance"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 780,
+      gapMinutes: 16,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Create a concise leadership update that combines reliability, spend, and policy risk trends.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Prepared a three-part update summarizing reliability drift, spend deltas, and unresolved policy violations with owners.",
+        },
+      ],
+    },
+    {
+      title: "Workspace onboarding checklist for new admins",
+      topics: ["Support"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 2310,
+      gapMinutes: 20,
+      messages: [
+        {
+          role: "user",
+          content:
+            "I need a practical onboarding checklist for newly added workspace admins.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Checklist created with access setup, notification preferences, policy review, and dashboard ownership handoff.",
+        },
+      ],
+    },
+    {
+      title: "Change communication draft for integration updates",
+      topics: ["Support"],
+      status: "archived",
+      unreadCount: 0,
+      startedMinutesAgo: 5520,
+      gapMinutes: 24,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Write a customer-facing note about upcoming integration updates and expected impact.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Drafted communication with timeline, potential interruptions, and support contacts for migration issues.",
+        },
+      ],
+    },
+  ],
   [TABS.SETTINGS]: [
     {
       title: "Workspace defaults cleanup for new teams",
@@ -510,6 +592,7 @@ const TOPIC_BY_TAB: Record<Exclude<TABS, TABS.DASHBOARD>, ChatTopic> = {
   [TABS.AGENTS]: "Agents",
   [TABS.COSTS]: "Costs",
   [TABS.GOVERNANCE]: "Governance",
+  [TABS.CHAT]: "Support",
   [TABS.SETTINGS]: "Support",
 };
 
@@ -581,6 +664,9 @@ function buildFixtures(now: Date): Record<TABS, ConversationFixture[]> {
     ),
     [TABS.GOVERNANCE]: TEMPLATES_BY_TAB[TABS.GOVERNANCE].map((template, index) =>
       buildConversation(TABS.GOVERNANCE, index, template, now),
+    ),
+    [TABS.CHAT]: TEMPLATES_BY_TAB[TABS.CHAT].map((template, index) =>
+      buildConversation(TABS.CHAT, index, template, now),
     ),
     [TABS.SETTINGS]: TEMPLATES_BY_TAB[TABS.SETTINGS].map((template, index) =>
       buildConversation(TABS.SETTINGS, index, template, now),
@@ -788,6 +874,7 @@ export class StubChatApi implements IChatApi {
       ...this.fixturesByTab[TABS.AGENTS],
       ...this.fixturesByTab[TABS.COSTS],
       ...this.fixturesByTab[TABS.GOVERNANCE],
+      ...this.fixturesByTab[TABS.CHAT],
       ...this.fixturesByTab[TABS.SETTINGS],
     ];
   }

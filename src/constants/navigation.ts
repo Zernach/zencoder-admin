@@ -9,8 +9,6 @@ import type { LucideIcon } from "lucide-react-native";
 import {
   ROUTES,
   TABS,
-  TAB_ORDER,
-  SETTINGS_CHAT_HISTORY_ROUTE,
   getRouteForTab,
   type NavRoute,
 } from "./routes";
@@ -29,6 +27,7 @@ const TOP_NAV_METADATA: Record<TABS, Pick<NavItem, "icon" | "label">> = {
   [TABS.AGENTS]: { icon: Bot, label: "navigation.agents" },
   [TABS.COSTS]: { icon: DollarSign, label: "navigation.costs" },
   [TABS.GOVERNANCE]: { icon: Shield, label: "navigation.governance" },
+  [TABS.CHAT]: { icon: MessageSquare, label: "navigation.settings" },
   [TABS.SETTINGS]: { icon: MessageSquare, label: "navigation.settings" },
 };
 
@@ -37,10 +36,19 @@ const TOP_NAV_ROUTE_BY_TAB: Record<TABS, NavRoute> = {
   [TABS.AGENTS]: getRouteForTab(TABS.AGENTS),
   [TABS.COSTS]: getRouteForTab(TABS.COSTS),
   [TABS.GOVERNANCE]: getRouteForTab(TABS.GOVERNANCE),
-  [TABS.SETTINGS]: SETTINGS_CHAT_HISTORY_ROUTE,
+  [TABS.CHAT]: ROUTES.CHAT,
+  [TABS.SETTINGS]: ROUTES.SETTINGS,
 };
 
-export const TOP_NAV_ITEMS: NavItem[] = TAB_ORDER.map((tab) => ({
+const TOP_NAV_TABS: readonly TABS[] = [
+  TABS.DASHBOARD,
+  TABS.AGENTS,
+  TABS.COSTS,
+  TABS.GOVERNANCE,
+  TABS.CHAT,
+] as const;
+
+export const TOP_NAV_ITEMS: NavItem[] = TOP_NAV_TABS.map((tab) => ({
   tab,
   route: TOP_NAV_ROUTE_BY_TAB[tab],
   ...TOP_NAV_METADATA[tab],

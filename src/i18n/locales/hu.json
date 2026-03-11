@@ -439,7 +439,7 @@
   },
   "chat": {
     "newChat": "Új csevegés",
-    "startConversation": "Beszélgetés indítása",
+    "startConversation": "Beszélgess témákról az AI-oddal",
     "askAnything": "Kérdezz bármit...",
     "messageInput": "Csevegés üzenet beviteli mező",
     "sendMessage": "Üzenet küldése",
@@ -455,7 +455,7 @@
     "noConversationsYet": "Még nincsenek beszélgetések.",
     "noConversationsMatchTopics": "Nincs a kiválasztott témáknak megfelelő beszélgetés.",
     "openChat": "Csevegés megnyitása {{title}}",
-    "welcomeTitle": "Szia! Miben segíthetek?",
+    "welcomeTitle": "Szia! Hogyan segíthetek?",
     "welcomeSubtitle": {
       "dashboard": "Kérdezz az ágensek teljesítményéről, aktivitási trendekről, vagy kérj gyors állapotjelentést.",
       "agents": "Vizsgáld meg az ágensek állapotát, hasonlítsd össze a teljesítményt, vagy hárítsd el a problémákat.",

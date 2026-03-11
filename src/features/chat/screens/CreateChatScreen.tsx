@@ -8,13 +8,13 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { TABS } from "@/constants/routes";
 import { buildChatThreadRoute } from "@/constants/routes";
 import { ScreenWrapper } from "@/components/screen";
 import { CustomButton } from "@/components/buttons";
 import { CustomTextInput } from "@/components/inputs";
 import { useAppDependencies } from "@/core/di";
 import { useAppSelector } from "@/store/hooks";
+import { selectMostRecentTab } from "@/store";
 import { selectOrgId } from "@/store/slices/filtersSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -27,15 +27,12 @@ import {
 } from "@/features/chat/constants/suggestedPrompts";
 import { useChatHistory } from "@/features/chat/hooks";
 
-interface CreateChatScreenProps {
-  tab: TABS;
-}
-
-export function CreateChatScreen({ tab }: CreateChatScreenProps) {
+export function CreateChatScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { chatService } = useAppDependencies();
   const orgId = useAppSelector(selectOrgId);
+  const tab = useAppSelector(selectMostRecentTab);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const insets = useSafeAreaInsets();

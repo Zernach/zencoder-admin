@@ -439,7 +439,7 @@
   },
   "chat": {
     "newChat": "Nowy czat",
-    "startConversation": "Rozpocznij rozmowę",
+    "startConversation": "Omawiaj tematy ze swoją AI",
     "askAnything": "Zapytaj o cokolwiek...",
     "messageInput": "Pole wprowadzania wiadomości",
     "sendMessage": "Wyślij wiadomość",
@@ -455,7 +455,7 @@
     "noConversationsYet": "Brak rozmów.",
     "noConversationsMatchTopics": "Żadne rozmowy nie pasują do wybranych tematów.",
     "openChat": "Otwórz czat {{title}}",
-    "welcomeTitle": "Cześć! W czym mogę pomóc?",
+    "welcomeTitle": "Cześć! Jak mogę ci pomóc?",
     "welcomeSubtitle": {
       "dashboard": "Zapytaj o wydajność agentów, trendy aktywności lub uzyskaj szybkie podsumowanie.",
       "agents": "Zbadaj kondycję agentów, porównaj wydajność lub rozwiąż problemy.",

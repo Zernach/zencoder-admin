@@ -46,6 +46,19 @@ describe("navigationHistorySlice", () => {
     expect(secondState.previousSegments).toEqual([]);
   });
 
+  it("does not overwrite mostRecentTab when current tab is chat", () => {
+    const withKnownTab = navigationHistorySlice.reducer(
+      undefined,
+      setCurrentSegments(["(dashboard)", "agents"]),
+    );
+    const withChatRoute = navigationHistorySlice.reducer(
+      withKnownTab,
+      setCurrentSegments(["(dashboard)", "chat"]),
+    );
+
+    expect(withChatRoute.mostRecentTab).toBe(TABS.AGENTS);
+  });
+
   it("keeps the last known tab when segments do not include a tab", () => {
     const withKnownTab = navigationHistorySlice.reducer(
       undefined,

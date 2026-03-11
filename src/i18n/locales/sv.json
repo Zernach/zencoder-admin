@@ -439,7 +439,7 @@
   },
   "chat": {
     "newChat": "Ny chatt",
-    "startConversation": "Starta en konversation",
+    "startConversation": "Diskutera ämnen med din AI",
     "askAnything": "Fråga vad som helst...",
     "messageInput": "Inmatningsfält för chattmeddelande",
     "sendMessage": "Skicka meddelande",
@@ -455,7 +455,7 @@
     "noConversationsYet": "Inga konversationer ännu.",
     "noConversationsMatchTopics": "Inga konversationer matchar de valda ämnena.",
     "openChat": "Öppna chatt {{title}}",
-    "welcomeTitle": "Hej! Vad kan jag hjälpa dig med?",
+    "welcomeTitle": "Hej! Hur kan jag hjälpa dig?",
     "welcomeSubtitle": {
       "dashboard": "Fråga om agentprestanda, aktivitetstrender eller få en snabb statusöversikt.",
       "agents": "Granska agenthälsa, jämför prestanda eller felsök problem.",

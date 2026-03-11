@@ -439,7 +439,7 @@
   },
   "chat": {
     "newChat": "Nový chat",
-    "startConversation": "Zahájit konverzaci",
+    "startConversation": "Diskutujte o tématech se svou AI",
     "askAnything": "Zeptejte se na cokoliv...",
     "messageInput": "Pole pro zadání zprávy",
     "sendMessage": "Odeslat zprávu",
@@ -455,7 +455,7 @@
     "noConversationsYet": "Zatím žádné konverzace.",
     "noConversationsMatchTopics": "Žádné konverzace neodpovídají vybraným tématům.",
     "openChat": "Otevřít chat {{title}}",
-    "welcomeTitle": "Ahoj! S čím vám mohu pomoci?",
+    "welcomeTitle": "Ahoj! Jak vám mohu pomoci?",
     "welcomeSubtitle": {
       "dashboard": "Zeptejte se na výkon agentů, trendy aktivity nebo získejte rychlý přehled.",
       "agents": "Prozkoumejte zdraví agentů, porovnejte výkon nebo řešte problémy.",

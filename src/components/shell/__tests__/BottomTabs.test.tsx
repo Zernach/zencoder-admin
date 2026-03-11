@@ -114,7 +114,8 @@ describe("BottomTabs", () => {
 
     fireEvent.press(getByLabelText("navigation.settings"));
 
-    expect(mockDispatch).not.toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith("/settings/chat/history");
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+    expect(mockDispatch).toHaveBeenCalledWith(TabActions.jumpTo(TABS.CHAT));
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

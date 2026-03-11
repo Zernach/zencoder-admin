@@ -439,7 +439,7 @@
   },
   "chat": {
     "newChat": "Conversație nouă",
-    "startConversation": "Începe o conversație",
+    "startConversation": "Discută subiecte cu AI-ul tău",
     "askAnything": "Întreabă orice...",
     "messageInput": "Câmp de mesaj chat",
     "sendMessage": "Trimite mesajul",
@@ -455,7 +455,7 @@
     "noConversationsYet": "Nicio conversație încă.",
     "noConversationsMatchTopics": "Nicio conversație nu corespunde subiectelor selectate.",
     "openChat": "Deschide conversația {{title}}",
-    "welcomeTitle": "Bună! Cu ce te pot ajuta?",
+    "welcomeTitle": "Bună! Cum te pot ajuta?",
     "welcomeSubtitle": {
       "dashboard": "Întreabă despre performanța agenților, tendințele de activitate sau obține o verificare rapidă a stării.",
       "agents": "Analizează sănătatea agenților, compară performanțele sau rezolvă probleme.",

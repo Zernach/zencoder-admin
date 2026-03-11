@@ -20,7 +20,7 @@ describe("search entity navigation integration", () => {
     }
   });
 
-  it("full 25-route matrix produces unique, well-formed routes", () => {
+  it("full tab/entity matrix produces unique, well-formed routes", () => {
     const routes = new Set<string>();
     for (const tab of tabs) {
       for (const entity of entities) {
@@ -29,7 +29,7 @@ describe("search entity navigation integration", () => {
         routes.add(route);
       }
     }
-    expect(routes.size).toBe(30);
+    expect(routes.size).toBe(36);
   });
 
   it("typing without selection does not produce route changes", () => {

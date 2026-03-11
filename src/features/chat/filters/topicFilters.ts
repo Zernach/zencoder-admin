@@ -6,6 +6,7 @@ const DEFAULT_TOPIC_FILTERS_BY_TAB: Record<TABS, ChatTopic[]> = {
   [TABS.AGENTS]: ["Agents"],
   [TABS.COSTS]: ["Costs"],
   [TABS.GOVERNANCE]: ["Governance"],
+  [TABS.CHAT]: [],
   [TABS.SETTINGS]: ["Support"],
 };
 
