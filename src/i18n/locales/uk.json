@@ -44,6 +44,10 @@
     "expandSidebar": "Розгорнути бічну панель",
     "subsectionsLabel": "Підрозділи {{label}}",
     "subsections": {
+      "liveAssistants": "Активні асистенти",
+      "trends": "Тренди",
+      "outcomes": "Результати",
+      "keyMetrics": "Ключові показники",
       "reliability": "Надійність",
       "agentPerformance": "Розбивка агентів",
       "projectBreakdown": "Розбивка проєктів",
@@ -63,13 +67,13 @@
       "internationalization": "Інтернаціоналізація",
       "organization": "Організація",
       "dangerZone": "Небезпечна зона",
-      "costPerProject": "Cost per Project",
-      "violations": "Violations"
+      "costPerProject": "Вартість за проєктом",
+      "violations": "Порушення"
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Агенти й аналітика вашої організації",
+    "subtitleWithData": "Агенти й аналітика вашої організації",
     "keyMetrics": "Ключові показники",
     "keyMetricsSubtitle": "Загальний огляд",
     "trends": "Тенденції",
@@ -148,7 +152,7 @@
       "tokens": "Токени",
       "provider": "Провайдер"
     },
-    "reliabilitySubtitle": "Observability & Analytics"
+    "reliabilitySubtitle": "Спостережуваність та аналітика"
   },
   "costs": {
     "subtitle": "Тенденції витрат та відстеження бюджету",

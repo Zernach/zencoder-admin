@@ -44,6 +44,10 @@
     "expandSidebar": "Zijbalk uitklappen",
     "subsectionsLabel": "{{label}} subsecties",
     "subsections": {
+      "liveAssistants": "Actieve assistenten",
+      "trends": "Trends",
+      "outcomes": "Resultaten",
+      "keyMetrics": "Kernstatistieken",
       "reliability": "Betrouwbaarheid",
       "agentPerformance": "Agenten overzicht",
       "projectBreakdown": "Projecten overzicht",
@@ -63,13 +67,13 @@
       "internationalization": "Internationalisatie",
       "organization": "Organisatie",
       "dangerZone": "Gevarenzone",
-      "costPerProject": "Cost per Project",
-      "violations": "Violations"
+      "costPerProject": "Kosten per project",
+      "violations": "Overtredingen"
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Agenten en analyses van uw organisatie",
+    "subtitleWithData": "Agenten en analyses van uw organisatie",
     "keyMetrics": "Belangrijke statistieken",
     "keyMetricsSubtitle": "In een oogopslag",
     "trends": "Trends",
@@ -148,7 +152,7 @@
       "tokens": "Tokens",
       "provider": "Provider"
     },
-    "reliabilitySubtitle": "Observability & Analytics"
+    "reliabilitySubtitle": "Observeerbaarheid en analyses"
   },
   "costs": {
     "subtitle": "Uitgavetrends en budgetbewaking",

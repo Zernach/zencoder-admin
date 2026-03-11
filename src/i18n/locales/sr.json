@@ -44,6 +44,10 @@
     "expandSidebar": "Прошири бочну траку",
     "subsectionsLabel": "{{label}} подсекције",
     "subsections": {
+      "liveAssistants": "Активни асистенти",
+      "trends": "Трендови",
+      "outcomes": "Исходи",
+      "keyMetrics": "Кључни показатељи",
       "reliability": "Поузданост",
       "agentPerformance": "Преглед агената",
       "projectBreakdown": "Преглед пројеката",
@@ -63,13 +67,13 @@
       "internationalization": "Интернационализација",
       "organization": "Организација",
       "dangerZone": "Опасна зона",
-      "costPerProject": "Cost per Project",
-      "violations": "Violations"
+      "costPerProject": "Трошак по пројекту",
+      "violations": "Кршења"
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Агенти и аналитика ваше организације",
+    "subtitleWithData": "Агенти и аналитика ваше организације",
     "keyMetrics": "Ључне метрике",
     "keyMetricsSubtitle": "На први поглед",
     "trends": "Трендови",
@@ -88,7 +92,7 @@
     "anomaliesSubtitle": "Значајна одступања",
     "run": "Покретање ",
     "live": {
-      "title": "Live",
+      "title": "Уживо",
       "subtitle": "АИ помоћници на делу",
       "succeeded": "Успело",
       "queued": "У реду",
@@ -148,7 +152,7 @@
       "tokens": "Токени",
       "provider": "Провајдер"
     },
-    "reliabilitySubtitle": "Observability & Analytics"
+    "reliabilitySubtitle": "Посматрање и аналитика"
   },
   "costs": {
     "subtitle": "Трендови потрошње и праћење буџета",

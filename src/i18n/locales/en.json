@@ -44,6 +44,10 @@
     "expandSidebar": "Expand sidebar",
     "subsectionsLabel": "{{label}} subsections",
     "subsections": {
+      "liveAssistants": "Live Assistants",
+      "trends": "Trends",
+      "outcomes": "Outcomes",
+      "keyMetrics": "Key Metrics",
       "reliability": "Reliability",
       "agentPerformance": "Agents",
       "projectBreakdown": "Projects",

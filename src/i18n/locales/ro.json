@@ -44,6 +44,10 @@
     "expandSidebar": "Extinde bara laterală",
     "subsectionsLabel": "Subsecțiuni {{label}}",
     "subsections": {
+      "liveAssistants": "Asistenți activi",
+      "trends": "Tendințe",
+      "outcomes": "Rezultate",
+      "keyMetrics": "Indicatori cheie",
       "reliability": "Fiabilitate",
       "agentPerformance": "Defalcarea agenților",
       "projectBreakdown": "Defalcarea proiectelor",
@@ -63,13 +67,13 @@
       "internationalization": "Internaționalizare",
       "organization": "Organizație",
       "dangerZone": "Zonă periculoasă",
-      "costPerProject": "Cost per Project",
-      "violations": "Violations"
+      "costPerProject": "Cost pe proiect",
+      "violations": "Încălcări"
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Agenții și analizele organizației dvs.",
+    "subtitleWithData": "Agenții și analizele organizației dvs.",
     "keyMetrics": "Indicatori cheie",
     "keyMetricsSubtitle": "Privire de ansamblu",
     "trends": "Tendințe",
@@ -88,7 +92,7 @@
     "anomaliesSubtitle": "Valori aberante notabile",
     "run": "Rulare ",
     "live": {
-      "title": "Live",
+      "title": "În direct",
       "subtitle": "Asistenți AI în acțiune",
       "succeeded": "Reușite",
       "queued": "În așteptare",
@@ -148,7 +152,7 @@
       "tokens": "Tokeni",
       "provider": "Furnizor"
     },
-    "reliabilitySubtitle": "Observability & Analytics"
+    "reliabilitySubtitle": "Observabilitate și analize"
   },
   "costs": {
     "subtitle": "Tendințe de cheltuieli și urmărirea bugetului",

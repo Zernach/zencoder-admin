@@ -44,6 +44,10 @@
     "expandSidebar": "Expandera sidofältet",
     "subsectionsLabel": "{{label}} undersektioner",
     "subsections": {
+      "liveAssistants": "Aktiva assistenter",
+      "trends": "Trender",
+      "outcomes": "Resultat",
+      "keyMetrics": "Nyckeltal",
       "reliability": "Tillförlitlighet",
       "agentPerformance": "Agentfördelning",
       "projectBreakdown": "Projektfördelning",
@@ -63,13 +67,13 @@
       "internationalization": "Internationalisering",
       "organization": "Organisation",
       "dangerZone": "Riskzon",
-      "costPerProject": "Cost per Project",
-      "violations": "Violations"
+      "costPerProject": "Kostnad per projekt",
+      "violations": "Överträdelser"
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Din organisations agenter och analyser",
+    "subtitleWithData": "Din organisations agenter och analyser",
     "keyMetrics": "Nyckeltal",
     "keyMetricsSubtitle": "I ett ögonkast",
     "trends": "Trender",
@@ -88,7 +92,7 @@
     "anomaliesSubtitle": "Anmärkningsvärda avvikelser",
     "run": "Körning ",
     "live": {
-      "title": "Live",
+      "title": "Direkt",
       "subtitle": "AI-assistenter i aktion",
       "succeeded": "Lyckade",
       "queued": "I kö",
@@ -148,7 +152,7 @@
       "tokens": "Tokens",
       "provider": "Leverantör"
     },
-    "reliabilitySubtitle": "Observability & Analytics"
+    "reliabilitySubtitle": "Observerbarhet och analyser"
   },
   "costs": {
     "subtitle": "Utgiftstrender och budgetuppföljning",

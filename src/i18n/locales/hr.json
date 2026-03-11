@@ -44,6 +44,10 @@
     "expandSidebar": "Proširi bočnu traku",
     "subsectionsLabel": "Podsekcije {{label}}",
     "subsections": {
+      "liveAssistants": "Aktivni asistenti",
+      "trends": "Trendovi",
+      "outcomes": "Ishodi",
+      "keyMetrics": "Ključni pokazatelji",
       "reliability": "Pouzdanost",
       "agentPerformance": "Raščlamba agenata",
       "projectBreakdown": "Raščlamba projekata",
@@ -63,13 +67,13 @@
       "internationalization": "Internacionalizacija",
       "organization": "Organizacija",
       "dangerZone": "Opasna zona",
-      "costPerProject": "Cost per Project",
-      "violations": "Violations"
+      "costPerProject": "Trošak po projektu",
+      "violations": "Prekršaji"
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Agenti i analitika vaše organizacije",
+    "subtitleWithData": "Agenti i analitika vaše organizacije",
     "keyMetrics": "Ključne metrike",
     "keyMetricsSubtitle": "Na prvi pogled",
     "trends": "Trendovi",
@@ -88,7 +92,7 @@
     "anomaliesSubtitle": "Značajna odstupanja",
     "run": "Izvršavanje ",
     "live": {
-      "title": "Live",
+      "title": "Uživo",
       "subtitle": "AI asistenti u akciji",
       "succeeded": "Uspjelo",
       "queued": "U redu",
@@ -148,7 +152,7 @@
       "tokens": "Tokeni",
       "provider": "Pružatelj"
     },
-    "reliabilitySubtitle": "Observability & Analytics"
+    "reliabilitySubtitle": "Vidljivost i analitika"
   },
   "costs": {
     "subtitle": "Trendovi potrošnje i praćenje proračuna",

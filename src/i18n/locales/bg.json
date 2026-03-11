@@ -44,6 +44,10 @@
     "expandSidebar": "Разшири страничната лента",
     "subsectionsLabel": "Подсекции на {{label}}",
     "subsections": {
+      "liveAssistants": "Активни асистенти",
+      "trends": "Тенденции",
+      "outcomes": "Резултати",
+      "keyMetrics": "Ключови показатели",
       "reliability": "Надеждност",
       "agentPerformance": "Разбивка по агенти",
       "projectBreakdown": "Разбивка по проекти",
@@ -63,13 +67,13 @@
       "internationalization": "Интернационализация",
       "organization": "Организация",
       "dangerZone": "Опасна зона",
-      "costPerProject": "Cost per Project",
-      "violations": "Violations"
+      "costPerProject": "Цена по проект",
+      "violations": "Нарушения"
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Агенти и анализи на вашата организация",
+    "subtitleWithData": "Агенти и анализи на вашата организация",
     "keyMetrics": "Ключови метрики",
     "keyMetricsSubtitle": "С един поглед",
     "trends": "Тенденции",
@@ -88,7 +92,7 @@
     "anomaliesSubtitle": "Забележителни отклонения",
     "run": "Изпълнение ",
     "live": {
-      "title": "Live",
+      "title": "На живо",
       "subtitle": "ИИ асистенти в действие",
       "succeeded": "Успешно",
       "queued": "На опашка",
@@ -148,7 +152,7 @@
       "tokens": "Токени",
       "provider": "Доставчик"
     },
-    "reliabilitySubtitle": "Observability & Analytics"
+    "reliabilitySubtitle": "Наблюдаемост и анализи"
   },
   "costs": {
     "subtitle": "Тенденции на разходите и проследяване на бюджета",

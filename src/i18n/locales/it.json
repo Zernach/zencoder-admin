@@ -44,6 +44,10 @@
     "expandSidebar": "Espandi barra laterale",
     "subsectionsLabel": "Sottosezioni {{label}}",
     "subsections": {
+      "liveAssistants": "Assistenti attivi",
+      "trends": "Tendenze",
+      "outcomes": "Risultati",
+      "keyMetrics": "Metriche chiave",
       "reliability": "Affidabilità",
       "agentPerformance": "Prestazioni agenti",
       "projectBreakdown": "Ripartizione progetti",
@@ -63,13 +67,13 @@
       "internationalization": "Internazionalizzazione",
       "organization": "Organizzazione",
       "dangerZone": "Zona pericolosa",
-      "costPerProject": "Cost per Project",
-      "violations": "Violations"
+      "costPerProject": "Costo per progetto",
+      "violations": "Violazioni"
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Agenti e analisi della tua organizzazione",
+    "subtitleWithData": "Agenti e analisi della tua organizzazione",
     "keyMetrics": "Metriche chiave",
     "keyMetricsSubtitle": "A colpo d'occhio",
     "trends": "Tendenze",
@@ -88,7 +92,7 @@
     "anomaliesSubtitle": "Valori anomali notevoli",
     "run": "Esecuzione ",
     "live": {
-      "title": "Live",
+      "title": "In diretta",
       "subtitle": "Assistenti IA in azione",
       "succeeded": "Completato",
       "queued": "In coda",
@@ -148,7 +152,7 @@
       "tokens": "Token",
       "provider": "Provider"
     },
-    "reliabilitySubtitle": "Observability & Analytics"
+    "reliabilitySubtitle": "Osservabilità e analisi"
   },
   "costs": {
     "subtitle": "Tendenze di spesa e monitoraggio del budget",

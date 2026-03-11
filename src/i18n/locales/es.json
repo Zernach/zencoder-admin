@@ -44,6 +44,10 @@
     "expandSidebar": "Expandir barra lateral",
     "subsectionsLabel": "Subsecciones de {{label}}",
     "subsections": {
+      "liveAssistants": "Asistentes activos",
+      "trends": "Tendencias",
+      "outcomes": "Resultados",
+      "keyMetrics": "Métricas clave",
       "reliability": "Fiabilidad",
       "agentPerformance": "Desglose de agentes",
       "projectBreakdown": "Desglose de proyectos",
@@ -63,13 +67,13 @@
       "internationalization": "Internacionalización",
       "organization": "Organización",
       "dangerZone": "Zona de peligro",
-      "costPerProject": "Cost per Project",
-      "violations": "Violations"
+      "costPerProject": "Coste por proyecto",
+      "violations": "Infracciones"
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Agentes y análisis de su organización",
+    "subtitleWithData": "Agentes y análisis de su organización",
     "keyMetrics": "Métricas clave",
     "keyMetricsSubtitle": "De un vistazo",
     "trends": "Tendencias",
@@ -148,7 +152,7 @@
       "tokens": "Tokens",
       "provider": "Proveedor"
     },
-    "reliabilitySubtitle": "Observability & Analytics"
+    "reliabilitySubtitle": "Observabilidad y análisis"
   },
   "costs": {
     "subtitle": "Tendencias de gastos y seguimiento de presupuesto",

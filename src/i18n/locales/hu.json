@@ -44,6 +44,10 @@
     "expandSidebar": "Oldalsáv kinyitása",
     "subsectionsLabel": "{{label}} alszekciók",
     "subsections": {
+      "liveAssistants": "Aktív asszisztensek",
+      "trends": "Trendek",
+      "outcomes": "Eredmények",
+      "keyMetrics": "Fő mutatók",
       "reliability": "Megbízhatóság",
       "agentPerformance": "Ágensek bontása",
       "projectBreakdown": "Projektek bontása",
@@ -63,13 +67,13 @@
       "internationalization": "Nemzetköziesítés",
       "organization": "Szervezet",
       "dangerZone": "Veszélyzóna",
-      "costPerProject": "Cost per Project",
-      "violations": "Violations"
+      "costPerProject": "Költség projektenként",
+      "violations": "Szabálysértések"
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Szervezete ügynökei és elemzései",
+    "subtitleWithData": "Szervezete ügynökei és elemzései",
     "keyMetrics": "Kulcsmutatók",
     "keyMetricsSubtitle": "Egy pillantásra",
     "trends": "Trendek",
@@ -148,7 +152,7 @@
       "tokens": "Tokenek",
       "provider": "Szolgáltató"
     },
-    "reliabilitySubtitle": "Observability & Analytics"
+    "reliabilitySubtitle": "Megfigyelhetőség és elemzés"
   },
   "costs": {
     "subtitle": "Kiadási trendek és költségvetés-követés",
