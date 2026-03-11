@@ -281,7 +281,7 @@ export const TopBar = React.memo(function TopBar({
           onPress={handleOpenSettings}
         >
           <View style={{ marginTop: 0.5, marginLeft: -1 }}>
-            <User size={18} color="#FFFFFF" strokeWidth={1.5} />
+            <User size={18} color={theme.icon.primary} strokeWidth={1.5} />
           </View>
         </CustomButton>
       </View>
