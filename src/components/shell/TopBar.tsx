@@ -273,14 +273,14 @@ export const TopBar = React.memo(function TopBar({
           </CustomButton>
         )}
         <CustomButton
-          style={styles.profileBtn}
+          style={[styles.profileBtn, { backgroundColor: "#E65100" }]}
           buttonMode="surface"
           buttonSize="iconSm"
           accessibilityRole="button"
           accessibilityLabel="Open settings"
           onPress={handleOpenSettings}
         >
-          <CircleUserRound size={16} color={theme.text.secondary} />
+          <CircleUserRound size={24} color="#FFFFFF" />
         </CustomButton>
       </View>
       <CustomModal
@@ -406,6 +406,8 @@ const styles = StyleSheet.create({
     width: CONTROL_HEIGHT,
     height: CONTROL_HEIGHT,
     borderRadius: radius.full,
+    alignItems: "center",
+    justifyContent: "center",
   },
   timeRangePanel: {
     padding: spacing[12],
