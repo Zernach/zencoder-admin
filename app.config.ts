@@ -17,6 +17,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   web: {
     bundler: "metro",
     favicon: "./src/assets/images/zencoder-transparent.ico",
+    backgroundColor: "#0a0a0a",
   },
   plugins: ["expo-router"],
 });
