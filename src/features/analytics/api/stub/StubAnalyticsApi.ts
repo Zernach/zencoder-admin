@@ -921,8 +921,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const dayCount = this.bucketByDay(runs, () => 0).length || 1;
     const dailySpend = totalCost / dayCount;
     const budgetUsd = 60000;
-    const budgetSpent = totalCost * 1.35;
-    const forecastMonthEndUsd = (budgetSpent / dayCount) * 30;
+    const budgetSpent = budgetUsd * 0.55;
+    const forecastMonthEndUsd = budgetUsd * 0.78;
 
     return {
       totalCostUsd: round2(totalCost),
