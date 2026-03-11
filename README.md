@@ -1,19 +1,25 @@
 # Zencoder Admin Dashboard
 
+**[View Production Site](https://zencoder-submission.pages.dev/)**
+
 <p>
   <img src="src/assets/images/zencoder-text-dark-bg.png" width="300" alt="Zencoder Admin icon">
+</p>
+
+
+<p>
+  <img src="docs/gifs/demo.gif" width="800" alt="Zencoder Admin demo - desktop and mobile views">
 </p>
 
 Cross-platform admin dashboard for AI coding agent analytics, built with Expo + React Native + TypeScript.
 
 ## Overview
 
-This app supports all platforms from one codebase:
+This app supports all primary platforms from one codebase:
 
 - ✅ iOS
 - ✅ Android
 - ✅ Web
-- ⚠️ Desktop (coming soon!)
 
 This repository is frontend-first and currently uses a fully stubbed analytics backend. All dashboard data comes from deterministic seed fixtures through typed interfaces, so real APIs can be swapped in later without changing screen code.
 
@@ -27,7 +33,8 @@ Main tabs:
 | `Agents` | Reliability and execution performance | Reliability KPIs + charts, agent performance table, project breakdown table, recent runs table, create agent/project flows |
 | `Costs` | Spend analysis and forecasting | Budget forecast, cost per project, cost trend, avg cost KPIs, provider cost + token cost views, project cost breakdown |
 | `Governance` | Compliance and operational risk | Governance KPI overview, violations by team, team performance comparison, seat user oversight, recent violations, security events, policy changes, create rule/team/user flows |
-| `Settings` | User/org preferences and account actions | Theme toggle, notification toggles, language + currency selection, org plan/seat usage, cache action, sign-out modal |
+| `Chat` | AI assistant conversations per section | Chat history with topic filtering (Agents, Costs, Governance, Support), conversation threads with real-time messaging, create chat with tab-scoped suggested prompts, status tracking (active/completed/archived), unread indicators |
+| `Settings` | User/org preferences and account config | Profile card, dark mode + notification + auto-refresh toggles, language + currency selection, Slack integration, org plan/seat usage, clear cache, sign-out |
 
 Navigation is responsive:
 
@@ -146,7 +153,7 @@ Notes:
 
 ## Internationalization and Preferences
 
-- Locales currently included: `en`, `ru`, `de`, `fr`, `it`
+- Locales currently included: `bg`, `cs`, `da`, `de`, `el`, `en`, `es`, `fr`, `hr`, `hu`, `it`, `nl`, `pl`, `pt`, `ro`, `ru`, `sr`, `sv`, `tr`, `uk`
 - Theme mode support: dark/light
 - Currency and language preferences are managed in Redux settings state
 
