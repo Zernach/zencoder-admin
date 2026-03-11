@@ -6,6 +6,7 @@ import { area, curveMonotoneX, line } from "d3-shape";
 import type { TimeSeriesPoint } from "@/features/analytics/types";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { getShadowStyle } from "@/theme/shadowStyles";
 import { semanticThemes } from "@/theme/themes";
 import { fontFamilies, radius, spacing } from "@/theme/tokens";
 import { ChartCardHeaderActionContext } from "./ChartCardHeaderActionContext";
@@ -65,6 +66,10 @@ export const LineChart = React.memo(function LineChart({
 }: LineChartProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const tooltipShadowStyle = useMemo(
+    () => getShadowStyle({ themeName: mode, level: "md" }),
+    [mode],
+  );
   const chartCardHeaderActionContext = useContext(ChartCardHeaderActionContext);
   const lineStrokeColor = theme.state.success;
   const isPercentagesVariant = variant === "percentages";
@@ -520,7 +525,6 @@ export const LineChart = React.memo(function LineChart({
         </Svg>
         <View
           testID="trend-chart-interaction-layer"
-          pointerEvents={chartMode === "line" ? "auto" : "none"}
           style={[
             styles.interactionLayer,
             {
@@ -528,6 +532,7 @@ export const LineChart = React.memo(function LineChart({
               left: MARGIN.left,
               width: innerW,
               height: innerH,
+              pointerEvents: chartMode === "line" ? "auto" : "none",
             },
           ]}
           {...(isWeb
@@ -547,16 +552,17 @@ export const LineChart = React.memo(function LineChart({
         {activePoint && tooltipPosition ? (
           <View
             testID="trend-chart-hover-tooltip"
-            pointerEvents="none"
             style={[
               styles.tooltip,
               {
                 left: tooltipPosition.left,
                 top: tooltipPosition.top,
                 width: TOOLTIP_WIDTH,
+                pointerEvents: "none",
                 backgroundColor: theme.bg.surface,
                 borderColor: theme.border.default,
               },
+              tooltipShadowStyle,
             ]}
           >
             <Text style={[styles.tooltipDate, { color: theme.text.tertiary }]}>{activePointDateLabel}</Text>
@@ -619,10 +625,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     zIndex: 3,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.14,
-    shadowRadius: 8,
-    elevation: 3,
   },
   tooltipDate: {
     fontFamily: fontFamilies.sans,

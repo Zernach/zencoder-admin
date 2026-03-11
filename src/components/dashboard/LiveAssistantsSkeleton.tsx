@@ -152,10 +152,12 @@ const LiveAssistantsSkeletonCard = memo(function LiveAssistantsSkeletonCard({
         </View>
       </RNAnimated.View>
       <RNAnimated.View
-        pointerEvents="none"
         style={[
           styles.shimmer,
-          { backgroundColor: theme.bg.surfaceElevated },
+          {
+            pointerEvents: "none",
+            backgroundColor: theme.bg.surfaceElevated,
+          },
           shimmerStyle,
         ]}
       />

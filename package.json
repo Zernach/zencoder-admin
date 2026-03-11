@@ -9,15 +9,15 @@
     "clean": "rm -rf node_modules ios android .expo package-lock.json dist && npm install",
     "figma:sync": "node --experimental-strip-types docs/designs/src/index.ts",
     "ralph": "sh docs/ralph/ralph.sh",
-    "start": "expo start -c",
-    "web": "expo start --web -c",
-    "android": "expo run:android -c",
-    "ios": "expo run:ios -c",
+    "start": "NODE_OPTIONS='--require tsx/cjs' expo start -c",
+    "web": "NODE_OPTIONS='--require tsx/cjs' expo start --web -c",
+    "android": "NODE_OPTIONS='--require tsx/cjs' expo run:android -c",
+    "ios": "NODE_OPTIONS='--require tsx/cjs' expo run:ios -c",
     "test": "jest --passWithNoTests",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/ --ext .ts,.tsx",
     "test:e2e": "npx playwright test --config e2e/playwright.config.ts",
-    "build": "expo export --platform web",
+    "build": "NODE_OPTIONS='--require tsx/cjs' expo export --platform web",
     "deploy": "npm run build && npx wrangler pages deploy ./dist --project-name=zencoder-submission"
   },
   "dependencies": {
@@ -73,6 +73,8 @@
     "prettier": "^3.8.1",
     "react-test-renderer": "19.2.0",
     "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "version": "1.0.0"

@@ -5,6 +5,7 @@ import type { PointerEvent as RNPointerEvent, StyleProp, TextStyle, ViewStyle } 
 import type { KeyValueMetric } from "@/features/analytics/types";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { getShadowStyle } from "@/theme/shadowStyles";
 import { semanticThemes } from "@/theme/themes";
 import { fontFamilies, radius, spacing } from "@/theme/tokens";
 import { getOrangeBarShade, getOrangeBarShadesStepped, getOrangePieColorsByValue } from "./palette";
@@ -177,6 +178,10 @@ const PrimitiveBarChart = React.memo(function PrimitiveBarChart({
 }: PrimitiveBarChartProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const tooltipShadowStyle = useMemo(
+    () => getShadowStyle({ themeName: mode, level: "lg" }),
+    [mode],
+  );
 
   const maxValue = useMemo(
     () => Math.max(...data.map((item) => item.value), 0),
@@ -284,17 +289,17 @@ const PrimitiveBarChart = React.memo(function PrimitiveBarChart({
 
   const tooltipBubble = activeTooltipRows && activeTooltipRows.length > 0 ? (
     <Animated.View
-      pointerEvents="none"
       testID={`bar-chart-tooltip-${activeTooltipIndex}`}
       style={[
         styles.tooltipBubble,
         {
           left: tooltipPos.left,
           top: tooltipPos.top,
+          pointerEvents: "none",
           backgroundColor: theme.bg.surface,
           borderColor: theme.border.default,
-          shadowColor: mode === "dark" ? "#000000" : "#0f1720",
         },
+        tooltipShadowStyle,
         tooltipAnimatedStyle,
       ]}
     >
@@ -541,6 +546,10 @@ const BreakdownModeBarChart = React.memo(function BreakdownModeBarChart({
 }: BreakdownModeBarChartProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const tooltipShadowStyle = useMemo(
+    () => getShadowStyle({ themeName: mode, level: "lg" }),
+    [mode],
+  );
 
   const [measuredLabelWidth, setMeasuredLabelWidth] = useState<number>(0);
   const [measuredRowHeight, setMeasuredRowHeight] = useState<number>(0);
@@ -804,17 +813,17 @@ const BreakdownModeBarChart = React.memo(function BreakdownModeBarChart({
         />
         {activeTooltipIndex !== null && effectiveSorted[activeTooltipIndex]?.hoverRows?.length ? (
           <Animated.View
-            pointerEvents="none"
             testID={`breakdown-hover-bubble-${activeTooltipIndex}`}
             style={[
               styles.tooltipBubble,
               {
                 left: tooltipPos.left,
                 top: tooltipPos.top,
+                pointerEvents: "none",
                 backgroundColor: theme.bg.surface,
                 borderColor: theme.border.default,
-                shadowColor: mode === "dark" ? "#000000" : "#0f1720",
               },
+              tooltipShadowStyle,
               tooltipAnimatedStyle,
             ]}
           >
@@ -1284,10 +1293,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[10],
     paddingVertical: spacing[8],
     zIndex: 10,
-    elevation: 5,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.22,
-    shadowRadius: 16,
   },
   tooltipRow: {
     flexDirection: "row",

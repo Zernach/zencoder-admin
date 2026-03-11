@@ -5,6 +5,7 @@ import type { PointerEvent as RNPointerEvent, ViewProps, ViewStyle, StyleProp } 
 import Svg, { Path } from "react-native-svg";
 import { arc, pie } from "d3-shape";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { getShadowStyle } from "@/theme/shadowStyles";
 import { semanticThemes } from "@/theme/themes";
 import { fontFamilies, radius, spacing } from "@/theme/tokens";
 import { typography } from "@/theme/typography";
@@ -73,6 +74,10 @@ export const PieChart = React.memo(function PieChart({
   const resolvedShowSliceLabels = showSliceLabels ?? true;
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const tooltipShadowStyle = useMemo(
+    () => getShadowStyle({ themeName: mode, level: "lg" }),
+    [mode],
+  );
 
   const { slices, total, outerRadius, innerRadius: computedInnerRadius } = useMemo(() => {
     const normalizedData = data.map((datum) => ({
@@ -234,17 +239,17 @@ export const PieChart = React.memo(function PieChart({
   const tooltipBubble =
     activeTooltipRows && activeTooltipRows.length > 0 ? (
       <Animated.View
-        pointerEvents="none"
         testID={`pie-chart-tooltip-${activeTooltipIndex}`}
         style={[
           styles.tooltipBubble,
           {
             left: tooltipPos.left,
             top: tooltipPos.top,
+            pointerEvents: "none",
             backgroundColor: theme.bg.surface,
             borderColor: theme.border.default,
-            shadowColor: mode === "dark" ? "#000000" : "#0f1720",
           },
+          tooltipShadowStyle,
           tooltipAnimatedStyle,
         ]}
       >
@@ -283,7 +288,12 @@ export const PieChart = React.memo(function PieChart({
           />
         ))}
       </Svg>
-      <View style={styles.overlay} pointerEvents={overlayPointerEvents}>
+      <View
+        style={[
+          styles.overlay,
+          { pointerEvents: overlayPointerEvents },
+        ]}
+      >
         {resolvedShowSliceLabels &&
           slices
             .filter((slice) => slice.percent > sliceLabelThreshold)
@@ -339,10 +349,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[10],
     paddingVertical: spacing[8],
     zIndex: 10,
-    elevation: 5,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.22,
-    shadowRadius: 16,
   },
   tooltipRow: {
     flexDirection: "row",

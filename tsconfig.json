@@ -7,5 +7,5 @@
     "paths": { "@/*": ["src/*"] },
     "types": ["jest", "@testing-library/jest-native"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "e2e/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "e2e/**/*.ts", "jest.config.ts", "metro.config.ts", "babel.config.ts"]
 }

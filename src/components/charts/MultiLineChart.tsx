@@ -6,6 +6,7 @@ import { curveMonotoneX, line } from "d3-shape";
 import type { TimeSeriesPoint } from "@/features/analytics/types";
 import { formatCompactNumber } from "@/features/analytics/utils/formatters";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { getShadowStyle } from "@/theme/shadowStyles";
 import { semanticThemes } from "@/theme/themes";
 import { fontFamilies, radius, spacing } from "@/theme/tokens";
 
@@ -42,6 +43,10 @@ export const MultiLineChart = React.memo(function MultiLineChart({
 }: MultiLineChartProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const tooltipShadowStyle = useMemo(
+    () => getShadowStyle({ themeName: mode, level: "md" }),
+    [mode],
+  );
   const defaultColors = [theme.data.seriesPrimary, theme.data.seriesSecondary, theme.data.seriesTertiary];
   const [containerWidth, setContainerWidth] = useState(300);
   const [activePointIndex, setActivePointIndex] = useState<number | null>(null);
@@ -336,7 +341,6 @@ export const MultiLineChart = React.memo(function MultiLineChart({
         {/* Interaction layer */}
         <View
           testID="multi-line-chart-interaction-layer"
-          pointerEvents="auto"
           style={[
             styles.interactionLayer,
             {
@@ -344,6 +348,7 @@ export const MultiLineChart = React.memo(function MultiLineChart({
               left: MARGIN.left,
               width: innerW,
               height: innerH,
+              pointerEvents: "auto",
             },
           ]}
           {...(isWeb
@@ -365,16 +370,17 @@ export const MultiLineChart = React.memo(function MultiLineChart({
         {activePointData && tooltipPosition ? (
           <View
             testID="multi-line-chart-hover-tooltip"
-            pointerEvents="none"
             style={[
               styles.tooltip,
               {
                 left: tooltipPosition.left,
                 top: tooltipPosition.top,
                 width: TOOLTIP_WIDTH,
+                pointerEvents: "none",
                 backgroundColor: theme.bg.surface,
                 borderColor: theme.border.default,
               },
+              tooltipShadowStyle,
             ]}
           >
             <Text style={[styles.tooltipDate, { color: theme.text.tertiary }]}>
@@ -441,10 +447,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     zIndex: 3,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.14,
-    shadowRadius: 8,
-    elevation: 3,
   },
   tooltipDate: {
     fontFamily: fontFamilies.sans,

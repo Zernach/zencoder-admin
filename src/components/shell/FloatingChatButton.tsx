@@ -7,6 +7,7 @@ import { CustomButton } from "@/components/buttons";
 import { buildChatHistoryRoute, resolveTabFromPathname } from "@/constants/routes";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useThemeMode } from "@/providers/ThemeProvider";
+import { getShadowStyle } from "@/theme/shadowStyles";
 import { semanticThemes } from "@/theme/themes";
 import { borderWidth, layout, radius, spacing } from "@/theme/tokens";
 import { MiniChatModal } from "./MiniChatModal";
@@ -23,6 +24,10 @@ export const FloatingChatButton = React.memo(function FloatingChatButton() {
   const isMobile = bp === "mobile";
   const isDesktop = bp === "desktop";
   const [expanded, setExpanded] = useState(false);
+  const buttonShadowStyle = useMemo(
+    () => getShadowStyle({ themeName: mode, level: "lg" }),
+    [mode],
+  );
 
   const targetRoute = useMemo(() => {
     const tab = resolveTabFromPathname(pathname);
@@ -57,8 +62,9 @@ export const FloatingChatButton = React.memo(function FloatingChatButton() {
           ? insets.bottom + layout.touchTargetMin + spacing[20]
           : spacing[24],
       },
+      buttonShadowStyle,
     ],
-    [insets.bottom, isMobile, theme.border.brand],
+    [buttonShadowStyle, insets.bottom, isMobile, theme.border.brand],
   );
 
   if (isDesktop && expanded) {
@@ -88,10 +94,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 300,
-    elevation: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.28,
-    shadowRadius: 10,
   },
 });

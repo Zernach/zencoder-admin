@@ -121,12 +121,8 @@ export const selectActiveFilters = createSelector(
   }),
 );
 
-export const selectPreset = createSelector(
-  [(state: { filters: FiltersState }) => state.filters.preset],
-  (preset) => preset,
-);
+export const selectPreset = (state: { filters: FiltersState }): TimeRangePreset =>
+  state.filters.preset;
 
-export const selectSearchQuery = createSelector(
-  [(state: { filters: FiltersState }) => state.filters.searchQuery],
-  (searchQuery) => searchQuery,
-);
+export const selectSearchQuery = (state: { filters: FiltersState }): string =>
+  state.filters.searchQuery;

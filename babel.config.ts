@@ -1,4 +1,6 @@
-module.exports = function (api) {
+type BabelConfigApi = { cache: (enabled: boolean) => void };
+
+export default function (api: BabelConfigApi) {
   api.cache(true);
   return {
     presets: ["babel-preset-expo"],
@@ -7,4 +9,4 @@ module.exports = function (api) {
       "react-native-reanimated/plugin", // must be last
     ],
   };
-};
+}
