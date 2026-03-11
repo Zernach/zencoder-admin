@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { CustomModal } from "@/components/modals";
 import type { TextInput as TextInputHandle } from "react-native";
-import { Search, Clock, X, CircleUserRound } from "lucide-react-native";
+import { Search, Clock, X, User } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
@@ -273,14 +273,16 @@ export const TopBar = React.memo(function TopBar({
           </CustomButton>
         )}
         <CustomButton
-          style={[styles.profileBtn, { backgroundColor: "#E65100" }]}
-          buttonMode="surface"
-          buttonSize="iconSm"
+          style={[styles.profileBtn, { backgroundColor: "transparent", borderWidth: 1, borderColor: "#E65100" }]}
+          buttonMode="unstyled"
+          buttonSize="none"
           accessibilityRole="button"
           accessibilityLabel="Open settings"
           onPress={handleOpenSettings}
         >
-          <CircleUserRound size={24} color="#FFFFFF" />
+          <View style={{ marginTop: 0.5, marginLeft: -1 }}>
+            <User size={18} color="#FFFFFF" strokeWidth={1.5} />
+          </View>
         </CustomButton>
       </View>
       <CustomModal

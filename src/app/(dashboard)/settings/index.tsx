@@ -119,7 +119,7 @@ export default function SettingsScreen() {
   const refFor = useSectionRef();
 
   const headerProps = useMemo(
-    () => ({ title: t("settings.title"), subtitle: t("settings.subtitle") }),
+    () => ({ title: t("settings.title"), subtitle: t("settings.subtitle"), showBackButton: false }),
     [t],
   );
 
@@ -132,7 +132,7 @@ export default function SettingsScreen() {
         </View>
         <View style={styles.profileInfo}>
           <Text style={[styles.profileName, { color: theme.text.primary }]}>{t("settings.adminUser")}</Text>
-          <Text style={[styles.profileEmail, { color: theme.text.secondary }]}>{t("settings.adminEmail")}</Text>
+          <Text selectable={false} style={[styles.profileEmail, { color: theme.text.secondary }]} pointerEvents="none">{t("settings.adminEmail")}</Text>
           <View style={[styles.roleBadge, { backgroundColor: theme.border.brand + "1A" }]}>
             <Text style={[styles.roleBadgeText, { color: theme.text.brand }]}>{t("settings.ownerRole")}</Text>
           </View>
