@@ -117,6 +117,21 @@ src/
   theme/                   Tokens, theme objects, typography, breakpoints
 ```
 
+## ⚙️ Backend Handoff (OpenAPI)
+
+- Backend contract summary: `docs/openapi/api-contracts.md`
+- Readiness audit and priorities: `docs/openapi/api-contract-audit.md`
+- Generated OpenAPI artifact: `openapi/admin-api-v1.json` (mirrored at `docs/openapi/admin-api-v1.json`)
+- Endpoint metadata source registries:
+  - `src/features/analytics/contracts/endpoints.ts`
+  - `src/features/chat/contracts/endpoints.ts`
+
+Regenerate the OpenAPI artifact after contract updates:
+
+```bash
+npm run contracts:openapi
+```
+
 ## ⚙️ Scripts
 
 ```bash

@@ -1,4 +1,5 @@
 import type { TABS } from "@/constants/routes";
+import type { CursorPageRequest, CursorPageResponse } from "@/contracts/http/pagination";
 
 export type ChatMessageRole = "user" | "assistant" | "system";
 
@@ -35,18 +36,16 @@ export interface ChatMessage {
   createdAtIso: string;
 }
 
-export interface GetChatHistoryRequest {
+export interface GetChatHistoryRequest extends CursorPageRequest {
+  orgId: string;
   tab: TABS;
   scope?: ChatHistoryScope;
-  limit?: number;
 }
 
-export interface GetChatHistoryResponse {
-  items: ChatConversationSummary[];
-  totalCount: number;
-}
+export interface GetChatHistoryResponse extends CursorPageResponse<ChatConversationSummary> {}
 
 export interface GetChatThreadRequest {
+  orgId: string;
   tab: TABS;
   chatId: string;
 }
@@ -57,6 +56,7 @@ export interface GetChatThreadResponse {
 }
 
 export interface CreateChatRequest {
+  orgId: string;
   tab: TABS;
   title: string;
   firstMessage: string;
@@ -67,6 +67,7 @@ export interface CreateChatResponse {
 }
 
 export interface SendMessageRequest {
+  orgId: string;
   tab: TABS;
   chatId: string;
   content: string;
@@ -78,6 +79,7 @@ export interface SendMessageResponse {
 }
 
 export interface MarkAsReadRequest {
+  orgId: string;
   tab: TABS;
   chatId: string;
 }

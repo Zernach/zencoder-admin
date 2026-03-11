@@ -13,7 +13,7 @@ This specification defines the exact architecture, shared contracts, and impleme
 ## Stack
 - Expo + React Native + React Native Web.
 - Expo Router.
-- TanStack React Query.
+- Redux Toolkit + RTK Query.
 - React Native SVG + chart library compatible with iOS/Android/Web.
 - Jest + React Native Testing Library for unit/component/integration tests.
 - Playwright for web end-to-end tests.
@@ -26,14 +26,13 @@ Routing and app shell:
 - `react-native-safe-area-context` for device-safe spacing and notch handling.
 
 Data orchestration:
-- `@tanstack/react-query` for async caching, background refetch, and loading/error state standardization.
-- `@reduxjs/toolkit` + `react-redux` for shared client state (UI preferences, session-level controls, cross-screen app state).
-- `redux-saga` for complex async orchestration and side-effect workflows that are not simple request caching.
+- `@reduxjs/toolkit` + `react-redux` for shared client state.
+- RTK Query (`createApi`) for server-like/stubbed data fetching and cache management.
 
 State boundary rules:
-- Use React Query for server-like/stub API data fetching and caching.
-- Use Redux for global client/application state.
-- Use Redux Saga for long-running flows (polling, cancellation, multi-step side effects, orchestration between domains).
+- Use RTK Query for server-like/stub API data fetching and caching.
+- Use Redux slices for global client/application state.
+- Keep API contracts in shared TypeScript modules used by UI, services, and stub APIs.
 
 Data visualization (gorgeous but maintainable):
 - `react-native-svg` as the base rendering layer for all charts.
@@ -220,21 +219,6 @@ export interface GovernanceResponse {
   policyChanges: PolicyChangeEvent[];
 }
 
-export interface RunsPageRequest {
-  filters: AnalyticsFilters;
-  page: number;
-  pageSize: number;
-  sortBy: "startedAtIso" | "costUsd" | "durationMs" | "totalTokens";
-  sortDirection: "asc" | "desc";
-}
-
-export interface RunsPageResponse {
-  total: number;
-  page: number;
-  pageSize: number;
-  rows: RunListRow[];
-}
-
 export interface RunDetailResponse {
   run: RunListRow;
   timeline: RunTimelineEvent[];
@@ -337,8 +321,22 @@ export interface IAnalyticsApi {
   getCost(filters: AnalyticsFilters): Promise<CostResponse>;
   getReliability(filters: AnalyticsFilters): Promise<ReliabilityResponse>;
   getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse>;
-  getRunsPage(request: RunsPageRequest): Promise<RunsPageResponse>;
-  getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse>;
+  getAgentsHub(filters: AnalyticsFilters): Promise<AgentsHubResponse>;
+  getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse>;
+  getSearchSuggestions(request: SearchSuggestionsRequest): Promise<SearchSuggestionsResponse>;
+  getAgentDetail(request: GetAgentDetailRequest): Promise<AgentDetailResponse>;
+  getProjectDetail(request: GetProjectDetailRequest): Promise<ProjectDetailResponse>;
+  getTeamDetail(request: GetTeamDetailRequest): Promise<TeamDetailResponse>;
+  getHumanDetail(request: GetHumanDetailRequest): Promise<HumanDetailResponse>;
+  getRunDetail(request: GetRunDetailRequest): Promise<RunDetailResponse>;
+  getRuleDetail(request: GetRuleDetailRequest): Promise<RuleDetailResponse>;
+  updateRule(request: UpdateRuleRequest): Promise<UpdateRuleResponse>;
+  createComplianceRule(request: CreateComplianceRuleRequest): Promise<CreateComplianceRuleResponse>;
+  createSeat(request: CreateSeatRequest): Promise<CreateSeatResponse>;
+  createProject(request: CreateProjectRequest): Promise<CreateProjectResponse>;
+  createTeam(request: CreateTeamRequest): Promise<CreateTeamResponse>;
+  createAgent(request: CreateAgentRequest): Promise<CreateAgentResponse>;
+  updateAgentDescription(request: UpdateAgentDescriptionRequest): Promise<UpdateAgentDescriptionResponse>;
 }
 ```
 
@@ -347,23 +345,14 @@ export interface IAnalyticsApi {
 - Returns fully typed data only.
 - Uses deterministic seeded fixtures.
 - Simulates latency between `250ms` and `900ms`.
-- Supports filtering, sorting, pagination, and segmentation logic.
+- Supports filtering and realistic dashboard/list/search behavior.
 - Can optionally inject controlled failures for testing (`debugFailureRate` config).
 
 ## Service Layer
 Use interface-driven service layer:
 
 ```ts
-export interface IAnalyticsService {
-  getOverview(filters: AnalyticsFilters): Promise<OverviewResponse>;
-  getUsage(filters: AnalyticsFilters): Promise<UsageResponse>;
-  getOutcomes(filters: AnalyticsFilters): Promise<OutcomesResponse>;
-  getCost(filters: AnalyticsFilters): Promise<CostResponse>;
-  getReliability(filters: AnalyticsFilters): Promise<ReliabilityResponse>;
-  getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse>;
-  getRunsPage(request: RunsPageRequest): Promise<RunsPageResponse>;
-  getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse>;
-}
+export interface IAnalyticsService extends IAnalyticsApi {}
 ```
 
 `AnalyticsService` responsibilities:
@@ -438,7 +427,7 @@ Required hooks:
 - Emit screen and filter interaction events via local analytics interface (stubbed).
 
 ## Security and Data Handling
-- All requests must include `orgId` scoping via `AnalyticsFilters`.
+- All analytics and chat requests are tenant-scoped with `orgId`.
 - Treat all prompt/run metadata as sensitive in logs and exports.
 - Governance screens must expose policy/audit insights but not edit controls in V1.
 
@@ -447,7 +436,7 @@ Required hooks:
 2. Implement shared contracts and interfaces.
 3. Build deterministic stub fixtures and `StubAnalyticsApi`.
 4. Build service layer and metric utilities.
-5. Implement hooks with React Query.
+5. Implement hooks with RTK Query and service abstractions.
 6. Compose reusable dashboard components.
 7. Build each screen in route order from Overview to Run Detail.
 8. Implement loading/empty/error states everywhere.

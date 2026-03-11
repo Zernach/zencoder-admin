@@ -25,6 +25,12 @@ import type {
   SearchSuggestion,
   SearchSuggestionGroup,
   SearchEntityType,
+  GetAgentDetailRequest,
+  GetProjectDetailRequest,
+  GetTeamDetailRequest,
+  GetHumanDetailRequest,
+  GetRunDetailRequest,
+  GetRuleDetailRequest,
   AgentDetailResponse,
   ProjectDetailResponse,
   TeamDetailResponse,
@@ -50,6 +56,12 @@ import type {
   TeamViolationMetric,
   CostPerTeamRow,
 } from "@/features/analytics/types";
+import {
+  conflictError,
+  internalError,
+  notFoundError,
+  validationError,
+} from "@/contracts/http/errors";
 import { round2, round4 } from "../../utils/metricFormulas";
 import {
   percentile,
@@ -127,16 +139,25 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   private async simulate(): Promise<void> {
     if (this.failureRate > 0 && Math.random() < this.failureRate) {
-      throw new Error("StubAnalyticsApi: simulated failure");
+      throw internalError("StubAnalyticsApi: simulated failure");
     }
     const ms = this.latencyMin + Math.random() * (this.latencyMax - this.latencyMin);
     if (ms <= 0) return;
     await new Promise((r) => setTimeout(r, ms));
   }
 
+  private assertOrgId(orgId: string): void {
+    if (orgId.trim().length === 0) {
+      throw validationError("orgId is required", [
+        { field: "orgId", code: "required", message: "Provide a non-empty orgId." },
+      ]);
+    }
+  }
+
   // ── Shared data helpers ────────────────────────────────
 
   private filterRuns(filters: AnalyticsFilters): RunListRow[] {
+    this.assertOrgId(filters.orgId);
     return this.seed.runs.filter((run) => {
       if (run.startedAtIso < filters.timeRange.fromIso) return false;
       if (run.startedAtIso > filters.timeRange.toIso) return false;
@@ -900,7 +921,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const dayCount = this.bucketByDay(runs, () => 0).length || 1;
     const dailySpend = totalCost / dayCount;
     const budgetUsd = 60000;
-    const forecastMonthEndUsd = dailySpend * 30;
+    const budgetSpent = totalCost * 1.35;
+    const forecastMonthEndUsd = (budgetSpent / dayCount) * 30;
 
     return {
       totalCostUsd: round2(totalCost),
@@ -912,8 +934,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       providerBreakdown,
       budget: {
         budgetUsd,
-        spentUsd: round2(totalCost),
-        remainingUsd: round2(budgetUsd - totalCost),
+        spentUsd: round2(budgetSpent),
+        remainingUsd: round2(budgetUsd - budgetSpent),
         forecastMonthEndUsd: round2(forecastMonthEndUsd),
       },
     };
@@ -1285,12 +1307,23 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     request: SearchSuggestionsRequest,
   ): Promise<SearchSuggestionsResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
 
     const query = request.query.trim().toLowerCase();
-    const perGroupLimit = request.limit ?? 5;
+    const totalLimit = Math.max(1, request.limit ?? 25);
+    const offset = request.cursor ? Number.parseInt(request.cursor, 10) : 0;
+    if (offset < 0 || Number.isNaN(offset)) {
+      throw validationError("cursor must be a non-negative integer string", [
+        {
+          field: "cursor",
+          code: "invalid_format",
+          message: "Expected cursor to be an encoded numeric offset.",
+        },
+      ]);
+    }
 
     if (query.length === 0) {
-      return { groups: [], totalCount: 0 };
+      return { groups: [], totalCount: 0, nextCursor: undefined };
     }
 
     const matchAndScore = (text: string): number => {
@@ -1310,7 +1343,6 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         .map((s) => ({ suggestion: s, score: Math.max(matchAndScore(s.title), matchAndScore(s.subtitle ?? "")) }))
         .filter((s) => s.score > 0)
         .sort((a, b) => b.score - a.score || a.suggestion.title.localeCompare(b.suggestion.title))
-        .slice(0, perGroupLimit)
         .map((s) => s.suggestion);
 
       if (scored.length === 0) return null;
@@ -1365,23 +1397,57 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       ["run", "Runs", runCandidates],
     ];
 
-    const groups: SearchSuggestionGroup[] = [];
-    let totalCount = 0;
+    const fullGroups: SearchSuggestionGroup[] = [];
     for (const [entityType, label, candidates] of groupDefs) {
       const group = buildGroup(entityType, label, candidates);
       if (group) {
-        groups.push(group);
-        totalCount += group.suggestions.length;
+        fullGroups.push(group);
       }
     }
 
-    return { groups, totalCount };
+    const flattened = fullGroups.flatMap((group) =>
+      group.suggestions.map((suggestion) => ({
+        entityType: group.entityType,
+        label: group.label,
+        suggestion,
+      })),
+    );
+
+    const paged = flattened.slice(offset, offset + totalLimit);
+    const nextCursor =
+      offset + totalLimit < flattened.length ? String(offset + totalLimit) : undefined;
+
+    const pagedGroupsByType = new Map<SearchEntityType, SearchSuggestionGroup>();
+    for (const item of paged) {
+      const existing = pagedGroupsByType.get(item.entityType);
+      if (existing) {
+        existing.suggestions.push(item.suggestion);
+      } else {
+        pagedGroupsByType.set(item.entityType, {
+          entityType: item.entityType,
+          label: item.label,
+          suggestions: [item.suggestion],
+        });
+      }
+    }
+
+    const groups = groupDefs
+      .map(([entityType]) => pagedGroupsByType.get(entityType))
+      .filter((group): group is SearchSuggestionGroup => group != null);
+
+    return {
+      groups,
+      totalCount: flattened.length,
+      nextCursor,
+    };
   }
 
-  async getAgentDetail(_orgId: string, agentId: string): Promise<AgentDetailResponse> {
+  async getAgentDetail(request: GetAgentDetailRequest): Promise<AgentDetailResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
+    const { agentId } = request;
     const agent = this.seed.agents.find((a) => a.id === agentId);
-    if (!agent) throw new Error(`Agent not found: ${agentId}`);
+    if (!agent) throw notFoundError("Agent", agentId);
     const project = this.seed.projects.find((p) => p.id === agent.projectId);
     const team = project ? this.seed.teams.find((t) => t.id === project.teamId) : undefined;
     const agentRuns = this.seed.runs.filter((r) => r.agentId === agentId);
@@ -1404,10 +1470,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     };
   }
 
-  async getProjectDetail(_orgId: string, projectId: string): Promise<ProjectDetailResponse> {
+  async getProjectDetail(request: GetProjectDetailRequest): Promise<ProjectDetailResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
+    const { projectId } = request;
     const project = this.seed.projects.find((p) => p.id === projectId);
-    if (!project) throw new Error(`Project not found: ${projectId}`);
+    if (!project) throw notFoundError("Project", projectId);
     const team = this.seed.teams.find((t) => t.id === project.teamId);
     const projectAgents = this.seed.agents.filter((a) => a.projectId === projectId);
     const projectRuns = this.seed.runs.filter((r) => r.projectId === projectId);
@@ -1426,10 +1494,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     };
   }
 
-  async getTeamDetail(_orgId: string, teamId: string): Promise<TeamDetailResponse> {
+  async getTeamDetail(request: GetTeamDetailRequest): Promise<TeamDetailResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
+    const { teamId } = request;
     const team = this.seed.teams.find((t) => t.id === teamId);
-    if (!team) throw new Error(`Team not found: ${teamId}`);
+    if (!team) throw notFoundError("Team", teamId);
     const members = this.seed.users.filter((u) => u.teamId === teamId);
     const projects = this.seed.projects.filter((p) => p.teamId === teamId);
     const teamRuns = this.seed.runs.filter((r) => r.teamId === teamId);
@@ -1446,10 +1516,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     };
   }
 
-  async getHumanDetail(_orgId: string, humanId: string): Promise<HumanDetailResponse> {
+  async getHumanDetail(request: GetHumanDetailRequest): Promise<HumanDetailResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
+    const { humanId } = request;
     const user = this.seed.users.find((u) => u.id === humanId);
-    if (!user) throw new Error(`Human not found: ${humanId}`);
+    if (!user) throw notFoundError("Human", humanId);
     const team = this.seed.teams.find((t) => t.id === user.teamId);
     const userRuns = this.seed.runs.filter((r) => r.userId === humanId);
     return {
@@ -1462,10 +1534,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     };
   }
 
-  async getRunDetail(_orgId: string, runId: string): Promise<RunDetailResponse> {
+  async getRunDetail(request: GetRunDetailRequest): Promise<RunDetailResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
+    const { runId } = request;
     const run = this.seed.runs.find((r) => r.id === runId);
-    if (!run) throw new Error(`Run not found: ${runId}`);
+    if (!run) throw notFoundError("Run", runId);
     const agent = this.seed.agents.find((a) => a.id === run.agentId);
     const project = this.seed.projects.find((p) => p.id === run.projectId);
     const team = project ? this.seed.teams.find((t) => t.id === project.teamId) : undefined;
@@ -1479,8 +1553,10 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     };
   }
 
-  async getRuleDetail(_orgId: string, ruleId: string): Promise<RuleDetailResponse> {
+  async getRuleDetail(request: GetRuleDetailRequest): Promise<RuleDetailResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
+    const { ruleId } = request;
     // Build the same rules list that getGovernance produces so we can look up by id
     const baseRules: GovernanceRuleRow[] = this.seed.complianceItems.map((item, index) => {
       const sortedChanges = [...this.seed.policyChanges].sort((a, b) =>
@@ -1514,7 +1590,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
     const allRules = [...baseRules, ...createdRules];
     const rule = allRules.find((r) => r.id === ruleId);
-    if (!rule) throw new Error(`Rule not found: ${ruleId}`);
+    if (!rule) throw notFoundError("Rule", ruleId);
 
     // Get stored assignments or default: seed rules start with first 3 agents / 2 projects
     const assignments = this.ruleAssignments.get(ruleId) ?? {
@@ -1546,6 +1622,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async updateRule(request: UpdateRuleRequest): Promise<UpdateRuleResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
 
     // Try to find and update in createdComplianceRules first
     const created = this.createdComplianceRules.find((r) => r.id === request.ruleId);
@@ -1562,7 +1639,10 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     });
 
     // Return updated rule
-    const detail = await this.getRuleDetail("", request.ruleId);
+    const detail = await this.getRuleDetail({
+      orgId: request.orgId,
+      ruleId: request.ruleId,
+    });
     return { rule: { ...detail.rule, title: request.title, description: request.description, editedAtIso: new Date().toISOString() } };
   }
 
@@ -1572,6 +1652,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async createComplianceRule(request: CreateComplianceRuleRequest): Promise<CreateComplianceRuleResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
     const ruleId = this.nextId("rule");
     const createdAtIso = new Date().toISOString();
 
@@ -1618,6 +1699,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async createSeat(request: CreateSeatRequest): Promise<CreateSeatResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
 
     // Reject duplicate email
     const allEmails = [
@@ -1625,7 +1707,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       ...this.createdUsers.map((u) => u.email),
     ];
     if (allEmails.includes(request.email)) {
-      throw new Error(`A user with email "${request.email}" already exists`);
+      throw conflictError(`A user with email "${request.email}" already exists`);
     }
 
     const id = this.nextId("user");
@@ -1639,6 +1721,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async createProject(request: CreateProjectRequest): Promise<CreateProjectResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
 
     // Reject duplicate project name within same team
     const allProjects = [...this.seed.projects, ...this.createdProjects];
@@ -1646,7 +1729,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       (p) => p.name === request.name && p.teamId === request.teamId,
     );
     if (duplicate) {
-      throw new Error(`A project named "${request.name}" already exists in this team`);
+      throw conflictError(`A project named "${request.name}" already exists in this team`);
     }
 
     const id = this.nextId("proj");
@@ -1660,11 +1743,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async createTeam(request: CreateTeamRequest): Promise<CreateTeamResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
 
     // Reject duplicate team name
     const allTeams = [...this.seed.teams, ...this.createdTeams];
     if (allTeams.some((t) => t.name === request.name)) {
-      throw new Error(`A team named "${request.name}" already exists`);
+      throw conflictError(`A team named "${request.name}" already exists`);
     }
 
     const id = this.nextId("team");
@@ -1678,6 +1762,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async createAgent(request: CreateAgentRequest): Promise<CreateAgentResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
 
     // Reject duplicate agent name within same project
     const allAgents = [...this.seed.agents, ...this.createdAgents];
@@ -1685,7 +1770,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       (a) => a.name === request.name && a.projectId === request.projectId,
     );
     if (duplicate) {
-      throw new Error(`An agent named "${request.name}" already exists in this project`);
+      throw conflictError(`An agent named "${request.name}" already exists in this project`);
     }
 
     const id = this.nextId("agent");
@@ -1699,10 +1784,11 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   async updateAgentDescription(request: UpdateAgentDescriptionRequest): Promise<UpdateAgentDescriptionResponse> {
     await this.simulate();
+    this.assertOrgId(request.orgId);
     const agent =
       this.seed.agents.find((a) => a.id === request.agentId) ??
       this.createdAgents.find((a) => a.id === request.agentId);
-    if (!agent) throw new Error(`Agent not found: ${request.agentId}`);
+    if (!agent) throw notFoundError("Agent", request.agentId);
     agent.description = request.description;
     return { agent };
   }

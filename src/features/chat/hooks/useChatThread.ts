@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { TABS } from "@/constants/routes";
 import { useAppDependencies } from "@/core/di";
+import { useAppSelector } from "@/store/hooks";
+import { selectOrgId } from "@/store/slices/filtersSlice";
+import { getApiErrorMessage } from "@/contracts/http/errors";
 import type { GetChatThreadResponse } from "@/features/chat/types";
 
 interface UseChatThreadResult {
@@ -12,6 +15,7 @@ interface UseChatThreadResult {
 
 export function useChatThread(tab: TABS, chatId: string): UseChatThreadResult {
   const { chatService } = useAppDependencies();
+  const orgId = useAppSelector(selectOrgId);
   const [data, setData] = useState<GetChatThreadResponse>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
@@ -32,7 +36,7 @@ export function useChatThread(tab: TABS, chatId: string): UseChatThreadResult {
     setError(undefined);
 
     try {
-      const response = await chatService.getChatThread({ tab, chatId });
+      const response = await chatService.getChatThread({ orgId, tab, chatId });
 
       if (requestId !== requestIdRef.current) {
         return;
@@ -45,9 +49,7 @@ export function useChatThread(tab: TABS, chatId: string): UseChatThreadResult {
       }
 
       setError(
-        unknownError instanceof Error
-          ? unknownError.message
-          : "Failed to load chat thread.",
+        getApiErrorMessage(unknownError, "Failed to load chat thread."),
       );
       setData(undefined);
     } finally {
@@ -55,7 +57,7 @@ export function useChatThread(tab: TABS, chatId: string): UseChatThreadResult {
         setLoading(false);
       }
     }
-  }, [chatId, chatService, tab]);
+  }, [chatId, chatService, orgId, tab]);
 
   useEffect(() => {
     void load();
@@ -72,8 +74,8 @@ export function useChatThread(tab: TABS, chatId: string): UseChatThreadResult {
     if (markedRef.current === data.chat.id) return;
 
     markedRef.current = data.chat.id;
-    void chatService.markAsRead({ tab, chatId: data.chat.id });
-  }, [data, chatService, tab]);
+    void chatService.markAsRead({ orgId, tab, chatId: data.chat.id });
+  }, [data, chatService, orgId, tab]);
 
   return {
     data,

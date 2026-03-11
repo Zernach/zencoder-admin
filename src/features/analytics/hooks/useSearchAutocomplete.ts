@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGetSearchSuggestionsQuery } from "@/store/api";
+import { getApiErrorMessage } from "@/contracts/http/errors";
 import type {
   SearchSuggestionsResponse,
   SearchSuggestion,
 } from "@/features/analytics/types";
+import { useDashboardFilters } from "./useDashboardFilters";
 
 const DEBOUNCE_MS = 200;
 const MIN_QUERY_LENGTH = 2;
@@ -22,6 +24,7 @@ interface UseSearchAutocompleteResult {
 export function useSearchAutocomplete(
   onSelect?: (suggestion: SearchSuggestion) => void,
 ): UseSearchAutocompleteResult {
+  const { filters } = useDashboardFilters();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedSuggestion, setSelectedSuggestion] = useState<SearchSuggestion | null>(null);
@@ -48,7 +51,7 @@ export function useSearchAutocomplete(
   const shouldSkip = debouncedQuery.length < MIN_QUERY_LENGTH || dismissed;
 
   const { data, isLoading, error } = useGetSearchSuggestionsQuery(
-    { query: debouncedQuery },
+    { orgId: filters.orgId, query: debouncedQuery },
     { skip: shouldSkip },
   );
 
@@ -76,7 +79,7 @@ export function useSearchAutocomplete(
   return {
     suggestions: shouldSkip ? null : (data ?? null),
     loading: shouldSkip ? false : isLoading,
-    error: error ? String(error) : undefined,
+    error: error ? getApiErrorMessage(error) : undefined,
     query,
     setQuery: handleSetQuery,
     clear,

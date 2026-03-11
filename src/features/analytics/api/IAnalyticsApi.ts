@@ -10,6 +10,12 @@ import type {
   LiveAgentSessionsResponse,
   SearchSuggestionsRequest,
   SearchSuggestionsResponse,
+  GetAgentDetailRequest,
+  GetProjectDetailRequest,
+  GetTeamDetailRequest,
+  GetHumanDetailRequest,
+  GetRunDetailRequest,
+  GetRuleDetailRequest,
   AgentDetailResponse,
   ProjectDetailResponse,
   TeamDetailResponse,
@@ -42,12 +48,12 @@ export interface IAnalyticsApi {
   getAgentsHub(filters: AnalyticsFilters): Promise<AgentsHubResponse>;
   getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse>;
   getSearchSuggestions(request: SearchSuggestionsRequest): Promise<SearchSuggestionsResponse>;
-  getAgentDetail(orgId: string, agentId: string): Promise<AgentDetailResponse>;
-  getProjectDetail(orgId: string, projectId: string): Promise<ProjectDetailResponse>;
-  getTeamDetail(orgId: string, teamId: string): Promise<TeamDetailResponse>;
-  getHumanDetail(orgId: string, humanId: string): Promise<HumanDetailResponse>;
-  getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse>;
-  getRuleDetail(orgId: string, ruleId: string): Promise<RuleDetailResponse>;
+  getAgentDetail(request: GetAgentDetailRequest): Promise<AgentDetailResponse>;
+  getProjectDetail(request: GetProjectDetailRequest): Promise<ProjectDetailResponse>;
+  getTeamDetail(request: GetTeamDetailRequest): Promise<TeamDetailResponse>;
+  getHumanDetail(request: GetHumanDetailRequest): Promise<HumanDetailResponse>;
+  getRunDetail(request: GetRunDetailRequest): Promise<RunDetailResponse>;
+  getRuleDetail(request: GetRuleDetailRequest): Promise<RuleDetailResponse>;
   updateRule(request: UpdateRuleRequest): Promise<UpdateRuleResponse>;
   createComplianceRule(request: CreateComplianceRuleRequest): Promise<CreateComplianceRuleResponse>;
   createSeat(request: CreateSeatRequest): Promise<CreateSeatResponse>;

@@ -1,0 +1,1 @@
+export { analyticsEndpointRegistry } from "./endpoints";

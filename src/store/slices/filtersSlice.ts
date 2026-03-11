@@ -126,3 +126,6 @@ export const selectPreset = (state: { filters: FiltersState }): TimeRangePreset 
 
 export const selectSearchQuery = (state: { filters: FiltersState }): string =>
   state.filters.searchQuery;
+
+export const selectOrgId = (state: { filters: FiltersState }): string =>
+  state.filters.orgId;

@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from "react";
 import type { GovernanceResponse, TimeSeriesPoint } from "@/features/analytics/types";
 import { useGetGovernanceQuery, useGetUsageQuery } from "@/store/api";
+import { getApiErrorMessage } from "@/contracts/http/errors";
 import { useDashboardFilters } from "./useDashboardFilters";
 
 export interface GovernanceDashboardData extends GovernanceResponse {
@@ -33,7 +34,7 @@ export function useGovernanceDashboard() {
   return {
     data,
     loading: governanceQuery.isLoading || usageQuery.isLoading,
-    error: governanceQuery.error ? String(governanceQuery.error) : undefined,
+    error: governanceQuery.error ? getApiErrorMessage(governanceQuery.error) : undefined,
     refetch,
   };
 }

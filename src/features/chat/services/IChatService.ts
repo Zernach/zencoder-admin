@@ -1,20 +1,4 @@
-import type {
-  CreateChatRequest,
-  CreateChatResponse,
-  GetChatHistoryRequest,
-  GetChatHistoryResponse,
-  GetChatThreadRequest,
-  GetChatThreadResponse,
-  MarkAsReadRequest,
-  MarkAsReadResponse,
-  SendMessageRequest,
-  SendMessageResponse,
-} from "@/features/chat/types";
+import type { IChatApi } from "@/features/chat/api";
 
-export interface IChatService {
-  getChatHistory(request: GetChatHistoryRequest): Promise<GetChatHistoryResponse>;
-  getChatThread(request: GetChatThreadRequest): Promise<GetChatThreadResponse>;
-  createChat(request: CreateChatRequest): Promise<CreateChatResponse>;
-  sendMessage(request: SendMessageRequest): Promise<SendMessageResponse>;
-  markAsRead(request: MarkAsReadRequest): Promise<MarkAsReadResponse>;
-}
+// Keep the service contract locked to the API contract surface.
+export interface IChatService extends IChatApi {}

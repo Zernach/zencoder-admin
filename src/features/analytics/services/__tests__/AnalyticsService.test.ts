@@ -341,7 +341,7 @@ describe("getSearchSuggestions", () => {
     };
 
     const svc = new AnalyticsService(mockApi);
-    const request = { query: "agent" };
+    const request = { orgId: "org_zencoder_001", query: "agent" };
     const res = await svc.getSearchSuggestions(request);
 
     expect(mockApi.getSearchSuggestions).toHaveBeenCalledWith(request);
@@ -349,7 +349,10 @@ describe("getSearchSuggestions", () => {
   });
 
   it("returns grouped suggestions from stub", async () => {
-    const res = await service.getSearchSuggestions({ query: "a" });
+    const res = await service.getSearchSuggestions({
+      orgId: "org_zencoder_001",
+      query: "a",
+    });
     expect(res.groups.length).toBeGreaterThan(0);
     expect(res.totalCount).toBeGreaterThan(0);
   });
@@ -358,41 +361,41 @@ describe("getSearchSuggestions", () => {
 describe("entity detail delegation", () => {
   it("getAgentDetail delegates to api", async () => {
     const agentId = seedData.agents[0]!.id;
-    const res = await service.getAgentDetail("org1", agentId);
+    const res = await service.getAgentDetail({ orgId: "org1", agentId });
     expect(res.agent.id).toBe(agentId);
     expect(typeof res.totalRuns).toBe("number");
   });
 
   it("getProjectDetail delegates to api", async () => {
     const projectId = seedData.projects[0]!.id;
-    const res = await service.getProjectDetail("org1", projectId);
+    const res = await service.getProjectDetail({ orgId: "org1", projectId });
     expect(res.project.id).toBe(projectId);
     expect(typeof res.agentCount).toBe("number");
   });
 
   it("getTeamDetail delegates to api", async () => {
     const teamId = seedData.teams[0]!.id;
-    const res = await service.getTeamDetail("org1", teamId);
+    const res = await service.getTeamDetail({ orgId: "org1", teamId });
     expect(res.team.id).toBe(teamId);
     expect(typeof res.memberCount).toBe("number");
   });
 
   it("getHumanDetail delegates to api", async () => {
     const userId = seedData.users[0]!.id;
-    const res = await service.getHumanDetail("org1", userId);
+    const res = await service.getHumanDetail({ orgId: "org1", humanId: userId });
     expect(res.user.id).toBe(userId);
     expect(typeof res.totalTokens).toBe("number");
   });
 
   it("getRunDetail delegates to api", async () => {
     const runId = seedData.runs[0]!.id;
-    const res = await service.getRunDetail("org1", runId);
+    const res = await service.getRunDetail({ orgId: "org1", runId });
     expect(res.run.id).toBe(runId);
     expect(typeof res.agentName).toBe("string");
   });
 
   it("getRuleDetail delegates to api", async () => {
-    const res = await service.getRuleDetail("org1", "rule_seed_1");
+    const res = await service.getRuleDetail({ orgId: "org1", ruleId: "rule_seed_1" });
     expect(res.rule.id).toBe("rule_seed_1");
     expect(Array.isArray(res.recentViolations)).toBe(true);
     expect(Array.isArray(res.allAgents)).toBe(true);

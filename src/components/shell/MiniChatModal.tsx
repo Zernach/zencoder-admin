@@ -20,6 +20,8 @@ import { CustomButton } from "@/components/buttons";
 import { CustomTextInput } from "@/components/inputs";
 import { LoadingSkeleton } from "@/components/dashboard";
 import { useAppDependencies } from "@/core/di";
+import { useAppSelector } from "@/store/hooks";
+import { selectOrgId } from "@/store/slices/filtersSlice";
 import {
   buildChatHistoryRoute,
   buildChatThreadRoute,
@@ -61,6 +63,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
   const pathname = usePathname();
   const { t } = useTranslation();
   const { chatService } = useAppDependencies();
+  const orgId = useAppSelector(selectOrgId);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const [view, setView] = useState<MiniChatView>("compose");
@@ -116,7 +119,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
 
       // Use a stub chatId for the mini chat
       chatService
-        .sendMessage({ tab, chatId: `mini-${tab}`, content: value })
+        .sendMessage({ orgId, tab, chatId: `mini-${tab}`, content: value })
         .then((response) => {
           const aiMsg: MiniMessage = {
             id: response.assistantMessage.id,
@@ -146,7 +149,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
           setSending(false);
         });
     },
-    [chatService, tab],
+    [chatService, orgId, tab],
   );
 
   const handleSend = useCallback(() => {

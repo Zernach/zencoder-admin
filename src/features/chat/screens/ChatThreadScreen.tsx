@@ -14,6 +14,8 @@ import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { CustomButton } from "@/components/buttons";
 import { CustomTextInput } from "@/components/inputs";
 import { useAppDependencies } from "@/core/di";
+import { useAppSelector } from "@/store/hooks";
+import { selectOrgId } from "@/store/slices/filtersSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { borderWidth, radius, spacing } from "@/theme/tokens";
@@ -44,6 +46,7 @@ function getBubbleStyle(role: ChatMessageRole): "assistant" | "user" | "system" 
 export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
   const insets = useSafeAreaInsets();
   const { chatService } = useAppDependencies();
+  const orgId = useAppSelector(selectOrgId);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const { data, loading, error, refetch } = useChatThread(tab, chatId);
@@ -93,7 +96,7 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
     setExtraMessages((prev) => [...prev, userMsg]);
 
     chatService
-      .sendMessage({ tab, chatId, content: value })
+      .sendMessage({ orgId, tab, chatId, content: value })
       .then((response) => {
         // Replace optimistic user message with server version, add AI response
         setExtraMessages((prev) => [
@@ -109,7 +112,7 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
         sendingRef.current = false;
         setSending(false);
       });
-  }, [draft, chatId, tab, chatService]);
+  }, [draft, chatId, orgId, tab, chatService]);
 
   if (error) {
     return <ErrorState message={error} onRetry={() => void refetch()} />;

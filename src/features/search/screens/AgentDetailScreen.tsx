@@ -16,6 +16,8 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { cellText, getSuccessRateColor } from "@/components/tables/cellStyles";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
+import { useAppSelector } from "@/store/hooks";
+import { selectOrgId } from "@/store/slices/filtersSlice";
 import { spacing, radius, borderWidth } from "@/theme/tokens";
 import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
 
@@ -26,6 +28,7 @@ interface AgentDetailScreenProps {
 export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
   const { t } = useTranslation();
   const { data, loading, error, refetch } = useAgentDetailScreen(agentId);
+  const orgId = useAppSelector(selectOrgId);
   const [updateDescription] = useUpdateAgentDescriptionMutation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -106,12 +109,12 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
   const handleSave = useCallback(async () => {
     setSaving(true);
     try {
-      await updateDescription({ agentId, description: draft }).unwrap();
+      await updateDescription({ orgId, agentId, description: draft }).unwrap();
       setIsEditing(false);
     } finally {
       setSaving(false);
     }
-  }, [agentId, draft, updateDescription]);
+  }, [agentId, draft, orgId, updateDescription]);
 
   if (loading) return <LoadingSkeleton variant="text" />;
   if (error) return <ErrorState message={error} onRetry={refetch} />;

@@ -12,6 +12,12 @@ import type {
   LiveAgentSessionsResponse,
   SearchSuggestionsRequest,
   SearchSuggestionsResponse,
+  GetAgentDetailRequest,
+  GetProjectDetailRequest,
+  GetTeamDetailRequest,
+  GetHumanDetailRequest,
+  GetRunDetailRequest,
+  GetRuleDetailRequest,
   AgentDetailResponse,
   ProjectDetailResponse,
   TeamDetailResponse,
@@ -135,28 +141,28 @@ export class AnalyticsService implements IAnalyticsService {
     return this.api.getSearchSuggestions(request);
   }
 
-  async getAgentDetail(orgId: string, agentId: string): Promise<AgentDetailResponse> {
-    return this.api.getAgentDetail(orgId, agentId);
+  async getAgentDetail(request: GetAgentDetailRequest): Promise<AgentDetailResponse> {
+    return this.api.getAgentDetail(request);
   }
 
-  async getProjectDetail(orgId: string, projectId: string): Promise<ProjectDetailResponse> {
-    return this.api.getProjectDetail(orgId, projectId);
+  async getProjectDetail(request: GetProjectDetailRequest): Promise<ProjectDetailResponse> {
+    return this.api.getProjectDetail(request);
   }
 
-  async getTeamDetail(orgId: string, teamId: string): Promise<TeamDetailResponse> {
-    return this.api.getTeamDetail(orgId, teamId);
+  async getTeamDetail(request: GetTeamDetailRequest): Promise<TeamDetailResponse> {
+    return this.api.getTeamDetail(request);
   }
 
-  async getHumanDetail(orgId: string, humanId: string): Promise<HumanDetailResponse> {
-    return this.api.getHumanDetail(orgId, humanId);
+  async getHumanDetail(request: GetHumanDetailRequest): Promise<HumanDetailResponse> {
+    return this.api.getHumanDetail(request);
   }
 
-  async getRunDetail(orgId: string, runId: string): Promise<RunDetailResponse> {
-    return this.api.getRunDetail(orgId, runId);
+  async getRunDetail(request: GetRunDetailRequest): Promise<RunDetailResponse> {
+    return this.api.getRunDetail(request);
   }
 
-  async getRuleDetail(orgId: string, ruleId: string): Promise<RuleDetailResponse> {
-    return this.api.getRuleDetail(orgId, ruleId);
+  async getRuleDetail(request: GetRuleDetailRequest): Promise<RuleDetailResponse> {
+    return this.api.getRuleDetail(request);
   }
 
   async updateRule(request: UpdateRuleRequest): Promise<UpdateRuleResponse> {

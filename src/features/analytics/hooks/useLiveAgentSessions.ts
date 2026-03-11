@@ -1,4 +1,5 @@
 import { useGetLiveAgentSessionsQuery } from "@/store/api";
+import { getApiErrorMessage } from "@/contracts/http/errors";
 import { useDashboardFilters } from "./useDashboardFilters";
 
 export function useLiveAgentSessions() {
@@ -11,7 +12,7 @@ export function useLiveAgentSessions() {
     data: data?.activeSessions ?? [],
     lastUpdatedIso: data?.lastUpdatedIso,
     loading: isLoading,
-    error: error ? String(error) : undefined,
+    error: error ? getApiErrorMessage(error) : undefined,
     refetch,
   };
 }

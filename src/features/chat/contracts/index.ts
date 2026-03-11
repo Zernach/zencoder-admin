@@ -1,0 +1,1 @@
+export { chatEndpointRegistry } from "./endpoints";

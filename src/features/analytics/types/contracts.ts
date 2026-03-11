@@ -1,3 +1,5 @@
+import type { CursorPageRequest } from "@/contracts/http/pagination";
+
 // ─── Domain Enums ────────────────────────────────────────
 export type ModelProvider = "codex" | "claude" | "other";
 export type RunStatus = "queued" | "running" | "succeeded" | "failed" | "canceled";
@@ -318,14 +320,46 @@ export interface SearchSuggestionGroup {
   suggestions: SearchSuggestion[];
 }
 
-export interface SearchSuggestionsRequest {
+export interface SearchSuggestionsRequest extends CursorPageRequest {
+  orgId: string;
   query: string;
-  limit?: number;
 }
 
 export interface SearchSuggestionsResponse {
   groups: SearchSuggestionGroup[];
   totalCount: number;
+  nextCursor?: string;
+}
+
+// ─── Entity Detail Requests ─────────────────────────────
+export interface GetAgentDetailRequest {
+  orgId: string;
+  agentId: string;
+}
+
+export interface GetProjectDetailRequest {
+  orgId: string;
+  projectId: string;
+}
+
+export interface GetTeamDetailRequest {
+  orgId: string;
+  teamId: string;
+}
+
+export interface GetHumanDetailRequest {
+  orgId: string;
+  humanId: string;
+}
+
+export interface GetRunDetailRequest {
+  orgId: string;
+  runId: string;
+}
+
+export interface GetRuleDetailRequest {
+  orgId: string;
+  ruleId: string;
 }
 
 // ─── Entity Detail Responses ────────────────────────────
@@ -397,6 +431,7 @@ export interface RuleDetailResponse {
 }
 
 export interface UpdateRuleRequest {
+  orgId: string;
   ruleId: string;
   title: string;
   description: string;
@@ -410,6 +445,7 @@ export interface UpdateRuleResponse {
 
 // ─── Create Entity Contracts ────────────────────────────
 export interface CreateComplianceRuleRequest {
+  orgId: string;
   name: string;
   description: string;
   severity: Severity;
@@ -424,6 +460,7 @@ export interface CreateComplianceRuleResponse {
 }
 
 export interface CreateSeatRequest {
+  orgId: string;
   name: string;
   email: string;
   teamId: string;
@@ -435,6 +472,7 @@ export interface CreateSeatResponse {
 }
 
 export interface CreateProjectRequest {
+  orgId: string;
   name: string;
   teamId: string;
 }
@@ -445,6 +483,7 @@ export interface CreateProjectResponse {
 }
 
 export interface CreateTeamRequest {
+  orgId: string;
   name: string;
 }
 
@@ -454,6 +493,7 @@ export interface CreateTeamResponse {
 }
 
 export interface CreateAgentRequest {
+  orgId: string;
   name: string;
   projectId: string;
 }
@@ -464,6 +504,7 @@ export interface CreateAgentResponse {
 }
 
 export interface UpdateAgentDescriptionRequest {
+  orgId: string;
   agentId: string;
   description: string;
 }

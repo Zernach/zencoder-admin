@@ -6,6 +6,7 @@ export {
   selectActiveFilters,
   selectPreset,
   selectSearchQuery,
+  selectOrgId,
   sidebarSlice,
   toggleSidebar,
   setSidebarExpanded,
@@ -49,5 +50,8 @@ export {
   useCreateSeatMutation,
   useCreateProjectMutation,
   useCreateTeamMutation,
+  useCreateAgentMutation,
+  useUpdateRuleMutation,
+  useUpdateAgentDescriptionMutation,
   initializeService,
 } from "./api";

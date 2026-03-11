@@ -491,7 +491,7 @@ describe("getAgentsHub", () => {
 describe("getAgentDetail", () => {
   it("returns valid agent detail for existing agent", async () => {
     const agentId = seedData.agents[0]!.id;
-    const res = await api.getAgentDetail("org1", agentId);
+    const res = await api.getAgentDetail({ orgId: "org1", agentId });
     expect(res.agent.id).toBe(agentId);
     expect(typeof res.projectName).toBe("string");
     expect(typeof res.teamName).toBe("string");
@@ -503,14 +503,14 @@ describe("getAgentDetail", () => {
   });
 
   it("throws for unknown agent", async () => {
-    await expect(api.getAgentDetail("org1", "nonexistent")).rejects.toThrow("Agent not found");
+    await expect(api.getAgentDetail({ orgId: "org1", agentId: "nonexistent" })).rejects.toThrow("Agent not found");
   });
 });
 
 describe("getProjectDetail", () => {
   it("returns valid project detail for existing project", async () => {
     const projectId = seedData.projects[0]!.id;
-    const res = await api.getProjectDetail("org1", projectId);
+    const res = await api.getProjectDetail({ orgId: "org1", projectId });
     expect(res.project.id).toBe(projectId);
     expect(typeof res.teamName).toBe("string");
     expect(typeof res.agentCount).toBe("number");
@@ -521,14 +521,14 @@ describe("getProjectDetail", () => {
   });
 
   it("throws for unknown project", async () => {
-    await expect(api.getProjectDetail("org1", "nonexistent")).rejects.toThrow("Project not found");
+    await expect(api.getProjectDetail({ orgId: "org1", projectId: "nonexistent" })).rejects.toThrow("Project not found");
   });
 });
 
 describe("getTeamDetail", () => {
   it("returns valid team detail for existing team", async () => {
     const teamId = seedData.teams[0]!.id;
-    const res = await api.getTeamDetail("org1", teamId);
+    const res = await api.getTeamDetail({ orgId: "org1", teamId });
     expect(res.team.id).toBe(teamId);
     expect(typeof res.memberCount).toBe("number");
     expect(typeof res.projectCount).toBe("number");
@@ -539,14 +539,14 @@ describe("getTeamDetail", () => {
   });
 
   it("throws for unknown team", async () => {
-    await expect(api.getTeamDetail("org1", "nonexistent")).rejects.toThrow("Team not found");
+    await expect(api.getTeamDetail({ orgId: "org1", teamId: "nonexistent" })).rejects.toThrow("Team not found");
   });
 });
 
 describe("getHumanDetail", () => {
   it("returns valid human detail for existing user", async () => {
     const userId = seedData.users[0]!.id;
-    const res = await api.getHumanDetail("org1", userId);
+    const res = await api.getHumanDetail({ orgId: "org1", humanId: userId });
     expect(res.user.id).toBe(userId);
     expect(typeof res.teamName).toBe("string");
     expect(typeof res.totalRuns).toBe("number");
@@ -556,14 +556,14 @@ describe("getHumanDetail", () => {
   });
 
   it("throws for unknown human", async () => {
-    await expect(api.getHumanDetail("org1", "nonexistent")).rejects.toThrow("Human not found");
+    await expect(api.getHumanDetail({ orgId: "org1", humanId: "nonexistent" })).rejects.toThrow("Human not found");
   });
 });
 
 describe("getRunDetail", () => {
   it("returns valid run detail for existing run", async () => {
     const runId = seedData.runs[0]!.id;
-    const res = await api.getRunDetail("org1", runId);
+    const res = await api.getRunDetail({ orgId: "org1", runId });
     expect(res.run.id).toBe(runId);
     expect(typeof res.agentName).toBe("string");
     expect(typeof res.projectName).toBe("string");
@@ -572,7 +572,7 @@ describe("getRunDetail", () => {
   });
 
   it("throws for unknown run", async () => {
-    await expect(api.getRunDetail("org1", "nonexistent")).rejects.toThrow("Run not found");
+    await expect(api.getRunDetail({ orgId: "org1", runId: "nonexistent" })).rejects.toThrow("Run not found");
   });
 });
 
@@ -580,20 +580,20 @@ describe("getRunDetail", () => {
 
 describe("getSearchSuggestions", () => {
   it("returns empty groups for empty query", async () => {
-    const res = await api.getSearchSuggestions({ query: "" });
+    const res = await api.getSearchSuggestions({ orgId: "org1", query: "" });
     expect(res.groups).toEqual([]);
     expect(res.totalCount).toBe(0);
   });
 
   it("returns empty groups for whitespace-only query", async () => {
-    const res = await api.getSearchSuggestions({ query: "   " });
+    const res = await api.getSearchSuggestions({ orgId: "org1", query: "   " });
     expect(res.groups).toEqual([]);
     expect(res.totalCount).toBe(0);
   });
 
   it("returns groups ordered as agent, project, team, human, run", async () => {
     // Use a broad query that matches across entity types
-    const res = await api.getSearchSuggestions({ query: "a" });
+    const res = await api.getSearchSuggestions({ orgId: "org1", query: "a" });
     const entityTypes = res.groups.map((g) => g.entityType);
     const expectedOrder = ["agent", "project", "team", "human", "run"];
     for (let i = 0; i < entityTypes.length; i++) {
@@ -606,34 +606,44 @@ describe("getSearchSuggestions", () => {
     }
   });
 
-  it("respects per-group limit", async () => {
-    const res = await api.getSearchSuggestions({ query: "a", limit: 2 });
-    for (const group of res.groups) {
-      expect(group.suggestions.length).toBeLessThanOrEqual(2);
-    }
+  it("respects total limit across all groups", async () => {
+    const res = await api.getSearchSuggestions({ orgId: "org1", query: "a", limit: 2 });
+    const shownCount = res.groups.reduce((sum, group) => sum + group.suggestions.length, 0);
+    expect(shownCount).toBeLessThanOrEqual(2);
   });
 
-  it("default per-group limit is 5", async () => {
-    const res = await api.getSearchSuggestions({ query: "a" });
-    for (const group of res.groups) {
-      expect(group.suggestions.length).toBeLessThanOrEqual(5);
-    }
+  it("default total limit is 25", async () => {
+    const res = await api.getSearchSuggestions({ orgId: "org1", query: "a" });
+    const shownCount = res.groups.reduce((sum, group) => sum + group.suggestions.length, 0);
+    expect(shownCount).toBeLessThanOrEqual(25);
   });
 
-  it("totalCount equals sum of all group suggestion counts", async () => {
-    const res = await api.getSearchSuggestions({ query: "a" });
-    const sum = res.groups.reduce((s, g) => s + g.suggestions.length, 0);
-    expect(res.totalCount).toBe(sum);
+  it("totalCount reflects full match set beyond the current page", async () => {
+    const res = await api.getSearchSuggestions({ orgId: "org1", query: "a" });
+    const shownCount = res.groups.reduce((sum, group) => sum + group.suggestions.length, 0);
+    expect(res.totalCount).toBeGreaterThanOrEqual(shownCount);
+  });
+
+  it("returns nextCursor when additional pages are available", async () => {
+    const firstPage = await api.getSearchSuggestions({ orgId: "org1", query: "a", limit: 2 });
+    expect(firstPage.nextCursor).toBeDefined();
+    const secondPage = await api.getSearchSuggestions({
+      orgId: "org1",
+      query: "a",
+      limit: 2,
+      cursor: firstPage.nextCursor,
+    });
+    expect(secondPage.totalCount).toBe(firstPage.totalCount);
   });
 
   it("matches query case-insensitively", async () => {
-    const lowerRes = await api.getSearchSuggestions({ query: "team" });
-    const upperRes = await api.getSearchSuggestions({ query: "TEAM" });
+    const lowerRes = await api.getSearchSuggestions({ orgId: "org1", query: "team" });
+    const upperRes = await api.getSearchSuggestions({ orgId: "org1", query: "TEAM" });
     expect(lowerRes.totalCount).toBe(upperRes.totalCount);
   });
 
   it("each suggestion has required fields", async () => {
-    const res = await api.getSearchSuggestions({ query: "a" });
+    const res = await api.getSearchSuggestions({ orgId: "org1", query: "a" });
     for (const group of res.groups) {
       expect(typeof group.entityType).toBe("string");
       expect(typeof group.label).toBe("string");
@@ -647,7 +657,7 @@ describe("getSearchSuggestions", () => {
   });
 
   it("returns no groups when query matches nothing", async () => {
-    const res = await api.getSearchSuggestions({ query: "zzzzxyznonexistent" });
+    const res = await api.getSearchSuggestions({ orgId: "org1", query: "zzzzxyznonexistent" });
     expect(res.groups).toEqual([]);
     expect(res.totalCount).toBe(0);
   });

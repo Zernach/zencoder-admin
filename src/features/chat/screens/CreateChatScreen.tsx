@@ -14,6 +14,8 @@ import { ScreenWrapper } from "@/components/screen";
 import { CustomButton } from "@/components/buttons";
 import { CustomTextInput } from "@/components/inputs";
 import { useAppDependencies } from "@/core/di";
+import { useAppSelector } from "@/store/hooks";
+import { selectOrgId } from "@/store/slices/filtersSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { borderWidth, radius, spacing } from "@/theme/tokens";
@@ -33,6 +35,7 @@ export function CreateChatScreen({ tab }: CreateChatScreenProps) {
   const router = useRouter();
   const { t } = useTranslation();
   const { chatService } = useAppDependencies();
+  const orgId = useAppSelector(selectOrgId);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const insets = useSafeAreaInsets();
@@ -56,6 +59,7 @@ export function CreateChatScreen({ tab }: CreateChatScreenProps) {
         const title =
           trimmed.length > 60 ? `${trimmed.slice(0, 57)}...` : trimmed;
         const response = await chatService.createChat({
+          orgId,
           tab,
           title,
           firstMessage: trimmed,
@@ -65,7 +69,7 @@ export function CreateChatScreen({ tab }: CreateChatScreenProps) {
         setSubmitting(false);
       }
     },
-    [submitting, chatService, tab, router],
+    [orgId, submitting, chatService, tab, router],
   );
 
   const handleCreate = useCallback(

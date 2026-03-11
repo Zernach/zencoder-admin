@@ -275,7 +275,7 @@ export default function AgentsScreen() {
 
       {data && filteredRuns.length > 0 && (
         <View ref={refFor("recent-runs")} nativeID="recent-runs" style={styles.section}>
-          <SectionHeader title={t("agents.recentRuns")} subtitle={t("agents.latestRuns", { count: formatCompactNumber(filteredRuns.length) })} />
+          <SectionHeader title={t("agents.recentRuns")} subtitle={t("agents.latestRuns", { count: filteredRuns.length })} />
           <DataTable
             columns={recentRunCols}
             data={filteredRuns}

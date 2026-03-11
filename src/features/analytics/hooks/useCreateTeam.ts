@@ -1,29 +1,34 @@
 import { useCallback, useMemo } from "react";
 import { useCreateTeamMutation } from "@/store/api";
+import { getApiErrorMessage } from "@/contracts/http/errors";
 import type { CreateTeamRequest, CreateTeamResponse } from "@/features/analytics/types";
+import { useDashboardFilters } from "./useDashboardFilters";
+
+type CreateTeamInput = Omit<CreateTeamRequest, "orgId">;
 
 interface UseCreateTeamReturn {
-  create: (request: CreateTeamRequest) => Promise<CreateTeamResponse>;
+  create: (request: CreateTeamInput) => Promise<CreateTeamResponse>;
   loading: boolean;
   error: string | undefined;
   lastResult: CreateTeamResponse | undefined;
 }
 
 export function useCreateTeam(): UseCreateTeamReturn {
+  const { filters } = useDashboardFilters();
   const [trigger, state] = useCreateTeamMutation();
 
   const create = useCallback(
-    async (request: CreateTeamRequest): Promise<CreateTeamResponse> => {
-      const result = await trigger(request).unwrap();
+    async (request: CreateTeamInput): Promise<CreateTeamResponse> => {
+      const result = await trigger({ orgId: filters.orgId, ...request }).unwrap();
       return result;
     },
-    [trigger],
+    [filters.orgId, trigger],
   );
 
   return useMemo(() => ({
     create,
     loading: state.isLoading,
-    error: state.error ? String(state.error) : undefined,
+    error: state.error ? getApiErrorMessage(state.error) : undefined,
     lastResult: state.data,
   }), [create, state.isLoading, state.error, state.data]);
 }

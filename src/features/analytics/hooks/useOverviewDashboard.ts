@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useGetOverviewQuery, useGetOutcomesQuery } from "@/store/api";
+import { getApiErrorMessage } from "@/contracts/http/errors";
 import { useDashboardFilters } from "./useDashboardFilters";
 import { useCurrencyFormatter } from "./useCurrencyFormatter";
 import { mapOverviewToViewModel } from "../mappers/overviewMappers";
@@ -22,7 +23,7 @@ export function useOverviewDashboard() {
   return {
     data,
     loading: overviewQuery.isLoading,
-    error: overviewQuery.error ? String(overviewQuery.error) : undefined,
+    error: overviewQuery.error ? getApiErrorMessage(overviewQuery.error) : undefined,
     refetch: overviewQuery.refetch,
   };
 }

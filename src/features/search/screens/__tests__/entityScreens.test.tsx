@@ -102,6 +102,12 @@ jest.mock("@/store/api", () => ({
   useUpdateAgentDescriptionMutation: () => [jest.fn(), { isLoading: false }],
 }));
 
+jest.mock("@/store/hooks", () => ({
+  useAppDispatch: () => jest.fn(),
+  useAppSelector: (selector: (state: { filters: { orgId: string } }) => unknown) =>
+    selector({ filters: { orgId: "org1" } }),
+}));
+
 jest.mock("@/components/inputs/CustomTextInput", () => ({
   CustomTextInput: ({ value, onChangeText, ...props }: { value: string; onChangeText: (v: string) => void; placeholder?: string; accessibilityLabel?: string }) => {
     const { TextInput } = require("react-native");

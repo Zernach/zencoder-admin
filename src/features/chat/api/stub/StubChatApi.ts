@@ -16,6 +16,7 @@ import {
   type SendMessageRequest,
   type SendMessageResponse,
 } from "@/features/chat/types";
+import { notFoundError, validationError } from "@/contracts/http/errors";
 
 interface StubChatApiOptions {
   latencyMinMs?: number;
@@ -606,8 +607,17 @@ export class StubChatApi implements IChatApi {
     this.fixturesByTab = buildFixtures(new Date());
   }
 
+  private assertOrgId(orgId: string): void {
+    if (orgId.trim().length === 0) {
+      throw validationError("orgId is required", [
+        { field: "orgId", code: "required", message: "Provide a non-empty orgId." },
+      ]);
+    }
+  }
+
   async getChatHistory(request: GetChatHistoryRequest): Promise<GetChatHistoryResponse> {
     await this.simulateLatency();
+    this.assertOrgId(request.orgId);
 
     const fixturesSource = request.scope === "all"
       ? this.getAllFixtures()
@@ -617,25 +627,41 @@ export class StubChatApi implements IChatApi {
       right.summary.updatedAtIso.localeCompare(left.summary.updatedAtIso),
     );
 
+    const offset = request.cursor ? Number.parseInt(request.cursor, 10) : 0;
+    if (offset < 0 || Number.isNaN(offset)) {
+      throw validationError("cursor must be a non-negative integer string", [
+        {
+          field: "cursor",
+          code: "invalid_format",
+          message: "Expected cursor to be an encoded numeric offset.",
+        },
+      ]);
+    }
+
     const requestedLimit = request.limit;
-    const appliedLimit =
-      typeof requestedLimit === "number"
-        ? Math.max(0, Math.floor(requestedLimit))
-        : fixtures.length;
+    const appliedLimit = typeof requestedLimit === "number"
+      ? Math.max(1, Math.floor(requestedLimit))
+      : fixtures.length;
+    const nextCursor =
+      offset + appliedLimit < fixtures.length ? String(offset + appliedLimit) : undefined;
 
     return {
-      items: fixtures.slice(0, appliedLimit).map((fixture) => ({ ...fixture.summary })),
+      items: fixtures.slice(offset, offset + appliedLimit).map((fixture) => ({ ...fixture.summary })),
       totalCount: fixtures.length,
+      nextCursor,
     };
   }
 
   async getChatThread(request: GetChatThreadRequest): Promise<GetChatThreadResponse> {
     await this.simulateLatency();
+    this.assertOrgId(request.orgId);
 
-    const conversation = this.getAllFixtures().find((fixture) => fixture.summary.id === request.chatId);
+    const conversation = this.fixturesByTab[request.tab].find(
+      (fixture) => fixture.summary.id === request.chatId,
+    );
 
     if (!conversation) {
-      throw new Error(`Chat \"${request.chatId}\" was not found in ${request.tab}.`);
+      throw notFoundError("Chat", request.chatId);
     }
 
     return {
@@ -646,6 +672,7 @@ export class StubChatApi implements IChatApi {
 
   async createChat(request: CreateChatRequest): Promise<CreateChatResponse> {
     await this.simulateLatency();
+    this.assertOrgId(request.orgId);
 
     const now = new Date();
     const chatId = `${request.tab}-chat-${Date.now()}`;
@@ -704,6 +731,7 @@ export class StubChatApi implements IChatApi {
   async sendMessage(request: SendMessageRequest): Promise<SendMessageResponse> {
     // Simulate longer "AI thinking" latency
     await this.simulateThinkingLatency();
+    this.assertOrgId(request.orgId);
 
     const now = new Date();
     const userMessage: ChatMessage = {
@@ -725,28 +753,31 @@ export class StubChatApi implements IChatApi {
     };
 
     // Append to the fixture so the thread stays consistent
-    const conversation = this.getAllFixtures().find(
+    const conversation = this.fixturesByTab[request.tab].find(
       (f) => f.summary.id === request.chatId,
     );
-    if (conversation) {
-      conversation.messages.push(userMessage, assistantMessage);
-      conversation.summary.messageCount += 2;
-      conversation.summary.updatedAtIso = assistantMessage.createdAtIso;
+    if (!conversation) {
+      throw notFoundError("Chat", request.chatId);
     }
+    conversation.messages.push(userMessage, assistantMessage);
+    conversation.summary.messageCount += 2;
+    conversation.summary.updatedAtIso = assistantMessage.createdAtIso;
 
     return { userMessage, assistantMessage };
   }
 
   async markAsRead(request: MarkAsReadRequest): Promise<MarkAsReadResponse> {
     await this.simulateLatency();
+    this.assertOrgId(request.orgId);
 
-    const conversation = this.getAllFixtures().find(
+    const conversation = this.fixturesByTab[request.tab].find(
       (f) => f.summary.id === request.chatId,
     );
 
-    if (conversation) {
-      conversation.summary.unreadCount = 0;
+    if (!conversation) {
+      throw notFoundError("Chat", request.chatId);
     }
+    conversation.summary.unreadCount = 0;
 
     return { success: true };
   }

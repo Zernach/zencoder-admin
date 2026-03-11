@@ -20,6 +20,8 @@ import { spacing, radius, borderWidth } from "@/theme/tokens";
 import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
 import type { PolicyViolationRow, RunListRow } from "@/features/analytics/types";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
+import { useAppSelector } from "@/store/hooks";
+import { selectOrgId } from "@/store/slices/filtersSlice";
 import { keyExtractors } from "@/constants";
 
 interface RuleDetailScreenProps {
@@ -29,6 +31,7 @@ interface RuleDetailScreenProps {
 export function RuleDetailScreen({ ruleId }: RuleDetailScreenProps) {
   const { t } = useTranslation();
   const { data, loading, error, refetch } = useRuleDetailScreen(ruleId);
+  const orgId = useAppSelector(selectOrgId);
   const [updateRule] = useUpdateRuleMutation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -85,6 +88,7 @@ export function RuleDetailScreen({ ruleId }: RuleDetailScreenProps) {
     setSaving(true);
     try {
       await updateRule({
+        orgId,
         ruleId,
         title: draftTitle,
         description: draftDescription,
@@ -97,7 +101,7 @@ export function RuleDetailScreen({ ruleId }: RuleDetailScreenProps) {
     } finally {
       setSaving(false);
     }
-  }, [ruleId, draftTitle, draftDescription, selectedAgentIds, selectedProjectIds, updateRule]);
+  }, [ruleId, draftTitle, draftDescription, selectedAgentIds, selectedProjectIds, orgId, updateRule]);
 
   const toggleAgent = useCallback((agentId: string) => {
     setSelectedAgentIds((prev) => {

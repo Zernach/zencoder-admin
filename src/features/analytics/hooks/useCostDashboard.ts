@@ -1,4 +1,5 @@
 import { useGetCostQuery } from "@/store/api";
+import { getApiErrorMessage } from "@/contracts/http/errors";
 import { useDashboardFilters } from "./useDashboardFilters";
 
 export function useCostDashboard() {
@@ -8,7 +9,7 @@ export function useCostDashboard() {
   return {
     data: query.data,
     loading: query.isLoading,
-    error: query.error ? String(query.error) : undefined,
+    error: query.error ? getApiErrorMessage(query.error) : undefined,
     refetch: query.refetch,
   };
 }

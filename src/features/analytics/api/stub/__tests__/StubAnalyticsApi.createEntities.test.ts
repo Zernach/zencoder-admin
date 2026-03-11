@@ -11,6 +11,7 @@ describe("StubAnalyticsApi — createComplianceRule", () => {
   it("returns a rule with deterministic ID and timestamp", async () => {
     const api = createApi();
     const result = await api.createComplianceRule({
+      orgId: "org1",
       name: "Max Token Limit",
       description: "Triggers when token usage exceeds 10k",
       severity: "HIGH",
@@ -34,6 +35,7 @@ describe("StubAnalyticsApi — createComplianceRule", () => {
     const beforeViolationCount = beforeGov.policyViolationCount;
 
     await api.createComplianceRule({
+      orgId: "org1",
       name: "Test Rule",
       description: "Test desc",
       severity: "MEDIUM",
@@ -59,8 +61,7 @@ describe("StubAnalyticsApi — createComplianceRule", () => {
 describe("StubAnalyticsApi — createSeat", () => {
   it("creates a user with deterministic ID", async () => {
     const api = createApi();
-    const result = await api.createSeat({
-      name: "Jane Test",
+    const result = await api.createSeat({ orgId: "org1", name: "Jane Test",
       email: "jane@test.com",
       teamId: seedData.teams[0]!.id,
     });
@@ -76,27 +77,26 @@ describe("StubAnalyticsApi — createSeat", () => {
     const existingEmail = seedData.users[0]!.email;
 
     await expect(
-      api.createSeat({ name: "Dup User", email: existingEmail, teamId: seedData.teams[0]!.id }),
+      api.createSeat({ orgId: "org1", name: "Dup User", email: existingEmail, teamId: seedData.teams[0]!.id }),
     ).rejects.toThrow("already exists");
   });
 
   it("rejects duplicate email across created users", async () => {
     const api = createApi();
-    await api.createSeat({
-      name: "First",
+    await api.createSeat({ orgId: "org1", name: "First",
       email: "unique@test.com",
       teamId: seedData.teams[0]!.id,
     });
 
     await expect(
-      api.createSeat({ name: "Second", email: "unique@test.com", teamId: seedData.teams[0]!.id }),
+      api.createSeat({ orgId: "org1", name: "Second", email: "unique@test.com", teamId: seedData.teams[0]!.id }),
     ).rejects.toThrow("already exists");
   });
 
   it("created user appears in governance seat user usage", async () => {
     const api = createApi();
     const teamId = seedData.teams[0]!.id;
-    await api.createSeat({ name: "New Person", email: "new@test.com", teamId });
+    await api.createSeat({ orgId: "org1", name: "New Person", email: "new@test.com", teamId });
 
     const gov = await api.getGovernance({
       orgId: "org1",
@@ -112,8 +112,7 @@ describe("StubAnalyticsApi — createSeat", () => {
 describe("StubAnalyticsApi — createProject", () => {
   it("creates a project with deterministic ID", async () => {
     const api = createApi();
-    const result = await api.createProject({
-      name: "New Dashboard",
+    const result = await api.createProject({ orgId: "org1", name: "New Dashboard",
       teamId: seedData.teams[0]!.id,
     });
 
@@ -127,7 +126,7 @@ describe("StubAnalyticsApi — createProject", () => {
     const existing = seedData.projects[0]!;
 
     await expect(
-      api.createProject({ name: existing.name, teamId: existing.teamId }),
+      api.createProject({ orgId: "org1", name: existing.name, teamId: existing.teamId }),
     ).rejects.toThrow("already exists");
   });
 
@@ -136,8 +135,8 @@ describe("StubAnalyticsApi — createProject", () => {
     const team1 = seedData.teams[0]!.id;
     const team2 = seedData.teams[1]!.id;
 
-    await api.createProject({ name: "Shared Name", teamId: team1 });
-    const result = await api.createProject({ name: "Shared Name", teamId: team2 });
+    await api.createProject({ orgId: "org1", name: "Shared Name", teamId: team1 });
+    const result = await api.createProject({ orgId: "org1", name: "Shared Name", teamId: team2 });
     expect(result.project.name).toBe("Shared Name");
   });
 });
@@ -145,7 +144,7 @@ describe("StubAnalyticsApi — createProject", () => {
 describe("StubAnalyticsApi — createTeam", () => {
   it("creates a team with deterministic ID", async () => {
     const api = createApi();
-    const result = await api.createTeam({ name: "New Team" });
+    const result = await api.createTeam({ orgId: "org1", name: "New Team" });
 
     expect(result.team.id).toMatch(/^team_/);
     expect(result.team.name).toBe("New Team");
@@ -156,19 +155,19 @@ describe("StubAnalyticsApi — createTeam", () => {
     const api = createApi();
     const existingName = seedData.teams[0]!.name;
 
-    await expect(api.createTeam({ name: existingName })).rejects.toThrow("already exists");
+    await expect(api.createTeam({ orgId: "org1", name: existingName })).rejects.toThrow("already exists");
   });
 
   it("rejects duplicate team name across created teams", async () => {
     const api = createApi();
-    await api.createTeam({ name: "Unique Team" });
+    await api.createTeam({ orgId: "org1", name: "Unique Team" });
 
-    await expect(api.createTeam({ name: "Unique Team" })).rejects.toThrow("already exists");
+    await expect(api.createTeam({ orgId: "org1", name: "Unique Team" })).rejects.toThrow("already exists");
   });
 
   it("created team appears in governance team performance comparison", async () => {
     const api = createApi();
-    await api.createTeam({ name: "Platform Team" });
+    await api.createTeam({ orgId: "org1", name: "Platform Team" });
 
     const gov = await api.getGovernance({
       orgId: "org1",

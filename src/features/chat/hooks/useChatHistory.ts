@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { TABS } from "@/constants/routes";
 import { useAppDependencies } from "@/core/di";
+import { useAppSelector } from "@/store/hooks";
+import { selectOrgId } from "@/store/slices/filtersSlice";
+import { getApiErrorMessage } from "@/contracts/http/errors";
 import type { ChatHistoryScope, GetChatHistoryResponse } from "@/features/chat/types";
 
 interface UseChatHistoryOptions {
@@ -17,6 +20,7 @@ interface UseChatHistoryResult {
 
 export function useChatHistory(tab: TABS, options: UseChatHistoryOptions = {}): UseChatHistoryResult {
   const { chatService } = useAppDependencies();
+  const orgId = useAppSelector(selectOrgId);
   const [data, setData] = useState<GetChatHistoryResponse>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
@@ -31,6 +35,7 @@ export function useChatHistory(tab: TABS, options: UseChatHistoryOptions = {}): 
 
     try {
       const response = await chatService.getChatHistory({
+        orgId,
         tab,
         scope: options.scope,
         limit: options.limit,
@@ -47,9 +52,7 @@ export function useChatHistory(tab: TABS, options: UseChatHistoryOptions = {}): 
       }
 
       setError(
-        unknownError instanceof Error
-          ? unknownError.message
-          : "Failed to load chat history.",
+        getApiErrorMessage(unknownError, "Failed to load chat history."),
       );
       setData(undefined);
     } finally {
@@ -57,7 +60,7 @@ export function useChatHistory(tab: TABS, options: UseChatHistoryOptions = {}): 
         setLoading(false);
       }
     }
-  }, [chatService, options.limit, options.scope, tab]);
+  }, [chatService, options.limit, options.scope, orgId, tab]);
 
   useEffect(() => {
     void load();

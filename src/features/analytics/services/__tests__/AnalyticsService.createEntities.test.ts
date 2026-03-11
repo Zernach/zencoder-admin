@@ -52,7 +52,12 @@ describe("AnalyticsService — createComplianceRule delegation", () => {
   it("delegates to api.createComplianceRule and returns response", async () => {
     const api = createMockApi();
     const svc = new AnalyticsService(api);
-    const request = { name: "R", description: "D", severity: "HIGH" as const };
+    const request = {
+      orgId: "org1",
+      name: "R",
+      description: "D",
+      severity: "HIGH" as const,
+    };
     const result = await svc.createComplianceRule(request);
 
     expect(api.createComplianceRule).toHaveBeenCalledWith(request);
@@ -64,7 +69,7 @@ describe("AnalyticsService — createSeat delegation", () => {
   it("delegates to api.createSeat and returns response", async () => {
     const api = createMockApi();
     const svc = new AnalyticsService(api);
-    const request = { name: "A", email: "a@b.com", teamId: "t1" };
+    const request = { orgId: "org1", name: "A", email: "a@b.com", teamId: "t1" };
     const result = await svc.createSeat(request);
 
     expect(api.createSeat).toHaveBeenCalledWith(request);
@@ -76,7 +81,7 @@ describe("AnalyticsService — createProject delegation", () => {
   it("delegates to api.createProject and returns response", async () => {
     const api = createMockApi();
     const svc = new AnalyticsService(api);
-    const request = { name: "P", teamId: "t1" };
+    const request = { orgId: "org1", name: "P", teamId: "t1" };
     const result = await svc.createProject(request);
 
     expect(api.createProject).toHaveBeenCalledWith(request);
@@ -88,7 +93,7 @@ describe("AnalyticsService — createTeam delegation", () => {
   it("delegates to api.createTeam and returns response", async () => {
     const api = createMockApi();
     const svc = new AnalyticsService(api);
-    const request = { name: "T" };
+    const request = { orgId: "org1", name: "T" };
     const result = await svc.createTeam(request);
 
     expect(api.createTeam).toHaveBeenCalledWith(request);
