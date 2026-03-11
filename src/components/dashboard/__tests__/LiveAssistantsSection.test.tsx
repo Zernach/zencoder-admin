@@ -2,9 +2,16 @@ import React from "react";
 import { render, waitFor } from "@testing-library/react-native";
 import type { LiveAgentSession } from "@/features/analytics/types";
 import { LiveAssistantsSection } from "../LiveAssistantsSection";
+import { useLiveAgentSessions } from "@/features/analytics/hooks/useLiveAgentSessions";
+
+const mockUseLiveAgentSessions = useLiveAgentSessions as jest.MockedFunction<typeof useLiveAgentSessions>;
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
+}));
+
+jest.mock("expo-router", () => ({
+  useRouter: () => ({ push: jest.fn() }),
 }));
 
 jest.mock("lucide-react-native", () => ({
@@ -14,6 +21,14 @@ jest.mock("lucide-react-native", () => ({
 
 jest.mock("@/hooks/useReducedMotion", () => ({
   useReducedMotion: () => true,
+}));
+
+jest.mock("@/hooks/useSearchFilter", () => ({
+  useSearchFilter: <T,>(data: T[]) => data,
+}));
+
+jest.mock("@/features/analytics/hooks/useLiveAgentSessions", () => ({
+  useLiveAgentSessions: jest.fn(),
 }));
 
 jest.mock("react-native-svg", () => {
@@ -116,10 +131,19 @@ function createSession(overrides?: Partial<LiveAgentSession>): LiveAgentSession 
 }
 
 describe("LiveAssistantsSection", () => {
+  beforeEach(() => {
+    mockUseLiveAgentSessions.mockReset();
+  });
+
   it("renders polished skeleton while loading with no sessions", () => {
-    const { getByTestId, queryByText } = render(
-      <LiveAssistantsSection sessions={[]} loading error={undefined} />
-    );
+    mockUseLiveAgentSessions.mockReturnValue({
+      data: [],
+      lastUpdatedIso: undefined,
+      loading: true,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+    const { getByTestId, queryByText } = render(<LiveAssistantsSection />);
 
     expect(getByTestId("live-assistants-skeleton")).toBeTruthy();
     expect(getByTestId("live-assistants-skeleton-card-0")).toBeTruthy();
@@ -127,18 +151,28 @@ describe("LiveAssistantsSection", () => {
   });
 
   it("renders empty state when not loading and no sessions", () => {
-    const { getByText, queryByTestId } = render(
-      <LiveAssistantsSection sessions={[]} loading={false} error={undefined} />
-    );
+    mockUseLiveAgentSessions.mockReturnValue({
+      data: [],
+      lastUpdatedIso: undefined,
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+    const { getByText, queryByTestId } = render(<LiveAssistantsSection />);
 
     expect(queryByTestId("live-assistants-skeleton")).toBeNull();
     expect(getByText("dashboard.live.emptySubtitle")).toBeTruthy();
   });
 
   it("renders error state instead of skeleton when error is present", () => {
-    const { getByText, queryByTestId } = render(
-      <LiveAssistantsSection sessions={[]} loading error="live sessions failed" />
-    );
+    mockUseLiveAgentSessions.mockReturnValue({
+      data: [],
+      lastUpdatedIso: undefined,
+      loading: true,
+      error: "live sessions failed",
+      refetch: jest.fn(),
+    });
+    const { getByText, queryByTestId } = render(<LiveAssistantsSection />);
 
     expect(getByText("live sessions failed")).toBeTruthy();
     expect(queryByTestId("live-assistants-skeleton")).toBeNull();
@@ -155,10 +189,15 @@ describe("LiveAssistantsSection", () => {
         status: "queued",
       }),
     ];
+    mockUseLiveAgentSessions.mockReturnValue({
+      data: sessions,
+      lastUpdatedIso: undefined,
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
 
-    const { getByText, queryByTestId } = render(
-      <LiveAssistantsSection sessions={sessions} loading={false} error={undefined} />
-    );
+    const { getByText, queryByTestId } = render(<LiveAssistantsSection />);
 
     await waitFor(() => {
       expect(getByText("Code Pilot")).toBeTruthy();

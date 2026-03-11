@@ -228,6 +228,42 @@ export interface LiveAgentSessionsResponse {
   lastUpdatedIso: string;
 }
 
+export type LiveAgentSessionsSocketReadyState = 0 | 1 | 2 | 3;
+
+export interface LiveAgentSessionsSocketMessage {
+  channel: "analytics.liveAgentSessions";
+  type: "snapshot";
+  data: LiveAgentSessionsResponse;
+}
+
+export interface LiveAgentSessionsSocketOpenEvent {
+  protocol: "ws";
+}
+
+export interface LiveAgentSessionsSocketMessageEvent {
+  data: string;
+}
+
+export interface LiveAgentSessionsSocketErrorEvent {
+  message: string;
+}
+
+export interface LiveAgentSessionsSocketCloseEvent {
+  code: number;
+  reason: string;
+  wasClean: boolean;
+}
+
+export interface LiveAgentSessionsSocket {
+  readonly protocol: "ws";
+  readonly readyState: LiveAgentSessionsSocketReadyState;
+  onopen: ((event: LiveAgentSessionsSocketOpenEvent) => void) | null;
+  onmessage: ((event: LiveAgentSessionsSocketMessageEvent) => void) | null;
+  onerror: ((event: LiveAgentSessionsSocketErrorEvent) => void) | null;
+  onclose: ((event: LiveAgentSessionsSocketCloseEvent) => void) | null;
+  close: (code?: number, reason?: string) => void;
+}
+
 export interface UsageResponse {
   wau: number; mau: number; activeSeats30d: number;
   seatAdoptionRate: number;

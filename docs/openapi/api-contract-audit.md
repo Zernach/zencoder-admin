@@ -36,7 +36,7 @@ Analytics operations (`IAnalyticsApi`):
 - `getReliability(AnalyticsFilters): Promise<ReliabilityResponse>`
 - `getGovernance(AnalyticsFilters): Promise<GovernanceResponse>`
 - `getAgentsHub(AnalyticsFilters): Promise<AgentsHubResponse>`
-- `getLiveAgentSessions(AnalyticsFilters): Promise<LiveAgentSessionsResponse>`
+- `connectLiveAgentSessionsSocket(AnalyticsFilters): LiveAgentSessionsSocket` (websocket stream, excluded from OpenAPI endpoint table)
 - `getSearchSuggestions(SearchSuggestionsRequest): Promise<SearchSuggestionsResponse>`
 - `getAgentDetail(GetAgentDetailRequest): Promise<AgentDetailResponse>`
 - `getProjectDetail(GetProjectDetailRequest): Promise<ProjectDetailResponse>`

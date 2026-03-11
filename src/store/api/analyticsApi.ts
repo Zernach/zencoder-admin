@@ -11,7 +11,6 @@ import type {
   ReliabilityResponse,
   GovernanceResponse,
   AgentsHubResponse,
-  LiveAgentSessionsResponse,
   SearchSuggestionsRequest,
   SearchSuggestionsResponse,
   GetAgentDetailRequest,
@@ -53,7 +52,6 @@ export const analyticsApi = createApi({
     "Reliability",
     "Governance",
     "AgentsHub",
-    "LiveAgentSessions",
     "Search",
     "AgentDetail",
     "ProjectDetail",
@@ -139,17 +137,6 @@ export const analyticsApi = createApi({
         }
       },
       providesTags: ["AgentsHub"],
-    }),
-
-    getLiveAgentSessions: builder.query<LiveAgentSessionsResponse, AnalyticsFilters>({
-      queryFn: async (filters) => {
-        try {
-          return { data: await getService().getLiveAgentSessions(filters) };
-        } catch (e) {
-          return { error: toApiError(e) };
-        }
-      },
-      providesTags: ["LiveAgentSessions"],
     }),
 
     // ─── Search ────────────────────────────────────────────
@@ -337,7 +324,6 @@ export const {
   useGetReliabilityQuery,
   useGetGovernanceQuery,
   useGetAgentsHubQuery,
-  useGetLiveAgentSessionsQuery,
   useGetSearchSuggestionsQuery,
   useGetAgentDetailQuery,
   useGetProjectDetailQuery,

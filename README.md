@@ -122,6 +122,7 @@ src/
 - Backend contract summary: `docs/openapi/api-contracts.md`
 - Readiness audit and priorities: `docs/openapi/api-contract-audit.md`
 - Generated OpenAPI artifact: `openapi/admin-api-v1.json` (mirrored at `docs/openapi/admin-api-v1.json`)
+- Realtime live-assistant stream uses websocket protocol and is intentionally documented outside OpenAPI.
 - Endpoint metadata source registries:
   - `src/features/analytics/contracts/endpoints.ts`
   - `src/features/chat/contracts/endpoints.ts`

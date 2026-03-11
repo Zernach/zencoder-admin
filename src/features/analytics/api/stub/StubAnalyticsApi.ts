@@ -10,6 +10,9 @@ import type {
   GovernanceResponse,
   AgentsHubResponse,
   LiveAgentSessionsResponse,
+  LiveAgentSessionsSocket,
+  LiveAgentSessionsSocketMessage,
+  LiveAgentSessionsSocketReadyState,
   RunListRow,
   TimeSeriesPoint,
   SeedData,
@@ -89,6 +92,7 @@ interface StubConfig {
   latencyMinMs?: number;
   latencyMaxMs?: number;
   debugFailureRate?: number;
+  liveStreamTickMs?: number;
 }
 
 const BASE_RULE_DESCRIPTIONS: Record<string, string> = {
@@ -106,6 +110,64 @@ const BASE_RULE_DESCRIPTIONS: Record<string, string> = {
     "Applies per-agent and per-team guardrails for execution volume, preventing runaway automation loops and protecting shared infrastructure during burst traffic conditions.",
 };
 
+class StubLiveAgentSessionsSocket implements LiveAgentSessionsSocket {
+  public readonly protocol = "ws" as const;
+  public onopen: ((event: { protocol: "ws" }) => void) | null = null;
+  public onmessage: ((event: { data: string }) => void) | null = null;
+  public onerror: ((event: { message: string }) => void) | null = null;
+  public onclose: ((event: { code: number; reason: string; wasClean: boolean }) => void) | null = null;
+  public readyState: LiveAgentSessionsSocketReadyState = 0;
+  private readonly connectTimer: ReturnType<typeof setTimeout>;
+  private streamTimer: ReturnType<typeof setInterval> | null = null;
+  private closed = false;
+
+  constructor(
+    private readonly buildSnapshot: () => LiveAgentSessionsResponse,
+    private readonly tickMs: number,
+  ) {
+    this.connectTimer = setTimeout(() => {
+      if (this.closed) return;
+      this.readyState = 1;
+      this.onopen?.({ protocol: "ws" });
+      this.emitSnapshot();
+      this.streamTimer = setInterval(() => this.emitSnapshot(), this.tickMs);
+    }, 0);
+  }
+
+  close(code = 1000, reason = "Normal closure"): void {
+    if (this.closed) return;
+    this.closed = true;
+    this.readyState = 2;
+    clearTimeout(this.connectTimer);
+    if (this.streamTimer) clearInterval(this.streamTimer);
+    this.readyState = 3;
+    this.onclose?.({
+      code,
+      reason,
+      wasClean: code === 1000,
+    });
+  }
+
+  private emitSnapshot(): void {
+    if (this.closed || this.readyState !== 1) {
+      return;
+    }
+
+    try {
+      const message: LiveAgentSessionsSocketMessage = {
+        channel: "analytics.liveAgentSessions",
+        type: "snapshot",
+        data: this.buildSnapshot(),
+      };
+      this.onmessage?.({ data: JSON.stringify(message) });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.onerror?.({ message });
+      this.close(1011, "Stub stream error");
+    }
+  }
+}
+
 // ─── Stub Implementation ─────────────────────────────────
 
 export class StubAnalyticsApi implements IAnalyticsApi {
@@ -113,6 +175,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   private latencyMin: number;
   private latencyMax: number;
   private failureRate: number;
+  private liveStreamTickMs: number;
   private createdViolations: PolicyViolationRow[] = [];
   private createdComplianceRules: Array<{
     id: string;
@@ -133,6 +196,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     this.latencyMin = config.latencyMinMs ?? 250;
     this.latencyMax = config.latencyMaxMs ?? 900;
     this.failureRate = config.debugFailureRate ?? 0;
+    this.liveStreamTickMs = config.liveStreamTickMs ?? 1_500;
   }
 
   // ── Network simulation ─────────────────────────────────
@@ -1220,10 +1284,15 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     };
   }
 
-  async getLiveAgentSessions(
-    filters: AnalyticsFilters,
-  ): Promise<LiveAgentSessionsResponse> {
-    await this.simulate();
+  connectLiveAgentSessionsSocket(filters: AnalyticsFilters): LiveAgentSessionsSocket {
+    this.assertOrgId(filters.orgId);
+    return new StubLiveAgentSessionsSocket(
+      () => this.buildLiveAgentSessionsSnapshot(filters),
+      this.liveStreamTickMs,
+    );
+  }
+
+  private buildLiveAgentSessionsSnapshot(filters: AnalyticsFilters): LiveAgentSessionsResponse {
     const filteredRuns = this.filterRuns({ ...filters, statuses: ["queued", "running"] });
     const orgWideActive = this.seed.runs.filter(
       (run) => run.status === "queued" || run.status === "running",

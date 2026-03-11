@@ -1,18 +1,22 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated as RNAnimated, Easing, Pressable, StyleSheet, Text, View, type ListRenderItemInfo, } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 import Svg, { Circle } from "react-native-svg";
 import { Check } from "lucide-react-native";
 import Reanimated, {
   Easing as ReanimatedEasing, cancelAnimation, useAnimatedProps, useAnimatedStyle, useSharedValue, withRepeat, withTiming,
 } from "react-native-reanimated";
 import type { LiveAgentSession } from "@/features/analytics/types";
+import { useLiveAgentSessions } from "@/features/analytics/hooks/useLiveAgentSessions";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useSearchFilter } from "@/hooks/useSearchFilter";
 import { radius, spacing } from "@/theme/tokens";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes, type SemanticTheme } from "@/theme/themes";
 import { keyExtractors } from "@/constants";
 import { isWeb } from "@/constants/platform";
+import { buildEntityRoute, TABS } from "@/constants/routes";
 import { CustomList } from "@/components/lists";
 import { ErrorState } from "./ErrorState";
 import { SectionHeader } from "./SectionHeader";
@@ -39,16 +43,9 @@ const INDICATOR_CIRCUMFERENCE = 2 * Math.PI * INDICATOR_RADIUS;
 const PROGRESS_MORPH_DURATION_MS = PROGRESS_TICK_MS + 120;
 const ACTIVE_SPIN_DURATION_MS = 1000;
 const CHECK_POP_DURATION_MS = 220;
+const SESSION_SEARCH_KEYS: (keyof LiveAgentSession)[] = ["agentName", "projectName", "userName", "currentTask"];
 
 const AnimatedCircle = Reanimated.createAnimatedComponent(Circle);
-
-interface LiveAssistantsSectionProps {
-  sessions: LiveAgentSession[];
-  loading: boolean;
-  error?: string;
-  onRetry?: () => void;
-  onCardPress?: (agentId: string) => void;
-}
 
 interface SessionCardState {
   session: LiveAgentSession;
@@ -386,18 +383,38 @@ function EmptyLiveState({ theme }: { theme: ThemeColors }) {
   );
 }
 
-export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
-  sessions,
-  loading,
-  error,
-  onRetry,
-  onCardPress,
-}: LiveAssistantsSectionProps) {
+export const LiveAssistantsSection = React.memo(function LiveAssistantsSection() {
   const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const reducedMotion = useReducedMotion();
+  const router = useRouter();
+  const {
+    data: liveSessions,
+    loading,
+    error,
+    refetch,
+  } = useLiveAgentSessions();
+  const sessions = useSearchFilter(liveSessions, SESSION_SEARCH_KEYS);
   const [cards, setCards] = useState<SessionCardState[]>([]);
+
+  const handleCardPress = useCallback((agentId: string) => {
+    router.push(buildEntityRoute(TABS.DASHBOARD, "agent", agentId) as never);
+  }, [router]);
+
+  // Cache per-agent handlers to avoid closure churn during live updates.
+  const cardPressCache = useRef(new Map<string, () => void>()).current;
+  const handleCardPressRef = useRef(handleCardPress);
+  handleCardPressRef.current = handleCardPress;
+
+  const getCardPressHandler = useCallback((agentId: string) => {
+    let handler = cardPressCache.get(agentId);
+    if (!handler) {
+      handler = () => handleCardPressRef.current(agentId);
+      cardPressCache.set(agentId, handler);
+    }
+    return handler;
+  }, [cardPressCache]);
 
   useEffect(() => {
     const now = Date.now();
@@ -499,14 +516,14 @@ export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
               card={card}
               reducedMotion={reducedMotion}
               theme={theme}
-              onPress={onCardPress ? () => onCardPress(card.session.agentId) : undefined}
+              onPress={getCardPressHandler(card.session.agentId)}
             />
           ))}
           {item.rows.length < ROWS_PER_COLUMN ? <View style={styles.cardSpacer} /> : null}
         </View>
       );
     },
-    [reducedMotion, theme, onCardPress],
+    [getCardPressHandler, reducedMotion, theme],
   );
   const renderColumnSeparator = useCallback(
     () => <View style={styles.columnGap} />,
@@ -523,7 +540,7 @@ export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
         action={<LiveBadge reducedMotion={reducedMotion} theme={theme} />}
       />
       {error ? (
-        <ErrorState message={error} onRetry={onRetry ?? (() => undefined)} />
+        <ErrorState message={error} onRetry={refetch} />
       ) : shouldShowSkeleton ? (
         <LiveAssistantsSkeleton theme={theme} reducedMotion={reducedMotion} />
       ) : columns.length === 0 && sessions.length === 0 ? (

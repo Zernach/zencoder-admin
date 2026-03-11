@@ -576,86 +576,6 @@
         "x-tenantScoped": true
       }
     },
-    "/v1/orgs/{orgId}/agents/live-sessions": {
-      "get": {
-        "operationId": "analytics.getLiveAgentSessions",
-        "summary": "Get currently active queued/running sessions.",
-        "tags": [
-          "analytics"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Path parameter: orgId"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LiveAgentSessionsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "VALIDATION_FAILED: Invalid request fields.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "UNAUTHORIZED: Missing or invalid auth credentials.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "FORBIDDEN: Caller cannot access this org.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "INTERNAL_ERROR: Unexpected server error.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "x-requestType": "AnalyticsFilters",
-        "x-responseType": "LiveAgentSessionsResponse",
-        "x-tenantScoped": true
-      }
-    },
     "/v1/orgs/{orgId}/search/suggestions": {
       "get": {
         "operationId": "analytics.getSearchSuggestions",
@@ -2616,10 +2536,6 @@
       "HumanDetailResponse": {
         "type": "object",
         "description": "Schema placeholder for HumanDetailResponse."
-      },
-      "LiveAgentSessionsResponse": {
-        "type": "object",
-        "description": "Schema placeholder for LiveAgentSessionsResponse."
       },
       "MarkAsReadRequest": {
         "type": "object",

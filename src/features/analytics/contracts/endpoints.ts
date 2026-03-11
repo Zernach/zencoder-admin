@@ -2,7 +2,7 @@ import type { EndpointMetadata } from "@/contracts/http/endpointTypes";
 import { API_BASE_PATH } from "@/contracts/http/versioning";
 import type { IAnalyticsApi } from "@/features/analytics/api/IAnalyticsApi";
 
-type AnalyticsOperation = keyof IAnalyticsApi;
+type AnalyticsOperation = Exclude<keyof IAnalyticsApi, "connectLiveAgentSessionsSocket">;
 
 const COMMON_QUERY_ERRORS: EndpointMetadata["errorResponses"] = [
   { status: 400, code: "VALIDATION_FAILED", description: "Invalid request fields." },
@@ -103,19 +103,6 @@ export const analyticsEndpointRegistry: Record<AnalyticsOperation, EndpointMetad
     path: `${API_BASE_PATH}/orgs/{orgId}/analytics/agents-hub`,
     requestType: "AnalyticsFilters",
     responseType: "AgentsHubResponse",
-    successStatus: 200,
-    auth: "bearer",
-    tenantScoped: true,
-    errorResponses: COMMON_QUERY_ERRORS,
-  },
-  getLiveAgentSessions: {
-    operationId: "analytics.getLiveAgentSessions",
-    feature: "analytics",
-    summary: "Get currently active queued/running sessions.",
-    method: "GET",
-    path: `${API_BASE_PATH}/orgs/{orgId}/agents/live-sessions`,
-    requestType: "AnalyticsFilters",
-    responseType: "LiveAgentSessionsResponse",
     successStatus: 200,
     auth: "bearer",
     tenantScoped: true,

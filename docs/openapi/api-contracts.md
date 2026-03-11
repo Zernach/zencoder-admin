@@ -51,6 +51,13 @@ Current usage:
 - Chat history uses cursor pagination directly.
 - Search suggestions expose `cursor` + `limit` with `nextCursor` in response.
 
+## WebSocket Streams (Not in OpenAPI)
+- Live assistants stream uses websocket transport, not REST.
+- Channel: `analytics.liveAgentSessions`
+- Message type: `snapshot`
+- Payload type: `LiveAgentSessionsResponse`
+- Connection contract: `connectLiveAgentSessionsSocket(filters: AnalyticsFilters): LiveAgentSessionsSocket`
+
 ## Analytics Endpoints
 | OperationId | Method | Path | Request Type | Response Type |
 |---|---|---|---|---|
@@ -61,7 +68,6 @@ Current usage:
 | analytics.getReliability | GET | `/v1/orgs/{orgId}/analytics/reliability` | `AnalyticsFilters` | `ReliabilityResponse` |
 | analytics.getGovernance | GET | `/v1/orgs/{orgId}/analytics/governance` | `AnalyticsFilters` | `GovernanceResponse` |
 | analytics.getAgentsHub | GET | `/v1/orgs/{orgId}/analytics/agents-hub` | `AnalyticsFilters` | `AgentsHubResponse` |
-| analytics.getLiveAgentSessions | GET | `/v1/orgs/{orgId}/agents/live-sessions` | `AnalyticsFilters` | `LiveAgentSessionsResponse` |
 | analytics.getSearchSuggestions | GET | `/v1/orgs/{orgId}/search/suggestions` | `SearchSuggestionsRequest` | `SearchSuggestionsResponse` |
 | analytics.getAgentDetail | GET | `/v1/orgs/{orgId}/agents/{agentId}` | `GetAgentDetailRequest` | `AgentDetailResponse` |
 | analytics.getProjectDetail | GET | `/v1/orgs/{orgId}/projects/{projectId}` | `GetProjectDetailRequest` | `ProjectDetailResponse` |

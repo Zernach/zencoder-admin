@@ -9,7 +9,7 @@ import type {
   ReliabilityResponse,
   GovernanceResponse,
   AgentsHubResponse,
-  LiveAgentSessionsResponse,
+  LiveAgentSessionsSocket,
   SearchSuggestionsRequest,
   SearchSuggestionsResponse,
   GetAgentDetailRequest,
@@ -133,8 +133,8 @@ export class AnalyticsService implements IAnalyticsService {
     return res;
   }
 
-  async getLiveAgentSessions(filters: AnalyticsFilters): Promise<LiveAgentSessionsResponse> {
-    return this.api.getLiveAgentSessions(filters);
+  connectLiveAgentSessionsSocket(filters: AnalyticsFilters): LiveAgentSessionsSocket {
+    return this.api.connectLiveAgentSessionsSocket(filters);
   }
 
   async getSearchSuggestions(request: SearchSuggestionsRequest): Promise<SearchSuggestionsResponse> {

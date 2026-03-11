@@ -1,6 +1,6 @@
 import { StubAnalyticsApi } from "../StubAnalyticsApi";
 import { generateSeedData } from "@/features/analytics/fixtures/seedData";
-import type { AnalyticsFilters } from "@/features/analytics/types";
+import type { AnalyticsFilters, LiveAgentSessionsSocketMessage } from "@/features/analytics/types";
 
 const seedData = generateSeedData(42);
 const api = new StubAnalyticsApi(seedData, { latencyMinMs: 0, latencyMaxMs: 0 });
@@ -136,12 +136,26 @@ describe("getOverview", () => {
   });
 });
 
-describe("getLiveAgentSessions", () => {
-  it("returns only active sessions and required fields", async () => {
-    const res = await api.getLiveAgentSessions(defaultFilters);
-    expect(Array.isArray(res.activeSessions)).toBe(true);
-    expect(res.activeSessions.length).toBeGreaterThan(0);
-    for (const session of res.activeSessions) {
+describe("connectLiveAgentSessionsSocket", () => {
+  it("streams live session snapshots over a websocket-shaped transport", async () => {
+    const socket = api.connectLiveAgentSessionsSocket(defaultFilters);
+
+    const payload = await new Promise<LiveAgentSessionsSocketMessage["data"]>((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error("socket timeout")), 1_000);
+      socket.onerror = (event) => {
+        clearTimeout(timeout);
+        reject(new Error(event.message));
+      };
+      socket.onmessage = (event) => {
+        clearTimeout(timeout);
+        const parsed = JSON.parse(event.data) as LiveAgentSessionsSocketMessage;
+        resolve(parsed.data);
+      };
+    });
+
+    expect(Array.isArray(payload.activeSessions)).toBe(true);
+    expect(payload.activeSessions.length).toBeGreaterThan(0);
+    for (const session of payload.activeSessions) {
       expect(session.status === "running" || session.status === "queued").toBe(true);
       expect(typeof session.sessionId).toBe("string");
       expect(typeof session.runId).toBe("string");
@@ -152,7 +166,8 @@ describe("getLiveAgentSessions", () => {
       expect(typeof session.userName).toBe("string");
       expect(typeof session.currentTask).toBe("string");
     }
-    expect(typeof res.lastUpdatedIso).toBe("string");
+    expect(typeof payload.lastUpdatedIso).toBe("string");
+    socket.close();
   });
 });
 

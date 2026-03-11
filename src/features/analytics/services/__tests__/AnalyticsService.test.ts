@@ -7,6 +7,7 @@ import type {
   OverviewResponse,
   CostResponse,
   SearchSuggestionsResponse,
+  LiveAgentSessionsSocketMessage,
 } from "@/features/analytics/types";
 
 const seedData = generateSeedData(42);
@@ -158,13 +159,27 @@ describe("getAgentsHub", () => {
   });
 });
 
-describe("getLiveAgentSessions", () => {
-  it("returns active sessions from api", async () => {
-    const res = await service.getLiveAgentSessions(defaultFilters);
-    expect(Array.isArray(res.activeSessions)).toBe(true);
-    for (const session of res.activeSessions) {
+describe("connectLiveAgentSessionsSocket", () => {
+  it("delegates websocket stream connection and receives snapshots", async () => {
+    const socket = service.connectLiveAgentSessionsSocket(defaultFilters);
+    const payload = await new Promise<LiveAgentSessionsSocketMessage["data"]>((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error("socket timeout")), 1_000);
+      socket.onerror = (event) => {
+        clearTimeout(timeout);
+        reject(new Error(event.message));
+      };
+      socket.onmessage = (event) => {
+        clearTimeout(timeout);
+        const parsed = JSON.parse(event.data) as LiveAgentSessionsSocketMessage;
+        resolve(parsed.data);
+      };
+    });
+
+    expect(Array.isArray(payload.activeSessions)).toBe(true);
+    for (const session of payload.activeSessions) {
       expect(session.status === "running" || session.status === "queued").toBe(true);
     }
+    socket.close();
   });
 });
 
@@ -200,7 +215,7 @@ describe("delegation via mock", () => {
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
       getAgentsHub: jest.fn(),
-      getLiveAgentSessions: jest.fn(),
+      connectLiveAgentSessionsSocket: jest.fn(),
       getSearchSuggestions: jest.fn(),
       getAgentDetail: jest.fn(),
       getProjectDetail: jest.fn(),
@@ -267,7 +282,7 @@ describe("delegation via mock", () => {
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
       getAgentsHub: jest.fn(),
-      getLiveAgentSessions: jest.fn(),
+      connectLiveAgentSessionsSocket: jest.fn(),
       getSearchSuggestions: jest.fn(),
       getAgentDetail: jest.fn(),
       getProjectDetail: jest.fn(),
@@ -323,7 +338,7 @@ describe("getSearchSuggestions", () => {
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
       getAgentsHub: jest.fn(),
-      getLiveAgentSessions: jest.fn(),
+      connectLiveAgentSessionsSocket: jest.fn(),
       getSearchSuggestions: jest.fn().mockResolvedValue(mockResponse),
       getAgentDetail: jest.fn(),
       getProjectDetail: jest.fn(),

@@ -7,7 +7,6 @@ export {
   useGetReliabilityQuery,
   useGetGovernanceQuery,
   useGetAgentsHubQuery,
-  useGetLiveAgentSessionsQuery,
   useGetSearchSuggestionsQuery,
   useGetAgentDetailQuery,
   useGetProjectDetailQuery,
