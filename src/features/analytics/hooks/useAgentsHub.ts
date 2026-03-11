@@ -1,15 +1,17 @@
+import { useMemo } from "react";
 import { useGetAgentsHubQuery } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
-import { useDashboardFilters } from "./useDashboardFilters";
+import { useActiveDashboardFilters } from "./useDashboardFilters";
 
 export function useAgentsHub() {
-  const { filters } = useDashboardFilters();
+  const filters = useActiveDashboardFilters();
   const query = useGetAgentsHubQuery(filters);
+  const errorMessage = query.error ? getApiErrorMessage(query.error) : undefined;
 
-  return {
+  return useMemo(() => ({
     data: query.data,
     loading: query.isLoading,
-    error: query.error ? getApiErrorMessage(query.error) : undefined,
+    error: errorMessage,
     refetch: query.refetch,
-  };
+  }), [query.data, query.isLoading, errorMessage, query.refetch]);
 }

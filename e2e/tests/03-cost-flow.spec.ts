@@ -10,8 +10,8 @@ test.describe("Costs", () => {
     await navigateTo(page, "Costs");
     await waitForPageLoad(page);
 
-    // Verify costs page loaded (cost-summary section, not sidebar subsection)
-    await expect(page.locator("#cost-summary").getByText("Cost Summary")).toBeVisible({
+    // Verify costs page loaded (cost-summary section has Cost per Team chart)
+    await expect(page.locator("#cost-summary").getByText("Cost per Team")).toBeVisible({
       timeout: 10_000,
     });
   });

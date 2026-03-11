@@ -11,7 +11,8 @@ export default defineConfig({
   },
   retries: 1,
   webServer: {
-    command: "CI=1 npx expo start --web --port 8085",
+    command:
+      "CI=1 NODE_OPTIONS='--require tsx/cjs' npx expo start --web --port 8085 -c",
     port: 8085,
     timeout: 180_000,
     reuseExistingServer: true,

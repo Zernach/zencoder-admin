@@ -37,8 +37,12 @@ export {
   setLanguage,
   setCurrency,
   setDeviceDefaultLanguage,
+  setEmailNotificationsEnabled,
+  setSlackIntegrationEnabled,
   selectSelectedLanguage,
   selectDeviceDefaultLanguage,
   selectSelectedCurrency,
+  selectEmailNotificationsEnabled,
+  selectSlackIntegrationEnabled,
   type SettingsState,
 } from "./settingsSlice";

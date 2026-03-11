@@ -25,9 +25,13 @@ export {
   setLanguage,
   setCurrency,
   setDeviceDefaultLanguage,
+  setEmailNotificationsEnabled,
+  setSlackIntegrationEnabled,
   selectSelectedLanguage,
   selectDeviceDefaultLanguage,
   selectSelectedCurrency,
+  selectEmailNotificationsEnabled,
+  selectSlackIntegrationEnabled,
 } from "./slices";
 export type { SidebarState, NavigationHistoryState, ModalState, SettingsState } from "./slices";
 export {

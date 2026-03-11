@@ -26,4 +26,24 @@ export const sectionStyles = StyleSheet.create({
   chartCardViewport: {
     alignSelf: "stretch",
   },
+  /** Row layout for section header + action button (e.g. "+ Create …") */
+  sectionRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    gap: spacing[8],
+  },
+  sectionHeaderWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
+  createButton: {
+    marginLeft: "auto",
+    flexShrink: 0,
+    maxWidth: "100%",
+  },
+  createButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
 });

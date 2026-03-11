@@ -2,7 +2,7 @@ import { useMemo, useCallback } from "react";
 import type { GovernanceResponse, TimeSeriesPoint } from "@/features/analytics/types";
 import { useGetGovernanceQuery, useGetUsageQuery } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
-import { useDashboardFilters } from "./useDashboardFilters";
+import { useActiveDashboardFilters } from "./useDashboardFilters";
 
 export interface GovernanceDashboardData extends GovernanceResponse {
   activeUsersTrend?: TimeSeriesPoint[];
@@ -11,7 +11,7 @@ export interface GovernanceDashboardData extends GovernanceResponse {
 }
 
 export function useGovernanceDashboard() {
-  const { filters } = useDashboardFilters();
+  const filters = useActiveDashboardFilters();
   const governanceQuery = useGetGovernanceQuery(filters);
   const usageQuery = useGetUsageQuery(filters);
   const { refetch: refetchGovernance } = governanceQuery;
@@ -31,10 +31,13 @@ export function useGovernanceDashboard() {
     await Promise.all([refetchGovernance(), refetchUsage()]);
   }, [refetchGovernance, refetchUsage]);
 
-  return {
+  const loading = governanceQuery.isLoading || usageQuery.isLoading;
+  const errorMessage = governanceQuery.error ? getApiErrorMessage(governanceQuery.error) : undefined;
+
+  return useMemo(() => ({
     data,
-    loading: governanceQuery.isLoading || usageQuery.isLoading,
-    error: governanceQuery.error ? getApiErrorMessage(governanceQuery.error) : undefined,
+    loading,
+    error: errorMessage,
     refetch,
-  };
+  }), [data, loading, errorMessage, refetch]);
 }

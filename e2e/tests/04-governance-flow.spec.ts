@@ -9,8 +9,10 @@ test.describe("Governance", () => {
     await navigateTo(page, "Governance");
     await waitForPageLoad(page);
 
-    // Verify governance page loaded (overview section, not sidebar subsection)
-    await expect(page.locator("#overview").getByText("Overview")).toBeVisible({
+    // Verify governance page loaded (team-performance is first section)
+    await expect(
+      page.locator("#team-performance").getByText("Teams", { exact: true }).first(),
+    ).toBeVisible({
       timeout: 10_000,
     });
   });

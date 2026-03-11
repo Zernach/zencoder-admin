@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useGetSearchSuggestionsQuery } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
 import type {
   SearchSuggestionsResponse,
   SearchSuggestion,
 } from "@/features/analytics/types";
-import { useDashboardFilters } from "./useDashboardFilters";
+import { useDashboardOrgId } from "./useDashboardFilters";
 
 const DEBOUNCE_MS = 200;
 const MIN_QUERY_LENGTH = 2;
@@ -24,7 +24,7 @@ interface UseSearchAutocompleteResult {
 export function useSearchAutocomplete(
   onSelect?: (suggestion: SearchSuggestion) => void,
 ): UseSearchAutocompleteResult {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [selectedSuggestion, setSelectedSuggestion] = useState<SearchSuggestion | null>(null);
@@ -51,7 +51,7 @@ export function useSearchAutocomplete(
   const shouldSkip = debouncedQuery.length < MIN_QUERY_LENGTH || dismissed;
 
   const { data, isLoading, error } = useGetSearchSuggestionsQuery(
-    { orgId: filters.orgId, query: debouncedQuery },
+    { orgId, query: debouncedQuery },
     { skip: shouldSkip },
   );
 
@@ -76,14 +76,18 @@ export function useSearchAutocomplete(
     setDismissed(false);
   }, []);
 
-  return {
-    suggestions: shouldSkip ? null : (data ?? null),
-    loading: shouldSkip ? false : isLoading,
-    error: error ? getApiErrorMessage(error) : undefined,
+  const suggestions = shouldSkip ? null : (data ?? null);
+  const resolvedLoading = shouldSkip ? false : isLoading;
+  const errorMessage = error ? getApiErrorMessage(error) : undefined;
+
+  return useMemo(() => ({
+    suggestions,
+    loading: resolvedLoading,
+    error: errorMessage,
     query,
     setQuery: handleSetQuery,
     clear,
     selectSuggestion,
     selectedSuggestion,
-  };
+  }), [suggestions, resolvedLoading, errorMessage, query, handleSetQuery, clear, selectSuggestion, selectedSuggestion]);
 }

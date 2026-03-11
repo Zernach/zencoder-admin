@@ -43,14 +43,165 @@ function getBubbleStyle(role: ChatMessageRole): "assistant" | "user" | "system" 
   return "assistant";
 }
 
+interface ChatThreadMessagesProps {
+  data: ReturnType<typeof useChatThread>["data"];
+  loading: boolean;
+  messages: ChatMessage[];
+  sending: boolean;
+}
+
+const ChatThreadMessages = React.memo(function ChatThreadMessages({
+  data,
+  loading,
+  messages,
+  sending,
+}: ChatThreadMessagesProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  return (
+    <>
+      {loading && !data ? (
+        <View style={styles.loadingWrap}>
+          <LoadingSkeleton variant="text" />
+        </View>
+      ) : null}
+
+      {messages.map((message) => {
+        const bubbleType = getBubbleStyle(message.role);
+        const isUser = bubbleType === "user";
+        const isSystem = bubbleType === "system";
+
+        return (
+          <View
+            key={message.id}
+            style={[
+              styles.messageRow,
+              isUser ? styles.userRow : styles.assistantRow,
+            ]}
+          >
+            <View
+              style={[
+                styles.messageBubble,
+                {
+                  borderColor: theme.border.default,
+                  backgroundColor: isUser
+                    ? theme.bg.brandSubtle
+                    : isSystem
+                      ? theme.bg.subtle
+                      : theme.bg.surface,
+                },
+                isUser ? styles.userBubble : styles.assistantBubble,
+              ]}
+            >
+              <Text style={[styles.messageAuthor, { color: theme.text.secondary }]}>
+                {message.authorName}
+              </Text>
+              <Text style={[styles.messageContent, { color: theme.text.primary }]}>
+                {message.content}
+              </Text>
+              <Text style={[styles.messageTime, { color: theme.text.tertiary }]}>
+                {formatTimestamp(message.createdAtIso)}
+              </Text>
+            </View>
+          </View>
+        );
+      })}
+
+      {sending ? (
+        <View style={[styles.messageRow, styles.assistantRow]}>
+          <View
+            style={[
+              styles.messageBubble,
+              styles.assistantBubble,
+              {
+                borderColor: theme.border.default,
+                backgroundColor: theme.bg.surface,
+              },
+            ]}
+          >
+            <View style={styles.typingRow}>
+              <ActivityIndicator size="small" color={theme.text.brand} />
+              <Text
+                style={[styles.typingText, { color: theme.text.secondary }]}
+              >
+                Zencoder is thinking...
+              </Text>
+            </View>
+          </View>
+        </View>
+      ) : null}
+    </>
+  );
+});
+
+interface ChatThreadComposerProps {
+  insetsBottom: number;
+  sending: boolean;
+  onSend: (content: string) => void;
+}
+
+const ChatThreadComposer = React.memo(function ChatThreadComposer({
+  insetsBottom,
+  sending,
+  onSend,
+}: ChatThreadComposerProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const [draft, setDraft] = useState("");
+
+  const handleSend = useCallback(() => {
+    const content = draft.trim();
+    if (content.length === 0 || sending) return;
+
+    setDraft("");
+    onSend(content);
+  }, [draft, onSend, sending]);
+
+  const canSend = draft.trim().length > 0 && !sending;
+
+  return (
+    <View
+      style={[
+        styles.composerContainer,
+        {
+          borderTopColor: theme.border.default,
+          backgroundColor: theme.bg.canvas,
+          paddingBottom: Math.max(spacing[8], insetsBottom),
+        },
+      ]}
+      testID="chat-thread-composer"
+    >
+      <View style={styles.composerRow}>
+        <CustomTextInput
+          value={draft}
+          onChangeText={setDraft}
+          placeholder="Ask a follow-up..."
+          accessibilityLabel="Chat message input"
+          multiline
+          containerStyle={styles.composerInputContainer}
+          inputContainerStyle={styles.composerInputInner}
+          style={styles.composerInputText}
+        />
+        <CustomButton
+          onPress={handleSend}
+          label="Send"
+          buttonMode="primary"
+          buttonSize="compact"
+          accessibilityRole="button"
+          accessibilityLabel="Send chat message"
+          style={styles.sendButton}
+          disabled={!canSend}
+        />
+      </View>
+    </View>
+  );
+});
+
 export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
   const insets = useSafeAreaInsets();
   const { chatService } = useAppDependencies();
   const orgId = useAppSelector(selectOrgId);
-  const { mode } = useThemeMode();
-  const theme = semanticThemes[mode];
   const { data, loading, error, refetch } = useChatThread(tab, chatId);
-  const [draft, setDraft] = useState<string>("");
   const [extraMessages, setExtraMessages] = useState<ChatMessage[]>([]);
   const [sending, setSending] = useState(false);
   const sendingRef = useRef(false);
@@ -76,11 +227,9 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
     };
   }, [data, loading]);
 
-  const handleSend = useCallback(() => {
-    const value = draft.trim();
-    if (value.length === 0 || sendingRef.current) return;
+  const handleSend = useCallback((content: string) => {
+    if (sendingRef.current) return;
 
-    setDraft("");
     sendingRef.current = true;
     setSending(true);
 
@@ -90,13 +239,13 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
       chatId,
       role: "user",
       authorName: "Admin",
-      content: value,
+      content,
       createdAtIso: new Date().toISOString(),
     };
     setExtraMessages((prev) => [...prev, userMsg]);
 
     chatService
-      .sendMessage({ orgId, tab, chatId, content: value })
+      .sendMessage({ orgId, tab, chatId, content })
       .then((response) => {
         // Replace optimistic user message with server version, add AI response
         setExtraMessages((prev) => [
@@ -112,7 +261,7 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
         sendingRef.current = false;
         setSending(false);
       });
-  }, [draft, chatId, orgId, tab, chatService]);
+  }, [chatId, orgId, tab, chatService]);
 
   if (error) {
     return <ErrorState message={error} onRetry={() => void refetch()} />;
@@ -129,106 +278,19 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
         headerProps={headerProps}
         showFilterBar={false}
         bottomAccessory={(
-          <View
-            style={[
-              styles.composerContainer,
-              {
-                borderTopColor: theme.border.default,
-                backgroundColor: theme.bg.canvas,
-                paddingBottom: Math.max(spacing[8], insets.bottom),
-              },
-            ]}
-            testID="chat-thread-composer"
-          >
-            <View style={styles.composerRow}>
-              <CustomTextInput
-                value={draft}
-                onChangeText={setDraft}
-                placeholder="Ask a follow-up..."
-                accessibilityLabel="Chat message input"
-                multiline
-                containerStyle={styles.composerInputContainer}
-                inputContainerStyle={styles.composerInputInner}
-                style={styles.composerInputText}
-              />
-              <CustomButton
-                onPress={handleSend}
-                label="Send"
-                buttonMode="primary"
-                buttonSize="compact"
-                accessibilityRole="button"
-                accessibilityLabel="Send chat message"
-                style={styles.sendButton}
-                disabled={draft.trim().length === 0}
-              />
-            </View>
-          </View>
+          <ChatThreadComposer
+            insetsBottom={insets.bottom}
+            sending={sending}
+            onSend={handleSend}
+          />
         )}
       >
-        {loading && !data ? (
-          <View style={styles.loadingWrap}>
-            <LoadingSkeleton variant="text" />
-          </View>
-        ) : null}
-
-        {allMessages.map((message) => {
-          const bubbleType = getBubbleStyle(message.role);
-          const isUser = bubbleType === "user";
-          const isSystem = bubbleType === "system";
-
-          return (
-            <View
-              key={message.id}
-              style={[
-                styles.messageRow,
-                isUser ? styles.userRow : styles.assistantRow,
-              ]}
-            >
-              <View
-                style={[
-                  styles.messageBubble,
-                  {
-                    borderColor: theme.border.default,
-                    backgroundColor: isUser
-                      ? theme.bg.brandSubtle
-                      : isSystem
-                        ? theme.bg.subtle
-                        : theme.bg.surface,
-                  },
-                  isUser ? styles.userBubble : styles.assistantBubble,
-                ]}
-              >
-                <Text style={[styles.messageAuthor, { color: theme.text.secondary }]}>{message.authorName}</Text>
-                <Text style={[styles.messageContent, { color: theme.text.primary }]}>{message.content}</Text>
-                <Text style={[styles.messageTime, { color: theme.text.tertiary }]}>{formatTimestamp(message.createdAtIso)}</Text>
-              </View>
-            </View>
-          );
-        })}
-
-        {sending ? (
-          <View style={[styles.messageRow, styles.assistantRow]}>
-            <View
-              style={[
-                styles.messageBubble,
-                styles.assistantBubble,
-                {
-                  borderColor: theme.border.default,
-                  backgroundColor: theme.bg.surface,
-                },
-              ]}
-            >
-              <View style={styles.typingRow}>
-                <ActivityIndicator size="small" color={theme.text.brand} />
-                <Text
-                  style={[styles.typingText, { color: theme.text.secondary }]}
-                >
-                  Zencoder is thinking...
-                </Text>
-              </View>
-            </View>
-          </View>
-        ) : null}
+        <ChatThreadMessages
+          data={data}
+          loading={loading}
+          messages={allMessages}
+          sending={sending}
+        />
       </ScreenWrapper>
     </KeyboardAvoidingView>
   );

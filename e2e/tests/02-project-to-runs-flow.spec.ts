@@ -22,7 +22,7 @@ test.describe("Agents Hub", () => {
     await navigateTo(page, "Agents");
     await waitForPageLoad(page);
 
-    await expect(page.locator("#project-breakdown")).toContainText("Project Breakdown", {
+    await expect(page.locator("#project-breakdown")).toContainText("All Projects", {
       timeout: 10_000,
     });
   });
@@ -34,7 +34,7 @@ test.describe("Agents Hub", () => {
     await navigateTo(page, "Agents");
     await waitForPageLoad(page);
 
-    await expect(page.locator("#recent-runs")).toContainText("Recent Runs", {
+    await expect(page.locator("#recent-runs")).toContainText("All Runs", {
       timeout: 10_000,
     });
   });

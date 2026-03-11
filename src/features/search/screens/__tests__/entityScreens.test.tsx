@@ -94,6 +94,7 @@ jest.mock("@/components/buttons", () => ({
 }));
 
 jest.mock("@/constants/routes", () => ({
+  ...jest.requireActual("@/constants/routes"),
   buildEntityRoute: (tab: string, type: string, id: string) => `/${tab}/${type}/${id}`,
   resolveTabFromPathname: (p: string) => p.replace("/", ""),
 }));

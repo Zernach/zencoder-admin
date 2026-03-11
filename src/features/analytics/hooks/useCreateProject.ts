@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useCreateProjectMutation } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
 import type { CreateProjectRequest, CreateProjectResponse } from "@/features/analytics/types";
-import { useDashboardFilters } from "./useDashboardFilters";
+import { useDashboardOrgId } from "./useDashboardFilters";
 
 type CreateProjectInput = Omit<CreateProjectRequest, "orgId">;
 
@@ -14,15 +14,15 @@ interface UseCreateProjectReturn {
 }
 
 export function useCreateProject(): UseCreateProjectReturn {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const [trigger, state] = useCreateProjectMutation();
 
   const create = useCallback(
     async (request: CreateProjectInput): Promise<CreateProjectResponse> => {
-      const result = await trigger({ orgId: filters.orgId, ...request }).unwrap();
+      const result = await trigger({ orgId, ...request }).unwrap();
       return result;
     },
-    [filters.orgId, trigger],
+    [orgId, trigger],
   );
 
   return useMemo(() => ({

@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useCreateSeatMutation } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
 import type { CreateSeatRequest, CreateSeatResponse } from "@/features/analytics/types";
-import { useDashboardFilters } from "./useDashboardFilters";
+import { useDashboardOrgId } from "./useDashboardFilters";
 
 type CreateHumanInput = Omit<CreateSeatRequest, "orgId">;
 
@@ -14,15 +14,15 @@ interface UseCreateHumanReturn {
 }
 
 export function useCreateHuman(): UseCreateHumanReturn {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const [trigger, state] = useCreateSeatMutation();
 
   const create = useCallback(
     async (request: CreateHumanInput): Promise<CreateSeatResponse> => {
-      const result = await trigger({ orgId: filters.orgId, ...request }).unwrap();
+      const result = await trigger({ orgId, ...request }).unwrap();
       return result;
     },
-    [filters.orgId, trigger],
+    [orgId, trigger],
   );
 
   return useMemo(() => ({

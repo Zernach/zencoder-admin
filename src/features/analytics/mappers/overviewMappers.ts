@@ -2,7 +2,7 @@ import type { OverviewResponse, OutcomesResponse, TimeSeriesPoint, RunAnomaly, D
 import { formatPercent, formatCompactNumber } from "../utils/formatters";
 import { ROUTES } from "@/constants/routes";
 
-interface KpiCardData {
+export interface KpiCardData {
   title: string;
   value: string;
   delta?: number;

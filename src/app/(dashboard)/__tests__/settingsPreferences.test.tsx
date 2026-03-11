@@ -7,7 +7,13 @@ import { settingsSlice, setCurrency, setLanguage } from "@/store/slices/settings
 import { spacing } from "@/theme/tokens";
 
 function renderWithStore(ui: React.ReactElement, preloadedState?: {
-  settings?: Partial<{ selectedLanguage: string; selectedCurrency: string; deviceDefaultLanguage: string }>;
+  settings?: Partial<{
+    selectedLanguage: string;
+    selectedCurrency: string;
+    deviceDefaultLanguage: string;
+    emailNotificationsEnabled: boolean;
+    slackIntegrationEnabled: boolean;
+  }>;
 }) {
   const store = configureStore({
     reducer: { modal: modalSlice.reducer, settings: settingsSlice.reducer },
@@ -17,6 +23,8 @@ function renderWithStore(ui: React.ReactElement, preloadedState?: {
             deviceDefaultLanguage: "en",
             selectedLanguage: "en",
             selectedCurrency: "EUR",
+            emailNotificationsEnabled: true,
+            slackIntegrationEnabled: true,
             ...preloadedState.settings,
           } as ReturnType<typeof settingsSlice.reducer>,
         }

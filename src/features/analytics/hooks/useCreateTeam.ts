@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useCreateTeamMutation } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
 import type { CreateTeamRequest, CreateTeamResponse } from "@/features/analytics/types";
-import { useDashboardFilters } from "./useDashboardFilters";
+import { useDashboardOrgId } from "./useDashboardFilters";
 
 type CreateTeamInput = Omit<CreateTeamRequest, "orgId">;
 
@@ -14,15 +14,15 @@ interface UseCreateTeamReturn {
 }
 
 export function useCreateTeam(): UseCreateTeamReturn {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const [trigger, state] = useCreateTeamMutation();
 
   const create = useCallback(
     async (request: CreateTeamInput): Promise<CreateTeamResponse> => {
-      const result = await trigger({ orgId: filters.orgId, ...request }).unwrap();
+      const result = await trigger({ orgId, ...request }).unwrap();
       return result;
     },
-    [filters.orgId, trigger],
+    [orgId, trigger],
   );
 
   return useMemo(() => ({

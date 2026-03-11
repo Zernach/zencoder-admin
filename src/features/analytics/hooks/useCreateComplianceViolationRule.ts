@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useCreateComplianceRuleMutation } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
 import type { CreateComplianceRuleRequest, CreateComplianceRuleResponse } from "@/features/analytics/types";
-import { useDashboardFilters } from "./useDashboardFilters";
+import { useDashboardOrgId } from "./useDashboardFilters";
 
 type CreateComplianceRuleInput = Omit<CreateComplianceRuleRequest, "orgId">;
 
@@ -14,15 +14,15 @@ interface UseCreateComplianceViolationRuleReturn {
 }
 
 export function useCreateComplianceViolationRule(): UseCreateComplianceViolationRuleReturn {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const [trigger, state] = useCreateComplianceRuleMutation();
 
   const create = useCallback(
     async (request: CreateComplianceRuleInput): Promise<CreateComplianceRuleResponse> => {
-      const result = await trigger({ orgId: filters.orgId, ...request }).unwrap();
+      const result = await trigger({ orgId, ...request }).unwrap();
       return result;
     },
-    [filters.orgId, trigger],
+    [orgId, trigger],
   );
 
   return useMemo(() => ({

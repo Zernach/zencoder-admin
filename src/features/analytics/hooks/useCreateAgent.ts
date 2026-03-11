@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useCreateAgentMutation } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
 import type { CreateAgentRequest, CreateAgentResponse } from "@/features/analytics/types";
-import { useDashboardFilters } from "./useDashboardFilters";
+import { useDashboardOrgId } from "./useDashboardFilters";
 
 type CreateAgentInput = Omit<CreateAgentRequest, "orgId">;
 
@@ -14,15 +14,15 @@ interface UseCreateAgentReturn {
 }
 
 export function useCreateAgent(): UseCreateAgentReturn {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const [trigger, state] = useCreateAgentMutation();
 
   const create = useCallback(
     async (request: CreateAgentInput): Promise<CreateAgentResponse> => {
-      const result = await trigger({ orgId: filters.orgId, ...request }).unwrap();
+      const result = await trigger({ orgId, ...request }).unwrap();
       return result;
     },
-    [filters.orgId, trigger],
+    [orgId, trigger],
   );
 
   return useMemo(() => ({

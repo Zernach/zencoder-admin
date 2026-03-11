@@ -7,7 +7,11 @@ import type { TextInput as TextInputHandle } from "react-native";
 import { Search, Clock, X, User } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
-import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
+import {
+  useDashboardFilterActions,
+  useDashboardPreset,
+  useDashboardSearchQuery,
+} from "@/features/analytics/hooks/useDashboardFilters";
 import { useSearchAutocomplete } from "@/features/analytics/hooks/useSearchAutocomplete";
 import type { TimeRangePreset, SearchSuggestion, SearchSuggestionsResponse } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -70,24 +74,28 @@ export interface TopBarProps {
   autocomplete?: TopBarAutocompleteOverride;
 }
 
-export const TopBar = React.memo(function TopBar({
+/**
+ * Isolated search section — owns localQuery + isPanelOpen state so that
+ * keystrokes only re-render the search area, not the time-range or profile buttons.
+ */
+const TopBarSearchSection = React.memo(function TopBarSearchSection({
   placeholder,
-  showTimeRange = true,
-  autocomplete: autocompleteOverride,
-}: TopBarProps) {
+  autocompleteOverride,
+}: {
+  placeholder?: string;
+  autocompleteOverride?: TopBarAutocompleteOverride;
+}) {
   const { t } = useTranslation();
-  const breakpoint = useBreakpoint();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const router = useRouter();
   const mostRecentTab = useAppSelector(selectMostRecentTab);
-  const { preset, setTimeRange, searchQuery, setSearchQuery } = useDashboardFilters();
+  const searchQuery = useDashboardSearchQuery();
+  const { setSearchQuery } = useDashboardFilterActions();
   const searchInputRef = useRef<TextInputHandle>(null);
   const [localQuery, setLocalQuery] = useState(searchQuery);
-  const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  // Use refs for values that change frequently but shouldn't recreate the callback
   const mostRecentTabRef = useRef(mostRecentTab);
   mostRecentTabRef.current = mostRecentTab;
 
@@ -160,16 +168,71 @@ export const TopBar = React.memo(function TopBar({
     [],
   );
 
+  const hasQuery = localQuery.length > 0;
+
+  const searchContainerStyle = useMemo(
+    () => [
+      styles.searchContainer,
+      { backgroundColor: theme.bg.surface, borderColor: hasQuery ? theme.border.brand : theme.border.default },
+    ],
+    [theme.bg.surface, theme.border.brand, theme.border.default, hasQuery],
+  );
+
+  return (
+    <View style={searchContainerStyle}>
+      <Search size={14} color={hasQuery ? theme.border.brand : theme.text.tertiary} />
+      <CustomTextInput
+        ref={searchInputRef}
+        containerStyle={styles.searchInputWrapper}
+        showInputContainer={false}
+        style={[styles.searchInput, isIos ? styles.searchInputIos : undefined]}
+        placeholder={placeholder ?? t("search.placeholder")}
+        value={localQuery}
+        onChangeText={handleSearchChange}
+        accessibilityLabel={t("search.searchLabel")}
+        accessibilityHint={t("search.searchHint")}
+      />
+      {hasQuery && (
+        <CustomButton
+          onPress={handleClearSearch}
+          hitSlop={8}
+          buttonMode="ghost"
+          buttonSize="iconSm"
+          accessibilityRole="button"
+          accessibilityLabel={t("search.clearSearch")}
+          style={styles.clearButton}
+        >
+          <X size={14} color={theme.icon.secondary} />
+        </CustomButton>
+      )}
+      <SearchAutocompletePanel
+        suggestions={autocompleteOverride?.suggestions ?? autocomplete.suggestions}
+        loading={autocompleteOverride?.loading ?? autocomplete.loading}
+        error={autocompleteOverride?.error ?? autocomplete.error}
+        onSelect={handlePanelSelect}
+        onDismiss={handleDismissPanel}
+        visible={isPanelOpen}
+      />
+    </View>
+  );
+});
+
+/**
+ * Isolated time-range button + modal — owns isTimeRangeOverlayVisible state
+ * so opening/closing the modal doesn't re-render search or profile.
+ */
+const TopBarTimeRange = React.memo(function TopBarTimeRange() {
+  const { t } = useTranslation();
+  const breakpoint = useBreakpoint();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const preset = useDashboardPreset();
+  const { setTimeRange } = useDashboardFilterActions();
+  const [isTimeRangeOverlayVisible, setTimeRangeOverlayVisible] = useState(false);
+
   const openTimeRangeOverlay = useCallback(
     () => setTimeRangeOverlayVisible(true),
     [],
-  );
-
-  const handleOpenSettings = useCallback(
-    () => {
-      router.push(ROUTES.SETTINGS as never);
-    },
-    [router],
   );
 
   const closeTimeRangeOverlay = useCallback(
@@ -185,7 +248,6 @@ export const TopBar = React.memo(function TopBar({
     [setTimeRange],
   );
 
-  // Stable per-preset press handlers to avoid inline closures in .map()
   const timeRangeHandlerCache = useRef(new Map<string, () => void>()).current;
   const handleSelectTimeRangeRef = useRef(handleSelectTimeRange);
   handleSelectTimeRangeRef.current = handleSelectTimeRange;
@@ -200,91 +262,24 @@ export const TopBar = React.memo(function TopBar({
 
   const presetButtonLabel =
     breakpoint === "mobile" ? t(PRESET_SHORT_LABEL_KEYS[preset]) : t(PRESET_LABEL_KEYS[preset]);
-  const hasQuery = localQuery.length > 0;
-
-  const containerStyle = useMemo(
-    () => [styles.container, { backgroundColor: theme.bg.canvas, borderBottomColor: theme.border.default }],
-    [theme.bg.canvas, theme.border.default],
-  );
-  const searchContainerStyle = useMemo(
-    () => [
-      styles.searchContainer,
-      { backgroundColor: theme.bg.surface, borderColor: hasQuery ? theme.border.brand : theme.border.default },
-    ],
-    [theme.bg.surface, theme.border.brand, theme.border.default, hasQuery],
-  );
-  const presetBtnStyle = useMemo(() => [styles.presetBtn], []);
 
   return (
-    <View style={containerStyle}>
-      <View style={styles.left}>
-        <View style={searchContainerStyle}>
-          <Search size={14} color={hasQuery ? theme.border.brand : theme.text.tertiary} />
-          <CustomTextInput
-            ref={searchInputRef}
-            containerStyle={styles.searchInputWrapper}
-            showInputContainer={false}
-            style={[styles.searchInput, isIos ? styles.searchInputIos : undefined]}
-            placeholder={placeholder ?? t("search.placeholder")}
-            value={localQuery}
-            onChangeText={handleSearchChange}
-            accessibilityLabel={t("search.searchLabel")}
-            accessibilityHint={t("search.searchHint")}
-          />
-          {hasQuery && (
-            <CustomButton
-              onPress={handleClearSearch}
-              hitSlop={8}
-              buttonMode="ghost"
-              buttonSize="iconSm"
-              accessibilityRole="button"
-              accessibilityLabel={t("search.clearSearch")}
-              style={styles.clearButton}
-            >
-              <X size={14} color={theme.icon.secondary} />
-            </CustomButton>
-          )}
-          <SearchAutocompletePanel
-            suggestions={autocompleteOverride?.suggestions ?? autocomplete.suggestions}
-            loading={autocompleteOverride?.loading ?? autocomplete.loading}
-            error={autocompleteOverride?.error ?? autocomplete.error}
-            onSelect={handlePanelSelect}
-            onDismiss={handleDismissPanel}
-            visible={isPanelOpen}
-          />
-        </View>
-      </View>
-      <View style={styles.right}>
-        {showTimeRange && (
-          <CustomButton
-            style={presetBtnStyle}
-            buttonMode="surface"
-            accessibilityRole="button"
-            accessibilityLabel={t("timeRange.openSelector")}
-            onPress={openTimeRangeOverlay}
-          >
-            <Clock size={14} color={theme.text.secondary} />
-            <Text
-              allowFontScaling={false}
-              style={[styles.presetText, { color: theme.text.secondary }]}
-            >
-              {presetButtonLabel}
-            </Text>
-          </CustomButton>
-        )}
-        <CustomButton
-          style={[styles.profileBtn, { backgroundColor: "transparent", borderWidth: 1, borderColor: "#E65100" }]}
-          buttonMode="unstyled"
-          buttonSize="none"
-          accessibilityRole="button"
-          accessibilityLabel="Open settings"
-          onPress={handleOpenSettings}
+    <>
+      <CustomButton
+        style={styles.presetBtn}
+        buttonMode="surface"
+        accessibilityRole="button"
+        accessibilityLabel={t("timeRange.openSelector")}
+        onPress={openTimeRangeOverlay}
+      >
+        <Clock size={14} color={theme.text.secondary} />
+        <Text
+          allowFontScaling={false}
+          style={[styles.presetText, { color: theme.text.secondary }]}
         >
-          <View style={{ marginTop: 0.5, marginLeft: -1 }}>
-            <User size={18} color={theme.icon.primary} strokeWidth={1.5} />
-          </View>
-        </CustomButton>
-      </View>
+          {presetButtonLabel}
+        </Text>
+      </CustomButton>
       <CustomModal
         visible={isTimeRangeOverlayVisible}
         onClose={closeTimeRangeOverlay}
@@ -323,6 +318,71 @@ export const TopBar = React.memo(function TopBar({
           })}
         </View>
       </CustomModal>
+    </>
+  );
+});
+
+/**
+ * Isolated profile button — doesn't re-render when search or time-range state changes.
+ */
+const TopBarProfileButton = React.memo(function TopBarProfileButton() {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const router = useRouter();
+
+  const handleOpenSettings = useCallback(
+    () => {
+      router.push(ROUTES.SETTINGS as never);
+    },
+    [router],
+  );
+
+  return (
+    <CustomButton
+      style={styles.profileBtnOutline}
+      buttonMode="unstyled"
+      buttonSize="none"
+      accessibilityRole="button"
+      accessibilityLabel="Open settings"
+      onPress={handleOpenSettings}
+    >
+      <View style={styles.profileIconOffset}>
+        <User size={18} color={theme.icon.primary} strokeWidth={1.5} />
+      </View>
+    </CustomButton>
+  );
+});
+
+/**
+ * TopBar — now a thin layout shell. State is isolated into sub-components
+ * so that search keystrokes, time-range toggles, and profile interactions
+ * each only re-render their own subtree.
+ */
+export const TopBar = React.memo(function TopBar({
+  placeholder,
+  showTimeRange = true,
+  autocomplete: autocompleteOverride,
+}: TopBarProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+
+  const containerStyle = useMemo(
+    () => [styles.container, { backgroundColor: theme.bg.canvas, borderBottomColor: theme.border.default }],
+    [theme.bg.canvas, theme.border.default],
+  );
+
+  return (
+    <View style={containerStyle}>
+      <View style={styles.left}>
+        <TopBarSearchSection
+          placeholder={placeholder}
+          autocompleteOverride={autocompleteOverride}
+        />
+      </View>
+      <View style={styles.right}>
+        {showTimeRange && <TopBarTimeRange />}
+        <TopBarProfileButton />
+      </View>
     </View>
   );
 });
@@ -410,6 +470,20 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
     alignItems: "center",
     justifyContent: "center",
+  },
+  profileBtnOutline: {
+    width: CONTROL_HEIGHT,
+    height: CONTROL_HEIGHT,
+    borderRadius: radius.full,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#E65100",
+  },
+  profileIconOffset: {
+    marginTop: 0.5,
+    marginLeft: -1,
   },
   timeRangePanel: {
     padding: spacing[12],

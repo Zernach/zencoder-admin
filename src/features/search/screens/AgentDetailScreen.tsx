@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useRouter, usePathname } from "expo-router";
@@ -20,6 +20,9 @@ import { useAppSelector } from "@/store/hooks";
 import { selectOrgId } from "@/store/slices/filtersSlice";
 import { spacing, radius, borderWidth } from "@/theme/tokens";
 import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
+import { keyExtractors } from "@/constants";
+
+const EMPTY_USER_MAP: Record<string, string> = {};
 
 interface AgentDetailScreenProps {
   agentId: string;
@@ -28,28 +31,26 @@ interface AgentDetailScreenProps {
 export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
   const { t } = useTranslation();
   const { data, loading, error, refetch } = useAgentDetailScreen(agentId);
-  const orgId = useAppSelector(selectOrgId);
-  const [updateDescription] = useUpdateAgentDescriptionMutation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
   const { formatCurrency } = useCurrencyFormatter();
   const router = useRouter();
   const pathname = usePathname();
-  const [isEditing, setIsEditing] = useState(false);
-  const [draft, setDraft] = useState("");
-  const [saving, setSaving] = useState(false);
+
+  const pathnameRef = useRef(pathname);
+  pathnameRef.current = pathname;
 
   const navigateTo = useCallback(
     (entityType: "agent" | "project" | "team" | "human" | "run", entityId: string) => {
-      const tab = resolveTabFromPathname(pathname);
+      const tab = resolveTabFromPathname(pathnameRef.current);
       const route = buildEntityRoute(tab, entityType, entityId);
       router.push(route as never);
     },
-    [pathname, router],
+    [router],
   );
 
-  const userMap = data?.userMap ?? {};
+  const userMap = useMemo(() => data?.userMap ?? EMPTY_USER_MAP, [data?.userMap]);
 
   const runColumns = useMemo<ColumnDef<RunListRow>[]>(
     () => [
@@ -97,25 +98,6 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
     [ct, navigateTo, userMap, t, formatCurrency],
   );
 
-  const handleEditPress = useCallback(() => {
-    setDraft(data?.agent.description ?? "");
-    setIsEditing(true);
-  }, [data?.agent.description]);
-
-  const handleCancelEdit = useCallback(() => {
-    setIsEditing(false);
-  }, []);
-
-  const handleSave = useCallback(async () => {
-    setSaving(true);
-    try {
-      await updateDescription({ orgId, agentId, description: draft }).unwrap();
-      setIsEditing(false);
-    } finally {
-      setSaving(false);
-    }
-  }, [agentId, draft, orgId, updateDescription]);
-
   if (loading) return <LoadingSkeleton variant="text" />;
   if (error) return <ErrorState message={error} onRetry={refetch} />;
   if (!data) return null;
@@ -135,54 +117,16 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
           <StatItem label={t("entityDetail.cost")} value={formatCurrency(data.totalCostUsd)} theme={theme} />
         </View>
 
-        <View style={[styles.descriptionSection, { backgroundColor: theme.bg.surface, borderColor: theme.border.default }]}>
-          <View style={styles.descriptionHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.promptDescription")}</Text>
-            {!isEditing && (
-              <CustomButton onPress={handleEditPress} accessibilityLabel="Edit description">
-                <Text style={[styles.editButton, { color: theme.border.brand }]}>{t("common.edit")}</Text>
-              </CustomButton>
-            )}
-          </View>
-          {isEditing ? (
-            <View style={styles.descriptionEditArea}>
-              <CustomTextInput
-                value={draft}
-                onChangeText={setDraft}
-                multiline
-                numberOfLines={4}
-                placeholder={t("entityDetail.descriptionPlaceholder")}
-                style={styles.descriptionInput}
-                inputContainerStyle={styles.descriptionInputContainer}
-                accessibilityLabel="Agent description"
-              />
-              <View style={styles.descriptionActions}>
-                <CustomButton onPress={handleCancelEdit} accessibilityLabel="Cancel editing">
-                  <Text style={[styles.actionButton, { color: theme.text.secondary }]}>{t("common.cancel")}</Text>
-                </CustomButton>
-                <CustomButton onPress={handleSave} accessibilityLabel="Save description">
-                  <View style={[styles.saveButton, { backgroundColor: theme.border.brand }]}>
-                    {saving ? (
-                      <CustomSpinner size={14} color="#fff" />
-                    ) : (
-                      <Text style={styles.saveButtonText}>{t("common.save")}</Text>
-                    )}
-                  </View>
-                </CustomButton>
-              </View>
-            </View>
-          ) : (
-            <Text style={[styles.descriptionText, { color: data.agent.description ? theme.text.primary : theme.text.secondary }]}>
-              {data.agent.description || t("entityDetail.noDescription")}
-            </Text>
-          )}
-        </View>
+        <AgentDescriptionSection
+          agentId={agentId}
+          description={data.agent.description}
+        />
 
         <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>{t("entityDetail.recentRuns")}</Text>
         <DataTable
           columns={runColumns}
           data={data.recentRuns}
-          keyExtractor={(r) => r.id}
+          keyExtractor={keyExtractors.byId}
           initialSortBy="startedAtIso"
           initialSortDirection="desc"
           emptyMessage={t("entityDetail.noRunsYet")}
@@ -192,9 +136,106 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
   );
 }
 
+const AgentDescriptionSection = React.memo(function AgentDescriptionSection({
+  agentId,
+  description,
+}: {
+  agentId: string;
+  description: string;
+}) {
+  const { t } = useTranslation();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const orgId = useAppSelector(selectOrgId);
+  const [updateDescription] = useUpdateAgentDescriptionMutation();
+  const [isEditing, setIsEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const handleEditPress = useCallback(() => {
+    setDraft(description);
+    setIsEditing(true);
+  }, [description]);
+
+  const handleCancelEdit = useCallback(() => {
+    setIsEditing(false);
+  }, []);
+
+  const handleSave = useCallback(async () => {
+    setSaving(true);
+    try {
+      await updateDescription({ orgId, agentId, description: draft }).unwrap();
+      setIsEditing(false);
+    } finally {
+      setSaving(false);
+    }
+  }, [agentId, draft, orgId, updateDescription]);
+
+  return (
+    <View
+      style={[
+        styles.descriptionSection,
+        { backgroundColor: theme.bg.surface, borderColor: theme.border.default },
+      ]}
+    >
+      <View style={styles.descriptionHeader}>
+        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>
+          {t("entityDetail.promptDescription")}
+        </Text>
+        {!isEditing && (
+          <CustomButton onPress={handleEditPress} accessibilityLabel="Edit description">
+            <Text style={[styles.editButton, { color: theme.border.brand }]}>
+              {t("common.edit")}
+            </Text>
+          </CustomButton>
+        )}
+      </View>
+      {isEditing ? (
+        <View style={styles.descriptionEditArea}>
+          <CustomTextInput
+            value={draft}
+            onChangeText={setDraft}
+            multiline
+            numberOfLines={4}
+            placeholder={t("entityDetail.descriptionPlaceholder")}
+            style={styles.descriptionInput}
+            inputContainerStyle={styles.descriptionInputContainer}
+            accessibilityLabel="Agent description"
+          />
+          <View style={styles.descriptionActions}>
+            <CustomButton onPress={handleCancelEdit} accessibilityLabel="Cancel editing">
+              <Text style={[styles.actionButton, { color: theme.text.secondary }]}>
+                {t("common.cancel")}
+              </Text>
+            </CustomButton>
+            <CustomButton onPress={handleSave} accessibilityLabel="Save description">
+              <View style={[styles.saveButton, { backgroundColor: theme.border.brand }]}>
+                {saving ? (
+                  <CustomSpinner size={14} color="#fff" />
+                ) : (
+                  <Text style={styles.saveButtonText}>{t("common.save")}</Text>
+                )}
+              </View>
+            </CustomButton>
+          </View>
+        </View>
+      ) : (
+        <Text
+          style={[
+            styles.descriptionText,
+            { color: description ? theme.text.primary : theme.text.secondary },
+          ]}
+        >
+          {description || t("entityDetail.noDescription")}
+        </Text>
+      )}
+    </View>
+  );
+});
+
 type ThemeColors = (typeof semanticThemes)["dark"];
 
-function StatItem({
+const StatItem = React.memo(function StatItem({
   label,
   value,
   theme,
@@ -211,7 +252,7 @@ function StatItem({
       <Text style={[styles.statLabel, { color: theme.text.secondary }]}>{label}</Text>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   content: { gap: spacing[16] },

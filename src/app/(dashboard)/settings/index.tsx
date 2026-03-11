@@ -1,10 +1,20 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useSectionRef } from "@/hooks/useRegisterSection";
 import { useTranslation } from "react-i18next";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomSwitch } from "@/components/inputs";
-import { Moon, Mail, MessageSquare, LogOut, Trash2, User, Globe, DollarSign, ChevronRight } from "lucide-react-native";
+import {
+  Moon,
+  Mail,
+  MessageSquare,
+  LogOut,
+  Trash2,
+  User,
+  Globe,
+  DollarSign,
+  ChevronRight,
+} from "lucide-react-native";
 import { SectionHeader } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
 import { SignOutNoticeModal } from "@/features/analytics/components/SignOutNoticeModal";
@@ -15,305 +25,426 @@ import { spacing, radius } from "@/theme/tokens";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { typography } from "@/theme/typography";
-import { useAppDispatch, useAppSelector, openModal, ModalName, selectSelectedLanguage, selectSelectedCurrency } from "@/store";
+import {
+  useAppDispatch,
+  useAppSelector,
+  openModal,
+  ModalName,
+  selectSelectedLanguage,
+  selectSelectedCurrency,
+  selectEmailNotificationsEnabled,
+  selectSlackIntegrationEnabled,
+  setEmailNotificationsEnabled,
+  setSlackIntegrationEnabled,
+} from "@/store";
 
-type SettingToggleKey = "darkMode" | "emailNotifs" | "slackInteg";
-type NonThemeSettingKey = Exclude<SettingToggleKey, "darkMode">;
+const SEATS_PURCHASED = 100;
+const SEATS_USED = 73;
+const ORG_ID = "org_zencoder_001";
 
-interface SettingToggle {
-  label: string;
-  description: string;
-  key: SettingToggleKey;
-  icon: React.ComponentType<{ size: number; color: string }>;
-}
-
-const TOGGLES: SettingToggle[] = [
-  { label: "Dark Mode", description: "Use dark theme (default)", key: "darkMode", icon: Moon },
-  { label: "Email Notifications", description: "Receive email alerts for anomalies", key: "emailNotifs", icon: Mail },
-];
-
-const INITIAL_SETTINGS: Record<NonThemeSettingKey, boolean> = {
-  emailNotifs: true,
-  slackInteg: true,
-};
-
-const TOGGLE_LABEL_KEYS: Record<SettingToggleKey, string> = {
-  darkMode: "settings.darkMode",
-  emailNotifs: "settings.emailNotifications",
-  slackInteg: "settings.slackIntegration",
-};
-
-const TOGGLE_DESC_KEYS: Record<SettingToggleKey, string> = {
-  darkMode: "settings.darkModeDescription",
-  emailNotifs: "settings.emailDescription",
-  slackInteg: "settings.slackDescription",
-};
-
-export default function SettingsScreen() {
+const SettingsProfileSection = React.memo(function SettingsProfileSection() {
   const { t } = useTranslation();
-  const { mode, setMode, toggleMode } = useThemeMode();
+  const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const refFor = useSectionRef();
+
+  return (
+    <View
+      ref={refFor("profile")}
+      nativeID="profile"
+      style={[
+        styles.profileCard,
+        { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle },
+      ]}
+    >
+      <View
+        style={[
+          styles.avatarCircle,
+          { backgroundColor: `${theme.border.brand}22` },
+        ]}
+      >
+        <User size={28} color={theme.border.brand} />
+      </View>
+      <View style={styles.profileInfo}>
+        <Text style={[styles.profileName, { color: theme.text.primary }]}>
+          {t("settings.adminUser")}
+        </Text>
+        <Text
+          selectable={false}
+          style={[styles.profileEmail, { color: theme.text.secondary }]}
+          pointerEvents="none"
+        >
+          {t("settings.adminEmail")}
+        </Text>
+        <View
+          style={[
+            styles.roleBadge,
+            { backgroundColor: `${theme.border.brand}1A` },
+          ]}
+        >
+          <Text style={[styles.roleBadgeText, { color: theme.text.brand }]}>
+            {t("settings.ownerRole")}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+});
+
+const SettingsPreferencesSection = React.memo(function SettingsPreferencesSection() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const [settings, setSettings] = useState<Record<NonThemeSettingKey, boolean>>(INITIAL_SETTINGS);
+  const { mode, toggleMode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const refFor = useSectionRef();
+  const emailNotificationsEnabled = useAppSelector(selectEmailNotificationsEnabled);
 
-  const toggle = useCallback((key: SettingToggleKey) => {
-    if (key === "darkMode") {
-      toggleMode();
-      return;
-    }
-
-    setSettings((currentSettings) => ({ ...currentSettings, [key]: !currentSettings[key] }));
+  const handleToggleTheme = useCallback(() => {
+    toggleMode();
   }, [toggleMode]);
 
-  // Stable per-key toggle handlers to avoid inline closures in .map()
-  const toggleHandlerCache = useRef(new Map<string, () => void>()).current;
-  const toggleRef = useRef(toggle);
-  toggleRef.current = toggle;
-  const getToggleHandler = useCallback((key: SettingToggleKey) => {
-    let handler = toggleHandlerCache.get(key);
-    if (!handler) {
-      handler = () => toggleRef.current(key);
-      toggleHandlerCache.set(key, handler);
-    }
-    return handler;
-  }, [toggleHandlerCache]);
+  const handleToggleEmailNotifications = useCallback(() => {
+    dispatch(setEmailNotificationsEnabled(!emailNotificationsEnabled));
+  }, [dispatch, emailNotificationsEnabled]);
 
+  return (
+    <View ref={refFor("preferences")} nativeID="preferences" style={styles.section}>
+      <SectionHeader
+        title={t("settings.preferences")}
+        subtitle={t("settings.preferencesSubtitle")}
+      />
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle },
+        ]}
+      >
+        <View style={styles.row}>
+          <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
+            <Moon size={16} color={theme.text.secondary} />
+          </View>
+          <View style={styles.rowText}>
+            <Text style={[styles.label, { color: theme.text.primary }]}>
+              {t("settings.darkModeLabel", {
+                mode: t(mode === "dark" ? "settings.dark" : "settings.light"),
+              })}
+            </Text>
+            <Text style={[styles.desc, { color: theme.text.tertiary }]}>
+              {t("settings.darkModeDescription")}
+            </Text>
+          </View>
+          <CustomSwitch
+            value={mode === "dark"}
+            onValueChange={handleToggleTheme}
+            accessibilityLabel={t("settings.themeModeLabel", {
+              mode: t(mode === "dark" ? "settings.dark" : "settings.light"),
+            })}
+          />
+        </View>
+
+        <View style={[styles.row, styles.rowDivider]}>
+          <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
+            <Mail size={16} color={theme.text.secondary} />
+          </View>
+          <View style={styles.rowText}>
+            <Text style={[styles.label, { color: theme.text.primary }]}>
+              {t("settings.emailNotifications")}
+            </Text>
+            <Text style={[styles.desc, { color: theme.text.tertiary }]}>
+              {t("settings.emailDescription")}
+            </Text>
+          </View>
+          <CustomSwitch
+            value={emailNotificationsEnabled}
+            onValueChange={handleToggleEmailNotifications}
+            accessibilityLabel={t("settings.emailNotifications")}
+          />
+        </View>
+      </View>
+    </View>
+  );
+});
+
+const SettingsInternationalizationSection = React.memo(function SettingsInternationalizationSection() {
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const refFor = useSectionRef();
   const selectedLanguage = useAppSelector(selectSelectedLanguage);
+  const selectedCurrency = useAppSelector(selectSelectedCurrency);
+
   const selectedLanguageLabel = useMemo(
-    () => LANGUAGE_OPTIONS.find((o) => o.code === selectedLanguage)?.nativeLabel ?? "English",
+    () =>
+      LANGUAGE_OPTIONS.find((option) => option.code === selectedLanguage)?.nativeLabel
+      ?? "English",
     [selectedLanguage],
   );
 
-  const handleOpenLanguageSelection = useCallback(
-    () => dispatch(openModal(ModalName.LanguageSelection)),
-    [dispatch],
+  const selectedCurrencyLabel = useMemo(() => {
+    const selectedCurrencyOption = CURRENCY_OPTIONS.find(
+      (option) => option.code === selectedCurrency,
+    );
+
+    if (!selectedCurrencyOption) {
+      return "EUR";
+    }
+
+    return `${selectedCurrencyOption.symbol} ${selectedCurrencyOption.code}`;
+  }, [selectedCurrency]);
+
+  const handleOpenLanguageSelection = useCallback(() => {
+    dispatch(openModal(ModalName.LanguageSelection));
+  }, [dispatch]);
+
+  const handleOpenCurrencySelection = useCallback(() => {
+    dispatch(openModal(ModalName.CurrencySelection));
+  }, [dispatch]);
+
+  return (
+    <View
+      ref={refFor("internationalization")}
+      nativeID="internationalization"
+      style={styles.section}
+    >
+      <SectionHeader
+        title={t("settings.internationalization")}
+        subtitle={t("settings.internationalizationSubtitle")}
+      />
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle },
+        ]}
+      >
+        <CustomButton
+          onPress={handleOpenLanguageSelection}
+          style={styles.row}
+          accessibilityRole="button"
+          accessibilityLabel={t("settings.selectLanguage")}
+        >
+          <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
+            <Globe size={16} color={theme.text.secondary} />
+          </View>
+          <View style={styles.rowText}>
+            <Text style={[styles.label, { color: theme.text.primary }]}>
+              {t("settings.language")}
+            </Text>
+            <Text style={[styles.desc, { color: theme.text.tertiary }]}>
+              {t("settings.languageDescription")}
+            </Text>
+          </View>
+          <View style={styles.langValue}>
+            <Text style={[styles.langValueText, { color: theme.text.secondary }]}>
+              {selectedLanguageLabel}
+            </Text>
+            <ChevronRight size={16} color={theme.text.tertiary} />
+          </View>
+        </CustomButton>
+
+        <CustomButton
+          onPress={handleOpenCurrencySelection}
+          style={[styles.row, styles.rowDivider]}
+          accessibilityRole="button"
+          accessibilityLabel={t("settings.selectCurrency")}
+        >
+          <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
+            <DollarSign size={16} color={theme.text.secondary} />
+          </View>
+          <View style={styles.rowText}>
+            <Text style={[styles.label, { color: theme.text.primary }]}>
+              {t("settings.currency")}
+            </Text>
+            <Text style={[styles.desc, { color: theme.text.tertiary }]}>
+              {t("settings.currencyDescription")}
+            </Text>
+          </View>
+          <View style={styles.langValue}>
+            <Text style={[styles.langValueText, { color: theme.text.secondary }]}>
+              {selectedCurrencyLabel}
+            </Text>
+            <ChevronRight size={16} color={theme.text.tertiary} />
+          </View>
+        </CustomButton>
+      </View>
+    </View>
   );
+});
 
-  const selectedCurrency = useAppSelector(selectSelectedCurrency);
-  const selectedCurrencyOption = useMemo(
-    () => CURRENCY_OPTIONS.find((o) => o.code === selectedCurrency),
-    [selectedCurrency],
+const SettingsOrganizationSection = React.memo(function SettingsOrganizationSection() {
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const refFor = useSectionRef();
+  const slackIntegrationEnabled = useAppSelector(selectSlackIntegrationEnabled);
+  const seatPercent = Math.round((SEATS_USED / SEATS_PURCHASED) * 100);
+
+  const handleToggleSlack = useCallback(() => {
+    dispatch(setSlackIntegrationEnabled(!slackIntegrationEnabled));
+  }, [dispatch, slackIntegrationEnabled]);
+
+  return (
+    <View ref={refFor("organization")} nativeID="organization" style={styles.section}>
+      <SectionHeader
+        title={t("settings.organization")}
+        subtitle={t("settings.organizationSubtitle")}
+      />
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle },
+        ]}
+      >
+        <View style={styles.row}>
+          <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
+            <MessageSquare size={16} color={theme.text.secondary} />
+          </View>
+          <View style={styles.rowText}>
+            <Text style={[styles.label, { color: theme.text.primary }]}>
+              {t("settings.slackIntegration")}
+            </Text>
+            <Text style={[styles.desc, { color: theme.text.tertiary }]}>
+              {t("settings.slackDescription")}
+            </Text>
+          </View>
+          <CustomSwitch
+            value={slackIntegrationEnabled}
+            onValueChange={handleToggleSlack}
+            accessibilityLabel={t("settings.slackIntegration")}
+          />
+        </View>
+        <View style={[styles.infoRow, styles.rowDivider]}>
+          <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>
+            {t("settings.orgId")}
+          </Text>
+          <Text style={[styles.infoValueMono, { color: theme.text.primary }]}>{ORG_ID}</Text>
+        </View>
+        <View style={[styles.infoRow, styles.rowDivider]}>
+          <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>
+            {t("settings.plan")}
+          </Text>
+          <View style={[styles.planBadge, { backgroundColor: theme.bg.brandSubtle }]}>
+            <Text style={[styles.planBadgeText, { color: theme.text.brand }]}>
+              {t("settings.enterprise")}
+            </Text>
+          </View>
+        </View>
+        <View style={[styles.infoRow, styles.rowDivider]}>
+          <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>
+            {t("settings.seats")}
+          </Text>
+          <Text style={[styles.infoValue, { color: theme.text.primary }]}>
+            {SEATS_USED} / {SEATS_PURCHASED}
+          </Text>
+        </View>
+        <View style={styles.seatBarOuter}>
+          <View
+            style={[
+              styles.seatBarInner,
+              {
+                backgroundColor: theme.border.brand,
+                width: `${seatPercent}%`,
+              },
+            ]}
+          />
+        </View>
+        <Text style={[styles.seatCaption, { color: theme.text.tertiary }]}>
+          {t("settings.seatsUsed", { percent: seatPercent })}
+        </Text>
+      </View>
+    </View>
   );
-  const selectedCurrencyLabel = selectedCurrencyOption
-    ? `${selectedCurrencyOption.symbol} ${selectedCurrencyOption.code}`
-    : "EUR";
+});
 
-  const handleOpenCurrencySelection = useCallback(
-    () => dispatch(openModal(ModalName.CurrencySelection)),
-    [dispatch],
-  );
-
-  const handleOpenSignOut = useCallback(
-    () => dispatch(openModal(ModalName.SignOutNotice)),
-    [dispatch],
-  );
-
-  const seatsPurchased = 100;
-  const seatsUsed = 73;
-  const seatPercent = Math.round((seatsUsed / seatsPurchased) * 100);
-
+const SettingsDangerZoneSection = React.memo(function SettingsDangerZoneSection() {
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
   const refFor = useSectionRef();
 
+  const handleOpenSignOut = useCallback(() => {
+    dispatch(openModal(ModalName.SignOutNotice));
+  }, [dispatch]);
+
+  return (
+    <View ref={refFor("danger-zone")} nativeID="danger-zone" style={styles.section}>
+      <SectionHeader
+        title={t("settings.dangerZone")}
+        subtitle={t("settings.dangerZoneSubtitle")}
+      />
+      <View
+        style={[
+          styles.dangerCard,
+          {
+            borderColor: `${theme.state.error}40`,
+            backgroundColor: `${theme.state.error}08`,
+          },
+        ]}
+      >
+        <CustomButton
+          style={[
+            styles.dangerBtn,
+            {
+              borderColor: theme.border.brand,
+              backgroundColor: theme.bg.brandSubtle,
+            },
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel={t("settings.clearCacheLabel")}
+        >
+          <View style={styles.btnRow}>
+            <Trash2 size={15} color={theme.border.brand} />
+            <Text style={[styles.dangerText, { color: theme.border.brand }]}>
+              {t("common.clearCache")}
+            </Text>
+          </View>
+        </CustomButton>
+
+        <CustomButton
+          onPress={handleOpenSignOut}
+          style={[
+            styles.signOutBtn,
+            {
+              borderColor: theme.border.default,
+              backgroundColor: theme.bg.surface,
+            },
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel={t("settings.signOutLabel")}
+        >
+          <View style={styles.btnRow}>
+            <LogOut size={15} color={theme.text.primary} />
+            <Text style={[styles.signOutText, { color: theme.text.primary }]}>
+              {t("settings.signOutLabel")}
+            </Text>
+          </View>
+        </CustomButton>
+      </View>
+    </View>
+  );
+});
+
+export default function SettingsScreen() {
+  const { t } = useTranslation();
+
   const headerProps = useMemo(
-    () => ({ title: t("settings.title"), subtitle: t("settings.subtitle"), showBackButton: false }),
+    () => ({
+      title: t("settings.title"),
+      subtitle: t("settings.subtitle"),
+      showBackButton: false,
+    }),
     [t],
   );
 
   return (
     <ScreenWrapper showFilterBar={false} headerProps={headerProps}>
-      {/* Profile hero card */}
-      <View ref={refFor("profile")} nativeID="profile" style={[styles.profileCard, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
-        <View style={[styles.avatarCircle, { backgroundColor: theme.border.brand + "22" }]}>
-          <User size={28} color={theme.border.brand} />
-        </View>
-        <View style={styles.profileInfo}>
-          <Text style={[styles.profileName, { color: theme.text.primary }]}>{t("settings.adminUser")}</Text>
-          <Text selectable={false} style={[styles.profileEmail, { color: theme.text.secondary }]} pointerEvents="none">{t("settings.adminEmail")}</Text>
-          <View style={[styles.roleBadge, { backgroundColor: theme.border.brand + "1A" }]}>
-            <Text style={[styles.roleBadgeText, { color: theme.text.brand }]}>{t("settings.ownerRole")}</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Preferences */}
-      <View ref={refFor("preferences")} nativeID="preferences" style={styles.section}>
-        <SectionHeader
-          title={t("settings.preferences")}
-          subtitle={t("settings.preferencesSubtitle")}
-        />
-        <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
-          {TOGGLES.map((tog, i) => {
-            const IconComp = tog.icon;
-            const isEnabled = tog.key === "darkMode" ? mode === "dark" : settings[tog.key];
-            return (
-              <View key={tog.key} style={[styles.row, i > 0 && styles.rowDivider]}>
-                <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
-                  <IconComp size={16} color={theme.text.secondary} />
-                </View>
-                <View style={styles.rowText}>
-                  <Text style={[styles.label, { color: theme.text.primary }]}>
-                    {tog.key === "darkMode"
-                      ? t("settings.darkModeLabel", { mode: t(mode === "dark" ? "settings.dark" : "settings.light") })
-                      : t(TOGGLE_LABEL_KEYS[tog.key])}
-                  </Text>
-                  <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t(TOGGLE_DESC_KEYS[tog.key])}</Text>
-                </View>
-                <CustomSwitch
-                  value={isEnabled}
-                  onValueChange={getToggleHandler(tog.key)}
-                  accessibilityLabel={
-                    tog.key === "darkMode"
-                      ? t("settings.themeModeLabel", { mode: t(mode === "dark" ? "settings.dark" : "settings.light") })
-                      : t(TOGGLE_LABEL_KEYS[tog.key])
-                  }
-                />
-              </View>
-            );
-          })}
-
-        </View>
-      </View>
-
-      {/* Internationalization */}
-      <View ref={refFor("internationalization")} nativeID="internationalization" style={styles.section}>
-        <SectionHeader
-          title={t("settings.internationalization")}
-          subtitle={t("settings.internationalizationSubtitle")}
-        />
-        <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
-          {/* Language preference row */}
-          <CustomButton
-            onPress={handleOpenLanguageSelection}
-            style={styles.row}
-            accessibilityRole="button"
-            accessibilityLabel={t("settings.selectLanguage")}
-          >
-            <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
-              <Globe size={16} color={theme.text.secondary} />
-            </View>
-            <View style={styles.rowText}>
-              <Text style={[styles.label, { color: theme.text.primary }]}>{t("settings.language")}</Text>
-              <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t("settings.languageDescription")}</Text>
-            </View>
-            <View style={styles.langValue}>
-              <Text style={[styles.langValueText, { color: theme.text.secondary }]}>{selectedLanguageLabel}</Text>
-              <ChevronRight size={16} color={theme.text.tertiary} />
-            </View>
-          </CustomButton>
-
-          {/* Currency preference row */}
-          <CustomButton
-            onPress={handleOpenCurrencySelection}
-            style={[styles.row, styles.rowDivider]}
-            accessibilityRole="button"
-            accessibilityLabel={t("settings.selectCurrency")}
-          >
-            <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
-              <DollarSign size={16} color={theme.text.secondary} />
-            </View>
-            <View style={styles.rowText}>
-              <Text style={[styles.label, { color: theme.text.primary }]}>{t("settings.currency")}</Text>
-              <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t("settings.currencyDescription")}</Text>
-            </View>
-            <View style={styles.langValue}>
-              <Text style={[styles.langValueText, { color: theme.text.secondary }]}>{selectedCurrencyLabel}</Text>
-              <ChevronRight size={16} color={theme.text.tertiary} />
-            </View>
-          </CustomButton>
-        </View>
-      </View>
-
-      {/* Organization */}
-      <View ref={refFor("organization")} nativeID="organization" style={styles.section}>
-        <SectionHeader
-          title={t("settings.organization")}
-          subtitle={t("settings.organizationSubtitle")}
-        />
-        <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border.subtle }]}>
-          <View style={styles.row}>
-            <View style={[styles.toggleIcon, { backgroundColor: theme.bg.surfaceHover }]}>
-              <MessageSquare size={16} color={theme.text.secondary} />
-            </View>
-            <View style={styles.rowText}>
-              <Text style={[styles.label, { color: theme.text.primary }]}>{t(TOGGLE_LABEL_KEYS.slackInteg)}</Text>
-              <Text style={[styles.desc, { color: theme.text.tertiary }]}>{t(TOGGLE_DESC_KEYS.slackInteg)}</Text>
-            </View>
-            <CustomSwitch
-              value={settings.slackInteg}
-              onValueChange={getToggleHandler("slackInteg")}
-              accessibilityLabel={t(TOGGLE_LABEL_KEYS.slackInteg)}
-            />
-          </View>
-          <View style={[styles.infoRow, styles.rowDivider]}>
-            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>{t("settings.orgId")}</Text>
-            <Text style={[styles.infoValueMono, { color: theme.text.primary }]}>org_zencoder_001</Text>
-          </View>
-          <View style={[styles.infoRow, styles.rowDivider]}>
-            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>{t("settings.plan")}</Text>
-            <View style={[styles.planBadge, { backgroundColor: theme.bg.brandSubtle }]}>
-              <Text style={[styles.planBadgeText, { color: theme.text.brand }]}>{t("settings.enterprise")}</Text>
-            </View>
-          </View>
-          <View style={[styles.infoRow, styles.rowDivider]}>
-            <Text style={[styles.infoLabel, { color: theme.text.tertiary }]}>{t("settings.seats")}</Text>
-            <Text style={[styles.infoValue, { color: theme.text.primary }]}>{seatsUsed} / {seatsPurchased}</Text>
-          </View>
-          <View style={styles.seatBarOuter}>
-            <View
-              style={[
-                styles.seatBarInner,
-                {
-                  backgroundColor: theme.border.brand,
-                  width: `${seatPercent}%`,
-                },
-              ]}
-            />
-          </View>
-          <Text style={[styles.seatCaption, { color: theme.text.tertiary }]}>
-            {t("settings.seatsUsed", { percent: seatPercent })}
-          </Text>
-        </View>
-      </View>
-
-      {/* Danger Zone */}
-      <View ref={refFor("danger-zone")} nativeID="danger-zone" style={styles.section}>
-        <SectionHeader
-          title={t("settings.dangerZone")}
-          subtitle={t("settings.dangerZoneSubtitle")}
-        />
-        <View
-          style={[
-            styles.dangerCard,
-            {
-              borderColor: theme.state.error + "40",
-              backgroundColor: theme.state.error + "08",
-            },
-          ]}
-        >
-          <CustomButton
-            style={[styles.dangerBtn, { borderColor: theme.border.brand, backgroundColor: theme.bg.brandSubtle }]}
-            accessibilityRole="button"
-            accessibilityLabel={t("settings.clearCacheLabel")}
-          >
-            <View style={styles.btnRow}>
-              <Trash2 size={15} color={theme.border.brand} />
-              <Text style={[styles.dangerText, { color: theme.border.brand }]}>{t("common.clearCache")}</Text>
-            </View>
-          </CustomButton>
-
-          <CustomButton
-            onPress={handleOpenSignOut}
-            style={[styles.signOutBtn, { borderColor: theme.border.default, backgroundColor: theme.bg.surface }]}
-            accessibilityRole="button"
-            accessibilityLabel={t("settings.signOutLabel")}
-          >
-            <View style={styles.btnRow}>
-              <LogOut size={15} color={theme.text.primary} />
-              <Text style={[styles.signOutText, { color: theme.text.primary }]}>{t("settings.signOutLabel")}</Text>
-            </View>
-          </CustomButton>
-        </View>
-      </View>
+      <SettingsProfileSection />
+      <SettingsPreferencesSection />
+      <SettingsInternationalizationSection />
+      <SettingsOrganizationSection />
+      <SettingsDangerZoneSection />
 
       <SignOutNoticeModal />
       <LanguageSelectionModal />

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   useGetAgentDetailQuery,
   useGetProjectDetailQuery,
@@ -7,7 +8,7 @@ import {
   useGetRuleDetailQuery,
 } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
-import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
+import { useDashboardOrgId } from "@/features/analytics/hooks/useDashboardFilters";
 import type {
   AgentDetailResponse,
   ProjectDetailResponse,
@@ -24,86 +25,71 @@ interface DetailResult<T> {
   refetch: () => void;
 }
 
-export function useAgentDetailScreen(agentId: string): DetailResult<AgentDetailResponse> {
-  const { filters } = useDashboardFilters();
-  const query = useGetAgentDetailQuery(
-    { orgId: filters.orgId, agentId },
-    { skip: !agentId },
-  );
-  return {
+function useStableDetailResult<T>(query: {
+  data?: T;
+  isLoading: boolean;
+  error?: unknown;
+  refetch: () => void;
+}): DetailResult<T> {
+  const errorMessage = query.error ? getApiErrorMessage(query.error) : undefined;
+  return useMemo(() => ({
     data: query.data,
     loading: query.isLoading,
-    error: query.error ? getApiErrorMessage(query.error) : undefined,
+    error: errorMessage,
     refetch: query.refetch,
-  };
+  }), [query.data, query.isLoading, errorMessage, query.refetch]);
+}
+
+export function useAgentDetailScreen(agentId: string): DetailResult<AgentDetailResponse> {
+  const orgId = useDashboardOrgId();
+  const query = useGetAgentDetailQuery(
+    { orgId, agentId },
+    { skip: !agentId },
+  );
+  return useStableDetailResult(query);
 }
 
 export function useProjectDetailScreen(projectId: string): DetailResult<ProjectDetailResponse> {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const query = useGetProjectDetailQuery(
-    { orgId: filters.orgId, projectId },
+    { orgId, projectId },
     { skip: !projectId },
   );
-  return {
-    data: query.data,
-    loading: query.isLoading,
-    error: query.error ? getApiErrorMessage(query.error) : undefined,
-    refetch: query.refetch,
-  };
+  return useStableDetailResult(query);
 }
 
 export function useTeamDetailScreen(teamId: string): DetailResult<TeamDetailResponse> {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const query = useGetTeamDetailQuery(
-    { orgId: filters.orgId, teamId },
+    { orgId, teamId },
     { skip: !teamId },
   );
-  return {
-    data: query.data,
-    loading: query.isLoading,
-    error: query.error ? getApiErrorMessage(query.error) : undefined,
-    refetch: query.refetch,
-  };
+  return useStableDetailResult(query);
 }
 
 export function useHumanDetailScreen(humanId: string): DetailResult<HumanDetailResponse> {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const query = useGetHumanDetailQuery(
-    { orgId: filters.orgId, humanId },
+    { orgId, humanId },
     { skip: !humanId },
   );
-  return {
-    data: query.data,
-    loading: query.isLoading,
-    error: query.error ? getApiErrorMessage(query.error) : undefined,
-    refetch: query.refetch,
-  };
+  return useStableDetailResult(query);
 }
 
 export function useRunDetailScreen(runId: string): DetailResult<RunDetailResponse> {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const query = useGetRunDetailQuery(
-    { orgId: filters.orgId, runId },
+    { orgId, runId },
     { skip: !runId },
   );
-  return {
-    data: query.data,
-    loading: query.isLoading,
-    error: query.error ? getApiErrorMessage(query.error) : undefined,
-    refetch: query.refetch,
-  };
+  return useStableDetailResult(query);
 }
 
 export function useRuleDetailScreen(ruleId: string): DetailResult<RuleDetailResponse> {
-  const { filters } = useDashboardFilters();
+  const orgId = useDashboardOrgId();
   const query = useGetRuleDetailQuery(
-    { orgId: filters.orgId, ruleId },
+    { orgId, ruleId },
     { skip: !ruleId },
   );
-  return {
-    data: query.data,
-    loading: query.isLoading,
-    error: query.error ? getApiErrorMessage(query.error) : undefined,
-    refetch: query.refetch,
-  };
+  return useStableDetailResult(query);
 }

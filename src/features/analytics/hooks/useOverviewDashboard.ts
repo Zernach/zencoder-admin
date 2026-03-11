@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import { useGetOverviewQuery, useGetOutcomesQuery } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
-import { useDashboardFilters } from "./useDashboardFilters";
+import { useActiveDashboardFilters } from "./useDashboardFilters";
 import { useCurrencyFormatter } from "./useCurrencyFormatter";
 import { mapOverviewToViewModel } from "../mappers/overviewMappers";
 
 export function useOverviewDashboard() {
-  const { filters } = useDashboardFilters();
+  const filters = useActiveDashboardFilters();
   const { formatCurrency } = useCurrencyFormatter();
 
   const overviewQuery = useGetOverviewQuery(filters);
@@ -20,10 +20,12 @@ export function useOverviewDashboard() {
     [overviewQuery.data, outcomesQuery.data, formatCurrency],
   );
 
-  return {
+  const errorMessage = overviewQuery.error ? getApiErrorMessage(overviewQuery.error) : undefined;
+
+  return useMemo(() => ({
     data,
     loading: overviewQuery.isLoading,
-    error: overviewQuery.error ? getApiErrorMessage(overviewQuery.error) : undefined,
+    error: errorMessage,
     refetch: overviewQuery.refetch,
-  };
+  }), [data, overviewQuery.isLoading, errorMessage, overviewQuery.refetch]);
 }

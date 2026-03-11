@@ -5,12 +5,16 @@ export interface SettingsState {
   deviceDefaultLanguage: LanguageCode;
   selectedLanguage: LanguageCode;
   selectedCurrency: CurrencyCode;
+  emailNotificationsEnabled: boolean;
+  slackIntegrationEnabled: boolean;
 }
 
 const initialState: SettingsState = {
   deviceDefaultLanguage: "en",
   selectedLanguage: "en",
   selectedCurrency: "EUR",
+  emailNotificationsEnabled: true,
+  slackIntegrationEnabled: true,
 };
 
 export const settingsSlice = createSlice({
@@ -26,10 +30,22 @@ export const settingsSlice = createSlice({
     setDeviceDefaultLanguage(state, action: PayloadAction<LanguageCode>) {
       state.deviceDefaultLanguage = action.payload;
     },
+    setEmailNotificationsEnabled(state, action: PayloadAction<boolean>) {
+      state.emailNotificationsEnabled = action.payload;
+    },
+    setSlackIntegrationEnabled(state, action: PayloadAction<boolean>) {
+      state.slackIntegrationEnabled = action.payload;
+    },
   },
 });
 
-export const { setLanguage, setCurrency, setDeviceDefaultLanguage } =
+export const {
+  setLanguage,
+  setCurrency,
+  setDeviceDefaultLanguage,
+  setEmailNotificationsEnabled,
+  setSlackIntegrationEnabled,
+} =
   settingsSlice.actions;
 
 export const selectSelectedLanguage = (state: {
@@ -43,3 +59,11 @@ export const selectDeviceDefaultLanguage = (state: {
 export const selectSelectedCurrency = (state: {
   settings: SettingsState;
 }): CurrencyCode => state.settings.selectedCurrency;
+
+export const selectEmailNotificationsEnabled = (state: {
+  settings: SettingsState;
+}): boolean => state.settings.emailNotificationsEnabled;
+
+export const selectSlackIntegrationEnabled = (state: {
+  settings: SettingsState;
+}): boolean => state.settings.slackIntegrationEnabled;

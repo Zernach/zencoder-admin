@@ -4,9 +4,13 @@ import {
   setLanguage,
   setCurrency,
   setDeviceDefaultLanguage,
+  setEmailNotificationsEnabled,
+  setSlackIntegrationEnabled,
   selectSelectedLanguage,
   selectDeviceDefaultLanguage,
   selectSelectedCurrency,
+  selectEmailNotificationsEnabled,
+  selectSlackIntegrationEnabled,
 } from "../settingsSlice";
 
 function createTestStore() {
@@ -22,6 +26,8 @@ describe("settingsSlice", () => {
     expect(state.settings.selectedLanguage).toBe("en");
     expect(state.settings.deviceDefaultLanguage).toBe("en");
     expect(state.settings.selectedCurrency).toBe("EUR");
+    expect(state.settings.emailNotificationsEnabled).toBe(true);
+    expect(state.settings.slackIntegrationEnabled).toBe(true);
   });
 
   it("setLanguage updates selectedLanguage", () => {
@@ -58,5 +64,29 @@ describe("settingsSlice", () => {
     const store = createTestStore();
     store.dispatch(setCurrency("GBP"));
     expect(selectSelectedCurrency(store.getState())).toBe("GBP");
+  });
+
+  it("setEmailNotificationsEnabled updates value", () => {
+    const store = createTestStore();
+    store.dispatch(setEmailNotificationsEnabled(false));
+    expect(store.getState().settings.emailNotificationsEnabled).toBe(false);
+  });
+
+  it("setSlackIntegrationEnabled updates value", () => {
+    const store = createTestStore();
+    store.dispatch(setSlackIntegrationEnabled(false));
+    expect(store.getState().settings.slackIntegrationEnabled).toBe(false);
+  });
+
+  it("selectEmailNotificationsEnabled returns correct value", () => {
+    const store = createTestStore();
+    store.dispatch(setEmailNotificationsEnabled(false));
+    expect(selectEmailNotificationsEnabled(store.getState())).toBe(false);
+  });
+
+  it("selectSlackIntegrationEnabled returns correct value", () => {
+    const store = createTestStore();
+    store.dispatch(setSlackIntegrationEnabled(false));
+    expect(selectSlackIntegrationEnabled(store.getState())).toBe(false);
   });
 });

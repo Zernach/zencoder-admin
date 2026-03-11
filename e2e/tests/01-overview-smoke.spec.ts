@@ -8,7 +8,7 @@ test.describe("Overview Dashboard", () => {
     await waitForPageLoad(page);
 
     // Should render the dashboard page (Key Metrics section is unique to overview)
-    await expect(page.getByText("Key Metrics", { exact: true })).toBeVisible({
+    await expect(page.getByText("Key Metrics", { exact: true }).first()).toBeVisible({
       timeout: 15_000,
     });
   });
@@ -18,7 +18,7 @@ test.describe("Overview Dashboard", () => {
     await waitForPageLoad(page);
 
     // Verify page loaded
-    await expect(page.getByText("Key Metrics", { exact: true })).toBeVisible({
+    await expect(page.getByText("Key Metrics", { exact: true }).first()).toBeVisible({
       timeout: 15_000,
     });
   });

@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import {
   filtersSlice,
   selectActiveFilters,
+  selectOrgId,
   selectPreset,
   selectSearchQuery,
 } from "@/store/slices/filtersSlice";
@@ -25,11 +26,36 @@ function countActiveFilters(f: AnalyticsFilters): number {
   return count;
 }
 
-export function useDashboardFilters() {
+interface DashboardFilterActions {
+  setTimeRange: (preset: TimeRangePreset) => void;
+  setCustomTimeRange: (range: TimeRange) => void;
+  setTeamFilter: (ids?: string[]) => void;
+  setUserFilter: (ids?: string[]) => void;
+  setProjectFilter: (ids?: string[]) => void;
+  setProviderFilter: (providers?: ModelProvider[]) => void;
+  setStatusFilter: (statuses?: RunStatus[]) => void;
+  setSearchQuery: (query: string) => void;
+  clearAll: () => void;
+}
+
+export function useActiveDashboardFilters(): AnalyticsFilters {
+  return useAppSelector(selectActiveFilters);
+}
+
+export function useDashboardPreset(): TimeRangePreset {
+  return useAppSelector(selectPreset);
+}
+
+export function useDashboardSearchQuery(): string {
+  return useAppSelector(selectSearchQuery);
+}
+
+export function useDashboardOrgId(): string {
+  return useAppSelector(selectOrgId);
+}
+
+export function useDashboardFilterActions(): DashboardFilterActions {
   const dispatch = useAppDispatch();
-  const filters = useAppSelector(selectActiveFilters);
-  const preset = useAppSelector(selectPreset);
-  const searchQuery = useAppSelector(selectSearchQuery);
 
   const setTimeRange = useCallback(
     (p: TimeRangePreset) => dispatch(filtersSlice.actions.setTimeRangePreset(p)),
@@ -68,6 +94,37 @@ export function useDashboardFilters() {
     [dispatch],
   );
 
+  return useMemo(
+    () => ({
+      setTimeRange,
+      setCustomTimeRange,
+      setTeamFilter,
+      setUserFilter,
+      setProjectFilter,
+      setProviderFilter,
+      setStatusFilter,
+      setSearchQuery,
+      clearAll,
+    }),
+    [
+      setTimeRange,
+      setCustomTimeRange,
+      setTeamFilter,
+      setUserFilter,
+      setProjectFilter,
+      setProviderFilter,
+      setStatusFilter,
+      setSearchQuery,
+      clearAll,
+    ],
+  );
+}
+
+export function useDashboardFilters() {
+  const filters = useActiveDashboardFilters();
+  const preset = useDashboardPreset();
+  const searchQuery = useDashboardSearchQuery();
+  const actions = useDashboardFilterActions();
   const activeFilterCount = useMemo(() => countActiveFilters(filters), [filters]);
 
   return useMemo(
@@ -75,31 +132,9 @@ export function useDashboardFilters() {
       filters,
       preset,
       searchQuery,
-      setTimeRange,
-      setCustomTimeRange,
-      setTeamFilter,
-      setUserFilter,
-      setProjectFilter,
-      setProviderFilter,
-      setStatusFilter,
-      setSearchQuery,
-      clearAll,
+      ...actions,
       activeFilterCount,
     }),
-    [
-      filters,
-      preset,
-      searchQuery,
-      setTimeRange,
-      setCustomTimeRange,
-      setTeamFilter,
-      setUserFilter,
-      setProjectFilter,
-      setProviderFilter,
-      setStatusFilter,
-      setSearchQuery,
-      clearAll,
-      activeFilterCount,
-    ],
+    [actions, activeFilterCount, filters, preset, searchQuery],
   );
 }
