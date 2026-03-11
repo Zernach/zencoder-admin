@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Something went wrong. Please try again.",
     "failedToLoad": "Failed to load data."
+  },
+  "chat": {
+    "newChat": "New Chat",
+    "startConversation": "Start a conversation",
+    "askAnything": "Ask anything...",
+    "messageInput": "Chat message input",
+    "sendMessage": "Send message",
+    "suggestedQuestions": "Suggested questions",
+    "suggested": "Suggested",
+    "chatHistory": "Chat History",
+    "backToNewChat": "Back to new chat",
+    "viewChatHistory": "View chat history",
+    "openFullChat": "Open full chat",
+    "closeChat": "Close chat",
+    "thinking": "Thinking...",
+    "typeMessage": "Type a message...",
+    "noConversationsYet": "No conversations yet.",
+    "noConversationsMatchTopics": "No conversations match the selected topics.",
+    "openChat": "Open chat {{title}}",
+    "welcomeTitle": "Hi! What can I help you with?",
+    "welcomeSubtitle": {
+      "dashboard": "Ask about agent performance, activity trends, or get a quick status check.",
+      "agents": "Dig into agent health, compare performance, or troubleshoot issues.",
+      "costs": "Explore spending patterns, find savings, or investigate cost spikes.",
+      "governance": "Check compliance status, review violations, or audit your policies.",
+      "settings": "Get help with agents, costs, governance, or support."
+    },
+    "topics": {
+      "agents": {
+        "label": "Which failure categories are trending up and need triage?",
+        "message": "Group failures by model family and show which categories are trending up week over week. Which need triage?"
+      },
+      "costs": {
+        "label": "What's driving cost increases and how can we contain them?",
+        "message": "Costs jumped recently. What changed by project and model? How can we contain this without breaking response quality?"
+      },
+      "governance": {
+        "label": "Summarize violations by severity — what should I prioritize?",
+        "message": "Break down violations by policy class and flag anything accelerating. What should I prioritize first?"
+      },
+      "support": {
+        "label": "Help me prepare a rollout checklist or team communication",
+        "message": "Help me prepare a rollout checklist or draft user-facing communication for an upcoming change."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "How are my agents performing this week?",
+          "message": "How are my agents performing this week? Summarize success rates, error trends, and any standout agents."
+        },
+        "activity": {
+          "label": "Show me today's activity summary",
+          "message": "Give me a summary of today's agent activity — runs, completions, failures, and anything unusual."
+        },
+        "teams": {
+          "label": "Which teams are most active?",
+          "message": "Which teams have been most active recently? Show me a breakdown of agent usage by team."
+        },
+        "issues": {
+          "label": "Any issues I should know about?",
+          "message": "Are there any issues or anomalies I should be aware of? Flag errors, spikes, or policy violations."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Which agents have the most errors?",
+          "message": "Which agents have the highest error rates right now? List them with failure counts and recent trends."
+        },
+        "compare": {
+          "label": "Compare top agents by success rate",
+          "message": "Compare my top agents by success rate this month. Show rankings and any notable changes."
+        },
+        "inactive": {
+          "label": "List inactive agents",
+          "message": "List agents that haven't had any runs in the past 7 days. Are any of them supposed to be active?"
+        },
+        "history": {
+          "label": "Explain an agent's recent run history",
+          "message": "Pick the agent with the most interesting recent activity and walk me through its run history."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Where are costs trending upwards?",
+          "message": "Where are costs trending upward? Show me which agents or teams are driving the increase."
+        },
+        "breakdown": {
+          "label": "Show cost breakdown by team",
+          "message": "Break down costs by team for this month. How does it compare to last month?"
+        },
+        "unusual": {
+          "label": "Flag unusual spending",
+          "message": "Flag any unusual or unexpected spending patterns. Are there cost spikes I should investigate?"
+        },
+        "reduce": {
+          "label": "How can I reduce costs?",
+          "message": "Analyze my current agent usage and suggest ways to reduce costs without impacting performance."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Any new policy violations?",
+          "message": "Are there any new policy violations since my last review? Summarize severity and affected agents."
+        },
+        "compliance": {
+          "label": "Show compliance summary",
+          "message": "Give me an overall compliance summary — how many rules are passing, failing, or need attention?"
+        },
+        "unresolved": {
+          "label": "List unresolved violations",
+          "message": "List all unresolved violations sorted by severity. Which ones should I prioritize?"
+        },
+        "rules": {
+          "label": "Review governance rules",
+          "message": "Walk me through the active governance rules. Are there any that haven't triggered recently?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "How do I add a new team member?",
+          "message": "Walk me through adding a new team member and setting up their permissions."
+        },
+        "integrations": {
+          "label": "What integrations are available?",
+          "message": "What integrations are available for connecting to external tools and services?"
+        },
+        "notifications": {
+          "label": "Review notification settings",
+          "message": "Show me my current notification settings. Am I missing any important alerts?"
+        },
+        "configure": {
+          "label": "Help me configure an agent",
+          "message": "Help me configure a new agent — what settings and parameters should I consider?"
+        }
+      }
+    }
   }
 }

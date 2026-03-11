@@ -39,7 +39,7 @@
     "agents": "Agenter",
     "costs": "Omkostninger",
     "governance": "Styring",
-    "settings": "Indstillinger",
+    "settings": "Chat",
     "collapseSidebar": "Skjul sidebjælke",
     "expandSidebar": "Vis sidebjælke",
     "subsectionsLabel": "{{label}} undersektioner",
@@ -49,14 +49,14 @@
       "outcomes": "Resultater",
       "keyMetrics": "Nøgletal",
       "reliability": "Pålidelighed",
-      "agentPerformance": "Agentopdeling",
-      "projectBreakdown": "Projektopdeling",
-      "recentRuns": "Seneste kørsler",
-      "costSummary": "Finansielle investeringer",
+      "agentPerformance": "Agenter",
+      "projectBreakdown": "Projekter",
+      "recentRuns": "Kørsler",
+      "costSummary": "Omkostning pr. hold",
       "costByProvider": "Omkostning pr. udbyder",
       "budgetForecast": "Budgetprognose",
       "overview": "Oversigt",
-      "teamPerformance": "Holdpræstation",
+      "teamPerformance": "Hold",
       "seatUserOversight": "Brugere",
       "recentViolations": "Seneste overtrædelser",
       "securityEvents": "Sikkerhedshændelser",
@@ -105,7 +105,7 @@
       },
       "emptySubtitle": "Nye live-sessioner vises automatisk, når ingeniører starter kørsler."
     },
-    "title": "Admin Home"
+    "title": "Admin Startside"
   },
   "agents": {
     "subtitle": "Intelligente Arbejdsgangsautomatiseringer",
@@ -157,7 +157,7 @@
   "costs": {
     "subtitle": "Udgiftstendenser og budgetopfølgning",
     "subtitleWithData": "{{totalCost}} brugt på {{projectCount}} projekter",
-    "costSummary": "Finansielle investeringer",
+    "costSummary": "Omkostning pr. hold",
     "totalCost": "Samlet omkostning",
     "avgPerRun": "Gennemsnitlig omkostning pr. kørsel",
     "costPerSuccess": "Gennemsnitlig omkostning pr. succesfuld kørsel",
@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Noget gik galt. Prøv venligst igen.",
     "failedToLoad": "Kunne ikke indlæse data."
+  },
+  "chat": {
+    "newChat": "Ny chat",
+    "startConversation": "Start en samtale",
+    "askAnything": "Spørg om hvad som helst...",
+    "messageInput": "Chatbesked-input",
+    "sendMessage": "Send besked",
+    "suggestedQuestions": "Foreslåede spørgsmål",
+    "suggested": "Foreslået",
+    "chatHistory": "Chathistorik",
+    "backToNewChat": "Tilbage til ny chat",
+    "viewChatHistory": "Se chathistorik",
+    "openFullChat": "Åbn fuld chat",
+    "closeChat": "Luk chat",
+    "thinking": "Tænker...",
+    "typeMessage": "Skriv en besked...",
+    "noConversationsYet": "Ingen samtaler endnu.",
+    "noConversationsMatchTopics": "Ingen samtaler matcher de valgte emner.",
+    "openChat": "Åbn chat {{title}}",
+    "welcomeTitle": "Hej! Hvad kan jeg hjælpe med?",
+    "welcomeSubtitle": {
+      "dashboard": "Spørg om agentpræstation, aktivitetstendenser eller få et hurtigt statusoverblik.",
+      "agents": "Dyk ned i agenthelbred, sammenlign præstationer eller fejlfind problemer.",
+      "costs": "Udforsk udgiftsmønstre, find besparelser eller undersøg omkostningsspidser.",
+      "governance": "Tjek overholdelsesstatus, gennemgå overtrædelser eller audit dine politikker.",
+      "settings": "Få hjælp med agenter, omkostninger, styring eller support."
+    },
+    "topics": {
+      "agents": {
+        "label": "Hvilke fejlkategorier er stigende og kræver triage?",
+        "message": "Gruppér fejl efter modelfamilie og vis hvilke kategorier der stiger uge for uge. Hvilke kræver triage?"
+      },
+      "costs": {
+        "label": "Hvad driver omkostningsstigningerne, og hvordan kan vi begrænse dem?",
+        "message": "Omkostningerne er steget for nylig. Hvad ændrede sig per projekt og model? Hvordan kan vi begrænse dette uden at forringe svarkvaliteten?"
+      },
+      "governance": {
+        "label": "Opsummér overtrædelser efter alvorlighed — hvad bør jeg prioritere?",
+        "message": "Opdel overtrædelser efter politikklasse og markér alt der accelererer. Hvad bør jeg prioritere først?"
+      },
+      "support": {
+        "label": "Hjælp mig med at forberede en udrulningscheckliste eller teamkommunikation",
+        "message": "Hjælp mig med at forberede en udrulningscheckliste eller udarbejde en brugerrettet kommunikation om en kommende ændring."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "Hvordan klarer mine agenter sig i denne uge?",
+          "message": "Hvordan klarer mine agenter sig i denne uge? Opsummér succesrater, fejltendenser og bemærkelsesværdige agenter."
+        },
+        "activity": {
+          "label": "Vis mig dagens aktivitetsoversigt",
+          "message": "Giv mig en oversigt over dagens agentaktivitet — kørsler, fuldførelser, fejl og alt usædvanligt."
+        },
+        "teams": {
+          "label": "Hvilke hold er mest aktive?",
+          "message": "Hvilke hold har været mest aktive for nylig? Vis mig en opdeling af agentbrug per hold."
+        },
+        "issues": {
+          "label": "Er der problemer jeg bør vide om?",
+          "message": "Er der problemer eller anomalier jeg bør kende til? Markér fejl, spidser eller politikovertrædelser."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Hvilke agenter har flest fejl?",
+          "message": "Hvilke agenter har de højeste fejlrater lige nu? List dem med fejlantal og nylige tendenser."
+        },
+        "compare": {
+          "label": "Sammenlign topagenter efter succesrate",
+          "message": "Sammenlign mine topagenter efter succesrate denne måned. Vis ranglister og bemærkelsesværdige ændringer."
+        },
+        "inactive": {
+          "label": "Vis inaktive agenter",
+          "message": "List agenter der ikke har haft kørsler i de sidste 7 dage. Burde nogen af dem være aktive?"
+        },
+        "history": {
+          "label": "Forklar en agents nylige kørselshistorik",
+          "message": "Vælg agenten med den mest interessante nylige aktivitet og gennemgå dens kørselshistorik med mig."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Hvor stiger omkostningerne?",
+          "message": "Hvor stiger omkostningerne? Vis mig hvilke agenter eller hold der driver stigningen."
+        },
+        "breakdown": {
+          "label": "Vis omkostningsopdeling per hold",
+          "message": "Opdel omkostningerne per hold for denne måned. Hvordan sammenligner det sig med sidste måned?"
+        },
+        "unusual": {
+          "label": "Markér usædvanlige udgifter",
+          "message": "Markér usædvanlige eller uventede udgiftsmønstre. Er der omkostningsspidser jeg bør undersøge?"
+        },
+        "reduce": {
+          "label": "Hvordan kan jeg reducere omkostningerne?",
+          "message": "Analysér mit nuværende agentforbrug og foreslå måder at reducere omkostninger uden at påvirke præstationen."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Er der nye politikovertrædelser?",
+          "message": "Er der nye politikovertrædelser siden min sidste gennemgang? Opsummér alvorlighed og berørte agenter."
+        },
+        "compliance": {
+          "label": "Vis overholdelsesoversigt",
+          "message": "Giv mig en samlet overholdelsesoversigt — hvor mange regler overholder, fejler eller kræver opmærksomhed?"
+        },
+        "unresolved": {
+          "label": "Vis uløste overtrædelser",
+          "message": "List alle uløste overtrædelser sorteret efter alvorlighed. Hvilke bør jeg prioritere?"
+        },
+        "rules": {
+          "label": "Gennemgå styringsregler",
+          "message": "Gennemgå de aktive styringsregler med mig. Er der nogen der ikke er blevet udløst for nylig?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "Hvordan tilføjer jeg et nyt holdmedlem?",
+          "message": "Gennemgå med mig hvordan man tilføjer et nyt holdmedlem og opsætter deres tilladelser."
+        },
+        "integrations": {
+          "label": "Hvilke integrationer er tilgængelige?",
+          "message": "Hvilke integrationer er tilgængelige til at forbinde med eksterne værktøjer og tjenester?"
+        },
+        "notifications": {
+          "label": "Gennemgå notifikationsindstillinger",
+          "message": "Vis mig mine nuværende notifikationsindstillinger. Går jeg glip af vigtige advarsler?"
+        },
+        "configure": {
+          "label": "Hjælp mig med at konfigurere en agent",
+          "message": "Hjælp mig med at konfigurere en ny agent — hvilke indstillinger og parametre bør jeg overveje?"
+        }
+      }
+    }
   }
 }

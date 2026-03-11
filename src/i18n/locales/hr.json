@@ -39,7 +39,7 @@
     "agents": "Agenti",
     "costs": "Troškovi",
     "governance": "Upravljanje",
-    "settings": "Postavke",
+    "settings": "Chat",
     "collapseSidebar": "Sažmi bočnu traku",
     "expandSidebar": "Proširi bočnu traku",
     "subsectionsLabel": "Podsekcije {{label}}",
@@ -49,14 +49,14 @@
       "outcomes": "Ishodi",
       "keyMetrics": "Ključni pokazatelji",
       "reliability": "Pouzdanost",
-      "agentPerformance": "Raščlamba agenata",
-      "projectBreakdown": "Raščlamba projekata",
-      "recentRuns": "Nedavna izvršavanja",
-      "costSummary": "Financijske investicije",
+      "agentPerformance": "Agenti",
+      "projectBreakdown": "Projekti",
+      "recentRuns": "Izvršavanja",
+      "costSummary": "Trošak po timu",
       "costByProvider": "Troškovi po pružatelju",
       "budgetForecast": "Prognoza proračuna",
       "overview": "Pregled",
-      "teamPerformance": "Performanse timova",
+      "teamPerformance": "Timovi",
       "seatUserOversight": "Korisnici",
       "recentViolations": "Nedavna kršenja",
       "securityEvents": "Sigurnosni događaji",
@@ -105,7 +105,7 @@
       },
       "emptySubtitle": "Nove sesije će se automatski pojaviti kada inženjeri pokrenu izvršavanja."
     },
-    "title": "Admin Home"
+    "title": "Admin Početna"
   },
   "agents": {
     "subtitle": "Inteligentne Automatizacije Tijekova Rada",
@@ -157,7 +157,7 @@
   "costs": {
     "subtitle": "Trendovi potrošnje i praćenje proračuna",
     "subtitleWithData": "{{totalCost}} potrošeno za {{projectCount}} projekata",
-    "costSummary": "Financijske investicije",
+    "costSummary": "Trošak po timu",
     "totalCost": "Ukupni trošak",
     "avgPerRun": "Prosječni trošak po izvršavanju",
     "costPerSuccess": "Prosječni trošak po uspješnom izvršavanju",
@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Nešto je pošlo po krivu. Molimo pokušajte ponovo.",
     "failedToLoad": "Neuspjelo učitavanje podataka."
+  },
+  "chat": {
+    "newChat": "Novi razgovor",
+    "startConversation": "Započni razgovor",
+    "askAnything": "Pitaj bilo što...",
+    "messageInput": "Polje za unos poruke",
+    "sendMessage": "Pošalji poruku",
+    "suggestedQuestions": "Predložena pitanja",
+    "suggested": "Predloženo",
+    "chatHistory": "Povijest razgovora",
+    "backToNewChat": "Natrag na novi razgovor",
+    "viewChatHistory": "Pogledaj povijest razgovora",
+    "openFullChat": "Otvori cijeli razgovor",
+    "closeChat": "Zatvori razgovor",
+    "thinking": "Razmišljam...",
+    "typeMessage": "Upiši poruku...",
+    "noConversationsYet": "Još nema razgovora.",
+    "noConversationsMatchTopics": "Nijedan razgovor ne odgovara odabranim temama.",
+    "openChat": "Otvori razgovor {{title}}",
+    "welcomeTitle": "Bok! Kako ti mogu pomoći?",
+    "welcomeSubtitle": {
+      "dashboard": "Pitaj o performansama agenata, trendovima aktivnosti ili dobij brzu provjeru statusa.",
+      "agents": "Istraži zdravlje agenata, usporedi performanse ili otkloni probleme.",
+      "costs": "Istraži obrasce potrošnje, pronađi uštede ili istraži skokove troškova.",
+      "governance": "Provjeri status sukladnosti, pregledaj kršenja ili revidiraj svoje politike.",
+      "settings": "Dobij pomoć s agentima, troškovima, upravljanjem ili podrškom."
+    },
+    "topics": {
+      "agents": {
+        "label": "Koje kategorije neuspjeha rastu i trebaju prioritizaciju?",
+        "message": "Grupiraj neuspjehe po obitelji modela i pokaži koje kategorije rastu iz tjedna u tjedan. Koje trebaju prioritizaciju?"
+      },
+      "costs": {
+        "label": "Što uzrokuje rast troškova i kako ih možemo obuzdati?",
+        "message": "Troškovi su nedavno porasli. Što se promijenilo po projektu i modelu? Kako to možemo obuzdati bez narušavanja kvalitete odgovora?"
+      },
+      "governance": {
+        "label": "Sažmi kršenja po ozbiljnosti — što bih trebao/la prioritizirati?",
+        "message": "Raščlani kršenja po klasi politike i označi sve što ubrzava. Što bih trebao/la prioritizirati prvo?"
+      },
+      "support": {
+        "label": "Pomozi mi pripremiti kontrolnu listu za lansiranje ili komunikaciju za tim",
+        "message": "Pomozi mi pripremiti kontrolnu listu za lansiranje ili sastaviti komunikaciju za korisnike o nadolazećoj promjeni."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "Kako moji agenti performiraju ovaj tjedan?",
+          "message": "Kako moji agenti performiraju ovaj tjedan? Sažmi stope uspjeha, trendove pogrešaka i sve istaknute agente."
+        },
+        "activity": {
+          "label": "Pokaži mi sažetak današnje aktivnosti",
+          "message": "Daj mi sažetak današnje aktivnosti agenata — izvršavanja, završetci, neuspjesi i sve neobično."
+        },
+        "teams": {
+          "label": "Koji timovi su najaktivniji?",
+          "message": "Koji timovi su bili najaktivniji u posljednje vrijeme? Pokaži mi raščlambu korištenja agenata po timu."
+        },
+        "issues": {
+          "label": "Ima li problema o kojima bih trebao/la znati?",
+          "message": "Postoje li problemi ili anomalije kojih bih trebao/la biti svjestan/na? Označi pogreške, skokove ili kršenja politika."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Koji agenti imaju najviše pogrešaka?",
+          "message": "Koji agenti trenutno imaju najviše stope pogrešaka? Navedi ih s brojem neuspjeha i nedavnim trendovima."
+        },
+        "compare": {
+          "label": "Usporedi najbolje agente po stopi uspjeha",
+          "message": "Usporedi moje najbolje agente po stopi uspjeha ovog mjeseca. Pokaži rangiranje i sve značajne promjene."
+        },
+        "inactive": {
+          "label": "Navedi neaktivne agente",
+          "message": "Navedi agente koji nisu imali izvršavanja u posljednjih 7 dana. Bi li neki od njih trebali biti aktivni?"
+        },
+        "history": {
+          "label": "Objasni nedavnu povijest izvršavanja agenta",
+          "message": "Odaberi agenta s najzanimljivijom nedavnom aktivnošću i provedi me kroz njegovu povijest izvršavanja."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Gdje troškovi rastu?",
+          "message": "Gdje troškovi rastu? Pokaži mi koji agenti ili timovi uzrokuju povećanje."
+        },
+        "breakdown": {
+          "label": "Pokaži raščlambu troškova po timu",
+          "message": "Raščlani troškove po timu za ovaj mjesec. Kako se uspoređuje s prošlim mjesecom?"
+        },
+        "unusual": {
+          "label": "Označi neobičnu potrošnju",
+          "message": "Označi sve neobične ili neočekivane obrasce potrošnje. Postoje li skokovi troškova koje bih trebao/la istražiti?"
+        },
+        "reduce": {
+          "label": "Kako mogu smanjiti troškove?",
+          "message": "Analiziraj moje trenutno korištenje agenata i predloži načine za smanjenje troškova bez utjecaja na performanse."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Ima li novih kršenja politika?",
+          "message": "Postoje li nova kršenja politika od mog posljednjeg pregleda? Sažmi ozbiljnost i pogođene agente."
+        },
+        "compliance": {
+          "label": "Pokaži sažetak sukladnosti",
+          "message": "Daj mi ukupni sažetak sukladnosti — koliko pravila prolazi, ne prolazi ili zahtijeva pažnju?"
+        },
+        "unresolved": {
+          "label": "Navedi neriješena kršenja",
+          "message": "Navedi sva neriješena kršenja sortirana po ozbiljnosti. Koja bih trebao/la prioritizirati?"
+        },
+        "rules": {
+          "label": "Pregledaj pravila upravljanja",
+          "message": "Provedi me kroz aktivna pravila upravljanja. Ima li nekih koja se nisu nedavno aktivirala?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "Kako dodam novog člana tima?",
+          "message": "Provedi me kroz dodavanje novog člana tima i postavljanje njegovih dozvola."
+        },
+        "integrations": {
+          "label": "Koje integracije su dostupne?",
+          "message": "Koje integracije su dostupne za povezivanje s vanjskim alatima i uslugama?"
+        },
+        "notifications": {
+          "label": "Pregledaj postavke obavijesti",
+          "message": "Pokaži mi moje trenutne postavke obavijesti. Propuštam li važna upozorenja?"
+        },
+        "configure": {
+          "label": "Pomozi mi konfigurirati agenta",
+          "message": "Pomozi mi konfigurirati novog agenta — koje postavke i parametre bih trebao/la razmotriti?"
+        }
+      }
+    }
   }
 }

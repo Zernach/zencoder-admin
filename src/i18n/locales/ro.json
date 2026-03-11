@@ -39,7 +39,7 @@
     "agents": "Agenți",
     "costs": "Costuri",
     "governance": "Guvernanță",
-    "settings": "Setări",
+    "settings": "Chat",
     "collapseSidebar": "Restrânge bara laterală",
     "expandSidebar": "Extinde bara laterală",
     "subsectionsLabel": "Subsecțiuni {{label}}",
@@ -49,14 +49,14 @@
       "outcomes": "Rezultate",
       "keyMetrics": "Indicatori cheie",
       "reliability": "Fiabilitate",
-      "agentPerformance": "Defalcarea agenților",
-      "projectBreakdown": "Defalcarea proiectelor",
-      "recentRuns": "Rulări recente",
-      "costSummary": "Investiții financiare",
+      "agentPerformance": "Agenți",
+      "projectBreakdown": "Proiecte",
+      "recentRuns": "Rulări",
+      "costSummary": "Cost per Echipă",
       "costByProvider": "Cost pe furnizor",
       "budgetForecast": "Prognoză buget",
       "overview": "Prezentare generală",
-      "teamPerformance": "Performanța echipelor",
+      "teamPerformance": "Echipe",
       "seatUserOversight": "Utilizatori",
       "recentViolations": "Încălcări recente",
       "securityEvents": "Evenimente de securitate",
@@ -105,7 +105,7 @@
       },
       "emptySubtitle": "Sesiunile live noi vor apărea automat pe măsură ce inginerii pornesc rulări."
     },
-    "title": "Admin Home"
+    "title": "Pagina de Start"
   },
   "agents": {
     "subtitle": "Automatizări Inteligente ale Fluxurilor de Lucru",
@@ -157,7 +157,7 @@
   "costs": {
     "subtitle": "Tendințe de cheltuieli și urmărirea bugetului",
     "subtitleWithData": "{{totalCost}} cheltuit în {{projectCount}} proiecte",
-    "costSummary": "Investiții financiare",
+    "costSummary": "Cost per Echipă",
     "totalCost": "Cost total",
     "avgPerRun": "Cost mediu pe rulare",
     "costPerSuccess": "Cost mediu pe rulare reușită",
@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Ceva nu a funcționat. Vă rugăm încercați din nou.",
     "failedToLoad": "Încărcarea datelor a eșuat."
+  },
+  "chat": {
+    "newChat": "Conversație nouă",
+    "startConversation": "Începe o conversație",
+    "askAnything": "Întreabă orice...",
+    "messageInput": "Câmp de mesaj chat",
+    "sendMessage": "Trimite mesajul",
+    "suggestedQuestions": "Întrebări sugerate",
+    "suggested": "Sugerate",
+    "chatHistory": "Istoric conversații",
+    "backToNewChat": "Înapoi la conversație nouă",
+    "viewChatHistory": "Vezi istoricul conversațiilor",
+    "openFullChat": "Deschide conversația completă",
+    "closeChat": "Închide conversația",
+    "thinking": "Se gândește...",
+    "typeMessage": "Scrie un mesaj...",
+    "noConversationsYet": "Nicio conversație încă.",
+    "noConversationsMatchTopics": "Nicio conversație nu corespunde subiectelor selectate.",
+    "openChat": "Deschide conversația {{title}}",
+    "welcomeTitle": "Bună! Cu ce te pot ajuta?",
+    "welcomeSubtitle": {
+      "dashboard": "Întreabă despre performanța agenților, tendințele de activitate sau obține o verificare rapidă a stării.",
+      "agents": "Analizează sănătatea agenților, compară performanțele sau rezolvă probleme.",
+      "costs": "Explorează tiparele de cheltuieli, găsește economii sau investighează creșterile de costuri.",
+      "governance": "Verifică starea conformității, revizuiește încălcările sau auditează politicile.",
+      "settings": "Obține ajutor cu agenții, costurile, guvernanța sau suportul."
+    },
+    "topics": {
+      "agents": {
+        "label": "Ce categorii de eșecuri sunt în creștere și necesită triaj?",
+        "message": "Grupează eșecurile după familia de modele și arată ce categorii sunt în creștere de la o săptămână la alta. Care necesită triaj?"
+      },
+      "costs": {
+        "label": "Ce determină creșterea costurilor și cum le putem limita?",
+        "message": "Costurile au crescut recent. Ce s-a schimbat pe proiect și model? Cum putem limita acest lucru fără a afecta calitatea răspunsurilor?"
+      },
+      "governance": {
+        "label": "Rezumă încălcările după severitate — ce ar trebui să priorizez?",
+        "message": "Descompune încălcările pe clase de politici și semnalează orice accelerare. Ce ar trebui să priorizez mai întâi?"
+      },
+      "support": {
+        "label": "Ajută-mă să pregătesc o listă de verificare pentru lansare sau o comunicare către echipă",
+        "message": "Ajută-mă să pregătesc o listă de verificare pentru lansare sau să redactez o comunicare pentru utilizatori referitoare la o schimbare viitoare."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "Cum performează agenții mei în această săptămână?",
+          "message": "Cum performează agenții mei în această săptămână? Rezumă ratele de succes, tendințele erorilor și orice agenți remarcabili."
+        },
+        "activity": {
+          "label": "Arată-mi rezumatul activității de astăzi",
+          "message": "Dă-mi un rezumat al activității agenților de astăzi — rulări, finalizări, eșecuri și orice neobișnuit."
+        },
+        "teams": {
+          "label": "Care echipe sunt cele mai active?",
+          "message": "Care echipe au fost cele mai active recent? Arată-mi o defalcare a utilizării agenților pe echipă."
+        },
+        "issues": {
+          "label": "Sunt probleme de care ar trebui să știu?",
+          "message": "Există probleme sau anomalii de care ar trebui să fiu conștient? Semnalează erorile, vârfurile sau încălcările de politici."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Care agenți au cele mai multe erori?",
+          "message": "Care agenți au cele mai mari rate de erori acum? Listează-i cu numărul de eșecuri și tendințele recente."
+        },
+        "compare": {
+          "label": "Compară cei mai buni agenți după rata de succes",
+          "message": "Compară cei mai buni agenți ai mei după rata de succes din această lună. Arată clasamentele și orice schimbări notabile."
+        },
+        "inactive": {
+          "label": "Listează agenții inactivi",
+          "message": "Listează agenții care nu au avut nicio rulare în ultimele 7 zile. Ar trebui vreunul dintre ei să fie activ?"
+        },
+        "history": {
+          "label": "Explică istoricul recent de rulări al unui agent",
+          "message": "Alege agentul cu cea mai interesantă activitate recentă și prezintă-mi istoricul său de rulări."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Unde cresc costurile?",
+          "message": "Unde sunt costurile în creștere? Arată-mi ce agenți sau echipe generează creșterea."
+        },
+        "breakdown": {
+          "label": "Arată defalcarea costurilor pe echipă",
+          "message": "Defalcă costurile pe echipă pentru luna aceasta. Cum se compară cu luna trecută?"
+        },
+        "unusual": {
+          "label": "Semnalează cheltuieli neobișnuite",
+          "message": "Semnalează orice tipare de cheltuieli neobișnuite sau neașteptate. Există vârfuri de cost pe care ar trebui să le investighez?"
+        },
+        "reduce": {
+          "label": "Cum pot reduce costurile?",
+          "message": "Analizează utilizarea actuală a agenților mei și sugerează modalități de reducere a costurilor fără a afecta performanța."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Sunt încălcări noi de politici?",
+          "message": "Există încălcări noi de politici de la ultima mea verificare? Rezumă severitatea și agenții afectați."
+        },
+        "compliance": {
+          "label": "Arată rezumatul conformității",
+          "message": "Dă-mi un rezumat general al conformității — câte reguli sunt respectate, încălcate sau necesită atenție?"
+        },
+        "unresolved": {
+          "label": "Listează încălcările nerezolvate",
+          "message": "Listează toate încălcările nerezolvate sortate după severitate. Care ar trebui priorizate?"
+        },
+        "rules": {
+          "label": "Revizuiește regulile de guvernanță",
+          "message": "Prezintă-mi regulile de guvernanță active. Există vreuna care nu s-a declanșat recent?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "Cum adaug un nou membru în echipă?",
+          "message": "Ghidează-mă prin adăugarea unui nou membru în echipă și configurarea permisiunilor sale."
+        },
+        "integrations": {
+          "label": "Ce integrări sunt disponibile?",
+          "message": "Ce integrări sunt disponibile pentru conectarea la instrumente și servicii externe?"
+        },
+        "notifications": {
+          "label": "Revizuiește setările de notificare",
+          "message": "Arată-mi setările actuale de notificare. Îmi lipsesc alerte importante?"
+        },
+        "configure": {
+          "label": "Ajută-mă să configurez un agent",
+          "message": "Ajută-mă să configurez un agent nou — ce setări și parametri ar trebui să iau în considerare?"
+        }
+      }
+    }
   }
 }

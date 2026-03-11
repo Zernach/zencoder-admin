@@ -39,7 +39,7 @@
     "agents": "Agenter",
     "costs": "Kostnader",
     "governance": "Styrning",
-    "settings": "Inställningar",
+    "settings": "Chatt",
     "collapseSidebar": "Fäll ihop sidofältet",
     "expandSidebar": "Expandera sidofältet",
     "subsectionsLabel": "{{label}} undersektioner",
@@ -49,14 +49,14 @@
       "outcomes": "Resultat",
       "keyMetrics": "Nyckeltal",
       "reliability": "Tillförlitlighet",
-      "agentPerformance": "Agentfördelning",
-      "projectBreakdown": "Projektfördelning",
-      "recentRuns": "Senaste körningar",
-      "costSummary": "Finansiella investeringar",
+      "agentPerformance": "Agenter",
+      "projectBreakdown": "Projekt",
+      "recentRuns": "Körningar",
+      "costSummary": "Kostnad per Team",
       "costByProvider": "Kostnad per leverantör",
       "budgetForecast": "Budgetprognos",
       "overview": "Översikt",
-      "teamPerformance": "Teamprestanda",
+      "teamPerformance": "Team",
       "seatUserOversight": "Användare",
       "recentViolations": "Senaste överträdelser",
       "securityEvents": "Säkerhetshändelser",
@@ -105,7 +105,7 @@
       },
       "emptySubtitle": "Nya livesessioner visas automatiskt när ingenjörer startar körningar."
     },
-    "title": "Admin Home"
+    "title": "Admin Hem"
   },
   "agents": {
     "subtitle": "Intelligenta Automatiseringar av Arbetsflöden",
@@ -157,7 +157,7 @@
   "costs": {
     "subtitle": "Utgiftstrender och budgetuppföljning",
     "subtitleWithData": "{{totalCost}} spenderat över {{projectCount}} projekt",
-    "costSummary": "Finansiella investeringar",
+    "costSummary": "Kostnad per Team",
     "totalCost": "Total kostnad",
     "avgPerRun": "Genomsnittlig kostnad per körning",
     "costPerSuccess": "Genomsnittlig kostnad per lyckad körning",
@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Något gick fel. Vänligen försök igen.",
     "failedToLoad": "Det gick inte att ladda data."
+  },
+  "chat": {
+    "newChat": "Ny chatt",
+    "startConversation": "Starta en konversation",
+    "askAnything": "Fråga vad som helst...",
+    "messageInput": "Inmatningsfält för chattmeddelande",
+    "sendMessage": "Skicka meddelande",
+    "suggestedQuestions": "Föreslagna frågor",
+    "suggested": "Föreslagna",
+    "chatHistory": "Chatthistorik",
+    "backToNewChat": "Tillbaka till ny chatt",
+    "viewChatHistory": "Visa chatthistorik",
+    "openFullChat": "Öppna fullständig chatt",
+    "closeChat": "Stäng chatt",
+    "thinking": "Tänker...",
+    "typeMessage": "Skriv ett meddelande...",
+    "noConversationsYet": "Inga konversationer ännu.",
+    "noConversationsMatchTopics": "Inga konversationer matchar de valda ämnena.",
+    "openChat": "Öppna chatt {{title}}",
+    "welcomeTitle": "Hej! Vad kan jag hjälpa dig med?",
+    "welcomeSubtitle": {
+      "dashboard": "Fråga om agentprestanda, aktivitetstrender eller få en snabb statusöversikt.",
+      "agents": "Granska agenthälsa, jämför prestanda eller felsök problem.",
+      "costs": "Utforska utgiftsmönster, hitta besparingar eller undersök kostnadsökningar.",
+      "governance": "Kontrollera efterlevnadsstatus, granska överträdelser eller granska dina policyer.",
+      "settings": "Få hjälp med agenter, kostnader, styrning eller support."
+    },
+    "topics": {
+      "agents": {
+        "label": "Vilka felkategorier ökar och behöver prioriteras?",
+        "message": "Gruppera fel efter modellfamilj och visa vilka kategorier som ökar vecka för vecka. Vilka behöver prioriteras?"
+      },
+      "costs": {
+        "label": "Vad driver kostnadsökningarna och hur kan vi begränsa dem?",
+        "message": "Kostnaderna ökade nyligen. Vad förändrades per projekt och modell? Hur kan vi begränsa detta utan att påverka svarskvaliteten?"
+      },
+      "governance": {
+        "label": "Sammanfatta överträdelser efter allvarlighetsgrad — vad bör jag prioritera?",
+        "message": "Bryt ner överträdelser efter policyklass och flagga allt som accelererar. Vad bör jag prioritera först?"
+      },
+      "support": {
+        "label": "Hjälp mig att förbereda en lanseringschecklista eller teamkommunikation",
+        "message": "Hjälp mig att förbereda en lanseringschecklista eller skriva ett användarriktat meddelande för en kommande förändring."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "Hur presterar mina agenter denna vecka?",
+          "message": "Hur presterar mina agenter denna vecka? Sammanfatta framgångsgrader, feltrender och eventuella framstående agenter."
+        },
+        "activity": {
+          "label": "Visa dagens aktivitetssammanfattning",
+          "message": "Ge mig en sammanfattning av dagens agentaktivitet — körningar, slutföranden, fel och eventuella avvikelser."
+        },
+        "teams": {
+          "label": "Vilka team är mest aktiva?",
+          "message": "Vilka team har varit mest aktiva på senaste? Visa mig en fördelning av agentanvändning per team."
+        },
+        "issues": {
+          "label": "Finns det problem jag bör känna till?",
+          "message": "Finns det problem eller avvikelser jag bör känna till? Flagga fel, toppar eller policyöverträdelser."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Vilka agenter har flest fel?",
+          "message": "Vilka agenter har högst felfrekvens just nu? Lista dem med antal fel och senaste trender."
+        },
+        "compare": {
+          "label": "Jämför toppagenter efter framgångsgrad",
+          "message": "Jämför mina toppagenter efter framgångsgrad denna månad. Visa rankningar och eventuella anmärkningsvärda förändringar."
+        },
+        "inactive": {
+          "label": "Lista inaktiva agenter",
+          "message": "Lista agenter som inte haft några körningar de senaste 7 dagarna. Borde någon av dem vara aktiv?"
+        },
+        "history": {
+          "label": "Förklara en agents senaste körningshistorik",
+          "message": "Välj agenten med den mest intressanta senaste aktiviteten och gå igenom dess körningshistorik."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Var ökar kostnaderna?",
+          "message": "Var ökar kostnaderna? Visa mig vilka agenter eller team som driver ökningen."
+        },
+        "breakdown": {
+          "label": "Visa kostnadsfördelning per team",
+          "message": "Bryt ner kostnader per team för denna månad. Hur jämför det sig med förra månaden?"
+        },
+        "unusual": {
+          "label": "Flagga ovanliga utgifter",
+          "message": "Flagga eventuella ovanliga eller oväntade utgiftsmönster. Finns det kostnadstoppar jag bör undersöka?"
+        },
+        "reduce": {
+          "label": "Hur kan jag minska kostnaderna?",
+          "message": "Analysera min nuvarande agentanvändning och föreslå sätt att minska kostnader utan att påverka prestandan."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Finns det nya policyöverträdelser?",
+          "message": "Finns det nya policyöverträdelser sedan min senaste granskning? Sammanfatta allvarlighetsgrad och berörda agenter."
+        },
+        "compliance": {
+          "label": "Visa efterlevnadssammanfattning",
+          "message": "Ge mig en övergripande efterlevnadssammanfattning — hur många regler klarar sig, misslyckas eller behöver uppmärksamhet?"
+        },
+        "unresolved": {
+          "label": "Lista olösta överträdelser",
+          "message": "Lista alla olösta överträdelser sorterade efter allvarlighetsgrad. Vilka bör jag prioritera?"
+        },
+        "rules": {
+          "label": "Granska styrningsregler",
+          "message": "Gå igenom de aktiva styrningsreglerna. Finns det några som inte utlösts nyligen?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "Hur lägger jag till en ny teammedlem?",
+          "message": "Vägled mig genom att lägga till en ny teammedlem och ställa in deras behörigheter."
+        },
+        "integrations": {
+          "label": "Vilka integrationer finns tillgängliga?",
+          "message": "Vilka integrationer finns tillgängliga för att ansluta till externa verktyg och tjänster?"
+        },
+        "notifications": {
+          "label": "Granska aviseringsinställningar",
+          "message": "Visa mig mina nuvarande aviseringsinställningar. Missar jag några viktiga varningar?"
+        },
+        "configure": {
+          "label": "Hjälp mig att konfigurera en agent",
+          "message": "Hjälp mig att konfigurera en ny agent — vilka inställningar och parametrar bör jag överväga?"
+        }
+      }
+    }
   }
 }

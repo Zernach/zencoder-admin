@@ -39,7 +39,7 @@
     "agents": "Agenten",
     "costs": "Kosten",
     "governance": "Governance",
-    "settings": "Instellingen",
+    "settings": "Chat",
     "collapseSidebar": "Zijbalk inklappen",
     "expandSidebar": "Zijbalk uitklappen",
     "subsectionsLabel": "{{label}} subsecties",
@@ -49,14 +49,14 @@
       "outcomes": "Resultaten",
       "keyMetrics": "Kernstatistieken",
       "reliability": "Betrouwbaarheid",
-      "agentPerformance": "Agenten overzicht",
-      "projectBreakdown": "Projecten overzicht",
-      "recentRuns": "Recente uitvoeringen",
-      "costSummary": "Financiële investeringen",
+      "agentPerformance": "Agenten",
+      "projectBreakdown": "Projecten",
+      "recentRuns": "Uitvoeringen",
+      "costSummary": "Kosten per Team",
       "costByProvider": "Kosten per provider",
       "budgetForecast": "Budgetprognose",
       "overview": "Overzicht",
-      "teamPerformance": "Teamprestaties",
+      "teamPerformance": "Teams",
       "seatUserOversight": "Gebruikers",
       "recentViolations": "Recente overtredingen",
       "securityEvents": "Beveiligingsgebeurtenissen",
@@ -105,7 +105,7 @@
       },
       "emptySubtitle": "Nieuwe livesessies verschijnen automatisch wanneer engineers uitvoeringen starten."
     },
-    "title": "Admin Home"
+    "title": "Admin Startpagina"
   },
   "agents": {
     "subtitle": "Intelligente Workflow-automatiseringen",
@@ -157,7 +157,7 @@
   "costs": {
     "subtitle": "Uitgavetrends en budgetbewaking",
     "subtitleWithData": "{{totalCost}} besteed aan {{projectCount}} projecten",
-    "costSummary": "Financiële investeringen",
+    "costSummary": "Kosten per Team",
     "totalCost": "Totale kosten",
     "avgPerRun": "Gemiddelde kosten per uitvoering",
     "costPerSuccess": "Gemiddelde kosten per geslaagde uitvoering",
@@ -356,7 +356,7 @@
     "filterBy": "Filteren op {{category}}",
     "closeFilterDropdown": "Filtermenu sluiten",
     "withCount": "{{label}} ({{count}})",
-    "providersLabel": "Providers",
+    "providersLabel": "Aanbieders",
     "statusesLabel": "Statussen",
     "providers": {
       "codex": "Codex",
@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Er is iets misgegaan. Probeer het opnieuw.",
     "failedToLoad": "Gegevens konden niet worden geladen."
+  },
+  "chat": {
+    "newChat": "Nieuw gesprek",
+    "startConversation": "Start een gesprek",
+    "askAnything": "Vraag wat je wilt...",
+    "messageInput": "Chatbericht invoeren",
+    "sendMessage": "Bericht verzenden",
+    "suggestedQuestions": "Voorgestelde vragen",
+    "suggested": "Voorgesteld",
+    "chatHistory": "Chatgeschiedenis",
+    "backToNewChat": "Terug naar nieuw gesprek",
+    "viewChatHistory": "Chatgeschiedenis bekijken",
+    "openFullChat": "Volledige chat openen",
+    "closeChat": "Chat sluiten",
+    "thinking": "Aan het denken...",
+    "typeMessage": "Typ een bericht...",
+    "noConversationsYet": "Nog geen gesprekken.",
+    "noConversationsMatchTopics": "Geen gesprekken komen overeen met de geselecteerde onderwerpen.",
+    "openChat": "Chat openen {{title}}",
+    "welcomeTitle": "Hallo! Hoe kan ik je helpen?",
+    "welcomeSubtitle": {
+      "dashboard": "Vraag naar agentprestaties, activiteitstrends of krijg een snelle statuscontrole.",
+      "agents": "Duik in de gezondheid van agenten, vergelijk prestaties of los problemen op.",
+      "costs": "Verken bestedingspatronen, vind besparingen of onderzoek kostenpieken.",
+      "governance": "Controleer de nalevingsstatus, bekijk overtredingen of audit uw beleid.",
+      "settings": "Krijg hulp met agenten, kosten, governance of ondersteuning."
+    },
+    "topics": {
+      "agents": {
+        "label": "Welke foutcategorieën nemen toe en vereisen triage?",
+        "message": "Groepeer fouten per modelfamilie en toon welke categorieën week na week toenemen. Welke vereisen triage?"
+      },
+      "costs": {
+        "label": "Wat drijft de kostenstijgingen en hoe kunnen we ze beheersen?",
+        "message": "De kosten zijn recent gestegen. Wat is er veranderd per project en model? Hoe kunnen we dit beheersen zonder de responskwaliteit aan te tasten?"
+      },
+      "governance": {
+        "label": "Vat overtredingen samen op ernst — wat moet ik prioriteren?",
+        "message": "Splits overtredingen op per beleidsklasse en markeer alles wat versnelt. Wat moet ik als eerste prioriteren?"
+      },
+      "support": {
+        "label": "Help me een uitrolchecklist of teamcommunicatie voor te bereiden",
+        "message": "Help me een uitrolchecklist voor te bereiden of een gebruikersgerichte communicatie op te stellen voor een aanstaande wijziging."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "Hoe presteren mijn agenten deze week?",
+          "message": "Hoe presteren mijn agenten deze week? Vat succespercentages, fouttrends en opvallende agenten samen."
+        },
+        "activity": {
+          "label": "Toon me de activiteitssamenvatting van vandaag",
+          "message": "Geef me een samenvatting van de agentactiviteit vandaag — uitvoeringen, voltooiingen, fouten en alles wat ongebruikelijk is."
+        },
+        "teams": {
+          "label": "Welke teams zijn het meest actief?",
+          "message": "Welke teams zijn recentelijk het meest actief geweest? Toon me een uitsplitsing van het agentgebruik per team."
+        },
+        "issues": {
+          "label": "Zijn er problemen waar ik van moet weten?",
+          "message": "Zijn er problemen of anomalieën waar ik van moet weten? Markeer fouten, pieken of beleidsschendingen."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Welke agenten hebben de meeste fouten?",
+          "message": "Welke agenten hebben op dit moment de hoogste foutpercentages? Vermeld ze met foutaantallen en recente trends."
+        },
+        "compare": {
+          "label": "Vergelijk topagenten op succespercentage",
+          "message": "Vergelijk mijn topagenten op succespercentage deze maand. Toon ranglijsten en opvallende veranderingen."
+        },
+        "inactive": {
+          "label": "Inactieve agenten weergeven",
+          "message": "Vermeld agenten die de afgelopen 7 dagen geen uitvoeringen hebben gehad. Zouden sommige hiervan actief moeten zijn?"
+        },
+        "history": {
+          "label": "De recente uitvoeringsgeschiedenis van een agent uitleggen",
+          "message": "Kies de agent met de meest interessante recente activiteit en loop me door de uitvoeringsgeschiedenis."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Waar stijgen de kosten?",
+          "message": "Waar stijgen de kosten? Toon me welke agenten of teams de stijging veroorzaken."
+        },
+        "breakdown": {
+          "label": "Kostenuitsplitsing per team tonen",
+          "message": "Splits de kosten uit per team voor deze maand. Hoe verhoudt het zich tot vorige maand?"
+        },
+        "unusual": {
+          "label": "Ongebruikelijke uitgaven markeren",
+          "message": "Markeer ongebruikelijke of onverwachte bestedingspatronen. Zijn er kostenpieken die ik moet onderzoeken?"
+        },
+        "reduce": {
+          "label": "Hoe kan ik kosten verlagen?",
+          "message": "Analyseer mijn huidige agentgebruik en stel manieren voor om kosten te verlagen zonder de prestaties te beïnvloeden."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Zijn er nieuwe beleidsschendingen?",
+          "message": "Zijn er nieuwe beleidsschendingen sinds mijn laatste controle? Vat de ernst en de getroffen agenten samen."
+        },
+        "compliance": {
+          "label": "Nalevingsoverzicht tonen",
+          "message": "Geef me een algemeen nalevingsoverzicht — hoeveel regels slagen, falen of hebben aandacht nodig?"
+        },
+        "unresolved": {
+          "label": "Onopgeloste overtredingen weergeven",
+          "message": "Vermeld alle onopgeloste overtredingen gesorteerd op ernst. Welke moet ik prioriteren?"
+        },
+        "rules": {
+          "label": "Governance-regels bekijken",
+          "message": "Loop me door de actieve governance-regels. Zijn er regels die recentelijk niet zijn geactiveerd?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "Hoe voeg ik een nieuw teamlid toe?",
+          "message": "Loop me door het toevoegen van een nieuw teamlid en het instellen van hun rechten."
+        },
+        "integrations": {
+          "label": "Welke integraties zijn beschikbaar?",
+          "message": "Welke integraties zijn beschikbaar om verbinding te maken met externe tools en diensten?"
+        },
+        "notifications": {
+          "label": "Meldingsinstellingen controleren",
+          "message": "Toon me mijn huidige meldingsinstellingen. Mis ik belangrijke waarschuwingen?"
+        },
+        "configure": {
+          "label": "Help me een agent te configureren",
+          "message": "Help me een nieuwe agent te configureren — welke instellingen en parameters moet ik overwegen?"
+        }
+      }
+    }
   }
 }

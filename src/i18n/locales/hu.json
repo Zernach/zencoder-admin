@@ -39,7 +39,7 @@
     "agents": "Ágensek",
     "costs": "Költségek",
     "governance": "Irányítás",
-    "settings": "Beállítások",
+    "settings": "Chat",
     "collapseSidebar": "Oldalsáv összecsukása",
     "expandSidebar": "Oldalsáv kinyitása",
     "subsectionsLabel": "{{label}} alszekciók",
@@ -49,14 +49,14 @@
       "outcomes": "Eredmények",
       "keyMetrics": "Fő mutatók",
       "reliability": "Megbízhatóság",
-      "agentPerformance": "Ágensek bontása",
-      "projectBreakdown": "Projektek bontása",
-      "recentRuns": "Legutóbbi futtatások",
-      "costSummary": "Pénzügyi befektetések",
+      "agentPerformance": "Ágensek",
+      "projectBreakdown": "Projektek",
+      "recentRuns": "Futtatások",
+      "costSummary": "Költség csapatonként",
       "costByProvider": "Költség szolgáltató szerint",
       "budgetForecast": "Költségvetési előrejelzés",
       "overview": "Áttekintés",
-      "teamPerformance": "Csapatteljesítmény",
+      "teamPerformance": "Csapatok",
       "seatUserOversight": "Felhasználók",
       "recentViolations": "Legutóbbi szabálysértések",
       "securityEvents": "Biztonsági események",
@@ -105,7 +105,7 @@
       },
       "emptySubtitle": "Új élő munkamenetek automatikusan megjelennek, amint a mérnökök futtatásokat indítanak."
     },
-    "title": "Admin Home"
+    "title": "Admin Kezdőlap"
   },
   "agents": {
     "subtitle": "Intelligens Munkafolyamat-automatizálások",
@@ -157,7 +157,7 @@
   "costs": {
     "subtitle": "Kiadási trendek és költségvetés-követés",
     "subtitleWithData": "{{totalCost}} elköltve {{projectCount}} projektben",
-    "costSummary": "Pénzügyi befektetések",
+    "costSummary": "Költség csapatonként",
     "totalCost": "Összes költség",
     "avgPerRun": "Átlagos költség futtatásonként",
     "costPerSuccess": "Átlagos költség sikeres futtatásonként",
@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Valami hiba történt. Kérjük, próbálja újra.",
     "failedToLoad": "Az adatok betöltése sikertelen."
+  },
+  "chat": {
+    "newChat": "Új csevegés",
+    "startConversation": "Beszélgetés indítása",
+    "askAnything": "Kérdezz bármit...",
+    "messageInput": "Csevegés üzenet beviteli mező",
+    "sendMessage": "Üzenet küldése",
+    "suggestedQuestions": "Javasolt kérdések",
+    "suggested": "Javasolt",
+    "chatHistory": "Csevegési előzmények",
+    "backToNewChat": "Vissza az új csevegéshez",
+    "viewChatHistory": "Csevegési előzmények megtekintése",
+    "openFullChat": "Teljes csevegés megnyitása",
+    "closeChat": "Csevegés bezárása",
+    "thinking": "Gondolkodik...",
+    "typeMessage": "Írjon üzenetet...",
+    "noConversationsYet": "Még nincsenek beszélgetések.",
+    "noConversationsMatchTopics": "Nincs a kiválasztott témáknak megfelelő beszélgetés.",
+    "openChat": "Csevegés megnyitása {{title}}",
+    "welcomeTitle": "Szia! Miben segíthetek?",
+    "welcomeSubtitle": {
+      "dashboard": "Kérdezz az ágensek teljesítményéről, aktivitási trendekről, vagy kérj gyors állapotjelentést.",
+      "agents": "Vizsgáld meg az ágensek állapotát, hasonlítsd össze a teljesítményt, vagy hárítsd el a problémákat.",
+      "costs": "Fedezd fel a kiadási mintákat, találj megtakarításokat, vagy vizsgáld meg a költségnövekedéseket.",
+      "governance": "Ellenőrizd a megfelelőségi állapotot, tekintsd át a szabálysértéseket, vagy auditáld a szabályzatokat.",
+      "settings": "Kérj segítséget az ágensekkel, költségekkel, irányítással vagy támogatással kapcsolatban."
+    },
+    "topics": {
+      "agents": {
+        "label": "Mely hibakategóriák mutatnak növekvő trendet és igényelnek priorizálást?",
+        "message": "Csoportosítsd a hibákat modellcsalád szerint, és mutasd meg, mely kategóriák mutatnak hétről hétre növekvő trendet. Melyek igényelnek priorizálást?"
+      },
+      "costs": {
+        "label": "Mi okozza a költségnövekedést és hogyan fékezhetjük meg?",
+        "message": "A költségek nemrég megnőttek. Mi változott projekt és modell szerint? Hogyan fékezhetjük meg ezt a válaszminőség romlása nélkül?"
+      },
+      "governance": {
+        "label": "Foglald össze a szabálysértéseket súlyosság szerint — mit priorizáljak?",
+        "message": "Bontsd le a szabálysértéseket szabályzatosztály szerint, és jelöld meg a gyorsuló tendenciákat. Mit priorizáljak először?"
+      },
+      "support": {
+        "label": "Segíts egy bevezetési ellenőrzőlista vagy csapatkommunikáció elkészítésében",
+        "message": "Segíts egy bevezetési ellenőrzőlista elkészítésében, vagy egy felhasználóknak szóló kommunikáció megírásában egy közelgő változtatásról."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "Hogyan teljesítenek az ágenseim ezen a héten?",
+          "message": "Hogyan teljesítenek az ágenseim ezen a héten? Foglald össze a sikerességi arányokat, hibatrendeket és a kiemelkedő ágenseket."
+        },
+        "activity": {
+          "label": "Mutasd a mai aktivitás összefoglalóját",
+          "message": "Adj összefoglalót a mai ágenstevékenységről — futtatások, befejezések, hibák és bármi szokatlan."
+        },
+        "teams": {
+          "label": "Mely csapatok a legaktívabbak?",
+          "message": "Mely csapatok voltak a legaktívabbak az utóbbi időben? Mutasd meg az ágenshasználat bontását csapatonként."
+        },
+        "issues": {
+          "label": "Van valami probléma, amiről tudnom kellene?",
+          "message": "Vannak problémák vagy anomáliák, amelyekről tudnom kellene? Jelöld meg a hibákat, kiugrásokat vagy szabályzatsértéseket."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Mely ágensnél van a legtöbb hiba?",
+          "message": "Mely ágenseknek van jelenleg a legmagasabb hibaaránya? Listázd őket hibaszámokkal és friss trendekkel."
+        },
+        "compare": {
+          "label": "Hasonlítsd össze a legjobb ágenseket sikerességi arány szerint",
+          "message": "Hasonlítsd össze a legjobb ágenseimet sikerességi arány szerint ebben a hónapban. Mutasd a rangsorokat és a figyelemre méltó változásokat."
+        },
+        "inactive": {
+          "label": "Listázd az inaktív ágenseket",
+          "message": "Listázd azokat az ágenseket, amelyeknek nem volt futtatásuk az elmúlt 7 napban. Valamelyiküknek aktívnak kellene lennie?"
+        },
+        "history": {
+          "label": "Magyarázd el egy ágens közelmúltbeli futtatási előzményeit",
+          "message": "Válaszd ki a legérdekesebb közelmúltbeli tevékenységű ágenst, és mutasd be a futtatási előzményeit."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Hol emelkednek a költségek?",
+          "message": "Hol emelkednek a költségek? Mutasd meg, mely ágensek vagy csapatok okozzák a növekedést."
+        },
+        "breakdown": {
+          "label": "Mutasd a költségbontást csapatonként",
+          "message": "Bontsd le a költségeket csapatonként ebben a hónapban. Hogyan viszonyul az előző hónaphoz?"
+        },
+        "unusual": {
+          "label": "Jelöld meg a szokatlan kiadásokat",
+          "message": "Jelöld meg a szokatlan vagy váratlan kiadási mintákat. Vannak költségkiugrások, amelyeket meg kellene vizsgálnom?"
+        },
+        "reduce": {
+          "label": "Hogyan csökkkenthetem a költségeket?",
+          "message": "Elemezd a jelenlegi ágenshasználatomat, és javasolj módokat a költségek csökkentésére a teljesítmény romlása nélkül."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Vannak új szabályzatsértések?",
+          "message": "Vannak új szabályzatsértések az utolsó áttekintésem óta? Foglald össze a súlyosságot és az érintett ágenseket."
+        },
+        "compliance": {
+          "label": "Mutasd a megfelelőségi összefoglalót",
+          "message": "Adj egy átfogó megfelelőségi összefoglalót — hány szabály teljesül, hány nem, és hány igényel figyelmet?"
+        },
+        "unresolved": {
+          "label": "Listázd a megoldatlan szabálysértéseket",
+          "message": "Listázd az összes megoldatlan szabálysértést súlyosság szerint rendezve. Melyeket kellene priorizálnom?"
+        },
+        "rules": {
+          "label": "Tekintsd át az irányítási szabályokat",
+          "message": "Mutasd be az aktív irányítási szabályokat. Van olyan, amelyik nem aktiválódott az utóbbi időben?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "Hogyan adhatok hozzá új csapattagot?",
+          "message": "Vezesd végig az új csapattag hozzáadásának és jogosultságai beállításának folyamatát."
+        },
+        "integrations": {
+          "label": "Milyen integrációk érhetők el?",
+          "message": "Milyen integrációk érhetők el külső eszközökhöz és szolgáltatásokhoz való csatlakozáshoz?"
+        },
+        "notifications": {
+          "label": "Tekintsd át az értesítési beállításokat",
+          "message": "Mutasd meg a jelenlegi értesítési beállításaimat. Lemaradok fontos riasztásokról?"
+        },
+        "configure": {
+          "label": "Segíts egy ágens konfigurálásában",
+          "message": "Segíts egy új ágens konfigurálásában — milyen beállításokat és paramétereket kell figyelembe vennem?"
+        }
+      }
+    }
   }
 }

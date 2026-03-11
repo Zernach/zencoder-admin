@@ -39,7 +39,7 @@
     "agents": "Agenci",
     "costs": "Koszty",
     "governance": "Zarządzanie",
-    "settings": "Ustawienia",
+    "settings": "Czat",
     "collapseSidebar": "Zwiń panel boczny",
     "expandSidebar": "Rozwiń panel boczny",
     "subsectionsLabel": "Podsekcje {{label}}",
@@ -49,14 +49,14 @@
       "outcomes": "Wyniki",
       "keyMetrics": "Kluczowe wskaźniki",
       "reliability": "Niezawodność",
-      "agentPerformance": "Podział agentów",
-      "projectBreakdown": "Podział projektów",
-      "recentRuns": "Ostatnie uruchomienia",
-      "costSummary": "Inwestycje finansowe",
+      "agentPerformance": "Agenci",
+      "projectBreakdown": "Projekty",
+      "recentRuns": "Uruchomienia",
+      "costSummary": "Koszt na zespół",
       "costByProvider": "Koszt wg dostawcy",
       "budgetForecast": "Prognoza budżetu",
       "overview": "Przegląd",
-      "teamPerformance": "Wydajność zespołów",
+      "teamPerformance": "Zespoły",
       "seatUserOversight": "Użytkownicy",
       "recentViolations": "Ostatnie naruszenia",
       "securityEvents": "Zdarzenia bezpieczeństwa",
@@ -105,7 +105,7 @@
       },
       "emptySubtitle": "Nowe sesje na żywo pojawią się automatycznie, gdy inżynierowie rozpoczną uruchomienia."
     },
-    "title": "Admin Home"
+    "title": "Panel Główny"
   },
   "agents": {
     "subtitle": "Inteligentne Automatyzacje Przepływów Pracy",
@@ -157,7 +157,7 @@
   "costs": {
     "subtitle": "Trendy wydatków i śledzenie budżetu",
     "subtitleWithData": "{{totalCost}} wydane w {{projectCount}} projektach",
-    "costSummary": "Inwestycje finansowe",
+    "costSummary": "Koszt na zespół",
     "totalCost": "Koszt całkowity",
     "avgPerRun": "Średni koszt na uruchomienie",
     "costPerSuccess": "Średni koszt na udane uruchomienie",
@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Coś poszło nie tak. Spróbuj ponownie.",
     "failedToLoad": "Nie udało się załadować danych."
+  },
+  "chat": {
+    "newChat": "Nowy czat",
+    "startConversation": "Rozpocznij rozmowę",
+    "askAnything": "Zapytaj o cokolwiek...",
+    "messageInput": "Pole wprowadzania wiadomości",
+    "sendMessage": "Wyślij wiadomość",
+    "suggestedQuestions": "Sugerowane pytania",
+    "suggested": "Sugerowane",
+    "chatHistory": "Historia czatów",
+    "backToNewChat": "Wróć do nowego czatu",
+    "viewChatHistory": "Zobacz historię czatów",
+    "openFullChat": "Otwórz pełny czat",
+    "closeChat": "Zamknij czat",
+    "thinking": "Myślę...",
+    "typeMessage": "Wpisz wiadomość...",
+    "noConversationsYet": "Brak rozmów.",
+    "noConversationsMatchTopics": "Żadne rozmowy nie pasują do wybranych tematów.",
+    "openChat": "Otwórz czat {{title}}",
+    "welcomeTitle": "Cześć! W czym mogę pomóc?",
+    "welcomeSubtitle": {
+      "dashboard": "Zapytaj o wydajność agentów, trendy aktywności lub uzyskaj szybkie podsumowanie.",
+      "agents": "Zbadaj kondycję agentów, porównaj wydajność lub rozwiąż problemy.",
+      "costs": "Zbadaj wzorce wydatków, znajdź oszczędności lub zbadaj skoki kosztów.",
+      "governance": "Sprawdź status zgodności, przejrzyj naruszenia lub przeprowadź audyt polityk.",
+      "settings": "Uzyskaj pomoc w zakresie agentów, kosztów, zarządzania lub wsparcia."
+    },
+    "topics": {
+      "agents": {
+        "label": "Które kategorie awarii rosną i wymagają analizy?",
+        "message": "Pogrupuj awarie według rodziny modeli i pokaż, które kategorie rosną tydzień po tygodniu. Które wymagają priorytetowej analizy?"
+      },
+      "costs": {
+        "label": "Co napędza wzrost kosztów i jak je ograniczyć?",
+        "message": "Koszty niedawno wzrosły. Co się zmieniło w projektach i modelach? Jak to ograniczyć bez pogarszania jakości odpowiedzi?"
+      },
+      "governance": {
+        "label": "Podsumowanie naruszeń według ważności — co priorytetyzować?",
+        "message": "Podziel naruszenia według klasy polityk i oznacz te, które przyspieszają. Co powinienem priorytetyzować?"
+      },
+      "support": {
+        "label": "Pomóż przygotować listę kontrolną wdrożenia lub komunikację z zespołem",
+        "message": "Pomóż mi przygotować listę kontrolną wdrożenia lub przygotować komunikację dla użytkowników o nadchodzącej zmianie."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "Jak działają moi agenci w tym tygodniu?",
+          "message": "Jak działają moi agenci w tym tygodniu? Podsumuj wskaźniki sukcesu, trendy błędów i wyróżniających się agentów."
+        },
+        "activity": {
+          "label": "Pokaż podsumowanie dzisiejszej aktywności",
+          "message": "Daj mi podsumowanie dzisiejszej aktywności agentów — uruchomienia, ukończenia, awarie i cokolwiek nietypowego."
+        },
+        "teams": {
+          "label": "Które zespoły są najbardziej aktywne?",
+          "message": "Które zespoły były ostatnio najbardziej aktywne? Pokaż mi rozkład wykorzystania agentów według zespołów."
+        },
+        "issues": {
+          "label": "Czy są problemy, o których powinienem wiedzieć?",
+          "message": "Czy są jakieś problemy lub anomalie, o których powinienem wiedzieć? Zaznacz błędy, skoki lub naruszenia polityk."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Którzy agenci mają najwięcej błędów?",
+          "message": "Którzy agenci mają obecnie najwyższy wskaźnik błędów? Wymień ich z liczbą awarii i ostatnimi trendami."
+        },
+        "compare": {
+          "label": "Porównaj najlepszych agentów pod względem sukcesu",
+          "message": "Porównaj moich najlepszych agentów pod względem wskaźnika sukcesu w tym miesiącu. Pokaż rankingi i istotne zmiany."
+        },
+        "inactive": {
+          "label": "Lista nieaktywnych agentów",
+          "message": "Wymień agentów, którzy nie mieli żadnych uruchomień w ciągu ostatnich 7 dni. Czy któryś z nich powinien być aktywny?"
+        },
+        "history": {
+          "label": "Wyjaśnij ostatnią historię uruchomień agenta",
+          "message": "Wybierz agenta z najciekawszą ostatnią aktywnością i opowiedz mi o jego historii uruchomień."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Gdzie koszty rosną?",
+          "message": "Gdzie koszty wykazują tendencję wzrostową? Pokaż, którzy agenci lub zespoły napędzają wzrost."
+        },
+        "breakdown": {
+          "label": "Pokaż podział kosztów według zespołów",
+          "message": "Podziel koszty według zespołów za ten miesiąc. Jak to wygląda w porównaniu z poprzednim miesiącem?"
+        },
+        "unusual": {
+          "label": "Oznacz nietypowe wydatki",
+          "message": "Oznacz nietypowe lub nieoczekiwane wzorce wydatków. Czy są skoki kosztów, które warto zbadać?"
+        },
+        "reduce": {
+          "label": "Jak mogę obniżyć koszty?",
+          "message": "Przeanalizuj moje bieżące wykorzystanie agentów i zasugeruj sposoby na obniżenie kosztów bez wpływu na wydajność."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Czy są nowe naruszenia polityk?",
+          "message": "Czy są nowe naruszenia polityk od mojego ostatniego przeglądu? Podsumuj ważność i dotkniętych agentów."
+        },
+        "compliance": {
+          "label": "Pokaż podsumowanie zgodności",
+          "message": "Daj mi ogólne podsumowanie zgodności — ile reguł przechodzi, nie przechodzi lub wymaga uwagi?"
+        },
+        "unresolved": {
+          "label": "Lista nierozwiązanych naruszeń",
+          "message": "Wymień wszystkie nierozwiązane naruszenia posortowane według ważności. Które powinienem priorytetyzować?"
+        },
+        "rules": {
+          "label": "Przejrzyj reguły zarządzania",
+          "message": "Opowiedz mi o aktywnych regułach zarządzania. Czy są takie, które dawno nie zostały uruchomione?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "Jak dodać nowego członka zespołu?",
+          "message": "Przeprowadź mnie przez proces dodawania nowego członka zespołu i konfiguracji jego uprawnień."
+        },
+        "integrations": {
+          "label": "Jakie integracje są dostępne?",
+          "message": "Jakie integracje są dostępne do łączenia z zewnętrznymi narzędziami i usługami?"
+        },
+        "notifications": {
+          "label": "Przejrzyj ustawienia powiadomień",
+          "message": "Pokaż mi moje bieżące ustawienia powiadomień. Czy nie pomijam ważnych alertów?"
+        },
+        "configure": {
+          "label": "Pomóż mi skonfigurować agenta",
+          "message": "Pomóż mi skonfigurować nowego agenta — jakie ustawienia i parametry powinienem uwzględnić?"
+        }
+      }
+    }
   }
 }

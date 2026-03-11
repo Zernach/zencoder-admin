@@ -39,7 +39,7 @@
     "agents": "Agents",
     "costs": "Coûts",
     "governance": "Gouvernance",
-    "settings": "Paramètres",
+    "settings": "Chat",
     "collapseSidebar": "Réduire la barre latérale",
     "expandSidebar": "Développer la barre latérale",
     "subsectionsLabel": "Sous-sections {{label}}",
@@ -49,14 +49,14 @@
       "outcomes": "Résultats",
       "keyMetrics": "Indicateurs clés",
       "reliability": "Fiabilité",
-      "agentPerformance": "Performance des agents",
-      "projectBreakdown": "Répartition par projet",
-      "recentRuns": "Exécutions récentes",
-      "costSummary": "Investissements financiers",
+      "agentPerformance": "Agents",
+      "projectBreakdown": "Projets",
+      "recentRuns": "Exécutions",
+      "costSummary": "Coût par Équipe",
       "costByProvider": "Coûts par fournisseur",
       "budgetForecast": "Prévision budgétaire",
       "overview": "Vue d'ensemble",
-      "teamPerformance": "Performance des équipes",
+      "teamPerformance": "Équipes",
       "seatUserOversight": "Utilisateurs",
       "recentViolations": "Violations récentes",
       "securityEvents": "Événements de sécurité",
@@ -105,7 +105,7 @@
       },
       "emptySubtitle": "Les nouvelles sessions apparaîtront automatiquement lorsque les développeurs lanceront des exécutions."
     },
-    "title": "Admin Home"
+    "title": "Accueil Admin"
   },
   "agents": {
     "subtitle": "Automatisations Intelligentes des Flux de Travail",
@@ -157,7 +157,7 @@
   "costs": {
     "subtitle": "Tendances des dépenses et suivi budgétaire",
     "subtitleWithData": "{{totalCost}} dépensé pour {{projectCount}} projets",
-    "costSummary": "Investissements financiers",
+    "costSummary": "Coût par Équipe",
     "totalCost": "Coût total",
     "avgPerRun": "Moy. / exéc.",
     "costPerSuccess": "Coût / succès",
@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Une erreur est survenue. Veuillez réessayer.",
     "failedToLoad": "Échec du chargement des données."
+  },
+  "chat": {
+    "newChat": "Nouvelle conversation",
+    "startConversation": "Démarrer une conversation",
+    "askAnything": "Demandez n'importe quoi...",
+    "messageInput": "Saisie du message de chat",
+    "sendMessage": "Envoyer le message",
+    "suggestedQuestions": "Questions suggérées",
+    "suggested": "Suggéré",
+    "chatHistory": "Historique des conversations",
+    "backToNewChat": "Retour à une nouvelle conversation",
+    "viewChatHistory": "Voir l'historique des conversations",
+    "openFullChat": "Ouvrir la conversation complète",
+    "closeChat": "Fermer la conversation",
+    "thinking": "Réflexion en cours...",
+    "typeMessage": "Tapez un message...",
+    "noConversationsYet": "Aucune conversation pour le moment.",
+    "noConversationsMatchTopics": "Aucune conversation ne correspond aux sujets sélectionnés.",
+    "openChat": "Ouvrir la conversation {{title}}",
+    "welcomeTitle": "Bonjour ! Comment puis-je vous aider ?",
+    "welcomeSubtitle": {
+      "dashboard": "Posez des questions sur la performance des agents, les tendances d'activité ou obtenez un bilan rapide.",
+      "agents": "Explorez la santé des agents, comparez les performances ou résolvez des problèmes.",
+      "costs": "Explorez les tendances de dépenses, trouvez des économies ou enquêtez sur les pics de coûts.",
+      "governance": "Vérifiez le statut de conformité, examinez les violations ou auditez vos politiques.",
+      "settings": "Obtenez de l'aide sur les agents, les coûts, la gouvernance ou le support."
+    },
+    "topics": {
+      "agents": {
+        "label": "Quelles catégories de défaillances sont en hausse et nécessitent un tri ?",
+        "message": "Regroupez les défaillances par famille de modèle et montrez quelles catégories augmentent semaine après semaine. Lesquelles nécessitent un tri ?"
+      },
+      "costs": {
+        "label": "Qu'est-ce qui provoque l'augmentation des coûts et comment les contenir ?",
+        "message": "Les coûts ont augmenté récemment. Qu'est-ce qui a changé par projet et par modèle ? Comment contenir cela sans dégrader la qualité des réponses ?"
+      },
+      "governance": {
+        "label": "Résumez les violations par gravité — que dois-je prioriser ?",
+        "message": "Décomposez les violations par classe de politique et signalez tout ce qui s'accélère. Que dois-je prioriser en premier ?"
+      },
+      "support": {
+        "label": "Aidez-moi à préparer une liste de contrôle de déploiement ou une communication d'équipe",
+        "message": "Aidez-moi à préparer une liste de contrôle de déploiement ou à rédiger une communication destinée aux utilisateurs pour un changement à venir."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "Comment se comportent mes agents cette semaine ?",
+          "message": "Comment se comportent mes agents cette semaine ? Résumez les taux de succès, les tendances d'erreurs et les agents remarquables."
+        },
+        "activity": {
+          "label": "Montrez-moi le résumé d'activité du jour",
+          "message": "Donnez-moi un résumé de l'activité des agents aujourd'hui — exécutions, achèvements, échecs et tout ce qui est inhabituel."
+        },
+        "teams": {
+          "label": "Quelles équipes sont les plus actives ?",
+          "message": "Quelles équipes ont été les plus actives récemment ? Montrez-moi une répartition de l'utilisation des agents par équipe."
+        },
+        "issues": {
+          "label": "Y a-t-il des problèmes dont je devrais être informé ?",
+          "message": "Y a-t-il des problèmes ou des anomalies dont je devrais être informé ? Signalez les erreurs, les pics ou les violations de politique."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Quels agents ont le plus d'erreurs ?",
+          "message": "Quels agents ont les taux d'erreur les plus élevés actuellement ? Listez-les avec le nombre de défaillances et les tendances récentes."
+        },
+        "compare": {
+          "label": "Comparer les meilleurs agents par taux de succès",
+          "message": "Comparez mes meilleurs agents par taux de succès ce mois-ci. Montrez les classements et les changements notables."
+        },
+        "inactive": {
+          "label": "Lister les agents inactifs",
+          "message": "Listez les agents qui n'ont eu aucune exécution au cours des 7 derniers jours. Certains d'entre eux devraient-ils être actifs ?"
+        },
+        "history": {
+          "label": "Expliquer l'historique récent d'exécution d'un agent",
+          "message": "Choisissez l'agent avec l'activité récente la plus intéressante et présentez-moi son historique d'exécution."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Où les coûts augmentent-ils ?",
+          "message": "Où les coûts augmentent-ils ? Montrez-moi quels agents ou équipes provoquent la hausse."
+        },
+        "breakdown": {
+          "label": "Afficher la répartition des coûts par équipe",
+          "message": "Décomposez les coûts par équipe pour ce mois-ci. Comment cela se compare-t-il au mois dernier ?"
+        },
+        "unusual": {
+          "label": "Signaler les dépenses inhabituelles",
+          "message": "Signalez toute dépense inhabituelle ou inattendue. Y a-t-il des pics de coûts que je devrais examiner ?"
+        },
+        "reduce": {
+          "label": "Comment puis-je réduire les coûts ?",
+          "message": "Analysez mon utilisation actuelle des agents et suggérez des moyens de réduire les coûts sans affecter les performances."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Y a-t-il de nouvelles violations de politique ?",
+          "message": "Y a-t-il de nouvelles violations de politique depuis ma dernière vérification ? Résumez la gravité et les agents concernés."
+        },
+        "compliance": {
+          "label": "Afficher le résumé de conformité",
+          "message": "Donnez-moi un résumé global de la conformité — combien de règles sont respectées, enfreintes ou nécessitent une attention ?"
+        },
+        "unresolved": {
+          "label": "Lister les violations non résolues",
+          "message": "Listez toutes les violations non résolues triées par gravité. Lesquelles devrais-je prioriser ?"
+        },
+        "rules": {
+          "label": "Examiner les règles de gouvernance",
+          "message": "Présentez-moi les règles de gouvernance actives. Y en a-t-il qui ne se sont pas déclenchées récemment ?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "Comment ajouter un nouveau membre d'équipe ?",
+          "message": "Guidez-moi pour ajouter un nouveau membre d'équipe et configurer ses permissions."
+        },
+        "integrations": {
+          "label": "Quelles intégrations sont disponibles ?",
+          "message": "Quelles intégrations sont disponibles pour se connecter à des outils et services externes ?"
+        },
+        "notifications": {
+          "label": "Vérifier les paramètres de notification",
+          "message": "Montrez-moi mes paramètres de notification actuels. Est-ce que je manque des alertes importantes ?"
+        },
+        "configure": {
+          "label": "Aidez-moi à configurer un agent",
+          "message": "Aidez-moi à configurer un nouvel agent — quels paramètres et réglages dois-je considérer ?"
+        }
+      }
+    }
   }
 }

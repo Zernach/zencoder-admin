@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { usePathname, useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import {
   X,
   ArrowLeft,
@@ -58,6 +59,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
 }: MiniChatModalProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useTranslation();
   const { chatService } = useAppDependencies();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -91,7 +93,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
     setSelectedTopics([]);
   }, []);
 
-  const suggestedPrompts = useMemo(() => getSuggestedPrompts(tab), [tab]);
+  const suggestedPrompts = useMemo(() => getSuggestedPrompts(tab, t), [tab, t]);
 
   const doSend = useCallback(
     (text: string) => {
@@ -199,7 +201,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
             <CustomButton
               onPress={() => setView("compose")}
               style={styles.headerIconBtn}
-              accessibilityLabel="Back to new chat"
+              accessibilityLabel={t("chat.backToNewChat")}
               testID="mini-chat-back"
             >
               <ArrowLeft size={18} color={theme.text.secondary} />
@@ -208,21 +210,21 @@ export const MiniChatModal = React.memo(function MiniChatModal({
             <CustomButton
               onPress={() => setView("history")}
               style={styles.headerIconBtn}
-              accessibilityLabel="View chat history"
+              accessibilityLabel={t("chat.viewChatHistory")}
               testID="mini-chat-history-btn"
             >
               <History size={18} color={theme.text.secondary} />
             </CustomButton>
           )}
           <Text style={[styles.headerTitle, { color: theme.text.primary }]}>
-            {view === "compose" ? "New Chat" : "Chat History"}
+            {view === "compose" ? t("chat.newChat") : t("chat.chatHistory")}
           </Text>
         </View>
         <View style={styles.headerRight}>
           <CustomButton
             onPress={handleExpandToFull}
             style={styles.headerIconBtn}
-            accessibilityLabel="Open full chat"
+            accessibilityLabel={t("chat.openFullChat")}
             testID="mini-chat-expand"
           >
             <ExternalLink size={16} color={theme.text.tertiary} />
@@ -230,7 +232,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
           <CustomButton
             onPress={onClose}
             style={styles.headerIconBtn}
-            accessibilityLabel="Close chat"
+            accessibilityLabel={t("chat.closeChat")}
             testID="mini-chat-close"
           >
             <X size={18} color={theme.text.secondary} />
@@ -265,7 +267,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
                         { color: theme.text.primary },
                       ]}
                     >
-                      {getWelcomeTitle()}
+                      {getWelcomeTitle(t)}
                     </Text>
                   </View>
                   <Text
@@ -274,7 +276,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
                       { color: theme.text.secondary },
                     ]}
                   >
-                    {getWelcomeSubtitle(tab)}
+                    {getWelcomeSubtitle(tab, t)}
                   </Text>
                 </View>
 
@@ -285,7 +287,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
                       { color: theme.text.tertiary },
                     ]}
                   >
-                    Suggested
+                    {t("chat.suggested")}
                   </Text>
                   <View style={styles.suggestionsGrid}>
                     {suggestedPrompts.map((prompt) => (
@@ -379,7 +381,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
                             { color: theme.text.secondary },
                           ]}
                         >
-                          Thinking...
+                          {t("chat.thinking")}
                         </Text>
                       </View>
                     </View>
@@ -400,8 +402,8 @@ export const MiniChatModal = React.memo(function MiniChatModal({
               <CustomTextInput
                 value={draft}
                 onChangeText={setDraft}
-                placeholder="Type a message..."
-                accessibilityLabel="Chat message input"
+                placeholder={t("chat.typeMessage")}
+                accessibilityLabel={t("chat.messageInput")}
                 multiline
                 containerStyle={styles.composerInputContainer}
                 inputContainerStyle={styles.composerInputInner}
@@ -418,7 +420,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
                         : theme.bg.subtle,
                   },
                 ]}
-                accessibilityLabel="Send message"
+                accessibilityLabel={t("chat.sendMessage")}
                 testID="mini-chat-send"
                 disabled={draft.trim().length === 0 || sending}
               >
@@ -460,8 +462,8 @@ export const MiniChatModal = React.memo(function MiniChatModal({
               style={[styles.emptyText, { color: theme.text.secondary }]}
             >
               {selectedTopics.length === 0
-                ? "No conversations yet."
-                : "No conversations match the selected topics."}
+                ? t("chat.noConversationsYet")
+                : t("chat.noConversationsMatchTopics")}
             </Text>
           ) : null}
 
@@ -476,7 +478,7 @@ export const MiniChatModal = React.memo(function MiniChatModal({
                   backgroundColor: theme.bg.canvas,
                 },
               ]}
-              accessibilityLabel={`Open chat ${item.title}`}
+              accessibilityLabel={t("chat.openChat", { title: item.title })}
             >
               <Text
                 style={[

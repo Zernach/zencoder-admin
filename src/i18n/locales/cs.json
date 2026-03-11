@@ -39,7 +39,7 @@
     "agents": "Agenti",
     "costs": "Náklady",
     "governance": "Správa",
-    "settings": "Nastavení",
+    "settings": "Chat",
     "collapseSidebar": "Sbalit postranní panel",
     "expandSidebar": "Rozbalit postranní panel",
     "subsectionsLabel": "Podsekce {{label}}",
@@ -49,14 +49,14 @@
       "outcomes": "Výsledky",
       "keyMetrics": "Klíčové metriky",
       "reliability": "Spolehlivost",
-      "agentPerformance": "Rozložení agentů",
-      "projectBreakdown": "Rozložení projektů",
-      "recentRuns": "Nedávná spuštění",
-      "costSummary": "Finanční investice",
+      "agentPerformance": "Agenti",
+      "projectBreakdown": "Projekty",
+      "recentRuns": "Spuštění",
+      "costSummary": "Náklady na tým",
       "costByProvider": "Náklady dle poskytovatele",
       "budgetForecast": "Předpověď rozpočtu",
       "overview": "Přehled",
-      "teamPerformance": "Výkonnost týmů",
+      "teamPerformance": "Týmy",
       "seatUserOversight": "Uživatelé",
       "recentViolations": "Nedávná porušení",
       "securityEvents": "Bezpečnostní události",
@@ -105,7 +105,7 @@
       },
       "emptySubtitle": "Nové živé relace se zobrazí automaticky, jakmile inženýři zahájí spuštění."
     },
-    "title": "Admin Home"
+    "title": "Hlavní panel"
   },
   "agents": {
     "subtitle": "Inteligentní Automatizace Pracovních Toků",
@@ -157,7 +157,7 @@
   "costs": {
     "subtitle": "Trendy výdajů a sledování rozpočtu",
     "subtitleWithData": "{{totalCost}} utraceno v {{projectCount}} projektech",
-    "costSummary": "Finanční investice",
+    "costSummary": "Náklady na tým",
     "totalCost": "Celkové náklady",
     "avgPerRun": "Průměrné náklady na spuštění",
     "costPerSuccess": "Průměrné náklady na úspěšné spuštění",
@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Něco se pokazilo. Zkuste to prosím znovu.",
     "failedToLoad": "Nepodařilo se načíst data."
+  },
+  "chat": {
+    "newChat": "Nový chat",
+    "startConversation": "Zahájit konverzaci",
+    "askAnything": "Zeptejte se na cokoliv...",
+    "messageInput": "Pole pro zadání zprávy",
+    "sendMessage": "Odeslat zprávu",
+    "suggestedQuestions": "Navrhované otázky",
+    "suggested": "Navrhované",
+    "chatHistory": "Historie chatů",
+    "backToNewChat": "Zpět na nový chat",
+    "viewChatHistory": "Zobrazit historii chatů",
+    "openFullChat": "Otevřít celý chat",
+    "closeChat": "Zavřít chat",
+    "thinking": "Přemýšlím...",
+    "typeMessage": "Napište zprávu...",
+    "noConversationsYet": "Zatím žádné konverzace.",
+    "noConversationsMatchTopics": "Žádné konverzace neodpovídají vybraným tématům.",
+    "openChat": "Otevřít chat {{title}}",
+    "welcomeTitle": "Ahoj! S čím vám mohu pomoci?",
+    "welcomeSubtitle": {
+      "dashboard": "Zeptejte se na výkon agentů, trendy aktivity nebo získejte rychlý přehled.",
+      "agents": "Prozkoumejte zdraví agentů, porovnejte výkon nebo řešte problémy.",
+      "costs": "Prozkoumejte vzorce výdajů, najděte úspory nebo vyšetřete skoky nákladů.",
+      "governance": "Zkontrolujte stav shody, prohlédněte porušení nebo proveďte audit politik.",
+      "settings": "Získejte pomoc s agenty, náklady, správou nebo podporou."
+    },
+    "topics": {
+      "agents": {
+        "label": "Které kategorie selhání rostou a vyžadují pozornost?",
+        "message": "Seskupte selhání podle rodiny modelů a ukažte, které kategorie rostou týden po týdnu. Které vyžadují prioritní pozornost?"
+      },
+      "costs": {
+        "label": "Co způsobuje růst nákladů a jak je omezit?",
+        "message": "Náklady nedávno vzrostly. Co se změnilo podle projektů a modelů? Jak je omezit bez zhoršení kvality odpovědí?"
+      },
+      "governance": {
+        "label": "Shrnutí porušení podle závažnosti — co prioritizovat?",
+        "message": "Rozdělte porušení podle třídy politik a označte ta, která se zrychlují. Co bych měl prioritizovat?"
+      },
+      "support": {
+        "label": "Pomozte připravit kontrolní seznam pro nasazení nebo komunikaci s týmem",
+        "message": "Pomozte mi připravit kontrolní seznam pro nasazení nebo sestavit sdělení pro uživatele o nadcházející změně."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "Jak si vedou moji agenti tento týden?",
+          "message": "Jak si vedou moji agenti tento týden? Shrňte míru úspěšnosti, trendy chyb a vynikající agenty."
+        },
+        "activity": {
+          "label": "Ukažte mi dnešní souhrn aktivity",
+          "message": "Dejte mi souhrn dnešní aktivity agentů — spuštění, dokončení, selhání a cokoli neobvyklého."
+        },
+        "teams": {
+          "label": "Které týmy jsou nejaktivnější?",
+          "message": "Které týmy byly v poslední době nejaktivnější? Ukažte mi rozložení využití agentů podle týmů."
+        },
+        "issues": {
+          "label": "Jsou nějaké problémy, o kterých bych měl vědět?",
+          "message": "Jsou nějaké problémy nebo anomálie, o kterých bych měl vědět? Označte chyby, skoky nebo porušení politik."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Kteří agenti mají nejvíce chyb?",
+          "message": "Kteří agenti mají právě teď nejvyšší míru chyb? Vyjmenujte je s počtem selhání a nedávnými trendy."
+        },
+        "compare": {
+          "label": "Porovnejte nejlepší agenty podle úspěšnosti",
+          "message": "Porovnejte mé nejlepší agenty podle míry úspěšnosti tento měsíc. Ukažte žebříčky a významné změny."
+        },
+        "inactive": {
+          "label": "Seznam neaktivních agentů",
+          "message": "Vyjmenujte agenty, kteří neměli žádná spuštění za posledních 7 dní. Měli by být některé z nich aktivní?"
+        },
+        "history": {
+          "label": "Vysvětlete nedávnou historii spuštění agenta",
+          "message": "Vyberte agenta s nejzajímavější nedávnou aktivitou a proveďte mě jeho historií spuštění."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Kde náklady rostou?",
+          "message": "Kde náklady vykazují rostoucí trend? Ukažte, kteří agenti nebo týmy způsobují nárůst."
+        },
+        "breakdown": {
+          "label": "Ukažte rozložení nákladů podle týmů",
+          "message": "Rozdělte náklady podle týmů za tento měsíc. Jak to vypadá ve srovnání s minulým měsícem?"
+        },
+        "unusual": {
+          "label": "Označte neobvyklé výdaje",
+          "message": "Označte neobvyklé nebo neočekávané vzorce výdajů. Jsou nějaké skoky nákladů, které by stálo za to prozkoumat?"
+        },
+        "reduce": {
+          "label": "Jak mohu snížit náklady?",
+          "message": "Analyzujte mé aktuální využití agentů a navrhněte způsoby, jak snížit náklady bez dopadu na výkon."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Jsou nějaká nová porušení politik?",
+          "message": "Jsou nějaká nová porušení politik od mé poslední kontroly? Shrňte závažnost a dotčené agenty."
+        },
+        "compliance": {
+          "label": "Ukažte souhrn shody",
+          "message": "Dejte mi celkový souhrn shody — kolik pravidel prochází, neprochází nebo vyžaduje pozornost?"
+        },
+        "unresolved": {
+          "label": "Seznam nevyřešených porušení",
+          "message": "Vyjmenujte všechna nevyřešená porušení seřazená podle závažnosti. Která bych měl prioritizovat?"
+        },
+        "rules": {
+          "label": "Prohlédněte pravidla správy",
+          "message": "Proveďte mě aktivními pravidly správy. Jsou nějaká, která se v poslední době neaktivovala?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "Jak přidám nového člena týmu?",
+          "message": "Proveďte mě přidáním nového člena týmu a nastavením jeho oprávnění."
+        },
+        "integrations": {
+          "label": "Jaké integrace jsou k dispozici?",
+          "message": "Jaké integrace jsou k dispozici pro připojení k externím nástrojům a službám?"
+        },
+        "notifications": {
+          "label": "Zkontrolujte nastavení oznámení",
+          "message": "Ukažte mi moje aktuální nastavení oznámení. Nepřicházím o důležitá upozornění?"
+        },
+        "configure": {
+          "label": "Pomozte mi nakonfigurovat agenta",
+          "message": "Pomozte mi nakonfigurovat nového agenta — jaká nastavení a parametry bych měl zvážit?"
+        }
+      }
+    }
   }
 }

@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { View, Text, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Sparkles, Send } from "lucide-react-native";
 import Animated, {
   useAnimatedKeyboard,
@@ -18,9 +19,11 @@ import { semanticThemes } from "@/theme/themes";
 import { borderWidth, radius, spacing } from "@/theme/tokens";
 import {
   getSuggestedPrompts,
+  getSuggestedPromptsFromTopics,
   getWelcomeTitle,
   getWelcomeSubtitle,
 } from "@/features/chat/constants/suggestedPrompts";
+import { useChatHistory } from "@/features/chat/hooks";
 
 interface CreateChatScreenProps {
   tab: TABS;
@@ -28,6 +31,7 @@ interface CreateChatScreenProps {
 
 export function CreateChatScreen({ tab }: CreateChatScreenProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const { chatService } = useAppDependencies();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -35,7 +39,11 @@ export function CreateChatScreen({ tab }: CreateChatScreenProps) {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const suggestedPrompts = useMemo(() => getSuggestedPrompts(tab), [tab]);
+  const { data: chatHistory } = useChatHistory(tab, { scope: "tab" });
+  const suggestedPrompts = useMemo(() => {
+    const topics = [...new Set((chatHistory?.items ?? []).flatMap((item) => item.topics))];
+    return topics.length > 0 ? getSuggestedPromptsFromTopics(topics, t) : getSuggestedPrompts(tab, t);
+  }, [tab, chatHistory?.items, t]);
   const canSubmit = message.trim().length > 0 && !submitting;
 
   const submitMessage = useCallback(
@@ -95,8 +103,8 @@ export function CreateChatScreen({ tab }: CreateChatScreenProps) {
         <CustomTextInput
           value={message}
           onChangeText={setMessage}
-          placeholder="Ask anything..."
-          accessibilityLabel="Chat message input"
+          placeholder={t("chat.askAnything")}
+          accessibilityLabel={t("chat.messageInput")}
           multiline
           containerStyle={styles.composerInputContainer}
           inputContainerStyle={styles.composerInputInner}
@@ -112,7 +120,7 @@ export function CreateChatScreen({ tab }: CreateChatScreenProps) {
                 : theme.bg.subtle,
             },
           ]}
-          accessibilityLabel="Send message"
+          accessibilityLabel={t("chat.sendMessage")}
           disabled={!canSubmit}
         >
           <Send
@@ -128,8 +136,8 @@ export function CreateChatScreen({ tab }: CreateChatScreenProps) {
     <ScreenWrapper
       showTopBar={false}
       headerProps={{
-        title: "New Chat",
-        subtitle: "Start a conversation",
+        title: t("chat.newChat"),
+        subtitle: t("chat.startConversation"),
         isLoading: submitting,
       }}
       showFilterBar={false}
@@ -159,12 +167,12 @@ export function CreateChatScreen({ tab }: CreateChatScreenProps) {
               <Text
                 style={[styles.welcomeTitle, { color: theme.text.primary }]}
               >
-                {getWelcomeTitle()}
+                {getWelcomeTitle(t)}
               </Text>
               <Text
                 style={[styles.welcomeSubtitle, { color: theme.text.secondary }]}
               >
-                {getWelcomeSubtitle(tab)}
+                {getWelcomeSubtitle(tab, t)}
               </Text>
             </View>
           </View>
@@ -175,7 +183,7 @@ export function CreateChatScreen({ tab }: CreateChatScreenProps) {
           <Text
             style={[styles.suggestionsLabel, { color: theme.text.tertiary }]}
           >
-            Suggested questions
+            {t("chat.suggestedQuestions")}
           </Text>
           <View style={styles.suggestionsGrid}>
             {suggestedPrompts.map((prompt) => (

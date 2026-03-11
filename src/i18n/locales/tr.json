@@ -39,7 +39,7 @@
     "agents": "Ajanlar",
     "costs": "Maliyetler",
     "governance": "Yönetişim",
-    "settings": "Ayarlar",
+    "settings": "Sohbet",
     "collapseSidebar": "Kenar çubuğunu daralt",
     "expandSidebar": "Kenar çubuğunu genişlet",
     "subsectionsLabel": "{{label}} alt bölümleri",
@@ -49,14 +49,14 @@
       "outcomes": "Sonuçlar",
       "keyMetrics": "Temel göstergeler",
       "reliability": "Güvenilirlik",
-      "agentPerformance": "Ajan Dağılımı",
-      "projectBreakdown": "Proje Dağılımı",
-      "recentRuns": "Son Çalıştırmalar",
-      "costSummary": "Finansal Yatırımlar",
+      "agentPerformance": "Ajanlar",
+      "projectBreakdown": "Projeler",
+      "recentRuns": "Çalıştırmalar",
+      "costSummary": "Takım Başına Maliyet",
       "costByProvider": "Sağlayıcıya Göre Maliyet",
       "budgetForecast": "Bütçe Tahmini",
       "overview": "Genel Bakış",
-      "teamPerformance": "Takım Performansı",
+      "teamPerformance": "Takımlar",
       "seatUserOversight": "Kullanıcılar",
       "recentViolations": "Son İhlaller",
       "securityEvents": "Güvenlik Olayları",
@@ -105,7 +105,7 @@
       },
       "emptySubtitle": "Mühendisler çalıştırma başlattığında yeni canlı oturumlar otomatik olarak görünecektir."
     },
-    "title": "Admin Home"
+    "title": "Yönetici Ana Sayfa"
   },
   "agents": {
     "subtitle": "Akıllı İş Akışı Otomasyonları",
@@ -157,7 +157,7 @@
   "costs": {
     "subtitle": "Harcama trendleri ve bütçe takibi",
     "subtitleWithData": "{{projectCount}} projede {{totalCost}} harcandı",
-    "costSummary": "Finansal Yatırımlar",
+    "costSummary": "Takım Başına Maliyet",
     "totalCost": "Toplam Maliyet",
     "avgPerRun": "Çalıştırma Başına Ortalama Maliyet",
     "costPerSuccess": "Başarılı Çalıştırma Başına Ortalama Maliyet",
@@ -438,5 +438,142 @@
   "errors": {
     "somethingWentWrong": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
     "failedToLoad": "Veri yüklenemedi."
+  },
+  "chat": {
+    "newChat": "Yeni Sohbet",
+    "startConversation": "Bir sohbet başlat",
+    "askAnything": "Herhangi bir şey sor...",
+    "messageInput": "Sohbet mesajı girişi",
+    "sendMessage": "Mesaj gönder",
+    "suggestedQuestions": "Önerilen sorular",
+    "suggested": "Önerilen",
+    "chatHistory": "Sohbet Geçmişi",
+    "backToNewChat": "Yeni sohbete dön",
+    "viewChatHistory": "Sohbet geçmişini görüntüle",
+    "openFullChat": "Tam sohbeti aç",
+    "closeChat": "Sohbeti kapat",
+    "thinking": "Düşünüyor...",
+    "typeMessage": "Bir mesaj yazın...",
+    "noConversationsYet": "Henüz sohbet yok.",
+    "noConversationsMatchTopics": "Seçilen konularla eşleşen sohbet yok.",
+    "openChat": "Sohbeti aç {{title}}",
+    "welcomeTitle": "Merhaba! Size nasıl yardımcı olabilirim?",
+    "welcomeSubtitle": {
+      "dashboard": "Ajan performansı, aktivite trendleri hakkında sorun veya hızlı bir durum kontrolü alın.",
+      "agents": "Ajan sağlığını inceleyin, performansları karşılaştırın veya sorunları giderin.",
+      "costs": "Harcama kalıplarını keşfedin, tasarruf fırsatları bulun veya maliyet artışlarını araştırın.",
+      "governance": "Uyumluluk durumunu kontrol edin, ihlalleri gözden geçirin veya politikalarınızı denetleyin.",
+      "settings": "Ajanlar, maliyetler, yönetişim veya destek konusunda yardım alın."
+    },
+    "topics": {
+      "agents": {
+        "label": "Hangi hata kategorileri artış eğiliminde ve önceliklendirme gerektiriyor?",
+        "message": "Hataları model ailesine göre grupla ve haftadan haftaya hangi kategorilerin artış eğiliminde olduğunu göster. Hangilerinin önceliklendirilmesi gerekiyor?"
+      },
+      "costs": {
+        "label": "Maliyet artışlarının nedeni ne ve nasıl kontrol altına alabiliriz?",
+        "message": "Maliyetler son zamanlarda arttı. Proje ve modele göre ne değişti? Yanıt kalitesini bozmadan bunu nasıl kontrol altına alabiliriz?"
+      },
+      "governance": {
+        "label": "İhlalleri önem derecesine göre özetle — neyi önceliklendirmeliyim?",
+        "message": "İhlalleri politika sınıfına göre ayır ve hızlanan herhangi bir şeyi işaretle. İlk önce neyi önceliklendirmeliyim?"
+      },
+      "support": {
+        "label": "Lansman kontrol listesi veya ekip iletişimi hazırlamama yardım et",
+        "message": "Bir lansman kontrol listesi hazırlamama veya yaklaşan bir değişiklik için kullanıcıya yönelik iletişim taslağı oluşturmama yardım et."
+      }
+    },
+    "prompts": {
+      "dashboard": {
+        "performance": {
+          "label": "Ajanlarım bu hafta nasıl performans gösteriyor?",
+          "message": "Ajanlarım bu hafta nasıl performans gösteriyor? Başarı oranlarını, hata trendlerini ve öne çıkan ajanları özetle."
+        },
+        "activity": {
+          "label": "Bugünün aktivite özetini göster",
+          "message": "Bugünün ajan aktivitesinin özetini ver — çalıştırmalar, tamamlanmalar, hatalar ve olağandışı durumlar."
+        },
+        "teams": {
+          "label": "Hangi takımlar en aktif?",
+          "message": "Son zamanlarda hangi takımlar en aktif? Takıma göre ajan kullanımının dağılımını göster."
+        },
+        "issues": {
+          "label": "Bilmem gereken bir sorun var mı?",
+          "message": "Farkında olmam gereken sorunlar veya anomaliler var mı? Hataları, ani artışları veya politika ihlallerini işaretle."
+        }
+      },
+      "agents": {
+        "errors": {
+          "label": "Hangi ajanlarda en çok hata var?",
+          "message": "Şu anda en yüksek hata oranlarına sahip ajanlar hangileri? Hata sayıları ve son trendlerle listele."
+        },
+        "compare": {
+          "label": "En iyi ajanları başarı oranına göre karşılaştır",
+          "message": "Bu ay en iyi ajanlarımı başarı oranına göre karşılaştır. Sıralamaları ve dikkat çekici değişiklikleri göster."
+        },
+        "inactive": {
+          "label": "Etkin olmayan ajanları listele",
+          "message": "Son 7 gün içinde hiç çalıştırma yapmamış ajanları listele. Bunlardan herhangi birinin aktif olması gerekiyor muydu?"
+        },
+        "history": {
+          "label": "Bir ajanın son çalıştırma geçmişini açıkla",
+          "message": "En ilginç son aktiviteye sahip ajanı seç ve çalıştırma geçmişini bana anlat."
+        }
+      },
+      "costs": {
+        "trending": {
+          "label": "Maliyetler nerede artış eğiliminde?",
+          "message": "Maliyetler nerede artış eğiliminde? Artışı hangi ajanların veya takımların yönlendirdiğini göster."
+        },
+        "breakdown": {
+          "label": "Takıma göre maliyet dağılımını göster",
+          "message": "Bu ay için takıma göre maliyetleri ayır. Geçen ayla nasıl karşılaştırılıyor?"
+        },
+        "unusual": {
+          "label": "Olağandışı harcamaları işaretle",
+          "message": "Olağandışı veya beklenmeyen harcama kalıplarını işaretle. Araştırmam gereken maliyet artışları var mı?"
+        },
+        "reduce": {
+          "label": "Maliyetleri nasıl azaltabilirim?",
+          "message": "Mevcut ajan kullanımımı analiz et ve performansı etkilemeden maliyetleri azaltmanın yollarını öner."
+        }
+      },
+      "governance": {
+        "violations": {
+          "label": "Yeni politika ihlalleri var mı?",
+          "message": "Son incelememden bu yana yeni politika ihlalleri var mı? Önem derecesini ve etkilenen ajanları özetle."
+        },
+        "compliance": {
+          "label": "Uyumluluk özetini göster",
+          "message": "Genel bir uyumluluk özeti ver — kaç kural başarılı, başarısız veya dikkat gerektiriyor?"
+        },
+        "unresolved": {
+          "label": "Çözülmemiş ihlalleri listele",
+          "message": "Tüm çözülmemiş ihlalleri önem derecesine göre sıralı olarak listele. Hangilerini önceliklendirmeliyim?"
+        },
+        "rules": {
+          "label": "Yönetişim kurallarını gözden geçir",
+          "message": "Aktif yönetişim kurallarını bana anlat. Son zamanlarda tetiklenmemiş olan var mı?"
+        }
+      },
+      "settings": {
+        "addMember": {
+          "label": "Yeni bir takım üyesi nasıl eklerim?",
+          "message": "Yeni bir takım üyesi ekleme ve izinlerini ayarlama sürecinde bana rehberlik et."
+        },
+        "integrations": {
+          "label": "Hangi entegrasyonlar mevcut?",
+          "message": "Harici araçlara ve hizmetlere bağlanmak için hangi entegrasyonlar mevcut?"
+        },
+        "notifications": {
+          "label": "Bildirim ayarlarını gözden geçir",
+          "message": "Mevcut bildirim ayarlarımı göster. Önemli uyarıları kaçırıyor muyum?"
+        },
+        "configure": {
+          "label": "Bir ajan yapılandırmama yardım et",
+          "message": "Yeni bir ajan yapılandırmama yardım et — hangi ayarları ve parametreleri göz önünde bulundurmalıyım?"
+        }
+      }
+    }
   }
 }
