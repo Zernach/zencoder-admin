@@ -48,14 +48,12 @@ export const BottomTabs = React.memo(function BottomTabs() {
   const handleTabPress = useCallback(
     (tab: TABS, route: NavRoute, active: boolean) => {
       if (active) {
-        if (pathnameRef.current !== route) {
+        // Already at tab root — no-op. Dashboard has two root paths: "/" and "/dashboard".
+        const atRoot = pathnameRef.current === route
+          || (route === ROUTES.ROOT && pathnameRef.current === ROUTES.DASHBOARD);
+        if (!atRoot) {
           router.navigate(route as never);
         }
-        return;
-      }
-
-      if (route === ROUTES.ROOT) {
-        router.navigate(route as never);
         return;
       }
 

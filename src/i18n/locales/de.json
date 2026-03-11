@@ -62,7 +62,9 @@
       "preferences": "Einstellungen",
       "internationalization": "Internationalisierung",
       "organization": "Organisation",
-      "dangerZone": "Gefahrenzone"
+      "dangerZone": "Gefahrenzone",
+      "costPerProject": "Cost per Project",
+      "violations": "Violations"
     }
   },
   "dashboard": {
@@ -145,7 +147,8 @@
       "duration": "Dauer",
       "tokens": "Token",
       "provider": "Anbieter"
-    }
+    },
+    "reliabilitySubtitle": "Observability & Analytics"
   },
   "costs": {
     "subtitle": "Ausgabentrends und Budgetverfolgung",

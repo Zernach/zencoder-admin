@@ -20,6 +20,7 @@ import type { LiveAgentSession } from "@/features/analytics/types";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { buildEntityRoute, TABS } from "@/constants/routes";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
+import { useSectionRef } from "@/hooks/useRegisterSection";
 
 const styles = sectionStyles;
 
@@ -43,6 +44,7 @@ export default function OverviewDashboardScreen() {
   const filteredSessions = useSearchFilter(liveSessions, SESSION_SEARCH_KEYS);
   const router = useRouter();
   const { formatCurrency } = useCurrencyFormatter();
+  const refFor = useSectionRef();
 
   const handleKpiPress = useCallback(
     (route: string) => {
@@ -95,16 +97,18 @@ export default function OverviewDashboardScreen() {
 
   return (
     <ScreenWrapper headerProps={headerProps}>
-      <LiveAssistantsSection
-        sessions={filteredSessions}
-        loading={liveLoading}
-        error={liveError}
-        onRetry={refetchLiveSessions}
-        onCardPress={handleLiveCardPress}
-      />
+      <View ref={refFor("live-assistants")} nativeID="live-assistants">
+        <LiveAssistantsSection
+          sessions={filteredSessions}
+          loading={liveLoading}
+          error={liveError}
+          onRetry={refetchLiveSessions}
+          onCardPress={handleLiveCardPress}
+        />
+      </View>
 
       {/* Section 1 -- Trends */}
-      <View style={styles.section}>
+      <View ref={refFor("trends")} nativeID="trends" style={styles.section}>
         <SectionHeader title={t("dashboard.trends")} />
         <CustomList scrollViewProps={trendScrollProps}>
           <ChartCard title={t("dashboard.runsOverTime")} loading={loading} style={trendCardStyle}>
@@ -129,7 +133,7 @@ export default function OverviewDashboardScreen() {
 
       {/* Section 3 -- Outcomes */}
       {data && data.outcomesKpis.length > 0 && (
-        <View style={styles.section}>
+        <View ref={refFor("outcomes")} nativeID="outcomes" style={styles.section}>
           <SectionHeader title={t("dashboard.outcomes")} subtitle={t("dashboard.outcomesSubtitle")} />
           <CardGrid columns={3}>
             {data.outcomesKpis.map((kpi) => (
@@ -151,7 +155,7 @@ export default function OverviewDashboardScreen() {
 
       {/* Section 4 -- Anomalies */}
       {data && data.anomalies.length > 0 && (
-        <View style={styles.section}>
+        <View ref={refFor("key-metrics")} nativeID="key-metrics" style={styles.section}>
           <SectionHeader title={t("dashboard.keyMetrics")} subtitle={t("dashboard.keyMetricsSubtitle")} />
           {loading ? (
             <CardGrid columns={4}>

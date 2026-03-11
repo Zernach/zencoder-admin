@@ -62,6 +62,7 @@ const ENTITY_SEGMENTS: Record<SearchEntityType, string> = {
   human: "human",
   run: "run",
   rule: "rule",
+  chat: "chat",
 };
 
 const TAB_SET = new Set<string>(TAB_ORDER);
@@ -105,4 +106,53 @@ export function buildEntityRoute(
   entityId: string,
 ): string {
   return `${getRouteForTab(tab)}/${ENTITY_SEGMENTS[entityType]}/${encodeURIComponent(entityId)}`;
+}
+
+function buildChatBaseRoute(tab: TABS): string {
+  return `${getRouteForTab(tab)}/chat`;
+}
+
+export function buildChatHistoryRoute(
+  tab: TABS,
+  options?: { topics?: readonly string[] },
+): string {
+  const base = `${buildChatBaseRoute(tab)}/history`;
+  if (options?.topics && options.topics.length > 0) {
+    return `${base}?topics=${encodeURIComponent(options.topics.join(","))}`;
+  }
+  return base;
+}
+
+export function buildCreateChatRoute(tab: TABS): string {
+  return `${buildChatBaseRoute(tab)}/create`;
+}
+
+export function buildChatThreadRoute(tab: TABS, chatId: string): string {
+  return `${buildChatHistoryRoute(tab)}/${encodeURIComponent(chatId)}`;
+}
+
+function getPathSegments(pathname: string): string[] {
+  return pathname.split("/").filter((segment) => segment.length > 0);
+}
+
+export function isChatRoute(pathname: string): boolean {
+  const segments = getPathSegments(pathname);
+  const tabSegment = segments[0];
+  const routeSegment = segments[1];
+
+  return (
+    tabSegment != null
+    && isTab(tabSegment)
+    && routeSegment === "chat"
+    && segments.length >= 3
+  );
+}
+
+export function isChatThreadRoute(pathname: string): boolean {
+  if (!isChatRoute(pathname)) {
+    return false;
+  }
+
+  const segments = getPathSegments(pathname);
+  return segments.length === 4 && segments[2] === "history";
 }

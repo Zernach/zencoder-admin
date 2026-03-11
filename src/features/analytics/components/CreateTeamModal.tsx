@@ -27,7 +27,7 @@ export const CreateTeamModal = React.memo(function CreateTeamModal() {
       onClose={handleClose}
       accessibilityLabel="Close create team form"
     >
-      <CreateTeamForm onSubmit={handleSubmit} loading={loading} error={error} />
+      <CreateTeamForm onSubmit={handleSubmit} onCancel={handleClose} loading={loading} error={error} />
     </CustomModal>
   );
 });

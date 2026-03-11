@@ -62,7 +62,9 @@
       "preferences": "Подешавања",
       "internationalization": "Интернационализација",
       "organization": "Организација",
-      "dangerZone": "Опасна зона"
+      "dangerZone": "Опасна зона",
+      "costPerProject": "Cost per Project",
+      "violations": "Violations"
     }
   },
   "dashboard": {
@@ -145,7 +147,8 @@
       "duration": "Трајање",
       "tokens": "Токени",
       "provider": "Провајдер"
-    }
+    },
+    "reliabilitySubtitle": "Observability & Analytics"
   },
   "costs": {
     "subtitle": "Трендови потрошње и праћење буџета",

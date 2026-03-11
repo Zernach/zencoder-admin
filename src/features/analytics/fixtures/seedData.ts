@@ -215,6 +215,54 @@ export function generateSeedData(seed: number = 42): SeedData {
     }
   }
 
+  // ── User Activity Metadata ──────────────────────────
+  // Use a separate RNG so the main seed sequence is not disturbed.
+  // Stagger onboarding and vary daily activity probability so that
+  // the Active Users trend charts show realistic growth curves.
+  const activityRng = mulberry32(seed * 3 + 137);
+  const userActivityMeta: { activationDay: number; dailyProb: number }[] = [];
+  for (let i = 0; i < users.length; i++) {
+    // Early adopters (first ~35%) join in the first 10 days;
+    // remaining users stagger through day 65.
+    const earlyAdopter = i < Math.floor(users.length * 0.35);
+    const activationDay = earlyAdopter
+      ? randInt(activityRng, 0, 8)
+      : randInt(activityRng, 5, 65);
+    // Power-law-ish distribution: few power users (~85%), many casual (~25-50%)
+    const raw = activityRng();
+    const dailyProb = 0.25 + 0.60 * (1 - raw * raw);
+    userActivityMeta.push({ activationDay, dailyProb });
+  }
+
+  // Pre-compute which users are active each day for realistic trends
+  const dailyActiveUserPool = new Map<number, User[]>();
+  for (let dayOffset = 89; dayOffset >= 0; dayOffset--) {
+    const dayIndex = 89 - dayOffset;
+    const dayStart = new Date(REFERENCE_DATE.getTime() - dayOffset * DAY_MS);
+    const dayOfWeek = dayStart.getUTCDay();
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+    const pool: User[] = [];
+    for (let u = 0; u < users.length; u++) {
+      const meta = userActivityMeta[u]!;
+      if (meta.activationDay > dayIndex) continue;
+      let prob = meta.dailyProb;
+      if (isWeekend) prob *= 0.45;
+      if (activityRng() < prob) pool.push(users[u]!);
+    }
+    // Ensure minimum pool so there are always users to assign runs to
+    if (pool.length < 8) {
+      const eligible = users.filter(
+        (_, i) => userActivityMeta[i]!.activationDay <= dayIndex,
+      );
+      while (pool.length < 8 && eligible.length > pool.length) {
+        const candidate = pick(activityRng, eligible);
+        if (!pool.includes(candidate)) pool.push(candidate);
+      }
+    }
+    dailyActiveUserPool.set(dayOffset, pool);
+  }
+
   // ── Projects ──────────────────────────────────────────
   const projects: Project[] = [];
   for (let i = 0; i < 50; i++) {
@@ -394,7 +442,7 @@ export function generateSeedData(seed: number = 42): SeedData {
           ? new Date(startedAt.getTime() + durationMs).toISOString()
           : undefined;
 
-      const user = pick(rng, users);
+      const user = pick(rng, dailyActiveUserPool.get(dayOffset) ?? users);
       const agent = pick(rng, agents);
       const project = projects.find((p) => p.id === agent.projectId)!;
 

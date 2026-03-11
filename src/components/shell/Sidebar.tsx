@@ -13,21 +13,42 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
-import { useRouter, usePathname } from "expo-router";
+import { useRouter, usePathname, useNavigation } from "expo-router";
+import type { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { TabActions } from "@react-navigation/native";
 import { SidebarNavItem } from "./SidebarNavItem";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { isWeb } from "@/constants/platform";
-import { isRouteActive, type NavRoute } from "@/constants/routes";
+import { isRouteActive, ROUTES, type NavRoute, type TABS } from "@/constants/routes";
 import { TOP_NAV_ITEMS, hasSubsections, getSubsections } from "@/constants/navigation";
 import { SidebarSubsectionItem } from "./SidebarSubsectionItem";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { selectSidebarExpanded, toggleSidebar } from "@/store/slices/sidebarSlice";
 
+function findTabNavigator(
+  navigation: NavigationProp<ParamListBase>,
+  routeName: TABS,
+): NavigationProp<ParamListBase> | null {
+  let current: NavigationProp<ParamListBase> | undefined = navigation;
+
+  while (current) {
+    const state = current.getState();
+    if (state.type === "tab" && state.routeNames.includes(routeName)) {
+      return current;
+    }
+
+    current = current.getParent();
+  }
+
+  return null;
+}
+
 export const Sidebar = React.memo(function Sidebar() {
   const { t } = useTranslation();
   const router = useRouter();
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const expanded = useAppSelector(selectSidebarExpanded);
@@ -40,20 +61,32 @@ export const Sidebar = React.memo(function Sidebar() {
   pathnameRef.current = pathname;
   const routerRef = useRef(router);
   routerRef.current = router;
+  const navigationRef = useRef(navigation);
+  navigationRef.current = navigation;
 
   // Stable press handler cache — handlers reference refs so they never go stale
   const navPressHandlers = useRef(new Map<string, () => void>()).current;
   const subPressHandlers = useRef(new Map<string, () => void>()).current;
 
   const getNavPressHandler = useCallback(
-    (route: NavRoute) => {
+    (route: NavRoute, tab: TABS) => {
       let handler = navPressHandlers.get(route);
       if (!handler) {
         handler = () => {
           if (isRouteActive(pathnameRef.current, route)) {
-            if (pathnameRef.current !== route) {
+            // Active tab pressed — reset stack to root (no-op if already at root).
+            // Dashboard has two root paths: "/" and "/dashboard".
+            const atRoot = pathnameRef.current === route
+              || (route === ROUTES.ROOT && pathnameRef.current === ROUTES.DASHBOARD);
+            if (!atRoot) {
               routerRef.current.navigate(route as never);
             }
+            return;
+          }
+          // Inactive tab — jump without resetting its stack
+          const tabNav = findTabNavigator(navigationRef.current, tab);
+          if (tabNav) {
+            tabNav.dispatch(TabActions.jumpTo(tab));
             return;
           }
           routerRef.current.navigate(route as never);
@@ -158,7 +191,7 @@ export const Sidebar = React.memo(function Sidebar() {
                 route={item.route}
                 active={active}
                 expanded={expanded}
-                onPress={getNavPressHandler(item.route)}
+                onPress={getNavPressHandler(item.route, item.tab)}
               />
               {active && expanded && hasSubsections(item.route) && (
                 <View accessibilityRole="list" accessibilityLabel={t("navigation.subsectionsLabel", { label: t(item.label) })}>

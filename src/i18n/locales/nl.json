@@ -62,7 +62,9 @@
       "preferences": "Voorkeuren",
       "internationalization": "Internationalisatie",
       "organization": "Organisatie",
-      "dangerZone": "Gevarenzone"
+      "dangerZone": "Gevarenzone",
+      "costPerProject": "Cost per Project",
+      "violations": "Violations"
     }
   },
   "dashboard": {
@@ -145,7 +147,8 @@
       "duration": "Duur",
       "tokens": "Tokens",
       "provider": "Provider"
-    }
+    },
+    "reliabilitySubtitle": "Observability & Analytics"
   },
   "costs": {
     "subtitle": "Uitgavetrends en budgetbewaking",

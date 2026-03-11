@@ -1,15 +1,13 @@
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet } from "react-native";
-import { CustomButton } from "@/components/buttons";
 import { InputForm } from "@/components/forms";
 import type { InputFormItem } from "@/components/forms";
 import { useFormFields } from "@/hooks/useFormFields";
 import type { Severity } from "@/features/analytics/types";
-import { spacing } from "@/theme/tokens";
 
 interface CreateComplianceRuleFormProps {
   onSubmit: (values: { name: string; description: string; severity: Severity }) => void;
+  onCancel?: () => void;
   loading?: boolean;
 }
 
@@ -29,7 +27,7 @@ const INITIAL_FIELDS: FormFields = { name: "", description: "", severity: "MEDIU
 
 const SEVERITY_OPTIONS: Severity[] = ["HIGH", "MEDIUM", "LOW"];
 
-export function CreateComplianceRuleForm({ onSubmit, loading }: CreateComplianceRuleFormProps) {
+export function CreateComplianceRuleForm({ onSubmit, onCancel, loading }: CreateComplianceRuleFormProps) {
   const { t } = useTranslation();
 
   const validate = useCallback((fields: FormFields) => {
@@ -92,24 +90,11 @@ export function CreateComplianceRuleForm({ onSubmit, loading }: CreateCompliance
     <InputForm
       title={t("modals.createComplianceRuleTitle")}
       items={items}
-      footer={
-        <CustomButton
-          onPress={onPressSubmit}
-          style={styles.submitButton}
-          buttonMode="primary"
-          buttonSize="lg"
-          label={t("common.submit")}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.submit")}
-          disabled={loading}
-        />
-      }
+      onSubmit={onPressSubmit}
+      onCancel={onCancel}
+      submitLabel={t("common.submit")}
+      cancelLabel={t("common.cancel")}
+      submitDisabled={loading}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  submitButton: {
-    marginTop: spacing[4],
-  },
-});

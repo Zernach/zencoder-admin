@@ -10,6 +10,12 @@ jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
 // ─── Contract tests (from PR 0053) ──────────────────────
 
 describe("Sidebar Subsection Navigation — contract", () => {
+  it("dashboard subsections have matching nativeID anchors defined", () => {
+    const expectedIds = ["live-assistants", "trends", "outcomes", "key-metrics"];
+    const dashSubs = SUBSECTIONS[ROUTES.ROOT];
+    expect(dashSubs.map((s) => s.id)).toEqual(expectedIds);
+  });
+
   it("agents subsections have matching nativeID anchors defined", () => {
     const expectedIds = ["reliability", "agent-performance", "project-breakdown", "recent-runs"];
     const agentSubs = SUBSECTIONS[ROUTES.AGENTS];
@@ -30,16 +36,16 @@ describe("Sidebar Subsection Navigation — contract", () => {
       "seat-user-oversight",
       "rules",
       "recent-violations",
-      "security-events",
       "policy-changes",
+      "security-events",
     ]);
     expect(govSubs.map((s) => s.label)).toEqual([
       "navigation.subsections.teamPerformance",
       "navigation.subsections.seatUserOversight",
       "navigation.subsections.rules",
-      "navigation.subsections.recentViolations",
-      "navigation.subsections.securityEvents",
+      "navigation.subsections.violations",
       "navigation.subsections.policyChanges",
+      "navigation.subsections.securityEvents",
     ]);
   });
 
@@ -149,6 +155,7 @@ describe("SectionScrollContext — scroll dispatch", () => {
 
 describe("Sidebar subsection press → scrollToSection integration", () => {
   const SUBSECTION_ROUTES: { route: keyof typeof SUBSECTIONS; label: string }[] = [
+    { route: ROUTES.ROOT, label: "Dashboard" },
     { route: ROUTES.AGENTS, label: "Agents" },
     { route: ROUTES.COSTS, label: "Costs" },
     { route: ROUTES.GOVERNANCE, label: "Governance" },
@@ -198,9 +205,9 @@ describe("Governance subsection order and labels (strict)", () => {
     { id: "team-performance", label: "navigation.subsections.teamPerformance" },
     { id: "seat-user-oversight", label: "navigation.subsections.seatUserOversight" },
     { id: "rules", label: "navigation.subsections.rules" },
-    { id: "recent-violations", label: "navigation.subsections.recentViolations" },
-    { id: "security-events", label: "navigation.subsections.securityEvents" },
+    { id: "recent-violations", label: "navigation.subsections.violations" },
     { id: "policy-changes", label: "navigation.subsections.policyChanges" },
+    { id: "security-events", label: "navigation.subsections.securityEvents" },
   ];
 
   it("governance has exactly the required subsections in order", () => {

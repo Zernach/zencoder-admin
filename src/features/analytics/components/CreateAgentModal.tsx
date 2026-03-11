@@ -27,7 +27,7 @@ export const CreateAgentModal = React.memo(function CreateAgentModal() {
       onClose={handleClose}
       accessibilityLabel="Close create agent form"
     >
-      <CreateAgentForm onSubmit={handleSubmit} loading={loading} error={error} />
+      <CreateAgentForm onSubmit={handleSubmit} onCancel={handleClose} loading={loading} error={error} />
     </CustomModal>
   );
 });

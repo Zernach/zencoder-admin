@@ -106,7 +106,7 @@ export default function GovernanceScreen() {
       key: "description",
       header: "Description",
       width: 540,
-      render: (row) => <Text style={ct.secondary}>{row.description}</Text>,
+      render: (row) => <Text style={[ct.secondary, { fontWeight: "400" }]}>{row.description}</Text>,
     },
     {
       key: "editedAtIso",
@@ -384,6 +384,17 @@ export default function GovernanceScreen() {
       )}
 
       {data && (
+        <View ref={refFor("policy-changes")} nativeID="policy-changes" style={sectionStyles.section}>
+          <SectionHeader title={t("governance.policyChanges")} subtitle={t("governance.policyChangesSubtitle")} />
+          <DataTable
+            columns={policyChangeCols}
+            data={filteredPolicyChanges}
+            keyExtractor={keyExtractors.byId}
+          />
+        </View>
+      )}
+
+      {data && (
         <View ref={refFor("security-events")} nativeID="security-events" style={sectionStyles.section}>
           <SectionHeader
             title={t("governance.securityEvents")}
@@ -392,17 +403,6 @@ export default function GovernanceScreen() {
           <DataTable
             columns={securityCols}
             data={filteredSecurityEvents}
-            keyExtractor={keyExtractors.byId}
-          />
-        </View>
-      )}
-
-      {data && (
-        <View ref={refFor("policy-changes")} nativeID="policy-changes" style={sectionStyles.section}>
-          <SectionHeader title={t("governance.policyChanges")} subtitle={t("governance.policyChangesSubtitle")} />
-          <DataTable
-            columns={policyChangeCols}
-            data={filteredPolicyChanges}
             keyExtractor={keyExtractors.byId}
           />
         </View>

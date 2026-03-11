@@ -7,7 +7,6 @@ import { ChevronLeft } from "lucide-react-native";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing } from "@/theme/tokens";
-import { isWeb } from "@/constants/platform";
 
 export interface HeaderProps {
   title: string;
@@ -28,42 +27,46 @@ const ScreenHeader = React.memo(function ScreenHeader({
   const theme = semanticThemes[mode];
   const router = useRouter();
   const navigation = useNavigation();
-  const showBack = !isWeb && navigation.canGoBack();
+  const showBack = navigation.canGoBack();
 
   return (
     <View style={styles.container}>
-      <View style={styles.titleRow}>
-        {showBack && (
-          <Pressable
-            onPress={() => router.back()}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
-          >
-            <ChevronLeft size={24} color={theme.text.primary} />
-          </Pressable>
-        )}
-        <Text style={[styles.title, { color: theme.text.primary }]} numberOfLines={1}>
-          {title}
-        </Text>
-        {isLoading && (
-          <ActivityIndicator
-            size="small"
-            color={theme.border.brand}
-            style={styles.spinner}
-            accessibilityLabel="Loading"
-          />
+      <View style={styles.topRow}>
+        <View style={styles.titleBlock}>
+          <View style={styles.titleRow}>
+            {showBack && (
+              <Pressable
+                onPress={() => router.back()}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Go back"
+                style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
+              >
+                <ChevronLeft size={24} color={theme.text.primary} />
+              </Pressable>
+            )}
+            <Text style={[styles.title, { color: theme.text.primary, flexShrink: 1 }]}>
+              {title}
+            </Text>
+            {isLoading && (
+              <ActivityIndicator
+                size="small"
+                color={theme.border.brand}
+                style={styles.spinner}
+                accessibilityLabel="Loading"
+              />
+            )}
+          </View>
+          {subtitle && (
+            <Text style={[styles.subtitle, { color: theme.text.secondary }]} numberOfLines={1} ellipsizeMode="tail">
+              {subtitle}
+            </Text>
+          )}
+        </View>
+        {rightComponent != null && (
+          <View style={styles.right}>{rightComponent}</View>
         )}
       </View>
-      {subtitle && (
-        <Text style={[styles.subtitle, { color: theme.text.secondary }]} numberOfLines={1} ellipsizeMode="tail">
-          {subtitle}
-        </Text>
-      )}
-      {rightComponent != null && (
-        <View style={styles.right}>{rightComponent}</View>
-      )}
     </View>
   );
 });
@@ -72,13 +75,24 @@ export default ScreenHeader;
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing[4],
     minHeight: 48,
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing[12],
+  },
+  titleBlock: {
+    flex: 1,
+    gap: spacing[4],
+    minWidth: 0,
   },
   titleRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing[10],
+    flexShrink: 1,
   },
   title: {
     fontSize: 22,
@@ -89,7 +103,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   right: {
-    marginTop: spacing[4],
+    flexShrink: 0,
   },
   backButton: {
     marginRight: spacing[4],

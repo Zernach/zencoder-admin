@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { CustomList } from "@/components/lists";
 import { CustomTextInput } from "@/components/inputs";
+import { CustomButton } from "@/components/buttons";
 import { keyExtractors } from "@/constants";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -30,6 +31,11 @@ export interface InputFormProps {
   icon?: ReactNode;
   items: InputFormItem[];
   footer?: ReactNode;
+  onSubmit?: () => void;
+  onCancel?: () => void;
+  submitLabel?: string;
+  cancelLabel?: string;
+  submitDisabled?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
 }
 
@@ -40,6 +46,11 @@ export function InputForm({
   icon,
   items,
   footer,
+  onSubmit,
+  onCancel,
+  submitLabel = "Submit",
+  cancelLabel = "Cancel",
+  submitDisabled,
   containerStyle,
 }: InputFormProps) {
   const { mode } = useThemeMode();
@@ -89,6 +100,29 @@ export function InputForm({
         }}
       />
       {footer}
+      {onSubmit ? (
+        <View style={styles.buttonRow}>
+          {onCancel ? (
+            <CustomButton
+              onPress={onCancel}
+              buttonMode="secondary"
+              buttonSize="md"
+              label={cancelLabel}
+              accessibilityRole="button"
+              accessibilityLabel={cancelLabel}
+            />
+          ) : null}
+          <CustomButton
+            onPress={onSubmit}
+            buttonMode="primary"
+            buttonSize="md"
+            label={submitLabel}
+            accessibilityRole="button"
+            accessibilityLabel={submitLabel}
+            disabled={submitDisabled}
+          />
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -120,5 +154,11 @@ const styles = StyleSheet.create({
   },
   itemSeparator: {
     height: spacing[8],
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: spacing[8],
+    marginTop: spacing[4],
   },
 });

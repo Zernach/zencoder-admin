@@ -22,7 +22,6 @@ export const sectionStyles = StyleSheet.create({
   },
   chartCardScroll: {
     flexShrink: 1,
-    maxWidth: 260,
   },
   chartCardViewport: {
     alignSelf: "stretch",

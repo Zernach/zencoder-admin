@@ -23,11 +23,9 @@ const COST_BREAKDOWN_SEARCH_KEYS: (keyof CostBreakdownRow)[] = ["key"];
 const CostPerTeamDonutMemo = React.memo(function CostPerTeamDonutMemo({
   costPerTeam,
   totalCostUsd,
-  height,
 }: {
   costPerTeam: CostPerTeamRow[];
   totalCostUsd: number;
-  height?: number;
 }) {
   const { t } = useTranslation();
   const { formatCurrency } = useCurrencyFormatter();
@@ -36,7 +34,7 @@ const CostPerTeamDonutMemo = React.memo(function CostPerTeamDonutMemo({
     [costPerTeam],
   );
   const centerValue = useMemo(() => formatCurrency(totalCostUsd), [totalCostUsd, formatCurrency]);
-  return <DonutChart data={donutData} centerLabel={t("common.total")} centerValue={centerValue} height={height} formatValue={formatCurrency} />;
+  return <DonutChart data={donutData} centerLabel={t("common.total")} centerValue={centerValue} formatValue={formatCurrency} />;
 });
 
 /** Memoized budget forecast bar chart */
@@ -157,8 +155,8 @@ export default function CostAnalyticsScreen() {
       {data && (
         <View ref={refFor("cost-summary")} nativeID="cost-summary" style={styles.section}>
           <CustomList scrollViewProps={responsiveScrollProps}>
-            <ChartCard title={t("costs.costPerTeam")} style={isLargeLayout ? styles.chartCardFill : styles.chartCardScroll}>
-              <CostPerTeamDonutMemo costPerTeam={data.costPerTeam} totalCostUsd={data.totalCostUsd} height={isLargeLayout ? 220 : 160} />
+            <ChartCard title={t("costs.costPerTeam")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+              <CostPerTeamDonutMemo costPerTeam={data.costPerTeam} totalCostUsd={data.totalCostUsd} />
             </ChartCard>
             <ChartCard title={t("costs.costPerProject")} style={isLargeLayout ? styles.chartCardFill : undefined}>
               <CostPerProjectBarMemo filteredCostBreakdown={filteredCostBreakdown} />

@@ -62,7 +62,9 @@
       "preferences": "Προτιμήσεις",
       "internationalization": "Διεθνοποίηση",
       "organization": "Οργανισμός",
-      "dangerZone": "Επικίνδυνη Ζώνη"
+      "dangerZone": "Επικίνδυνη Ζώνη",
+      "costPerProject": "Cost per Project",
+      "violations": "Violations"
     }
   },
   "dashboard": {
@@ -145,7 +147,8 @@
       "duration": "Διάρκεια",
       "tokens": "Tokens",
       "provider": "Πάροχος"
-    }
+    },
+    "reliabilitySubtitle": "Observability & Analytics"
   },
   "costs": {
     "subtitle": "Τάσεις δαπανών και παρακολούθηση προϋπολογισμού",

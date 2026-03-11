@@ -28,7 +28,7 @@ export const CreateComplianceRuleModal = React.memo(function CreateComplianceRul
       onClose={handleClose}
       accessibilityLabel="Close create rule form"
     >
-      <CreateComplianceRuleForm onSubmit={handleSubmit} loading={loading} />
+      <CreateComplianceRuleForm onSubmit={handleSubmit} onCancel={handleClose} loading={loading} />
     </CustomModal>
   );
 });

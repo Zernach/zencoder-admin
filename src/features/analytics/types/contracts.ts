@@ -303,7 +303,7 @@ export interface GovernanceResponse {
 
 
 // ─── Search Autocomplete ────────────────────────────────
-export type SearchEntityType = "agent" | "project" | "team" | "human" | "run" | "rule";
+export type SearchEntityType = "agent" | "project" | "team" | "human" | "run" | "rule" | "chat";
 
 export interface SearchSuggestion {
   id: string;

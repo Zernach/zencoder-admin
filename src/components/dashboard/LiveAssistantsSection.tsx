@@ -16,6 +16,7 @@ import { isWeb } from "@/constants/platform";
 import { CustomList } from "@/components/lists";
 import { ErrorState } from "./ErrorState";
 import { SectionHeader } from "./SectionHeader";
+import { LiveAssistantsSkeleton } from "./LiveAssistantsSkeleton";
 
 
 
@@ -512,6 +513,8 @@ export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
     [],
   );
 
+  const shouldShowSkeleton = columns.length === 0 && (loading || sessions.length > 0);
+
   return (
     <View style={styles.section}>
       <SectionHeader
@@ -521,20 +524,10 @@ export const LiveAssistantsSection = React.memo(function LiveAssistantsSection({
       />
       {error ? (
         <ErrorState message={error} onRetry={onRetry ?? (() => undefined)} />
-      ) : loading && columns.length === 0 ? (
-        <View style={styles.placeholderWrap}>
-          {Array.from({ length: 4 }).map((_, index) => (
-            <View key={index} style={[styles.placeholderCard, { borderColor: theme.border.subtle, backgroundColor: theme.bg.subtle }]} />
-          ))}
-        </View>
+      ) : shouldShowSkeleton ? (
+        <LiveAssistantsSkeleton theme={theme} reducedMotion={reducedMotion} />
       ) : columns.length === 0 && sessions.length === 0 ? (
         <EmptyLiveState theme={theme} />
-      ) : columns.length === 0 ? (
-        <View style={styles.placeholderWrap}>
-          {Array.from({ length: 4 }).map((_, index) => (
-            <View key={index} style={[styles.placeholderCard, { borderColor: theme.border.subtle, backgroundColor: theme.bg.subtle }]} />
-          ))}
-        </View>
       ) : (
         <CustomList
           flatListProps={{
@@ -668,16 +661,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: "center",
     maxWidth: 320,
-  },
-  placeholderWrap: {
-    flexDirection: "row",
-    gap: spacing[12],
-  },
-  placeholderCard: {
-    width: 240,
-    minHeight: 108,
-    borderRadius: radius.md,
-    borderWidth: 1,
   },
   indicatorWrap: {
     width: INDICATOR_SIZE,

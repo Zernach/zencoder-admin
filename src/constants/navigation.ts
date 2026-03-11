@@ -38,9 +38,15 @@ export interface SubsectionItem {
   label: string;
 }
 
-export type SubsectionRoute = ROUTES.AGENTS | ROUTES.COSTS | ROUTES.GOVERNANCE | ROUTES.SETTINGS;
+export type SubsectionRoute = ROUTES.ROOT | ROUTES.AGENTS | ROUTES.COSTS | ROUTES.GOVERNANCE | ROUTES.SETTINGS;
 
 export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
+  [ROUTES.ROOT]: [
+    { id: "live-assistants", label: "navigation.subsections.liveAssistants" },
+    { id: "trends", label: "navigation.subsections.trends" },
+    { id: "outcomes", label: "navigation.subsections.outcomes" },
+    { id: "key-metrics", label: "navigation.subsections.keyMetrics" },
+  ],
   [ROUTES.AGENTS]: [
     { id: "reliability", label: "navigation.subsections.reliability" },
     { id: "agent-performance", label: "navigation.subsections.agentPerformance" },
@@ -57,8 +63,8 @@ export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
     { id: "seat-user-oversight", label: "navigation.subsections.seatUserOversight" },
     { id: "rules", label: "navigation.subsections.rules" },
     { id: "recent-violations", label: "navigation.subsections.violations" },
-    { id: "security-events", label: "navigation.subsections.securityEvents" },
     { id: "policy-changes", label: "navigation.subsections.policyChanges" },
+    { id: "security-events", label: "navigation.subsections.securityEvents" },
   ],
   [ROUTES.SETTINGS]: [
     { id: "preferences", label: "navigation.subsections.preferences" },

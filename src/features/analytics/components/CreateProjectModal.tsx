@@ -27,7 +27,7 @@ export const CreateProjectModal = React.memo(function CreateProjectModal() {
       onClose={handleClose}
       accessibilityLabel="Close create project form"
     >
-      <CreateProjectForm onSubmit={handleSubmit} loading={loading} error={error} />
+      <CreateProjectForm onSubmit={handleSubmit} onCancel={handleClose} loading={loading} error={error} />
     </CustomModal>
   );
 });

@@ -4,9 +4,13 @@ import {
   TAB_ORDER,
   TAB_ROUTES,
   TABS,
+  buildChatHistoryRoute,
+  buildChatThreadRoute,
   buildEntityRoute,
   getRouteForTab,
   getTabForRoute,
+  isChatRoute,
+  isChatThreadRoute,
   isRouteActive,
   resolveTabFromPathname,
   type TabRoute,
@@ -107,5 +111,45 @@ describe("buildEntityRoute", () => {
   it("encodes special characters in entity IDs", () => {
     const route = buildEntityRoute(TABS.DASHBOARD, "agent", "id with spaces/slashes");
     expect(route).toBe("/dashboard/agent/id%20with%20spaces%2Fslashes");
+  });
+});
+
+describe("chat route helpers", () => {
+  it.each([
+    [TABS.DASHBOARD, "/dashboard/chat/history"],
+    [TABS.AGENTS, "/agents/chat/history"],
+    [TABS.COSTS, "/costs/chat/history"],
+    [TABS.GOVERNANCE, "/governance/chat/history"],
+    [TABS.SETTINGS, "/settings/chat/history"],
+  ])("builds chat history route for %s", (tab, expectedRoute) => {
+    expect(buildChatHistoryRoute(tab)).toBe(expectedRoute);
+  });
+
+  it("builds encoded thread route", () => {
+    const route = buildChatThreadRoute(TABS.SETTINGS, "thread 1/alpha");
+    expect(route).toBe("/settings/chat/history/thread%201%2Falpha");
+  });
+
+  it.each([
+    ["/dashboard/chat", false],
+    ["/agents/chat/history", true],
+    ["/costs/chat/history/thread-1", true],
+    ["/costs/chat/thread-1", true],
+    ["/dashboard/chat/create", true],
+    ["/governance", false],
+    ["/", false],
+  ])("detects chat routes for %s", (pathname, expected) => {
+    expect(isChatRoute(pathname)).toBe(expected);
+  });
+
+  it.each([
+    ["/dashboard/chat/history/thread-1", true],
+    ["/agents/chat/history", false],
+    ["/costs/chat/history/thread-1", true],
+    ["/costs/chat/thread-1", false],
+    ["/settings/chat", false],
+    ["/settings", false],
+  ])("detects chat thread routes for %s", (pathname, expected) => {
+    expect(isChatThreadRoute(pathname)).toBe(expected);
   });
 });

@@ -1,16 +1,15 @@
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, StyleSheet } from "react-native";
-import { CustomButton } from "@/components/buttons";
 import { InputForm } from "@/components/forms";
 import type { InputFormItem } from "@/components/forms";
 import { useFormFields } from "@/hooks/useFormFields";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
-import { spacing } from "@/theme/tokens";
 
 interface CreateProjectFormProps {
   onSubmit: (values: { name: string; teamId: string }) => void;
+  onCancel?: () => void;
   loading?: boolean;
   error?: string;
 }
@@ -27,7 +26,7 @@ interface FormErrors {
 
 const INITIAL_FIELDS: FormFields = { name: "", teamId: "" };
 
-export function CreateProjectForm({ onSubmit, loading, error }: CreateProjectFormProps) {
+export function CreateProjectForm({ onSubmit, onCancel, loading, error }: CreateProjectFormProps) {
   const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -81,28 +80,18 @@ export function CreateProjectForm({ onSubmit, loading, error }: CreateProjectFor
       title={t("modals.createProjectTitle")}
       items={items}
       footer={
-        <>
-          {error ? <Text style={[styles.errorText, { color: theme.state.error }]}>{error}</Text> : null}
-          <CustomButton
-            onPress={onPressSubmit}
-            style={styles.submitButton}
-            buttonMode="primary"
-            buttonSize="lg"
-            label={t("common.submit")}
-            accessibilityRole="button"
-            accessibilityLabel={t("common.submit")}
-            disabled={loading}
-          />
-        </>
+        error ? <Text style={[styles.errorText, { color: theme.state.error }]}>{error}</Text> : null
       }
+      onSubmit={onPressSubmit}
+      onCancel={onCancel}
+      submitLabel={t("common.submit")}
+      cancelLabel={t("common.cancel")}
+      submitDisabled={loading}
     />
   );
 }
 
 const styles = StyleSheet.create({
-  submitButton: {
-    marginTop: spacing[4],
-  },
   errorText: {
     fontSize: 12,
     textAlign: "center",

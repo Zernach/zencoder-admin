@@ -9,7 +9,7 @@ import { useRouter } from "expo-router";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import { useSearchAutocomplete } from "@/features/analytics/hooks/useSearchAutocomplete";
-import type { TimeRangePreset, SearchSuggestion } from "@/features/analytics/types";
+import type { TimeRangePreset, SearchSuggestion, SearchSuggestionsResponse } from "@/features/analytics/types";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { CustomTextInput } from "@/components/inputs";
@@ -52,7 +52,29 @@ const CONTROL_HORIZONTAL_PADDING = 12;
 const CONTROL_TEXT_SIZE = 13;
 const CONTROL_HEIGHT = 36;
 
-export const TopBar = React.memo(function TopBar() {
+export interface TopBarAutocompleteOverride {
+  suggestions: SearchSuggestionsResponse | null;
+  loading: boolean;
+  error: string | undefined;
+  selectSuggestion: (suggestion: SearchSuggestion) => void;
+  setQuery: (query: string) => void;
+  clear: () => void;
+}
+
+export interface TopBarProps {
+  /** Custom placeholder for the search input. */
+  placeholder?: string;
+  /** Whether to show the time-range selector. Defaults to true. */
+  showTimeRange?: boolean;
+  /** When provided, replaces the built-in analytics autocomplete with custom suggestions. */
+  autocomplete?: TopBarAutocompleteOverride;
+}
+
+export const TopBar = React.memo(function TopBar({
+  placeholder,
+  showTimeRange = true,
+  autocomplete: autocompleteOverride,
+}: TopBarProps) {
   const { t } = useTranslation();
   const breakpoint = useBreakpoint();
   const { mode } = useThemeMode();
@@ -68,6 +90,9 @@ export const TopBar = React.memo(function TopBar() {
   // Use refs for values that change frequently but shouldn't recreate the callback
   const mostRecentTabRef = useRef(mostRecentTab);
   mostRecentTabRef.current = mostRecentTab;
+
+  const autocompleteOverrideRef = useRef(autocompleteOverride);
+  autocompleteOverrideRef.current = autocompleteOverride;
 
   const handleSuggestionSelect = useCallback(
     (suggestion: SearchSuggestion) => {
@@ -93,7 +118,12 @@ export const TopBar = React.memo(function TopBar() {
   const handleSearchChange = useCallback(
     (text: string) => {
       setLocalQuery(text);
-      autocompleteRef.current.setQuery(text);
+      const custom = autocompleteOverrideRef.current;
+      if (custom) {
+        custom.setQuery(text);
+      } else {
+        autocompleteRef.current.setQuery(text);
+      }
       setIsPanelOpen(text.trim().length >= 2);
     },
     [],
@@ -101,8 +131,13 @@ export const TopBar = React.memo(function TopBar() {
 
   const handleClearSearch = useCallback(() => {
     setLocalQuery("");
-    setSearchQuery("");
-    autocompleteRef.current.clear();
+    const custom = autocompleteOverrideRef.current;
+    if (custom) {
+      custom.clear();
+    } else {
+      setSearchQuery("");
+      autocompleteRef.current.clear();
+    }
     setIsPanelOpen(false);
     searchInputRef.current?.focus();
   }, [setSearchQuery]);
@@ -110,6 +145,20 @@ export const TopBar = React.memo(function TopBar() {
   const handleDismissPanel = useCallback(() => {
     setIsPanelOpen(false);
   }, []);
+
+  const handlePanelSelect = useCallback(
+    (suggestion: SearchSuggestion) => {
+      const custom = autocompleteOverrideRef.current;
+      if (custom) {
+        custom.selectSuggestion(suggestion);
+        setLocalQuery(suggestion.title);
+        setIsPanelOpen(false);
+      } else {
+        autocompleteRef.current.selectSuggestion(suggestion);
+      }
+    },
+    [],
+  );
 
   const openTimeRangeOverlay = useCallback(
     () => setTimeRangeOverlayVisible(true),
@@ -169,7 +218,7 @@ export const TopBar = React.memo(function TopBar() {
             containerStyle={styles.searchInputWrapper}
             showInputContainer={false}
             style={[styles.searchInput, isIos ? styles.searchInputIos : undefined]}
-            placeholder={t("search.placeholder")}
+            placeholder={placeholder ?? t("search.placeholder")}
             value={localQuery}
             onChangeText={handleSearchChange}
             accessibilityLabel={t("search.searchLabel")}
@@ -189,32 +238,34 @@ export const TopBar = React.memo(function TopBar() {
             </CustomButton>
           )}
           <SearchAutocompletePanel
-            suggestions={autocomplete.suggestions}
-            loading={autocomplete.loading}
-            error={autocomplete.error}
-            onSelect={autocomplete.selectSuggestion}
+            suggestions={autocompleteOverride?.suggestions ?? autocomplete.suggestions}
+            loading={autocompleteOverride?.loading ?? autocomplete.loading}
+            error={autocompleteOverride?.error ?? autocomplete.error}
+            onSelect={handlePanelSelect}
             onDismiss={handleDismissPanel}
             visible={isPanelOpen}
           />
         </View>
       </View>
-      <View style={styles.right}>
-        <CustomButton
-          style={presetBtnStyle}
-          buttonMode="surface"
-          accessibilityRole="button"
-          accessibilityLabel={t("timeRange.openSelector")}
-          onPress={openTimeRangeOverlay}
-        >
-          <Clock size={14} color={theme.text.secondary} />
-          <Text
-            allowFontScaling={false}
-            style={[styles.presetText, { color: theme.text.secondary }]}
+      {showTimeRange && (
+        <View style={styles.right}>
+          <CustomButton
+            style={presetBtnStyle}
+            buttonMode="surface"
+            accessibilityRole="button"
+            accessibilityLabel={t("timeRange.openSelector")}
+            onPress={openTimeRangeOverlay}
           >
-            {presetButtonLabel}
-          </Text>
-        </CustomButton>
-      </View>
+            <Clock size={14} color={theme.text.secondary} />
+            <Text
+              allowFontScaling={false}
+              style={[styles.presetText, { color: theme.text.secondary }]}
+            >
+              {presetButtonLabel}
+            </Text>
+          </CustomButton>
+        </View>
+      )}
       <CustomModal
         visible={isTimeRangeOverlayVisible}
         onClose={closeTimeRangeOverlay}

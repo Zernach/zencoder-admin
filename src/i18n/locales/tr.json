@@ -62,7 +62,9 @@
       "preferences": "Tercihler",
       "internationalization": "Uluslararasılaştırma",
       "organization": "Kuruluş",
-      "dangerZone": "Tehlikeli Bölge"
+      "dangerZone": "Tehlikeli Bölge",
+      "costPerProject": "Cost per Project",
+      "violations": "Violations"
     }
   },
   "dashboard": {
@@ -145,7 +147,8 @@
       "duration": "Süre",
       "tokens": "Tokenlar",
       "provider": "Sağlayıcı"
-    }
+    },
+    "reliabilitySubtitle": "Observability & Analytics"
   },
   "costs": {
     "subtitle": "Harcama trendleri ve bütçe takibi",

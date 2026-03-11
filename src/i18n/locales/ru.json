@@ -62,7 +62,9 @@
       "preferences": "Параметры",
       "internationalization": "Интернационализация",
       "organization": "Организация",
-      "dangerZone": "Опасная зона"
+      "dangerZone": "Опасная зона",
+      "costPerProject": "Cost per Project",
+      "violations": "Violations"
     }
   },
   "dashboard": {
@@ -145,7 +147,8 @@
       "duration": "Длительность",
       "tokens": "Токены",
       "provider": "Провайдер"
-    }
+    },
+    "reliabilitySubtitle": "Observability & Analytics"
   },
   "costs": {
     "subtitle": "Тренды расходов и отслеживание бюджета",

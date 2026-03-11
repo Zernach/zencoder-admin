@@ -62,7 +62,9 @@
       "preferences": "Beállítások",
       "internationalization": "Nemzetköziesítés",
       "organization": "Szervezet",
-      "dangerZone": "Veszélyzóna"
+      "dangerZone": "Veszélyzóna",
+      "costPerProject": "Cost per Project",
+      "violations": "Violations"
     }
   },
   "dashboard": {
@@ -145,7 +147,8 @@
       "duration": "Időtartam",
       "tokens": "Tokenek",
       "provider": "Szolgáltató"
-    }
+    },
+    "reliabilitySubtitle": "Observability & Analytics"
   },
   "costs": {
     "subtitle": "Kiadási trendek és költségvetés-követés",

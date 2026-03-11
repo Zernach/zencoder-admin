@@ -8,3 +8,4 @@ export { SectionHeader } from "./SectionHeader";
 export { CardGrid } from "./CardGrid";
 export { DataTransition } from "./DataTransition";
 export { LiveAssistantsSection } from "./LiveAssistantsSection";
+export { LiveAssistantsSkeleton } from "./LiveAssistantsSkeleton";

@@ -128,7 +128,7 @@ export const BarPieChart = React.memo(function BarPieChart({
   return (
     <View style={[styles.container, containerStyle]}>
       {!isInsideChartCard ? modeToggle : null}
-      <View testID={`bar-pie-chart-current-mode-${chartMode}`}>
+      <View testID={`bar-pie-chart-current-mode-${chartMode}`} style={styles.content}>
         {chartMode === "bar" ? renderBar() : renderPie()}
       </View>
     </View>
@@ -137,8 +137,12 @@ export const BarPieChart = React.memo(function BarPieChart({
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     width: "100%",
     position: "relative",
+  },
+  content: {
+    flex: 1,
   },
   modeToggleContainer: {
     flexDirection: "row",

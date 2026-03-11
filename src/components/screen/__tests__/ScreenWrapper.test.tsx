@@ -109,4 +109,20 @@ describe("ScreenWrapper", () => {
     expect(queryByTestId("sticky-filter-bar")).toBeNull();
     expect(queryByTestId("filter-bar")).toBeNull();
   });
+
+  it("renders custom topFilterBar when showFilterBar is false", () => {
+    const { getByTestId, queryByTestId } = render(
+      <ScreenWrapper
+        headerProps={{ title: "Test" }}
+        showFilterBar={false}
+        topFilterBar={<Text testID="custom-top-filter">Custom Filter</Text>}
+      >
+        <Text>Content</Text>
+      </ScreenWrapper>
+    );
+
+    expect(getByTestId("sticky-filter-bar")).toBeTruthy();
+    expect(getByTestId("custom-top-filter")).toBeTruthy();
+    expect(queryByTestId("filter-bar")).toBeNull();
+  });
 });

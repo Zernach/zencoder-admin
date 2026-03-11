@@ -1,4 +1,7 @@
 export { AgentDetailRoute } from "./AgentDetailRoute";
+export { ChatHistoryRoute } from "./ChatHistoryRoute";
+export { ChatThreadRoute } from "./ChatThreadRoute";
+export { CreateChatRoute } from "./CreateChatRoute";
 export { HumanDetailRoute } from "./HumanDetailRoute";
 export { ProjectDetailRoute } from "./ProjectDetailRoute";
 export { RunDetailRoute } from "./RunDetailRoute";

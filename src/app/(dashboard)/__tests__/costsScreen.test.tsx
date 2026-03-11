@@ -203,7 +203,6 @@ describe("CostAnalyticsScreen", () => {
         "budget-forecast",
         "cost-summary",
         "cost-by-provider",
-        "costs-project-breakdown",
       ]),
     );
   });

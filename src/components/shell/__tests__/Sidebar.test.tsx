@@ -15,6 +15,11 @@ jest.mock("react-i18next", () => require("@/test-utils/i18nMock"));
 jest.mock("expo-router", () => ({
   useRouter: () => ({ navigate: mockNavigate }),
   usePathname: () => mockPathname,
+  useNavigation: () => ({
+    setOptions: jest.fn(),
+    getState: () => ({ type: "stack", routeNames: [] }),
+    getParent: () => undefined,
+  }),
 }));
 
 jest.mock("lucide-react-native", () => {
@@ -86,14 +91,13 @@ describe("Sidebar — subsection rendering", () => {
     expect(mockNavigate).toHaveBeenCalledWith(ROUTES.ROOT);
   });
 
-  it("navigates to root when pressing home while on /dashboard", () => {
+  it("does not navigate when pressing home while already on /dashboard (at root)", () => {
     mockPathname = ROUTES.DASHBOARD;
     const { getByLabelText } = renderSidebar(true);
 
     fireEvent.press(getByLabelText("navigation.home"));
 
-    expect(mockNavigate).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith(ROUTES.ROOT);
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("shows agents subsections when agents is active and expanded", () => {
@@ -133,14 +137,22 @@ describe("Sidebar — subsection rendering", () => {
     expect(queryByText("navigation.subsections.recentViolations")).toBeNull();
   });
 
-  it("does not show subsections for dashboard or settings", () => {
+  it("shows dashboard subsections when dashboard is active and expanded", () => {
+    mockPathname = ROUTES.DASHBOARD;
+    const { getByText } = renderSidebar(true);
+
+    for (const sub of SUBSECTIONS[ROUTES.ROOT]) {
+      expect(getByText(sub.label)).toBeTruthy();
+    }
+  });
+
+  it("does not show other tabs subsections when settings is active", () => {
     mockPathname = ROUTES.SETTINGS;
     const { queryByText } = renderSidebar(true);
 
-    // No subsections should appear since Settings has no subsections
     expect(queryByText("navigation.subsections.reliability")).toBeNull();
     expect(queryByText("navigation.subsections.costSummary")).toBeNull();
-    expect(queryByText("navigation.subsections.overview")).toBeNull();
+    expect(queryByText("navigation.subsections.liveAssistants")).toBeNull();
   });
 
   it("governance subsections appear in exact required order", () => {

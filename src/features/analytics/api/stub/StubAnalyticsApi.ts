@@ -523,19 +523,17 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       (dayRuns) => new Set(dayRuns.map((run) => run.userId)).size,
     );
     const maxUsers = this.seed.users.length + this.createdUsers.length;
-    // DAU is the lowest line — keep values in the ~15-35% range of maxUsers
-    // so it sits well below WAU and MAU.
-    const ceiling = Math.round(maxUsers * 0.35);
-    const scaledByDay = activeUsersByDay.map((point) => ({
-      tsIso: point.tsIso,
-      value: Math.round(point.value * 0.25),
-    }));
-    const naturalTrend = this.naturalUpwardTrend(scaledByDay, {
-      minGrowthPct: 0.25,
-      volatilityRatio: 0.16,
-      baselineBlend: 0.55,
-      longWaveCycles: 2.8,
-      shortWaveCycles: 7.5,
+    // Seed data now produces realistic daily active user counts with
+    // natural growth (staggered onboarding) and weekend dips, so no
+    // artificial scaling is needed.  Light shaping smooths noise while
+    // preserving the organic curve.
+    const ceiling = Math.round(maxUsers * 0.75);
+    const naturalTrend = this.naturalUpwardTrend(activeUsersByDay, {
+      minGrowthPct: 0.15,
+      volatilityRatio: 0.12,
+      baselineBlend: 0.35,
+      longWaveCycles: 2.5,
+      shortWaveCycles: 6.0,
       phaseShift: 0.95,
       bumpCenter: 0.40,
       divotCenter: 0.63,
@@ -544,15 +542,15 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       maxValue: ceiling,
     });
     return this.logarithmicExponentialTrend(naturalTrend, {
-      minGrowthPct: 0.22,
-      exponentialWeight: 0.55,
-      expIntensity: 2.0,
-      logScale: 7,
-      preserveShape: 0.42,
+      minGrowthPct: 0.12,
+      exponentialWeight: 0.40,
+      expIntensity: 1.6,
+      logScale: 5,
+      preserveShape: 0.60,
       highSpikeAt: 0.72,
       lowSpikeAt: 0.35,
-      highSpikeLift: 0.25,
-      lowSpikeDrop: 0.25,
+      highSpikeLift: 0.20,
+      lowSpikeDrop: 0.20,
       maxValue: ceiling,
       round: (value) => Math.round(value),
     });
@@ -586,15 +584,16 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
     const maxUsers = this.seed.users.length + this.createdUsers.length;
     // MAU (30-day) is the highest line, WAU (7-day) sits in between DAU and MAU.
-    const ceilingRatio = windowDays >= 30 ? 0.92 : 0.60;
+    // Higher ceilings since seed data now produces realistic rolling counts.
+    const ceilingRatio = windowDays >= 30 ? 0.97 : 0.85;
     const ceiling = Math.round(maxUsers * ceilingRatio);
 
     return this.naturalUpwardTrend(rawPoints, {
-      minGrowthPct: 0.12,
-      volatilityRatio: 0.08,
-      baselineBlend: 0.7,
-      longWaveCycles: 2.2,
-      shortWaveCycles: 5.5,
+      minGrowthPct: 0.10,
+      volatilityRatio: 0.06,
+      baselineBlend: 0.40,
+      longWaveCycles: 2.0,
+      shortWaveCycles: 5.0,
       phaseShift: windowDays === 7 ? 0.3 : 0.7,
       bumpCenter: 0.45,
       divotCenter: 0.6,
@@ -1172,7 +1171,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const projectBreakdown = buildProjectBreakdown(runs, this.seed.projects, this.seed.teams);
 
     const recentRuns = [...runs]
-      .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso));
+      .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
+      .slice(0, 25);
 
     return {
       runSuccessRate: succeeded / total,

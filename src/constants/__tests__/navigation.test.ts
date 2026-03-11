@@ -30,11 +30,23 @@ describe("TOP_NAV_ITEMS", () => {
 });
 
 describe("SUBSECTIONS", () => {
-  it("defines subsections for agents, costs, governance, and settings", () => {
+  it("defines subsections for dashboard, agents, costs, governance, and settings", () => {
+    expect(SUBSECTIONS[ROUTES.ROOT]).toBeDefined();
     expect(SUBSECTIONS[ROUTES.AGENTS]).toBeDefined();
     expect(SUBSECTIONS[ROUTES.COSTS]).toBeDefined();
     expect(SUBSECTIONS[ROUTES.GOVERNANCE]).toBeDefined();
     expect(SUBSECTIONS[ROUTES.SETTINGS]).toBeDefined();
+  });
+
+  it("dashboard has 4 subsections", () => {
+    const items = SUBSECTIONS[ROUTES.ROOT];
+    expect(items.length).toBe(4);
+    expect(items.map((i) => i.label)).toEqual([
+      "navigation.subsections.liveAssistants",
+      "navigation.subsections.trends",
+      "navigation.subsections.outcomes",
+      "navigation.subsections.keyMetrics",
+    ]);
   });
 
   it("agents has 4 subsections", () => {
@@ -66,8 +78,8 @@ describe("SUBSECTIONS", () => {
       "navigation.subsections.seatUserOversight",
       "navigation.subsections.rules",
       "navigation.subsections.violations",
-      "navigation.subsections.securityEvents",
       "navigation.subsections.policyChanges",
+      "navigation.subsections.securityEvents",
     ]);
   });
 
@@ -106,6 +118,7 @@ describe("getSubsectionById", () => {
 
 describe("hasSubsections", () => {
   it("returns true for routes with subsections", () => {
+    expect(hasSubsections(ROUTES.ROOT)).toBe(true);
     expect(hasSubsections(ROUTES.AGENTS)).toBe(true);
     expect(hasSubsections(ROUTES.COSTS)).toBe(true);
     expect(hasSubsections(ROUTES.GOVERNANCE)).toBe(true);
@@ -113,7 +126,6 @@ describe("hasSubsections", () => {
   });
 
   it("returns false for routes without subsections", () => {
-    expect(hasSubsections(ROUTES.ROOT)).toBe(false);
     expect(hasSubsections(ROUTES.DASHBOARD)).toBe(false);
   });
 });

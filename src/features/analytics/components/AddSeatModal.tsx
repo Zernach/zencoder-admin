@@ -27,7 +27,7 @@ export const AddSeatModal = React.memo(function AddSeatModal() {
       onClose={handleClose}
       accessibilityLabel="Close add seat form"
     >
-      <CreateHumanForm onSubmit={handleSubmit} loading={loading} error={error} />
+      <CreateHumanForm onSubmit={handleSubmit} onCancel={handleClose} loading={loading} error={error} />
     </CustomModal>
   );
 });

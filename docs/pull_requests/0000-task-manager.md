@@ -84,7 +84,10 @@
 | ✅ | [0076](./0076-bar-pie-chart-unification-toggle.md) | Bar/Pie Chart Unification Toggle | Components |
 | ✅ | [0077](./0077-datatable-pagination-all-runs.md) | DataTable Pagination Toggle + Agents All Runs | Components |
 | ✅ | [0078](./0078-home-route-dashboard-parity.md) | Home Route Dashboard Parity (No Redirect) | Screens |
+| ✅ | [0079](./0079-live-assistants-exquisite-skeleton-loaders.md) | Live Assistants Exquisite Skeleton Loaders | Polish |
+| ✅ | [0080](./0080-chat-fab-and-per-tab-chat-routes.md) | Global Chat FAB + Per-Tab Chat Routes | Navigation |
+| ✅ | [0081](./0081-chat-history-topic-filters.md) | Chat History Topic Filters (Reusable) | Chat |
 
 ---
 
-**Progress: 78 / 78**
+**Progress: 81 / 81**

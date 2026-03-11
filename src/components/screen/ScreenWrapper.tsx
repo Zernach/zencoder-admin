@@ -5,6 +5,7 @@ import type { StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { Edge } from "react-native-safe-area-context";
 import { ContentViewport, TopBar } from "@/components/shell";
+import type { TopBarProps } from "@/components/shell/TopBar";
 import { FilterBar } from "@/components/filters";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -17,10 +18,18 @@ interface ScreenWrapperProps {
   /** Props passed to ScreenHeader. If omitted, no header is rendered. */
   headerProps?: HeaderProps;
   children: ReactNode;
+  /** Optional custom top filter-bar content rendered below header/subtitle. */
+  topFilterBar?: ReactNode;
+  /** Optional non-scrolling content fixed below the scroll viewport (e.g. composer). */
+  bottomAccessory?: ReactNode;
   /** Style applied to the outer container View */
   style?: StyleProp<ViewStyle>;
   /** Whether to show the sticky FilterBar above scroll content. Defaults to true. */
   showFilterBar?: boolean;
+  /** Whether to show the TopBar (search + time-range). Defaults to true. */
+  showTopBar?: boolean;
+  /** Props forwarded to TopBar when visible. */
+  topBarProps?: TopBarProps;
 }
 
 // Stable edge arrays — avoids recreating on every render
@@ -34,7 +43,16 @@ const EDGES_DEFAULT: readonly Edge[] = ["top", "bottom"];
  * This component includes ContentViewport (ScrollView + responsive padding),
  * then renders TopBar, ScreenHeader, and children.
  */
-const ScreenWrapper = React.memo(function ScreenWrapper({ headerProps, children, style, showFilterBar = true }: ScreenWrapperProps) {
+const ScreenWrapper = React.memo(function ScreenWrapper({
+  headerProps,
+  children,
+  topFilterBar,
+  bottomAccessory,
+  style,
+  showFilterBar = true,
+  showTopBar = true,
+  topBarProps,
+}: ScreenWrapperProps) {
   const bp = useBreakpoint();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -51,7 +69,10 @@ const ScreenWrapper = React.memo(function ScreenWrapper({ headerProps, children,
     [theme.bg.canvas, style],
   );
   const headerContainerStyle = useMemo(
-    () => [styles.headerContainer, { paddingHorizontal: headerHorizontalPadding }],
+    () => [
+      styles.headerContainer,
+      { paddingHorizontal: headerHorizontalPadding },
+    ],
     [headerHorizontalPadding],
   );
   const filterBarContainerStyle = useMemo(
@@ -62,20 +83,23 @@ const ScreenWrapper = React.memo(function ScreenWrapper({ headerProps, children,
   return (
     <SafeAreaView edges={safeAreaEdges} style={containerStyle}>
       <StatusBar barStyle={mode === "dark" ? "light-content" : "dark-content"} backgroundColor={theme.bg.canvas} />
-      <TopBar />
+      {showTopBar && <TopBar {...topBarProps} />}
       {headerProps && (
         <View style={headerContainerStyle}>
           <ScreenHeader {...headerProps} />
         </View>
       )}
-      {showFilterBar && (
+      {(showFilterBar || topFilterBar) && (
         <View testID="sticky-filter-bar" style={filterBarContainerStyle}>
-          <FilterBar />
+          {topFilterBar ?? <FilterBar />}
         </View>
       )}
       <ContentViewport>
         <View style={styles.content}>{children}</View>
       </ContentViewport>
+      {bottomAccessory ? (
+        <View style={styles.bottomAccessory}>{bottomAccessory}</View>
+      ) : null}
     </SafeAreaView>
   );
 });
@@ -96,5 +120,8 @@ const styles = StyleSheet.create({
   },
   filterBarContainer: {
     paddingTop: spacing[0],
+  },
+  bottomAccessory: {
+    flexShrink: 0,
   },
 });

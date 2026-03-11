@@ -62,7 +62,9 @@
       "preferences": "Параметри",
       "internationalization": "Інтернаціоналізація",
       "organization": "Організація",
-      "dangerZone": "Небезпечна зона"
+      "dangerZone": "Небезпечна зона",
+      "costPerProject": "Cost per Project",
+      "violations": "Violations"
     }
   },
   "dashboard": {
@@ -145,7 +147,8 @@
       "duration": "Тривалість",
       "tokens": "Токени",
       "provider": "Провайдер"
-    }
+    },
+    "reliabilitySubtitle": "Observability & Analytics"
   },
   "costs": {
     "subtitle": "Тенденції витрат та відстеження бюджету",
