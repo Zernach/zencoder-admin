@@ -10,6 +10,7 @@ import {
   getRouteForTab,
   getTabForRoute,
   isChatRoute,
+  isChatHistoryRoute,
   isChatThreadRoute,
   isRouteActive,
   resolveTabFromPathname,
@@ -151,5 +152,15 @@ describe("chat route helpers", () => {
     ["/settings", false],
   ])("detects chat thread routes for %s", (pathname, expected) => {
     expect(isChatThreadRoute(pathname)).toBe(expected);
+  });
+
+  it.each([
+    ["/dashboard/chat/history", true],
+    ["/agents/chat/history", true],
+    ["/costs/chat/history/thread-1", false],
+    ["/settings/chat/create", false],
+    ["/governance", false],
+  ])("detects chat history routes for %s", (pathname, expected) => {
+    expect(isChatHistoryRoute(pathname)).toBe(expected);
   });
 });

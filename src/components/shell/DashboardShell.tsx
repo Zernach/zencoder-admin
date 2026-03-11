@@ -7,7 +7,7 @@ import { setSidebarExpanded } from "@/store/slices/sidebarSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { SectionScrollProvider } from "@/hooks/useSectionScroll";
-import { isChatRoute } from "@/constants/routes";
+import { isChatHistoryRoute, isChatRoute } from "@/constants/routes";
 import { Sidebar } from "./Sidebar";
 import { BottomTabs } from "./BottomTabs";
 
@@ -22,7 +22,7 @@ export const DashboardShell = React.memo(function DashboardShell({ children }: D
   const theme = semanticThemes[mode];
   const pathname = usePathname();
   const isMobile = bp === "mobile";
-  const showBottomTabs = isMobile && !isChatRoute(pathname);
+  const showBottomTabs = isMobile && (!isChatRoute(pathname) || isChatHistoryRoute(pathname));
 
   useEffect(() => {
     if (bp === "tablet") dispatch(setSidebarExpanded(false));

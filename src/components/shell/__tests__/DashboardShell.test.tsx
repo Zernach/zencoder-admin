@@ -5,9 +5,14 @@ import { DashboardShell } from "../DashboardShell";
 
 const mockDispatch = jest.fn();
 let mockBreakpoint: "mobile" | "tablet" | "desktop" = "mobile";
+let mockPathname = "/dashboard";
 
 jest.mock("@/hooks/useBreakpoint", () => ({
   useBreakpoint: () => mockBreakpoint,
+}));
+
+jest.mock("expo-router", () => ({
+  usePathname: () => mockPathname,
 }));
 
 jest.mock("@/store", () => ({
@@ -36,6 +41,7 @@ describe("DashboardShell chrome", () => {
   beforeEach(() => {
     mockDispatch.mockReset();
     mockBreakpoint = "mobile";
+    mockPathname = "/dashboard";
   });
 
   it("shows bottom tabs on mobile", () => {
@@ -82,6 +88,30 @@ describe("DashboardShell chrome", () => {
     );
 
     expect(queryByTestId("sidebar")).toBeTruthy();
+    expect(queryByTestId("bottom-tabs")).toBeNull();
+  });
+
+  it("shows bottom tabs on mobile chat history route", () => {
+    mockPathname = "/dashboard/chat/history";
+
+    const { queryByTestId } = render(
+      <DashboardShell>
+        <Text>content</Text>
+      </DashboardShell>,
+    );
+
+    expect(queryByTestId("bottom-tabs")).toBeTruthy();
+  });
+
+  it("hides bottom tabs on mobile create chat route", () => {
+    mockPathname = "/dashboard/chat/create";
+
+    const { queryByTestId } = render(
+      <DashboardShell>
+        <Text>content</Text>
+      </DashboardShell>,
+    );
+
     expect(queryByTestId("bottom-tabs")).toBeNull();
   });
 });

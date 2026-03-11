@@ -157,3 +157,12 @@ export function isChatThreadRoute(pathname: string): boolean {
   const segments = getPathSegments(pathname);
   return segments.length === 4 && segments[2] === "history";
 }
+
+export function isChatHistoryRoute(pathname: string): boolean {
+  if (!isChatRoute(pathname)) {
+    return false;
+  }
+
+  const segments = getPathSegments(pathname);
+  return segments.length === 3 && segments[2] === "history";
+}
