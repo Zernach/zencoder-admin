@@ -252,8 +252,6 @@
     "emailDescription": "Anomaliler için e-posta uyarıları alın",
     "slackIntegration": "Slack Entegrasyonu",
     "slackDescription": "Uyarıları Slack kanalına gönderin",
-    "autoRefresh": "Otomatik Yenileme",
-    "autoRefreshDescription": "Pano verilerini her 30 saniyede yenile",
     "internationalization": "Uluslararasılaştırma",
     "internationalizationSubtitle": "Diller ve para birimleri",
     "organization": "Kuruluş",

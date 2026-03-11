@@ -250,11 +250,10 @@ describe("Settings Preferences Integration", () => {
       expect(queryByText("settings.signOut.demoMessage")).toBeNull();
     });
 
-    it("email, slack, auto-refresh toggles still render", () => {
+    it("email and slack toggles still render", () => {
       const { getByText } = renderWithStore(<SettingsScreen />);
       expect(getByText("settings.emailNotifications")).toBeTruthy();
       expect(getByText("settings.slackIntegration")).toBeTruthy();
-      expect(getByText("settings.autoRefresh")).toBeTruthy();
     });
 
     it("organization section still renders", () => {

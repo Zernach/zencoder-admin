@@ -252,8 +252,6 @@
     "emailDescription": "Примајте упозорења е-поштом за аномалије",
     "slackIntegration": "Slack интеграција",
     "slackDescription": "Објављуј упозорења на Slack канал",
-    "autoRefresh": "Аутоматско освежавање",
-    "autoRefreshDescription": "Освежавање података на контролној табли сваких 30 секунди",
     "internationalization": "Интернационализација",
     "internationalizationSubtitle": "Језици и валуте",
     "organization": "Организација",

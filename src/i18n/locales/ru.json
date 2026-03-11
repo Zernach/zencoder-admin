@@ -252,8 +252,6 @@
     "emailDescription": "Получать email-оповещения об аномалиях",
     "slackIntegration": "Интеграция со Slack",
     "slackDescription": "Отправлять оповещения в канал Slack",
-    "autoRefresh": "Авто-обновление",
-    "autoRefreshDescription": "Обновлять данные каждые 30 секунд",
     "internationalization": "Интернационализация",
     "internationalizationSubtitle": "Языки и валюты",
     "organization": "Организация",

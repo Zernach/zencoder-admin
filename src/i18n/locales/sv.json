@@ -252,8 +252,6 @@
     "emailDescription": "Ta emot e-postvarningar för anomalier",
     "slackIntegration": "Slack-integration",
     "slackDescription": "Skicka varningar till Slack-kanal",
-    "autoRefresh": "Automatisk uppdatering",
-    "autoRefreshDescription": "Uppdatera instrumentpanelsdata var 30:e sekund",
     "internationalization": "Internationalisering",
     "internationalizationSubtitle": "Språk och valutor",
     "organization": "Organisation",

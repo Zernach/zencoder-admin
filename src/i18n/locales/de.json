@@ -252,8 +252,6 @@
     "emailDescription": "E-Mail-Warnungen bei Anomalien erhalten",
     "slackIntegration": "Slack-Integration",
     "slackDescription": "Warnungen in Slack-Kanal senden",
-    "autoRefresh": "Automatische Aktualisierung",
-    "autoRefreshDescription": "Dashboard-Daten alle 30 Sekunden aktualisieren",
     "internationalization": "Internationalisierung",
     "internationalizationSubtitle": "Sprachen und Währungen",
     "organization": "Organisation",

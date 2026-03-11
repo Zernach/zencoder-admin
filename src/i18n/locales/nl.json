@@ -252,8 +252,6 @@
     "emailDescription": "E-mailmeldingen ontvangen bij anomalieën",
     "slackIntegration": "Slack-integratie",
     "slackDescription": "Meldingen posten naar Slack-kanaal",
-    "autoRefresh": "Automatisch vernieuwen",
-    "autoRefreshDescription": "Dashboardgegevens elke 30 seconden vernieuwen",
     "internationalization": "Internationalisatie",
     "internationalizationSubtitle": "Talen en valuta's",
     "organization": "Organisatie",

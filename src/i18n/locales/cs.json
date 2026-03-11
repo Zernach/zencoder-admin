@@ -252,8 +252,6 @@
     "emailDescription": "Dostávat e-mailová upozornění na anomálie",
     "slackIntegration": "Integrace se Slack",
     "slackDescription": "Odesílat upozornění do kanálu Slack",
-    "autoRefresh": "Automatické obnovování",
-    "autoRefreshDescription": "Obnovovat data panelu každých 30 sekund",
     "internationalization": "Internacionalizace",
     "internationalizationSubtitle": "Jazyky a měny",
     "organization": "Organizace",

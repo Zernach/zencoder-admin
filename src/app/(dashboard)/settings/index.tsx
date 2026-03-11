@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { View, Text, StyleSheet } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomSwitch } from "@/components/inputs";
-import { Moon, Mail, MessageSquare, RefreshCw, LogOut, Trash2, User, Globe, DollarSign, ChevronRight } from "lucide-react-native";
+import { Moon, Mail, MessageSquare, LogOut, Trash2, User, Globe, DollarSign, ChevronRight } from "lucide-react-native";
 import { SectionHeader } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
 import { SignOutNoticeModal } from "@/features/analytics/components/SignOutNoticeModal";
@@ -17,7 +17,7 @@ import { semanticThemes } from "@/theme/themes";
 import { typography } from "@/theme/typography";
 import { useAppDispatch, useAppSelector, openModal, ModalName, selectSelectedLanguage, selectSelectedCurrency } from "@/store";
 
-type SettingToggleKey = "darkMode" | "emailNotifs" | "slackInteg" | "autoRefresh";
+type SettingToggleKey = "darkMode" | "emailNotifs" | "slackInteg";
 type NonThemeSettingKey = Exclude<SettingToggleKey, "darkMode">;
 
 interface SettingToggle {
@@ -30,27 +30,23 @@ interface SettingToggle {
 const TOGGLES: SettingToggle[] = [
   { label: "Dark Mode", description: "Use dark theme (default)", key: "darkMode", icon: Moon },
   { label: "Email Notifications", description: "Receive email alerts for anomalies", key: "emailNotifs", icon: Mail },
-  { label: "Auto-refresh", description: "Refresh dashboard data every 30 seconds", key: "autoRefresh", icon: RefreshCw },
 ];
 
 const INITIAL_SETTINGS: Record<NonThemeSettingKey, boolean> = {
   emailNotifs: true,
   slackInteg: true,
-  autoRefresh: true,
 };
 
 const TOGGLE_LABEL_KEYS: Record<SettingToggleKey, string> = {
   darkMode: "settings.darkMode",
   emailNotifs: "settings.emailNotifications",
   slackInteg: "settings.slackIntegration",
-  autoRefresh: "settings.autoRefresh",
 };
 
 const TOGGLE_DESC_KEYS: Record<SettingToggleKey, string> = {
   darkMode: "settings.darkModeDescription",
   emailNotifs: "settings.emailDescription",
   slackInteg: "settings.slackDescription",
-  autoRefresh: "settings.autoRefreshDescription",
 };
 
 export default function SettingsScreen() {

@@ -252,8 +252,6 @@
     "emailDescription": "Primiți alerte prin e-mail pentru anomalii",
     "slackIntegration": "Integrare Slack",
     "slackDescription": "Trimiteți alerte pe canalul Slack",
-    "autoRefresh": "Reîmprospătare automată",
-    "autoRefreshDescription": "Reîmprospătează datele panoului la fiecare 30 de secunde",
     "internationalization": "Internaționalizare",
     "internationalizationSubtitle": "Limbi și monede",
     "organization": "Organizație",

@@ -252,8 +252,6 @@
     "emailDescription": "Modtag email-advarsler for anomalier",
     "slackIntegration": "Slack-integration",
     "slackDescription": "Send advarsler til Slack-kanal",
-    "autoRefresh": "Automatisk opdatering",
-    "autoRefreshDescription": "Opdater dashboard-data hvert 30. sekund",
     "internationalization": "Internationalisering",
     "internationalizationSubtitle": "Sprog og valutaer",
     "organization": "Organisation",

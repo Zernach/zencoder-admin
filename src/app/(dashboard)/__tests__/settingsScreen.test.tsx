@@ -168,7 +168,6 @@ describe("SettingsScreen", () => {
     expect(getByText(/settings\.darkModeLabel/)).toBeTruthy();
     expect(getByText("settings.emailNotifications")).toBeTruthy();
     expect(getByText("settings.slackIntegration")).toBeTruthy();
-    expect(getByText("settings.autoRefresh")).toBeTruthy();
   });
 
   it("does not render Create Team button in settings", () => {

@@ -252,8 +252,6 @@
     "emailDescription": "Recibir alertas por correo ante anomalías",
     "slackIntegration": "Integración con Slack",
     "slackDescription": "Publicar alertas en un canal de Slack",
-    "autoRefresh": "Actualización automática",
-    "autoRefreshDescription": "Actualizar datos del panel cada 30 segundos",
     "internationalization": "Internacionalización",
     "internationalizationSubtitle": "Idiomas y monedas",
     "organization": "Organización",

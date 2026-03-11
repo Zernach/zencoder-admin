@@ -252,8 +252,6 @@
     "emailDescription": "Receive email alerts for anomalies",
     "slackIntegration": "Slack Integration",
     "slackDescription": "Post alerts to Slack channel",
-    "autoRefresh": "Auto-refresh",
-    "autoRefreshDescription": "Refresh dashboard data every 30 seconds",
     "internationalization": "Internationalization",
     "internationalizationSubtitle": "Languages and currencies",
     "organization": "Organization",

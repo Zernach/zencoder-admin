@@ -252,8 +252,6 @@
     "emailDescription": "E-mail értesítések fogadása anomáliákról",
     "slackIntegration": "Slack integráció",
     "slackDescription": "Értesítések küldése a Slack csatornára",
-    "autoRefresh": "Automatikus frissítés",
-    "autoRefreshDescription": "Irányítópult adatainak frissítése 30 másodpercenként",
     "internationalization": "Nemzetköziesítés",
     "internationalizationSubtitle": "Nyelvek és pénznemek",
     "organization": "Szervezet",

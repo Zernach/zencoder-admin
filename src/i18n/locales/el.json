@@ -252,8 +252,6 @@
     "emailDescription": "Λήψη ειδοποιήσεων email για ανωμαλίες",
     "slackIntegration": "Ενσωμάτωση Slack",
     "slackDescription": "Δημοσίευση ειδοποιήσεων στο κανάλι Slack",
-    "autoRefresh": "Αυτόματη Ανανέωση",
-    "autoRefreshDescription": "Ανανέωση δεδομένων πίνακα κάθε 30 δευτερόλεπτα",
     "internationalization": "Διεθνοποίηση",
     "internationalizationSubtitle": "Γλώσσες και νομίσματα",
     "organization": "Οργανισμός",
