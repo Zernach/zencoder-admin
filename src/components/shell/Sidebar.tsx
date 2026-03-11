@@ -20,7 +20,13 @@ import { SidebarNavItem } from "./SidebarNavItem";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { isWeb } from "@/constants/platform";
-import { isRouteActive, ROUTES, type NavRoute, type TABS } from "@/constants/routes";
+import {
+  isRouteActive,
+  ROUTES,
+  getRouteForTab,
+  type NavRoute,
+  type TABS,
+} from "@/constants/routes";
 import { TOP_NAV_ITEMS, hasSubsections, getSubsections } from "@/constants/navigation";
 import { SidebarSubsectionItem } from "./SidebarSubsectionItem";
 import { useSectionScroll } from "@/hooks/useSectionScroll";
@@ -73,6 +79,8 @@ export const Sidebar = React.memo(function Sidebar() {
       let handler = navPressHandlers.get(route);
       if (!handler) {
         handler = () => {
+          const isPrimaryTabRoute = route === ROUTES.ROOT || route === getRouteForTab(tab);
+
           if (isRouteActive(pathnameRef.current, route)) {
             // Active tab pressed — reset stack to root (no-op if already at root).
             // Dashboard has two root paths: "/" and "/dashboard".
@@ -83,6 +91,12 @@ export const Sidebar = React.memo(function Sidebar() {
             }
             return;
           }
+
+          if (!isPrimaryTabRoute) {
+            routerRef.current.navigate(route as never);
+            return;
+          }
+
           // Inactive tab — jump without resetting its stack
           const tabNav = findTabNavigator(navigationRef.current, tab);
           if (tabNav) {

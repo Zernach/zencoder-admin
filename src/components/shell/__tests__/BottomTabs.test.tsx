@@ -32,7 +32,7 @@ jest.mock("lucide-react-native", () => {
     Bot: Icon,
     DollarSign: Icon,
     Shield: Icon,
-    Settings: Icon,
+    MessageSquare: Icon,
   };
 });
 
@@ -106,5 +106,15 @@ describe("BottomTabs", () => {
 
     expect(mockDispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("navigates directly to chat history when pressing chat tab", () => {
+    mockPathname = ROUTES.AGENTS;
+    const { getByLabelText } = render(<BottomTabs />);
+
+    fireEvent.press(getByLabelText("navigation.settings"));
+
+    expect(mockDispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith("/settings/chat/history");
   });
 });

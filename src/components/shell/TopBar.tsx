@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { CustomModal } from "@/components/modals";
 import type { TextInput as TextInputHandle } from "react-native";
-import { Search, Clock, X } from "lucide-react-native";
+import { Search, Clock, X, CircleUserRound } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
@@ -14,7 +14,7 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { CustomTextInput } from "@/components/inputs";
 import { SearchAutocompletePanel } from "@/components/search";
-import { buildEntityRoute } from "@/constants/routes";
+import { buildEntityRoute, ROUTES } from "@/constants/routes";
 import { isIos } from "@/constants";
 import { useAppSelector, selectMostRecentTab } from "@/store";
 import { spacing, radius } from "@/theme/tokens";
@@ -165,6 +165,13 @@ export const TopBar = React.memo(function TopBar({
     [],
   );
 
+  const handleOpenSettings = useCallback(
+    () => {
+      router.push(ROUTES.SETTINGS as never);
+    },
+    [router],
+  );
+
   const closeTimeRangeOverlay = useCallback(
     () => setTimeRangeOverlayVisible(false),
     [],
@@ -247,8 +254,8 @@ export const TopBar = React.memo(function TopBar({
           />
         </View>
       </View>
-      {showTimeRange && (
-        <View style={styles.right}>
+      <View style={styles.right}>
+        {showTimeRange && (
           <CustomButton
             style={presetBtnStyle}
             buttonMode="surface"
@@ -264,8 +271,18 @@ export const TopBar = React.memo(function TopBar({
               {presetButtonLabel}
             </Text>
           </CustomButton>
-        </View>
-      )}
+        )}
+        <CustomButton
+          style={styles.profileBtn}
+          buttonMode="surface"
+          buttonSize="iconSm"
+          accessibilityRole="button"
+          accessibilityLabel="Open settings"
+          onPress={handleOpenSettings}
+        >
+          <CircleUserRound size={16} color={theme.text.secondary} />
+        </CustomButton>
+      </View>
       <CustomModal
         visible={isTimeRangeOverlayVisible}
         onClose={closeTimeRangeOverlay}
@@ -384,6 +401,11 @@ const styles = StyleSheet.create({
   },
   presetText: {
     fontSize: CONTROL_TEXT_SIZE,
+  },
+  profileBtn: {
+    width: CONTROL_HEIGHT,
+    height: CONTROL_HEIGHT,
+    borderRadius: radius.full,
   },
   timeRangePanel: {
     padding: spacing[12],

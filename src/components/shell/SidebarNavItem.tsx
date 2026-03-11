@@ -13,12 +13,12 @@ import type { LucideIcon } from "lucide-react-native";
 import { motion } from "@/theme/motion";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
-import type { ROUTES } from "@/constants/routes";
+import type { NavRoute } from "@/constants/routes";
 
 interface SidebarNavItemProps {
   icon: LucideIcon;
   label: string;
-  route: ROUTES;
+  route: NavRoute;
   badge?: number;
   active: boolean;
   expanded: boolean;

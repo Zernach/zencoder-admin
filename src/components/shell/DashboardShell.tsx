@@ -1,16 +1,13 @@
 import React, { useEffect, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
-import { usePathname } from "expo-router";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useAppDispatch } from "@/store";
 import { setSidebarExpanded } from "@/store/slices/sidebarSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
-import { isChatRoute } from "@/constants/routes";
 import { SectionScrollProvider } from "@/hooks/useSectionScroll";
 import { Sidebar } from "./Sidebar";
 import { BottomTabs } from "./BottomTabs";
-import { FloatingChatButton } from "./FloatingChatButton";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -19,11 +16,9 @@ interface DashboardShellProps {
 export const DashboardShell = React.memo(function DashboardShell({ children }: DashboardShellProps) {
   const bp = useBreakpoint();
   const dispatch = useAppDispatch();
-  const pathname = usePathname();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const isMobile = bp === "mobile";
-  const onChatRoute = isChatRoute(pathname);
 
   useEffect(() => {
     if (bp === "tablet") dispatch(setSidebarExpanded(false));
@@ -43,8 +38,7 @@ export const DashboardShell = React.memo(function DashboardShell({ children }: D
         )}
         <View style={styles.main}>
           {children}
-          {isMobile && !onChatRoute && <BottomTabs />}
-          {!onChatRoute && <FloatingChatButton />}
+          {isMobile && <BottomTabs />}
         </View>
       </View>
     </SectionScrollProvider>

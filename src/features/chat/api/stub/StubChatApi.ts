@@ -1,7 +1,7 @@
 import { TABS } from "@/constants/routes";
 import type { IChatApi } from "@/features/chat/api/IChatApi";
 import {
-  CHAT_TOPICS,
+  type ChatConversationStatus,
   type ChatConversationSummary,
   type ChatMessage,
   type ChatTopic,
@@ -27,36 +27,481 @@ interface ConversationFixture {
   messages: ChatMessage[];
 }
 
-const TOPICS_BY_TAB: Record<TABS, string[]> = {
+interface ConversationTemplateMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+interface ConversationTemplate {
+  title: string;
+  topics: ChatTopic[];
+  status: ChatConversationStatus;
+  unreadCount: number;
+  startedMinutesAgo: number;
+  gapMinutes: number;
+  messages: ConversationTemplateMessage[];
+}
+
+const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
   [TABS.DASHBOARD]: [
-    "Dashboard rollout summary",
-    "KPI anomaly investigation",
-    "Executive weekly digest",
-    "Live assistant incident follow-up",
+    {
+      title: "Q1 executive snapshot before board readout",
+      topics: ["Support", "Costs"],
+      status: "active",
+      unreadCount: 2,
+      startedMinutesAgo: 88,
+      gapMinutes: 10,
+      messages: [
+        {
+          role: "user",
+          content:
+            "I need a one-page snapshot: run success rate, total cost, and top 3 risky teams for the last 7 days.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Drafted. Success rate is 97.6%, spend is $182,340, and the highest-risk teams are Payments Ops, Claims Intake, and Customer Automation.",
+        },
+        {
+          role: "user",
+          content:
+            "Add a callout for why Payments Ops risk went up this week.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Added: policy bypass attempts increased 31% after the provider failover on Tuesday, which raised manual review volume.",
+        },
+      ],
+    },
+    {
+      title: "KPI anomaly triage for failed checkouts",
+      topics: ["Agents", "Governance"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 305,
+      gapMinutes: 12,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Checkout failure rate jumped this morning. Can you isolate whether this is model quality or policy blocks?",
+        },
+        {
+          role: "assistant",
+          content:
+            "Most of the spike is policy-related: 68% of failed runs were blocked by the high-risk card rule, not generation quality regressions.",
+        },
+        {
+          role: "user",
+          content:
+            "Which project contributed the most?",
+        },
+        {
+          role: "assistant",
+          content:
+            "Checkout Assist - EU contributed 42% of blocked runs. Suggest temporarily lowering strictness for known low-risk merchants.",
+        },
+      ],
+    },
+    {
+      title: "Weekly digest wording for leadership Slack",
+      topics: ["Support"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 980,
+      gapMinutes: 18,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Rewrite the weekly update to be less technical. Keep three bullets and one action item.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Shared a plain-language version focused on reliability, customer impact, and spend trend. Added action item to expand canary coverage.",
+        },
+      ],
+    },
+    {
+      title: "Follow-up after live assistant timeout incident",
+      topics: ["Agents", "Support"],
+      status: "archived",
+      unreadCount: 0,
+      startedMinutesAgo: 3240,
+      gapMinutes: 22,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Capture what we learned from yesterday's timeout incident and what we changed.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Summary prepared: root cause was queue saturation in us-east, mitigation was retry backoff + queue cap, and we added a 5-minute saturation alert.",
+        },
+      ],
+    },
   ],
   [TABS.AGENTS]: [
-    "Agent retry strategy tuning",
-    "Failure category triage",
-    "Queue wait optimization",
-    "Model provider fallback plan",
+    {
+      title: "Retry policy tuning for Agent-ops-router",
+      topics: ["Agents"],
+      status: "active",
+      unreadCount: 1,
+      startedMinutesAgo: 55,
+      gapMinutes: 9,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Should we increase retries from 2 to 3 for agent-ops-router given the overnight 5xx burst?",
+        },
+        {
+          role: "assistant",
+          content:
+            "Recommend keeping max retries at 2 and adding jittered backoff. Going to 3 improves completion only 0.6% but increases P95 latency by 11%.",
+        },
+        {
+          role: "user",
+          content:
+            "What if we scope that change only to low-priority queues?",
+        },
+        {
+          role: "assistant",
+          content:
+            "That is safer. Low-priority only adds 1.8% cost and avoids customer-facing latency impact.",
+        },
+      ],
+    },
+    {
+      title: "Failure category triage by model family",
+      topics: ["Agents"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 420,
+      gapMinutes: 11,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Group failures by model family and show which categories are trending up week over week.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Reasoning failure is up 14% on alpha-3-small, while schema mismatch is up 9% on beta-2-fast. Other categories are flat.",
+        },
+      ],
+    },
+    {
+      title: "Queue wait optimization plan for APAC",
+      topics: ["Agents"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 1460,
+      gapMinutes: 15,
+      messages: [
+        {
+          role: "user",
+          content:
+            "APAC queue wait crossed 2s again. Give me a concrete mitigation sequence.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Plan: reserve 15% burst capacity for APAC, rebalance stale jobs every 30s, then run a two-hour canary before full rollout.",
+        },
+      ],
+    },
+    {
+      title: "Provider fallback thresholds and guardrails",
+      topics: ["Agents"],
+      status: "archived",
+      unreadCount: 0,
+      startedMinutesAgo: 3780,
+      gapMinutes: 20,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Document fallback triggers between primary and secondary providers with rollback criteria.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Captured thresholds: failover at 2% sustained errors for 3 minutes, rollback after 20 minutes stable under 0.7% errors.",
+        },
+      ],
+    },
   ],
   [TABS.COSTS]: [
-    "Cost spike root-cause",
-    "Monthly budget forecast",
-    "Token efficiency opportunities",
-    "Provider spend split review",
+    {
+      title: "Root cause analysis for today's spend spike",
+      topics: ["Costs"],
+      status: "active",
+      unreadCount: 1,
+      startedMinutesAgo: 64,
+      gapMinutes: 8,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Costs jumped 19% since 09:00. What changed by project and model?",
+        },
+        {
+          role: "assistant",
+          content:
+            "Primary driver is Claims Intake, up $6.1k due to context window growth after prompt expansion. Model mix stayed mostly constant.",
+        },
+        {
+          role: "user",
+          content:
+            "Can we contain this today without breaking response quality?",
+        },
+        {
+          role: "assistant",
+          content:
+            "Yes. Trim retrieval chunks from 10 to 6 and cap assistant response length to 700 tokens for that flow. Estimated same-day savings: $2.3k.",
+        },
+      ],
+    },
+    {
+      title: "Forecast confidence for end-of-month budget",
+      topics: ["Costs", "Support"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 610,
+      gapMinutes: 13,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Given current trend, are we likely to exceed this month's budget?",
+        },
+        {
+          role: "assistant",
+          content:
+            "Projection lands at 94% of budget with medium confidence. Biggest risk is weekend promotional traffic in support workflows.",
+        },
+      ],
+    },
+    {
+      title: "Token efficiency opportunities in support flows",
+      topics: ["Costs", "Agents"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 1710,
+      gapMinutes: 17,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Find low-risk opportunities to reduce tokens in support conversations.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Three opportunities identified: shorter system preamble, deduplicated citations, and answer template compression. Combined savings around 7.4%.",
+        },
+      ],
+    },
+    {
+      title: "Provider spend split for procurement review",
+      topics: ["Costs"],
+      status: "archived",
+      unreadCount: 0,
+      startedMinutesAgo: 4320,
+      gapMinutes: 24,
+      messages: [
+        {
+          role: "user",
+          content:
+            "I need a provider split summary for procurement: spend, reliability, and lock-in risk.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Prepared with recommendation to keep dual-provider strategy. Primary handles 71% spend with best reliability, secondary maintains failover resilience.",
+        },
+      ],
+    },
   ],
   [TABS.GOVERNANCE]: [
-    "Policy exception review",
-    "Violation trend analysis",
-    "Security event escalation",
-    "Audit summary prep",
+    {
+      title: "Policy exception request for enterprise rollout",
+      topics: ["Governance", "Support"],
+      status: "active",
+      unreadCount: 0,
+      startedMinutesAgo: 140,
+      gapMinutes: 9,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Can we approve a temporary exception for enterprise onboarding while we tune the PII detector?",
+        },
+        {
+          role: "assistant",
+          content:
+            "Possible with guardrails. Limit to allowlisted accounts, enforce human review, and auto-expire in 14 days.",
+        },
+        {
+          role: "user",
+          content:
+            "Add approval language for legal and security sign-off.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Added wording plus rollback trigger: revoke immediately if false-negative rate exceeds 0.5% over 24 hours.",
+        },
+      ],
+    },
+    {
+      title: "Violation trend analysis by policy class",
+      topics: ["Governance"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 730,
+      gapMinutes: 14,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Break down violations by policy class and flag anything accelerating.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Prompt injection and unsafe external link classes are rising fastest, up 18% and 11% week over week respectively.",
+        },
+      ],
+    },
+    {
+      title: "Security escalation timeline draft",
+      topics: ["Governance", "Agents"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 2100,
+      gapMinutes: 20,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Draft a timeline for the security incident review with key checkpoints and owners.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Timeline drafted with detection, containment, remediation, and postmortem milestones plus owner assignment for each phase.",
+        },
+      ],
+    },
+    {
+      title: "Quarterly audit summary prep",
+      topics: ["Governance"],
+      status: "archived",
+      unreadCount: 0,
+      startedMinutesAgo: 5100,
+      gapMinutes: 28,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Assemble a concise quarterly audit summary with policy coverage and exception counts.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Prepared and organized by control family, with exception aging and closure-rate trend included for audit committee review.",
+        },
+      ],
+    },
   ],
   [TABS.SETTINGS]: [
-    "Workspace defaults cleanup",
-    "Language preference rollout",
-    "Currency migration checklist",
-    "Access control update",
+    {
+      title: "Workspace defaults cleanup for new teams",
+      topics: ["Support"],
+      status: "active",
+      unreadCount: 0,
+      startedMinutesAgo: 210,
+      gapMinutes: 10,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Our new teams inherit noisy notification defaults. Suggest a cleaner baseline profile.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Recommended baseline: critical alerts only, daily digest at 09:00 local time, and weekly cost summary enabled.",
+        },
+      ],
+    },
+    {
+      title: "Language rollout checklist for EMEA",
+      topics: ["Support"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 860,
+      gapMinutes: 16,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Create a rollout checklist for enabling French, German, and Spanish across the org.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Checklist prepared with translation QA, fallback locale behavior, and phased enablement by team.",
+        },
+      ],
+    },
+    {
+      title: "Currency migration readiness review",
+      topics: ["Support", "Costs"],
+      status: "completed",
+      unreadCount: 0,
+      startedMinutesAgo: 2490,
+      gapMinutes: 22,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Are we ready to switch default reporting currency to EUR for the parent workspace?",
+        },
+        {
+          role: "assistant",
+          content:
+            "Almost. Conversion settings are in place, but two downstream exports still assume USD labels.",
+        },
+      ],
+    },
+    {
+      title: "Access control policy update and communication",
+      topics: ["Support", "Governance"],
+      status: "archived",
+      unreadCount: 0,
+      startedMinutesAgo: 5760,
+      gapMinutes: 30,
+      messages: [
+        {
+          role: "user",
+          content:
+            "Draft user-facing comms for upcoming access control changes and impact on legacy admins.",
+        },
+        {
+          role: "assistant",
+          content:
+            "Draft created with timeline, affected roles, migration guidance, and support escalation path for blocked access.",
+        },
+      ],
+    },
   ],
 };
 
@@ -71,53 +516,38 @@ function subtractMinutes(now: Date, minutes: number): Date {
   return new Date(now.getTime() - minutes * 60_000);
 }
 
+function addMinutes(date: Date, minutes: number): Date {
+  return new Date(date.getTime() + minutes * 60_000);
+}
+
 function buildConversation(
   tab: TABS,
   index: number,
-  topics: ChatTopic[],
-  title: string,
+  template: ConversationTemplate,
   now: Date,
 ): ConversationFixture {
   const chatId = `${tab}-chat-${index + 1}`;
-  const openedAt = subtractMinutes(now, 240 + index * 65);
-  const questionAt = subtractMinutes(now, 80 + index * 18);
-  const answerAt = subtractMinutes(now, 45 + index * 12);
-  const followupAt = subtractMinutes(now, 20 + index * 7);
-
-  const messages: ChatMessage[] = [
-    {
-      id: `${chatId}-m1`,
+  const startedAt = subtractMinutes(now, template.startedMinutesAgo);
+  const systemMessage: ChatMessage = {
+    id: `${chatId}-m1`,
+    chatId,
+    role: "system",
+    authorName: "System",
+    content: `Workspace context loaded for ${tab} with team, project, and time-range filters.`,
+    createdAtIso: startedAt.toISOString(),
+  };
+  const conversationMessages = template.messages.map((message, messageIndex) => {
+    const createdAt = addMinutes(startedAt, (messageIndex + 1) * template.gapMinutes);
+    return {
+      id: `${chatId}-m${messageIndex + 2}`,
       chatId,
-      role: "system",
-      authorName: "System",
-      content: `Context initialized for ${tab} workflows and current filters.`,
-      createdAtIso: openedAt.toISOString(),
-    },
-    {
-      id: `${chatId}-m2`,
-      chatId,
-      role: "user",
-      authorName: "Admin",
-      content: `Help me evaluate: ${title.toLowerCase()}.`,
-      createdAtIso: questionAt.toISOString(),
-    },
-    {
-      id: `${chatId}-m3`,
-      chatId,
-      role: "assistant",
-      authorName: "Zencoder Assistant",
-      content: "I prepared a concise analysis with impact, confidence, and next-step recommendations.",
-      createdAtIso: answerAt.toISOString(),
-    },
-    {
-      id: `${chatId}-m4`,
-      chatId,
-      role: "assistant",
-      authorName: "Zencoder Assistant",
-      content: "Would you like me to export this as an action checklist for your team?",
-      createdAtIso: followupAt.toISOString(),
-    },
-  ];
+      role: message.role,
+      authorName: message.role === "assistant" ? "Zencoder Assistant" : "Admin",
+      content: message.content,
+      createdAtIso: createdAt.toISOString(),
+    } satisfies ChatMessage;
+  });
+  const messages: ChatMessage[] = [systemMessage, ...conversationMessages];
 
   const lastMessage = messages[messages.length - 1];
 
@@ -125,13 +555,13 @@ function buildConversation(
     summary: {
       id: chatId,
       tab,
-      topics,
-      title,
+      topics: template.topics,
+      title: template.title,
       preview: lastMessage ? lastMessage.content : "",
       updatedAtIso: lastMessage ? lastMessage.createdAtIso : now.toISOString(),
       messageCount: messages.length,
-      unreadCount: index < 2 ? 2 - index : 0,
-      status: index === 0 ? "active" : "completed",
+      unreadCount: template.unreadCount,
+      status: template.status,
     },
     messages,
   };
@@ -139,23 +569,20 @@ function buildConversation(
 
 function buildFixtures(now: Date): Record<TABS, ConversationFixture[]> {
   return {
-    [TABS.DASHBOARD]: TOPICS_BY_TAB[TABS.DASHBOARD].map((title, index) => {
-      const primary = CHAT_TOPICS[index % CHAT_TOPICS.length] ?? "Support";
-      const secondary = CHAT_TOPICS[(index + 1) % CHAT_TOPICS.length] ?? "Support";
-      const topics: ChatTopic[] = index % 2 === 0 ? [primary, secondary] : [primary];
-      return buildConversation(TABS.DASHBOARD, index, topics, title, now);
-    }),
-    [TABS.AGENTS]: TOPICS_BY_TAB[TABS.AGENTS].map((title, index) =>
-      buildConversation(TABS.AGENTS, index, [TOPIC_BY_TAB[TABS.AGENTS]], title, now),
+    [TABS.DASHBOARD]: TEMPLATES_BY_TAB[TABS.DASHBOARD].map((template, index) =>
+      buildConversation(TABS.DASHBOARD, index, template, now),
     ),
-    [TABS.COSTS]: TOPICS_BY_TAB[TABS.COSTS].map((title, index) =>
-      buildConversation(TABS.COSTS, index, [TOPIC_BY_TAB[TABS.COSTS]], title, now),
+    [TABS.AGENTS]: TEMPLATES_BY_TAB[TABS.AGENTS].map((template, index) =>
+      buildConversation(TABS.AGENTS, index, template, now),
     ),
-    [TABS.GOVERNANCE]: TOPICS_BY_TAB[TABS.GOVERNANCE].map((title, index) =>
-      buildConversation(TABS.GOVERNANCE, index, [TOPIC_BY_TAB[TABS.GOVERNANCE]], title, now),
+    [TABS.COSTS]: TEMPLATES_BY_TAB[TABS.COSTS].map((template, index) =>
+      buildConversation(TABS.COSTS, index, template, now),
     ),
-    [TABS.SETTINGS]: TOPICS_BY_TAB[TABS.SETTINGS].map((title, index) =>
-      buildConversation(TABS.SETTINGS, index, [TOPIC_BY_TAB[TABS.SETTINGS]], title, now),
+    [TABS.GOVERNANCE]: TEMPLATES_BY_TAB[TABS.GOVERNANCE].map((template, index) =>
+      buildConversation(TABS.GOVERNANCE, index, template, now),
+    ),
+    [TABS.SETTINGS]: TEMPLATES_BY_TAB[TABS.SETTINGS].map((template, index) =>
+      buildConversation(TABS.SETTINGS, index, template, now),
     ),
   };
 }

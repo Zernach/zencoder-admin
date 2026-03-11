@@ -214,7 +214,6 @@ export function CreateChatScreen({ tab }: CreateChatScreenProps) {
 const styles = StyleSheet.create({
   container: {
     gap: spacing[20],
-    maxWidth: 640,
   },
   welcomeCard: {
     borderWidth: borderWidth.hairline,

@@ -30,7 +30,7 @@ jest.mock("lucide-react-native", () => {
     Bot: Icon,
     DollarSign: Icon,
     Shield: Icon,
-    Settings: Icon,
+    MessageSquare: Icon,
     PanelLeftClose: Icon,
     PanelLeftOpen: Icon,
   };
@@ -98,6 +98,16 @@ describe("Sidebar — subsection rendering", () => {
     fireEvent.press(getByLabelText("navigation.home"));
 
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("navigates directly to chat history when pressing chat tab", () => {
+    mockPathname = ROUTES.AGENTS;
+    const { getByLabelText } = renderSidebar(true);
+
+    fireEvent.press(getByLabelText("navigation.settings"));
+
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith("/settings/chat/history");
   });
 
   it("shows agents subsections when agents is active and expanded", () => {

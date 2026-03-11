@@ -22,7 +22,8 @@ export enum ROUTES {
 }
 
 export type TabRoute = Exclude<ROUTES, ROUTES.ROOT>;
-export type NavRoute = ROUTES.ROOT | TabRoute;
+export const SETTINGS_CHAT_HISTORY_ROUTE = `${ROUTES.SETTINGS}/chat/history` as const;
+export type NavRoute = ROUTES.ROOT | TabRoute | typeof SETTINGS_CHAT_HISTORY_ROUTE;
 
 export const TAB_ORDER = [
   TABS.DASHBOARD,

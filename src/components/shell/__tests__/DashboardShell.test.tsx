@@ -4,12 +4,7 @@ import { render } from "@testing-library/react-native";
 import { DashboardShell } from "../DashboardShell";
 
 const mockDispatch = jest.fn();
-let mockPathname = "/agents";
 let mockBreakpoint: "mobile" | "tablet" | "desktop" = "mobile";
-
-jest.mock("expo-router", () => ({
-  usePathname: () => mockPathname,
-}));
 
 jest.mock("@/hooks/useBreakpoint", () => ({
   useBreakpoint: () => mockBreakpoint,
@@ -37,21 +32,13 @@ jest.mock("../BottomTabs", () => ({
   },
 }));
 
-jest.mock("../FloatingChatButton", () => ({
-  FloatingChatButton: () => {
-    const { Text: MockText } = require("react-native");
-    return <MockText testID="floating-chat-fab" />;
-  },
-}));
-
-describe("DashboardShell route-aware chrome", () => {
+describe("DashboardShell chrome", () => {
   beforeEach(() => {
     mockDispatch.mockReset();
     mockBreakpoint = "mobile";
-    mockPathname = "/agents";
   });
 
-  it("shows bottom tabs and FAB on non-chat routes", () => {
+  it("shows bottom tabs on mobile", () => {
     const { queryByTestId } = render(
       <DashboardShell>
         <Text>content</Text>
@@ -59,12 +46,10 @@ describe("DashboardShell route-aware chrome", () => {
     );
 
     expect(queryByTestId("bottom-tabs")).toBeTruthy();
-    expect(queryByTestId("floating-chat-fab")).toBeTruthy();
   });
 
-  it("hides both tabs and FAB on chat history routes", () => {
-    mockPathname = "/agents/chat/history";
-
+  it("hides bottom tabs on desktop", () => {
+    mockBreakpoint = "desktop";
     const { queryByTestId } = render(
       <DashboardShell>
         <Text>content</Text>
@@ -72,11 +57,10 @@ describe("DashboardShell route-aware chrome", () => {
     );
 
     expect(queryByTestId("bottom-tabs")).toBeNull();
-    expect(queryByTestId("floating-chat-fab")).toBeNull();
   });
 
-  it("hides both tabs and FAB on chat thread routes", () => {
-    mockPathname = "/agents/chat/history/thread-1";
+  it("hides sidebar on mobile", () => {
+    mockBreakpoint = "mobile";
 
     const { queryByTestId } = render(
       <DashboardShell>
@@ -84,12 +68,12 @@ describe("DashboardShell route-aware chrome", () => {
       </DashboardShell>,
     );
 
-    expect(queryByTestId("bottom-tabs")).toBeNull();
-    expect(queryByTestId("floating-chat-fab")).toBeNull();
+    expect(queryByTestId("bottom-tabs")).toBeTruthy();
+    expect(queryByTestId("sidebar")).toBeNull();
   });
 
-  it("hides both tabs and FAB on chat create routes", () => {
-    mockPathname = "/agents/chat/create";
+  it("shows sidebar on desktop", () => {
+    mockBreakpoint = "desktop";
 
     const { queryByTestId } = render(
       <DashboardShell>
@@ -97,7 +81,7 @@ describe("DashboardShell route-aware chrome", () => {
       </DashboardShell>,
     );
 
+    expect(queryByTestId("sidebar")).toBeTruthy();
     expect(queryByTestId("bottom-tabs")).toBeNull();
-    expect(queryByTestId("floating-chat-fab")).toBeNull();
   });
 });

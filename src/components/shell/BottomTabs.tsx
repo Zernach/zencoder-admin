@@ -8,7 +8,13 @@ import { TabActions } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
-import { isRouteActive, ROUTES, TABS, type NavRoute } from "@/constants/routes";
+import {
+  isRouteActive,
+  ROUTES,
+  TABS,
+  getRouteForTab,
+  type NavRoute,
+} from "@/constants/routes";
 import { TOP_NAV_ITEMS } from "@/constants/navigation";
 import { spacing, radius } from "@/theme/tokens";
 
@@ -47,6 +53,8 @@ export const BottomTabs = React.memo(function BottomTabs() {
 
   const handleTabPress = useCallback(
     (tab: TABS, route: NavRoute, active: boolean) => {
+      const isPrimaryTabRoute = route === ROUTES.ROOT || route === getRouteForTab(tab);
+
       if (active) {
         // Already at tab root — no-op. Dashboard has two root paths: "/" and "/dashboard".
         const atRoot = pathnameRef.current === route
@@ -54,6 +62,11 @@ export const BottomTabs = React.memo(function BottomTabs() {
         if (!atRoot) {
           router.navigate(route as never);
         }
+        return;
+      }
+
+      if (!isPrimaryTabRoute) {
+        router.navigate(route as never);
         return;
       }
 

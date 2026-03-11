@@ -18,7 +18,7 @@ describe("i18n config", () => {
     expect(i18n.t("navigation.agents")).toBe("Agents");
     expect(i18n.t("navigation.costs")).toBe("Costs");
     expect(i18n.t("navigation.governance")).toBe("Governance");
-    expect(i18n.t("navigation.settings")).toBe("Settings");
+    expect(i18n.t("navigation.settings")).toBe("Chat");
   });
 
   it("loads English translations for dashboard keys", () => {

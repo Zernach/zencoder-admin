@@ -21,6 +21,7 @@ jest.mock("lucide-react-native", () => ({
   Filter: () => null,
   Clock: () => null,
   X: () => null,
+  CircleUserRound: () => null,
 }));
 
 jest.mock("@/providers/ThemeProvider", () => ({
@@ -126,6 +127,14 @@ describe("TopBar", () => {
     fireEvent.press(getByLabelText("search.clearSearch"));
 
     expect(mockClear).toHaveBeenCalled();
+  });
+
+  it("navigates to settings when profile button is pressed", () => {
+    const { getByLabelText } = renderTopBar();
+
+    fireEvent.press(getByLabelText("Open settings"));
+
+    expect(mockPush).toHaveBeenCalledWith("/settings");
   });
 
   it("does not dispatch setSearchQuery to Redux while typing", () => {

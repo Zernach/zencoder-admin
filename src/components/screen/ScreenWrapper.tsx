@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, StatusBar, StyleSheet } from "react-native";
+import { View, StatusBar, StyleSheet, Platform } from "react-native";
 import type { ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -71,9 +71,10 @@ const ScreenWrapper = React.memo(function ScreenWrapper({
   const headerContainerStyle = useMemo(
     () => [
       styles.headerContainer,
+      showTopBar ? styles.headerContainerWithTopBar : styles.headerContainerStandalone,
       { paddingHorizontal: headerHorizontalPadding },
     ],
-    [headerHorizontalPadding],
+    [headerHorizontalPadding, showTopBar],
   );
   const filterBarContainerStyle = useMemo(
     () => [styles.filterBarContainer, { paddingHorizontal: headerHorizontalPadding }],
@@ -109,7 +110,7 @@ export default ScreenWrapper;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: layout.sectionGap,
+    gap: spacing[16],
   },
   content: {
     gap: layout.sectionGap,
@@ -117,6 +118,13 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingTop: spacing[2],
+    paddingBottom: spacing[12],
+  },
+  headerContainerWithTopBar: {
+    paddingTop: Platform.OS === "web" ? spacing[2] : spacing[0],
+  },
+  headerContainerStandalone: {
+    paddingTop: Platform.OS === "web" ? spacing[8] : spacing[4],
   },
   filterBarContainer: {
     paddingTop: spacing[0],

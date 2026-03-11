@@ -5,7 +5,7 @@ import {
   getSubsectionById,
   hasSubsections,
 } from "../navigation";
-import { ROUTES } from "../routes";
+import { ROUTES, SETTINGS_CHAT_HISTORY_ROUTE } from "../routes";
 
 describe("TOP_NAV_ITEMS", () => {
   it("contains all 5 top-level routes", () => {
@@ -14,7 +14,7 @@ describe("TOP_NAV_ITEMS", () => {
     expect(routes).toContain(ROUTES.AGENTS);
     expect(routes).toContain(ROUTES.COSTS);
     expect(routes).toContain(ROUTES.GOVERNANCE);
-    expect(routes).toContain(ROUTES.SETTINGS);
+    expect(routes).toContain(SETTINGS_CHAT_HISTORY_ROUTE);
     expect(routes).not.toContain(ROUTES.DASHBOARD);
     expect(TOP_NAV_ITEMS.length).toBe(5);
   });
