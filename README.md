@@ -13,7 +13,7 @@
 
 Cross-platform admin dashboard for AI coding agent analytics, built with Expo + React Native + TypeScript.
 
-## Overview
+## ⚙️ Overview
 
 This app supports all primary platforms from one codebase:
 
@@ -23,7 +23,31 @@ This app supports all primary platforms from one codebase:
 
 This repository is frontend-first and currently uses a fully stubbed analytics backend. All dashboard data comes from deterministic seed fixtures through typed interfaces, so real APIs can be swapped in later without changing screen code.
 
-## Product Areas
+## ⚙️ Getting Started
+
+### Prerequisites
+
+- Node.js `>=22 <24`
+- npm
+- Xcode (iOS local runs)
+- Android Studio (Android local runs)
+
+### Install
+
+```bash
+npm install
+```
+
+### Run
+
+```bash
+npm start        # Expo dev server
+npm run web      # Web
+npm run ios      # iOS
+npm run android  # Android
+```
+
+## ⚙️ Product Areas
 
 Main tabs:
 
@@ -47,7 +71,7 @@ Global UX available across dashboard screens:
 - Time range presets (`24h`, `7d`, `30d`, `90d`)
 - Per-tab entity detail routes (`/dashboard/agent/:agentId`, `/agents/run/:runId`, etc.)
 
-## Architecture
+## ⚙️ Architecture
 
 Primary data flow:
 
@@ -67,7 +91,7 @@ Shared contracts:
 - All API/domain contracts are defined in `src/features/analytics/types/contracts.ts`.
 - The same types are consumed by UI hooks, service layer, and stub API.
 
-## Project Structure
+## ⚙️ Project Structure
 
 ```text
 src/
@@ -93,46 +117,7 @@ src/
   theme/                   Tokens, theme objects, typography, breakpoints
 ```
 
-## Tech Stack
-
-- Expo 55
-- React 19
-- React Native 0.83
-- TypeScript (strict mode)
-- Expo Router
-- Redux Toolkit + RTK Query
-- i18next / react-i18next
-- React Native Reanimated + Moti
-- Victory Native + D3 + react-native-svg
-- Jest + React Native Testing Library
-- Playwright (web E2E)
-- Cloudflare Pages (Wrangler)
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js `>=22 <24`
-- npm
-- Xcode (iOS local runs)
-- Android Studio (Android local runs)
-
-### Install
-
-```bash
-npm install
-```
-
-### Run
-
-```bash
-npm start        # Expo dev server
-npm run web      # Web
-npm run ios      # iOS
-npm run android  # Android
-```
-
-## Scripts
+## ⚙️ Scripts
 
 ```bash
 npm run typecheck   # TypeScript check
@@ -157,10 +142,24 @@ Notes:
 - Theme mode support: dark/light
 - Currency and language preferences are managed in Redux settings state
 
+## ⚙️ Tech Stack
+
+- Expo 55 / React 19 / React Native 0.83
+- TypeScript (strict mode)
+- Expo Router
+- Redux Toolkit + RTK Query
+- i18next / react-i18next
+- React Native Reanimated + Moti
+- Victory Native + D3 + react-native-svg
+- Jest + React Native Testing Library
+- Playwright (web E2E)
+- Cloudflare Pages (Wrangler)
+
 ## Deployment
 
 `npm run deploy` exports the web build and deploys `dist/` to Cloudflare Pages using Wrangler (`zencoder-submission`).
 
 ## License
 
-Private repository. All rights reserved.
+https://zencoder.ai/
+All rights reserved.
