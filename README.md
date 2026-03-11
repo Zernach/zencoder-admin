@@ -155,11 +155,11 @@ Notes:
 - Playwright (web E2E)
 - Cloudflare Pages (Wrangler)
 
-## Deployment
+## ⚙️ Deployment
 
 `npm run deploy` exports the web build and deploys `dist/` to Cloudflare Pages using Wrangler (`zencoder-submission`).
 
-## License
+## ⚙️ License
 
 https://zencoder.ai/
 All rights reserved.
