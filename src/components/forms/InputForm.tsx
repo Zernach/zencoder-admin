@@ -105,9 +105,15 @@ export function InputForm({
           {onCancel ? (
             <CustomButton
               onPress={onCancel}
-              buttonMode="secondary"
+              buttonMode="unstyled"
               buttonSize="md"
               label={cancelLabel}
+              disablePressedStyle
+              textStyle={{ color: theme.text.secondary }}
+              style={({ pressed }) => [
+                styles.cancelButton,
+                { backgroundColor: pressed ? theme.bg.subtle : "transparent" },
+              ]}
               accessibilityRole="button"
               accessibilityLabel={cancelLabel}
             />
@@ -161,5 +167,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacing[12],
     marginTop: spacing[8],
+  },
+  cancelButton: {
+    borderRadius: radius.sm,
   },
 });

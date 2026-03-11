@@ -125,20 +125,16 @@ export function buildEntityRoute(
   entityId: string,
 ): string {
   if (entityType === "chat") {
-    return buildChatThreadRoute(tab, entityId);
+    return buildChatThreadRoute(entityId);
   }
 
   return `${getRouteForTab(tab)}/${ENTITY_SEGMENTS[entityType]}/${encodeURIComponent(entityId)}`;
 }
 
 function buildChatQuery(
-  tab: TABS,
   options?: { topics?: readonly string[] },
 ): string {
   const params = new URLSearchParams();
-  if (tab !== TABS.CHAT) {
-    params.set("tab", tab);
-  }
 
   if (options?.topics && options.topics.length > 0) {
     params.set("topics", options.topics.join(","));
@@ -149,18 +145,17 @@ function buildChatQuery(
 }
 
 export function buildChatHistoryRoute(
-  tab: TABS,
   options?: { topics?: readonly string[] },
 ): string {
-  return `${ROUTES.CHAT}${buildChatQuery(tab, options)}`;
+  return `${ROUTES.CHAT}${buildChatQuery(options)}`;
 }
 
 export function buildCreateChatRoute(): string {
   return `${ROUTES.CHAT}/create`;
 }
 
-export function buildChatThreadRoute(tab: TABS, chatId: string): string {
-  return `${ROUTES.CHAT}/${encodeURIComponent(chatId)}${buildChatQuery(tab)}`;
+export function buildChatThreadRoute(chatId: string): string {
+  return `${ROUTES.CHAT}/${encodeURIComponent(chatId)}`;
 }
 
 function getPathSegments(pathname: string): string[] {

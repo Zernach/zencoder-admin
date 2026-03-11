@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  type ListRenderItemInfo,
 } from "react-native";
 import { usePathname, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -18,6 +19,7 @@ import {
 } from "lucide-react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomTextInput } from "@/components/inputs";
+import { CustomList } from "@/components/lists";
 import { LoadingSkeleton } from "@/components/dashboard";
 import { useAppDependencies } from "@/core/di";
 import { useAppSelector } from "@/store/hooks";
@@ -36,7 +38,7 @@ import {
   filterChatHistoryByTopics,
   getDefaultTopicFiltersForTab,
 } from "@/features/chat/filters";
-import type { ChatTopic } from "@/features/chat/types";
+import type { ChatConversationSummary, ChatTopic } from "@/features/chat/types";
 import { formatRelativeTime } from "@/utils";
 import {
   getSuggestedPrompts,
@@ -163,20 +165,225 @@ export const MiniChatModal = React.memo(function MiniChatModal({
     [doSend],
   );
 
+  const renderSuggestedPrompt = useCallback(
+    ({ item: prompt }: ListRenderItemInfo<(typeof suggestedPrompts)[number]>) => (
+      <CustomButton
+        onPress={() => handleSuggestionPress(prompt.message)}
+        style={[
+          styles.suggestionChip,
+          {
+            borderColor: theme.border.default,
+            backgroundColor: theme.bg.canvas,
+          },
+        ]}
+        accessibilityLabel={prompt.label}
+        testID={`suggestion-${prompt.label}`}
+        disabled={sending}
+      >
+        <Text
+          style={[
+            styles.suggestionText,
+            { color: theme.text.primary },
+          ]}
+          numberOfLines={2}
+        >
+          {prompt.label}
+        </Text>
+      </CustomButton>
+    ),
+    [
+      handleSuggestionPress,
+      sending,
+      theme.bg.canvas,
+      theme.border.default,
+      theme.text.primary,
+    ],
+  );
+
+  const keySuggestedPrompt = useCallback(
+    (prompt: (typeof suggestedPrompts)[number]) => prompt.label,
+    [],
+  );
+
+  const renderSuggestionSeparator = useCallback(
+    () => <View style={styles.suggestionSeparator} />,
+    [],
+  );
+
+  const renderMiniMessage = useCallback(
+    ({ item: msg }: ListRenderItemInfo<MiniMessage>) => {
+      const isUser = msg.role === "user";
+      return (
+        <View
+          style={[
+            styles.miniMsgRow,
+            isUser
+              ? styles.miniMsgRowUser
+              : styles.miniMsgRowAssistant,
+          ]}
+        >
+          <View
+            style={[
+              styles.miniMsgBubble,
+              {
+                backgroundColor: isUser
+                  ? theme.bg.brandSubtle
+                  : theme.bg.subtle,
+                borderColor: theme.border.default,
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.miniMsgText,
+                { color: theme.text.primary },
+              ]}
+            >
+              {msg.content}
+            </Text>
+          </View>
+        </View>
+      );
+    },
+    [
+      theme.bg.brandSubtle,
+      theme.bg.subtle,
+      theme.border.default,
+      theme.text.primary,
+    ],
+  );
+
+  const keyMiniMessage = useCallback((message: MiniMessage) => message.id, []);
+
+  const miniMessageFooter = useMemo(() => {
+    if (!sending) {
+      return null;
+    }
+
+    return (
+      <View style={[styles.miniMsgRow, styles.miniMsgRowAssistant]}>
+        <View
+          style={[
+            styles.miniMsgBubble,
+            {
+              backgroundColor: theme.bg.subtle,
+              borderColor: theme.border.default,
+            },
+          ]}
+        >
+          <View style={styles.typingRow}>
+            <ActivityIndicator
+              size="small"
+              color={theme.text.brand}
+            />
+            <Text
+              style={[
+                styles.typingText,
+                { color: theme.text.secondary },
+              ]}
+            >
+              {t("chat.thinking")}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  }, [
+    sending,
+    t,
+    theme.bg.subtle,
+    theme.border.default,
+    theme.text.brand,
+    theme.text.secondary,
+  ]);
+
   const handleOpenThread = useCallback(
     (chatId: string) => {
       onClose();
-      router.push(buildChatThreadRoute(tab, chatId) as never);
+      router.push(buildChatThreadRoute(chatId) as never);
     },
-    [onClose, router, tab],
+    [onClose, router],
+  );
+
+  const renderHistoryConversation = useCallback(
+    ({ item }: ListRenderItemInfo<ChatConversationSummary>) => (
+      <CustomButton
+        onPress={() => handleOpenThread(item.id)}
+        style={[
+          styles.historyCard,
+          {
+            borderColor: theme.border.default,
+            backgroundColor: theme.bg.canvas,
+          },
+        ]}
+        accessibilityLabel={t("chat.openChat", { title: item.title })}
+      >
+        <Text
+          style={[
+            styles.historyTitle,
+            { color: theme.text.primary },
+          ]}
+          numberOfLines={1}
+        >
+          {item.title}
+        </Text>
+        <Text
+          style={[
+            styles.historyPreview,
+            { color: theme.text.secondary },
+          ]}
+          numberOfLines={1}
+        >
+          {item.preview}
+        </Text>
+        <View style={styles.historyMeta}>
+          <Text
+            style={[
+              styles.historyMetaText,
+              { color: theme.text.tertiary },
+            ]}
+          >
+            {formatRelativeTime(item.updatedAtIso)}
+          </Text>
+          {item.unreadCount > 0 ? (
+            <View
+              style={[
+                styles.unreadDot,
+                { backgroundColor: theme.border.brand },
+              ]}
+            />
+          ) : null}
+        </View>
+      </CustomButton>
+    ),
+    [
+      handleOpenThread,
+      t,
+      theme.bg.canvas,
+      theme.border.brand,
+      theme.border.default,
+      theme.text.primary,
+      theme.text.secondary,
+      theme.text.tertiary,
+    ],
+  );
+
+  const keyHistoryConversation = useCallback(
+    (item: ChatConversationSummary) => item.id,
+    [],
+  );
+
+  const renderHistorySeparator = useCallback(
+    () => <View style={styles.historyCardSeparator} />,
+    [],
   );
 
   const handleExpandToFull = useCallback(() => {
     onClose();
     router.push(
-      buildChatHistoryRoute(tab, { topics: selectedTopics }) as never,
+      buildChatHistoryRoute({ topics: selectedTopics }) as never,
     );
-  }, [onClose, router, tab, selectedTopics]);
+  }, [onClose, router, selectedTopics]);
 
   const containerStyle = useMemo(
     () => [
@@ -292,105 +499,29 @@ export const MiniChatModal = React.memo(function MiniChatModal({
                   >
                     {t("chat.suggested")}
                   </Text>
-                  <View style={styles.suggestionsGrid}>
-                    {suggestedPrompts.map((prompt) => (
-                      <CustomButton
-                        key={prompt.label}
-                        onPress={() => handleSuggestionPress(prompt.message)}
-                        style={[
-                          styles.suggestionChip,
-                          {
-                            borderColor: theme.border.default,
-                            backgroundColor: theme.bg.canvas,
-                          },
-                        ]}
-                        accessibilityLabel={prompt.label}
-                        testID={`suggestion-${prompt.label}`}
-                        disabled={sending}
-                      >
-                        <Text
-                          style={[
-                            styles.suggestionText,
-                            { color: theme.text.primary },
-                          ]}
-                          numberOfLines={2}
-                        >
-                          {prompt.label}
-                        </Text>
-                      </CustomButton>
-                    ))}
-                  </View>
+                  <CustomList
+                    flatListProps={{
+                      data: suggestedPrompts,
+                      renderItem: renderSuggestedPrompt,
+                      keyExtractor: keySuggestedPrompt,
+                      scrollEnabled: false,
+                      contentContainerStyle: styles.suggestionsGrid,
+                      ItemSeparatorComponent: renderSuggestionSeparator,
+                    }}
+                  />
                 </View>
               </>
             ) : (
-              <>
-                {messages.map((msg) => {
-                  const isUser = msg.role === "user";
-                  return (
-                    <View
-                      key={msg.id}
-                      style={[
-                        styles.miniMsgRow,
-                        isUser
-                          ? styles.miniMsgRowUser
-                          : styles.miniMsgRowAssistant,
-                      ]}
-                    >
-                      <View
-                        style={[
-                          styles.miniMsgBubble,
-                          {
-                            backgroundColor: isUser
-                              ? theme.bg.brandSubtle
-                              : theme.bg.subtle,
-                            borderColor: theme.border.default,
-                          },
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.miniMsgText,
-                            { color: theme.text.primary },
-                          ]}
-                        >
-                          {msg.content}
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
-
-                {sending ? (
-                  <View
-                    style={[styles.miniMsgRow, styles.miniMsgRowAssistant]}
-                  >
-                    <View
-                      style={[
-                        styles.miniMsgBubble,
-                        {
-                          backgroundColor: theme.bg.subtle,
-                          borderColor: theme.border.default,
-                        },
-                      ]}
-                    >
-                      <View style={styles.typingRow}>
-                        <ActivityIndicator
-                          size="small"
-                          color={theme.text.brand}
-                        />
-                        <Text
-                          style={[
-                            styles.typingText,
-                            { color: theme.text.secondary },
-                          ]}
-                        >
-                          {t("chat.thinking")}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                ) : null}
-              </>
+              <CustomList
+                flatListProps={{
+                  data: messages,
+                  renderItem: renderMiniMessage,
+                  keyExtractor: keyMiniMessage,
+                  scrollEnabled: false,
+                  contentContainerStyle: styles.miniMessageList,
+                  ListFooterComponent: miniMessageFooter,
+                }}
+              />
             )}
           </ScrollView>
 
@@ -448,80 +579,39 @@ export const MiniChatModal = React.memo(function MiniChatModal({
               onClearTopics={handleClearTopics}
             />
           </View>
-        <ScrollView
-          style={styles.historyScroll}
-          contentContainerStyle={styles.historyContent}
-        >
-          {loading && !data ? (
-            <View style={styles.loadingWrap}>
-              <LoadingSkeleton variant="text" />
-              <LoadingSkeleton variant="text" />
-              <LoadingSkeleton variant="text" />
-            </View>
-          ) : null}
-
-          {!loading && data && filteredItems.length === 0 ? (
-            <Text
-              style={[styles.emptyText, { color: theme.text.secondary }]}
-            >
-              {selectedTopics.length === 0
-                ? t("chat.noConversationsYet")
-                : t("chat.noConversationsMatchTopics")}
-            </Text>
-          ) : null}
-
-          {filteredItems.map((item) => (
-            <CustomButton
-              key={item.id}
-              onPress={() => handleOpenThread(item.id)}
-              style={[
-                styles.historyCard,
-                {
-                  borderColor: theme.border.default,
-                  backgroundColor: theme.bg.canvas,
-                },
-              ]}
-              accessibilityLabel={t("chat.openChat", { title: item.title })}
-            >
-              <Text
-                style={[
-                  styles.historyTitle,
-                  { color: theme.text.primary },
-                ]}
-                numberOfLines={1}
-              >
-                {item.title}
-              </Text>
-              <Text
-                style={[
-                  styles.historyPreview,
-                  { color: theme.text.secondary },
-                ]}
-                numberOfLines={1}
-              >
-                {item.preview}
-              </Text>
-              <View style={styles.historyMeta}>
-                <Text
-                  style={[
-                    styles.historyMetaText,
-                    { color: theme.text.tertiary },
-                  ]}
-                >
-                  {formatRelativeTime(item.updatedAtIso)}
-                </Text>
-                {item.unreadCount > 0 ? (
-                  <View
-                    style={[
-                      styles.unreadDot,
-                      { backgroundColor: theme.border.brand },
-                    ]}
-                  />
-                ) : null}
+          <ScrollView
+            style={styles.historyScroll}
+            contentContainerStyle={styles.historyContent}
+          >
+            {loading && !data ? (
+              <View style={styles.loadingWrap}>
+                <LoadingSkeleton variant="text" />
+                <LoadingSkeleton variant="text" />
+                <LoadingSkeleton variant="text" />
               </View>
-            </CustomButton>
-          ))}
-        </ScrollView>
+            ) : null}
+
+            {!loading && data && filteredItems.length === 0 ? (
+              <Text
+                style={[styles.emptyText, { color: theme.text.secondary }]}
+              >
+                {selectedTopics.length === 0
+                  ? t("chat.noConversationsYet")
+                  : t("chat.noConversationsMatchTopics")}
+              </Text>
+            ) : null}
+
+            <CustomList
+              flatListProps={{
+                data: filteredItems,
+                renderItem: renderHistoryConversation,
+                keyExtractor: keyHistoryConversation,
+                scrollEnabled: false,
+                contentContainerStyle: styles.historyList,
+                ItemSeparatorComponent: renderHistorySeparator,
+              }}
+            />
+          </ScrollView>
         </View>
       )}
     </View>
@@ -614,7 +704,10 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   suggestionsGrid: {
-    gap: spacing[6],
+    flexGrow: 1,
+  },
+  suggestionSeparator: {
+    height: spacing[6],
   },
   suggestionChip: {
     borderWidth: borderWidth.hairline,
@@ -673,7 +766,12 @@ const styles = StyleSheet.create({
   },
   historyContent: {
     padding: spacing[12],
-    gap: spacing[8],
+  },
+  historyList: {
+    flexGrow: 1,
+  },
+  historyCardSeparator: {
+    height: spacing[8],
   },
   loadingWrap: {
     gap: spacing[12],
@@ -715,6 +813,9 @@ const styles = StyleSheet.create({
   miniMsgRow: {
     flexDirection: "row",
     marginBottom: spacing[4],
+  },
+  miniMessageList: {
+    flexGrow: 1,
   },
   miniMsgRowUser: {
     justifyContent: "flex-end",

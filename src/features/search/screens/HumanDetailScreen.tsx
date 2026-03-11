@@ -14,7 +14,7 @@ import { semanticThemes } from "@/theme/themes";
 import { cellText } from "@/components/tables/cellStyles";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { spacing } from "@/theme/tokens";
-import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
+import { buildEntityRoute, resolveTabFromPathname, ROUTES } from "@/constants/routes";
 
 interface HumanDetailScreenProps {
   humanId: string;
@@ -75,7 +75,17 @@ export function HumanDetailScreen({ humanId }: HumanDetailScreenProps) {
   );
 
   if (loading) return <LoadingSkeleton variant="text" />;
-  if (error) return <ErrorState message={error} onRetry={refetch} />;
+  if (error) {
+    return (
+      <ErrorState
+        message={error}
+        onRetry={refetch}
+        fullScreen
+        showHomeButton
+        onGoHome={() => router.replace(ROUTES.ROOT as never)}
+      />
+    );
+  }
   if (!data) return null;
 
   return (

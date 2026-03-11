@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "We hit a snag.",
     "somethingWentWrong": "Something went wrong. Please try again.",
     "failedToLoad": "Failed to load data."
   },

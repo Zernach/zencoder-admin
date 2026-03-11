@@ -742,9 +742,13 @@ export class StubChatApi implements IChatApi {
     await this.simulateLatency();
     this.assertOrgId(request.orgId);
 
-    const conversation = this.fixturesByTab[request.tab].find(
-      (fixture) => fixture.summary.id === request.chatId,
-    );
+    const conversation =
+      this.fixturesByTab[request.tab].find(
+        (fixture) => fixture.summary.id === request.chatId,
+      ) ??
+      this.getAllFixtures().find(
+        (fixture) => fixture.summary.id === request.chatId,
+      );
 
     if (!conversation) {
       throw notFoundError("Chat", request.chatId);
@@ -839,9 +843,13 @@ export class StubChatApi implements IChatApi {
     };
 
     // Append to the fixture so the thread stays consistent
-    const conversation = this.fixturesByTab[request.tab].find(
-      (f) => f.summary.id === request.chatId,
-    );
+    const conversation =
+      this.fixturesByTab[request.tab].find(
+        (f) => f.summary.id === request.chatId,
+      ) ??
+      this.getAllFixtures().find(
+        (f) => f.summary.id === request.chatId,
+      );
     if (!conversation) {
       throw notFoundError("Chat", request.chatId);
     }
@@ -856,9 +864,13 @@ export class StubChatApi implements IChatApi {
     await this.simulateLatency();
     this.assertOrgId(request.orgId);
 
-    const conversation = this.fixturesByTab[request.tab].find(
-      (f) => f.summary.id === request.chatId,
-    );
+    const conversation =
+      this.fixturesByTab[request.tab].find(
+        (f) => f.summary.id === request.chatId,
+      ) ??
+      this.getAllFixtures().find(
+        (f) => f.summary.id === request.chatId,
+      );
 
     if (!conversation) {
       throw notFoundError("Chat", request.chatId);

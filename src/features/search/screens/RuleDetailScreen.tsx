@@ -16,7 +16,7 @@ import { CustomSpinner } from "@/components/feedback/CustomSpinner";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing, radius, borderWidth } from "@/theme/tokens";
-import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
+import { buildEntityRoute, resolveTabFromPathname, ROUTES } from "@/constants/routes";
 import type {
   PolicyViolationRow,
   RunListRow,
@@ -52,7 +52,17 @@ export function RuleDetailScreen({ ruleId }: RuleDetailScreenProps) {
   );
 
   if (loading) return <LoadingSkeleton variant="text" />;
-  if (error) return <ErrorState message={error} onRetry={refetch} />;
+  if (error) {
+    return (
+      <ErrorState
+        message={error}
+        onRetry={refetch}
+        fullScreen
+        showHomeButton
+        onGoHome={() => router.replace(ROUTES.ROOT as never)}
+      />
+    );
+  }
   if (!data) return null;
 
   return (

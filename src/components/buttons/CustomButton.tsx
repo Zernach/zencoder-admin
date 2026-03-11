@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import {
+  Platform,
   Pressable,
   Text,
   StyleSheet,
@@ -150,6 +151,11 @@ export function CustomButton({
     <Pressable
       {...pressableProps}
       disabled={isDisabled}
+      android_ripple={
+        Platform.OS === "android" && !isDisabled
+          ? { color: "rgba(128,128,128,0.15)", borderless: false }
+          : undefined
+      }
       style={(state) =>
         resolveButtonStyle(
           style,

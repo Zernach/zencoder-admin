@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 import { useTeamDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
@@ -12,6 +13,7 @@ import { semanticThemes } from "@/theme/themes";
 import { cellText, getSuccessRateColor } from "@/components/tables/cellStyles";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { spacing } from "@/theme/tokens";
+import { ROUTES } from "@/constants/routes";
 
 interface TeamDetailScreenProps {
   teamId: string;
@@ -19,6 +21,7 @@ interface TeamDetailScreenProps {
 
 export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const { data, loading, error, refetch } = useTeamDetailScreen(teamId);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -42,7 +45,17 @@ export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
   );
 
   if (loading) return <LoadingSkeleton variant="text" />;
-  if (error) return <ErrorState message={error} onRetry={refetch} />;
+  if (error) {
+    return (
+      <ErrorState
+        message={error}
+        onRetry={refetch}
+        fullScreen
+        showHomeButton
+        onGoHome={() => router.replace(ROUTES.ROOT as never)}
+      />
+    );
+  }
   if (!data) return null;
 
   return (

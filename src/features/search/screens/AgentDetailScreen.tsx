@@ -19,7 +19,7 @@ import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyForm
 import { useAppSelector } from "@/store/hooks";
 import { selectOrgId } from "@/store/slices/filtersSlice";
 import { spacing, radius, borderWidth } from "@/theme/tokens";
-import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
+import { buildEntityRoute, resolveTabFromPathname, ROUTES } from "@/constants/routes";
 import { keyExtractors } from "@/constants";
 
 const EMPTY_USER_MAP: Record<string, string> = {};
@@ -99,7 +99,17 @@ export function AgentDetailScreen({ agentId }: AgentDetailScreenProps) {
   );
 
   if (loading) return <LoadingSkeleton variant="text" />;
-  if (error) return <ErrorState message={error} onRetry={refetch} />;
+  if (error) {
+    return (
+      <ErrorState
+        message={error}
+        onRetry={refetch}
+        fullScreen
+        showHomeButton
+        onGoHome={() => router.replace(ROUTES.ROOT as never)}
+      />
+    );
+  }
   if (!data) return null;
 
   return (

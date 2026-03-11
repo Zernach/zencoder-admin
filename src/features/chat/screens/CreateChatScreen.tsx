@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { View, Text, StyleSheet, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -43,6 +43,7 @@ export function CreateChatScreen() {
   const insets = useSafeAreaInsets();
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
   const isMobileOrTablet = bp !== "desktop";
 
   const suggestedPrompts = useMemo(() => getAllSuggestedPrompts(t), [t]);
@@ -56,26 +57,35 @@ export function CreateChatScreen() {
   const canSubmit = message.trim().length > 0 && !submitting;
 
   const submitMessage = useCallback(
-    async (text: string) => {
+    (text: string) => {
       const trimmed = text.trim();
-      if (trimmed.length === 0 || submitting) return;
-
+      if (trimmed.length === 0 || submittingRef.current) return;
+      submittingRef.current = true;
       setSubmitting(true);
-      try {
-        const title =
-          trimmed.length > 60 ? `${trimmed.slice(0, 57)}...` : trimmed;
-        const response = await chatService.createChat({
-          orgId,
-          tab,
-          title,
-          firstMessage: trimmed,
+
+      const title =
+        trimmed.length > 60 ? `${trimmed.slice(0, 57)}...` : trimmed;
+      chatService
+        .createChat({ orgId, tab, title, firstMessage: trimmed })
+        .then((response) => {
+          const destination = buildChatThreadRoute(response.chat.id) as never;
+          // On Android, schedule route transition on the next frame so touch
+          // feedback can paint without waiting for InteractionManager.
+          if (Platform.OS === "android") {
+            requestAnimationFrame(() => {
+              router.replace(destination);
+            });
+          } else {
+            router.replace(destination);
+          }
+        })
+        .catch(() => {
+          setMessage(trimmed);
+          submittingRef.current = false;
+          setSubmitting(false);
         });
-        router.replace(buildChatThreadRoute(tab, response.chat.id) as never);
-      } catch {
-        setSubmitting(false);
-      }
     },
-    [orgId, submitting, chatService, tab, router],
+    [orgId, chatService, tab, router],
   );
 
   const handleCreate = useCallback(
@@ -85,6 +95,7 @@ export function CreateChatScreen() {
 
   const handleSuggestionPress = useCallback(
     (promptMessage: string) => {
+      setMessage(promptMessage);
       void submitMessage(promptMessage);
     },
     [submitMessage],

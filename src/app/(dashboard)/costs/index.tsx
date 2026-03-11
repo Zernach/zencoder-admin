@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
+import { useRouter } from "expo-router";
 import { useCostDashboard } from "@/features/analytics/hooks/useCostDashboard";
 import { CardGrid, KpiCard, LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ChartCard, LineChart, BarChart, DonutChart, ProviderCostChart, ProviderTokenCostBarChart, type BarChartBreakdownDatum } from "@/components/charts";
@@ -12,6 +13,7 @@ import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import { useSectionRef } from "@/hooks/useRegisterSection";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { ROUTES } from "@/constants/routes";
 
 const styles = sectionStyles;
 
@@ -217,6 +219,7 @@ const CostByProviderSection = React.memo(function CostByProviderSection({
 
 export default function CostAnalyticsScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { data, loading, error, refetch } = useCostDashboard();
   const { formatCurrency } = useCurrencyFormatter();
 
@@ -231,7 +234,17 @@ export default function CostAnalyticsScreen() {
     [subtitle, loading, t],
   );
 
-  if (error) return <ErrorState message={error} onRetry={refetch} />;
+  if (error) {
+    return (
+      <ErrorState
+        message={error}
+        onRetry={refetch}
+        fullScreen
+        showHomeButton
+        onGoHome={() => router.replace(ROUTES.ROOT as never)}
+      />
+    );
+  }
 
   return (
     <ScreenWrapper headerProps={headerProps}>

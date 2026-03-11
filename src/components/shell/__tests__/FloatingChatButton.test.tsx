@@ -50,34 +50,34 @@ describe("FloatingChatButton", () => {
     capturedOnClose = undefined;
   });
 
-  it("routes root path to /chat with dashboard context on mobile", () => {
+  it("routes to /chat without tab param on mobile", () => {
     mockPathname = "/";
     const { getByTestId } = render(<FloatingChatButton />);
 
     fireEvent.press(getByTestId("floating-chat-button"));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
-    expect(mockPush).toHaveBeenCalledWith("/chat?tab=dashboard");
+    expect(mockPush).toHaveBeenCalledWith("/chat");
   });
 
-  it("routes agent tab path to /chat with agents context on mobile", () => {
+  it("routes to /chat from agent tab on mobile", () => {
     mockPathname = "/agents";
     const { getByTestId } = render(<FloatingChatButton />);
 
     fireEvent.press(getByTestId("floating-chat-button"));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
-    expect(mockPush).toHaveBeenCalledWith("/chat?tab=agents");
+    expect(mockPush).toHaveBeenCalledWith("/chat");
   });
 
-  it("routes legacy settings chat paths to /chat with settings context", () => {
+  it("routes to /chat from settings chat paths", () => {
     mockPathname = "/settings/chat/history/settings-chat-2";
     const { getByTestId } = render(<FloatingChatButton />);
 
     fireEvent.press(getByTestId("floating-chat-button"));
 
     expect(mockPush).toHaveBeenCalledTimes(1);
-    expect(mockPush).toHaveBeenCalledWith("/chat?tab=settings");
+    expect(mockPush).toHaveBeenCalledWith("/chat");
   });
 
   it("does not navigate when already on chat history route", () => {
@@ -96,7 +96,7 @@ describe("FloatingChatButton", () => {
 
     fireEvent.press(getByTestId("floating-chat-button"));
 
-    expect(mockPush).toHaveBeenCalledWith("/chat?tab=costs");
+    expect(mockPush).toHaveBeenCalledWith("/chat");
   });
 
   describe("desktop mini modal", () => {

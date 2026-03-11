@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 import { useRunDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
@@ -10,6 +11,7 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { cellText } from "@/components/tables/cellStyles";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { spacing } from "@/theme/tokens";
+import { ROUTES } from "@/constants/routes";
 
 interface RunDetailScreenProps {
   runId: string;
@@ -22,6 +24,7 @@ interface DetailRow {
 
 export function RunDetailScreen({ runId }: RunDetailScreenProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const { data, loading, error, refetch } = useRunDetailScreen(runId);
   const { mode } = useThemeMode();
   const ct = cellText(mode);
@@ -36,7 +39,17 @@ export function RunDetailScreen({ runId }: RunDetailScreenProps) {
   );
 
   if (loading) return <LoadingSkeleton variant="text" />;
-  if (error) return <ErrorState message={error} onRetry={refetch} />;
+  if (error) {
+    return (
+      <ErrorState
+        message={error}
+        onRetry={refetch}
+        fullScreen
+        showHomeButton
+        onGoHome={() => router.replace(ROUTES.ROOT as never)}
+      />
+    );
+  }
   if (!data) return null;
 
   const { run } = data;

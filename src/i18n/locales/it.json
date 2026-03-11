@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "Si è verificato un problema.",
     "somethingWentWrong": "Si è verificato un errore. Riprova.",
     "failedToLoad": "Impossibile caricare i dati."
   },

@@ -6,6 +6,7 @@ import { sidebarSlice } from "@/store/slices/sidebarSlice";
 import { navigationHistorySlice } from "@/store/slices/navigationHistorySlice";
 import { modalSlice } from "@/store/slices/modalSlice";
 import { settingsSlice } from "@/store/slices/settingsSlice";
+import { chatHistorySlice } from "@/store/slices/chatHistorySlice";
 import { analyticsApi } from "@/store/api/analyticsApi";
 import { initializeService } from "@/store/api/serviceRegistry";
 import { AppDependenciesProvider } from "@/core/di/AppDependencies";
@@ -47,6 +48,7 @@ export function createTestStore() {
       navigationHistory: navigationHistorySlice.reducer,
       modal: modalSlice.reducer,
       settings: settingsSlice.reducer,
+      chatHistory: chatHistorySlice.reducer,
       [analyticsApi.reducerPath]: analyticsApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>

@@ -133,25 +133,22 @@ describe("buildEntityRoute", () => {
 
   it("routes chat entities to the dedicated /chat stack", () => {
     const route = buildEntityRoute(TABS.AGENTS, "chat", "thread 1/alpha");
-    expect(route).toBe("/chat/thread%201%2Falpha?tab=agents");
+    expect(route).toBe("/chat/thread%201%2Falpha");
   });
 });
 
 describe("chat route helpers", () => {
-  it.each([
-    [TABS.DASHBOARD, "/chat?tab=dashboard"],
-    [TABS.AGENTS, "/chat?tab=agents"],
-    [TABS.COSTS, "/chat?tab=costs"],
-    [TABS.GOVERNANCE, "/chat?tab=governance"],
-    [TABS.CHAT, "/chat"],
-    [TABS.SETTINGS, "/chat?tab=settings"],
-  ])("builds chat history route for %s", (tab, expectedRoute) => {
-    expect(buildChatHistoryRoute(tab)).toBe(expectedRoute);
+  it("builds chat history route without tab param", () => {
+    expect(buildChatHistoryRoute()).toBe("/chat");
   });
 
-  it("builds encoded thread route", () => {
-    const route = buildChatThreadRoute(TABS.SETTINGS, "thread 1/alpha");
-    expect(route).toBe("/chat/thread%201%2Falpha?tab=settings");
+  it("builds chat history route with topics", () => {
+    expect(buildChatHistoryRoute({ topics: ["Agents", "Costs"] })).toBe("/chat?topics=Agents%2CCosts");
+  });
+
+  it("builds encoded thread route without tab param", () => {
+    const route = buildChatThreadRoute("thread 1/alpha");
+    expect(route).toBe("/chat/thread%201%2Falpha");
   });
 
   it.each([

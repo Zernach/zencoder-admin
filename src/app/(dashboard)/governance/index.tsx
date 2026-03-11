@@ -28,7 +28,7 @@ import { CreateTeamModal } from "@/features/analytics/components/CreateTeamModal
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { useSectionRef } from "@/hooks/useRegisterSection";
 import { keyExtractors } from "@/constants";
-import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
+import { buildEntityRoute, resolveTabFromPathname, ROUTES } from "@/constants/routes";
 import { useAppDispatch, openModal, ModalName } from "@/store";
 
 const VIOLATION_SEARCH_KEYS: (keyof PolicyViolationRow)[] = ["agentName", "ruleTitle", "reason", "severity"];
@@ -478,7 +478,17 @@ export default function GovernanceScreen() {
     [loading, t],
   );
 
-  if (error) return <ErrorState message={error} onRetry={refetch} />;
+  if (error) {
+    return (
+      <ErrorState
+        message={error}
+        onRetry={refetch}
+        fullScreen
+        showHomeButton
+        onGoHome={() => router.replace(ROUTES.ROOT as never)}
+      />
+    );
+  }
 
   return (
     <ScreenWrapper headerProps={headerProps}>

@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useCallback, useMemo } from "react";
+import { View, Text, StyleSheet, type ListRenderItemInfo } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists";
 import { Filter } from "lucide-react-native";
@@ -15,16 +15,6 @@ interface ChatHistoryFiltersProps {
   onClearTopics: () => void;
 }
 
-const FILTER_SCROLL_PROPS = {
-  horizontal: true,
-  showsHorizontalScrollIndicator: false,
-  contentContainerStyle: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[8],
-  } as const,
-} as const;
-
 export function ChatHistoryFilters({
   selectedTopics,
   onToggleTopic,
@@ -33,51 +23,94 @@ export function ChatHistoryFilters({
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const selectedSet = useMemo(() => new Set<ChatTopic>(selectedTopics), [selectedTopics]);
+  const showClearButton = selectedTopics.length > 0;
+
+  const renderTopicFilter = useCallback(
+    ({ item: topic }: ListRenderItemInfo<ChatTopic>) => {
+      const selected = selectedSet.has(topic);
+      return (
+        <CustomButton
+          onPress={() => onToggleTopic(topic)}
+          style={[
+            styles.optionButton,
+            {
+              borderColor: selected ? theme.border.brand : theme.border.default,
+              backgroundColor: selected ? theme.bg.brandSubtle : theme.bg.surface,
+            },
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel={`Toggle ${topic} topic filter`}
+          accessibilityState={{ selected }}
+        >
+          <Text
+            style={[
+              styles.optionText,
+              { color: selected ? theme.text.brand : theme.text.secondary },
+            ]}
+          >
+            {topic}
+          </Text>
+        </CustomButton>
+      );
+    },
+    [
+      onToggleTopic,
+      selectedSet,
+      theme.bg.brandSubtle,
+      theme.bg.surface,
+      theme.border.brand,
+      theme.border.default,
+      theme.text.brand,
+      theme.text.secondary,
+    ],
+  );
+
+  const keyTopicFilter = useCallback((topic: ChatTopic) => topic, []);
+
+  const renderFilterSeparator = useCallback(
+    () => <View style={styles.filterSeparator} />,
+    [],
+  );
+
+  const listHeader = useMemo(
+    () => <Filter size={14} color={theme.text.tertiary} style={styles.filterIcon} />,
+    [theme.text.tertiary],
+  );
+
+  const listFooter = useMemo(() => {
+    if (!showClearButton) {
+      return null;
+    }
+
+    return (
+      <CustomButton
+        onPress={onClearTopics}
+        style={styles.clearButton}
+        accessibilityRole="button"
+        accessibilityLabel="Clear topic filters"
+      >
+        <Text style={[styles.clearButtonText, { color: theme.border.brand }]}>
+          Clear All
+        </Text>
+      </CustomButton>
+    );
+  }, [onClearTopics, showClearButton, theme.border.brand]);
 
   return (
     <View style={styles.container}>
-      <CustomList scrollViewProps={FILTER_SCROLL_PROPS}>
-        <Filter size={14} color={theme.text.tertiary} style={styles.filterIcon} />
-        {CHAT_HISTORY_TOPIC_OPTIONS.map((topic) => {
-          const selected = selectedSet.has(topic);
-
-          return (
-            <CustomButton
-              key={topic}
-              onPress={() => onToggleTopic(topic)}
-              style={[
-                styles.optionButton,
-                {
-                  borderColor: selected ? theme.border.brand : theme.border.default,
-                  backgroundColor: selected ? theme.bg.brandSubtle : theme.bg.surface,
-                },
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel={`Toggle ${topic} topic filter`}
-              accessibilityState={{ selected }}
-            >
-              <Text
-                style={[
-                  styles.optionText,
-                  { color: selected ? theme.text.brand : theme.text.secondary },
-                ]}
-              >
-                {topic}
-              </Text>
-            </CustomButton>
-          );
-        })}
-        {selectedTopics.length > 0 ? (
-          <CustomButton
-            onPress={onClearTopics}
-            style={styles.clearButton}
-            accessibilityRole="button"
-            accessibilityLabel="Clear topic filters"
-          >
-            <Text style={[styles.clearButtonText, { color: theme.border.brand }]}>Clear All</Text>
-          </CustomButton>
-        ) : null}
-      </CustomList>
+      <CustomList
+        flatListProps={{
+          data: CHAT_HISTORY_TOPIC_OPTIONS,
+          renderItem: renderTopicFilter,
+          keyExtractor: keyTopicFilter,
+          horizontal: true,
+          showsHorizontalScrollIndicator: false,
+          contentContainerStyle: styles.filterListContent,
+          ItemSeparatorComponent: renderFilterSeparator,
+          ListHeaderComponent: listHeader,
+          ListFooterComponent: listFooter,
+        }}
+      />
     </View>
   );
 }
@@ -86,8 +119,15 @@ const styles = StyleSheet.create({
   container: {
     gap: spacing[8],
   },
+  filterListContent: {
+    alignItems: "center",
+    paddingRight: spacing[8],
+  },
+  filterSeparator: {
+    width: spacing[8],
+  },
   filterIcon: {
-    marginRight: spacing[2],
+    marginRight: spacing[8],
   },
   optionButton: {
     borderWidth: borderWidth.hairline,
@@ -101,6 +141,7 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     paddingHorizontal: spacing[4],
+    marginLeft: spacing[8],
   },
   clearButtonText: {
     fontSize: 12,

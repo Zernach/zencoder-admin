@@ -7,7 +7,6 @@ import { CustomButton } from "@/components/buttons";
 import {
   buildChatHistoryRoute,
   isChatHistoryRoute,
-  resolveTabFromPathname,
 } from "@/constants/routes";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -33,10 +32,7 @@ export const FloatingChatButton = React.memo(function FloatingChatButton() {
     [mode],
   );
 
-  const targetRoute = useMemo(() => {
-    const tab = resolveTabFromPathname(pathname);
-    return buildChatHistoryRoute(tab);
-  }, [pathname]);
+  const targetRoute = buildChatHistoryRoute();
 
   const handlePress = useCallback(() => {
     if (isDesktop) {

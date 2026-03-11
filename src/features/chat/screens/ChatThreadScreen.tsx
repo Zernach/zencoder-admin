@@ -5,14 +5,17 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   ActivityIndicator,
+  type ListRenderItemInfo,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { TABS } from "@/constants/routes";
+import { ROUTES, type TABS } from "@/constants/routes";
 import { isIos } from "@/constants";
 import { ScreenWrapper } from "@/components/screen";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { CustomButton } from "@/components/buttons";
 import { CustomTextInput } from "@/components/inputs";
+import { CustomList } from "@/components/lists";
 import { useAppDependencies } from "@/core/di";
 import { useAppSelector } from "@/store/hooks";
 import { selectOrgId } from "@/store/slices/filtersSlice";
@@ -50,6 +53,56 @@ interface ChatThreadMessagesProps {
   sending: boolean;
 }
 
+type ThemePalette = (typeof semanticThemes)["light"];
+
+interface ChatThreadMessageRowProps {
+  message: ChatMessage;
+  theme: ThemePalette;
+}
+
+const ChatThreadMessageRow = React.memo(function ChatThreadMessageRow({
+  message,
+  theme,
+}: ChatThreadMessageRowProps) {
+  const bubbleType = getBubbleStyle(message.role);
+  const isUser = bubbleType === "user";
+  const isSystem = bubbleType === "system";
+
+  return (
+    <View
+      style={[
+        styles.messageRow,
+        isUser ? styles.userRow : styles.assistantRow,
+      ]}
+    >
+      <View
+        style={[
+          styles.messageBubble,
+          {
+            borderColor: theme.border.default,
+            backgroundColor: isUser
+              ? theme.bg.brandSubtle
+              : isSystem
+                ? theme.bg.subtle
+                : theme.bg.surface,
+          },
+          isUser ? styles.userBubble : styles.assistantBubble,
+        ]}
+      >
+        <Text style={[styles.messageAuthor, { color: theme.text.secondary }]}>
+          {message.authorName}
+        </Text>
+        <Text style={[styles.messageContent, { color: theme.text.primary }]}>
+          {message.content}
+        </Text>
+        <Text style={[styles.messageTime, { color: theme.text.tertiary }]}>
+          {formatTimestamp(message.createdAtIso)}
+        </Text>
+      </View>
+    </View>
+  );
+});
+
 const ChatThreadMessages = React.memo(function ChatThreadMessages({
   data,
   loading,
@@ -58,6 +111,48 @@ const ChatThreadMessages = React.memo(function ChatThreadMessages({
 }: ChatThreadMessagesProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const renderMessage = useCallback(
+    ({ item }: ListRenderItemInfo<ChatMessage>) => (
+      <ChatThreadMessageRow
+        message={item}
+        theme={theme}
+      />
+    ),
+    [theme],
+  );
+
+  const keyMessage = useCallback((item: ChatMessage) => item.id, []);
+
+  const sendingIndicator = useMemo(() => {
+    if (!sending) {
+      return null;
+    }
+
+    return (
+      <View style={[styles.messageRow, styles.assistantRow]}>
+        <View
+          style={[
+            styles.messageBubble,
+            styles.assistantBubble,
+            {
+              borderColor: theme.border.default,
+              backgroundColor: theme.bg.surface,
+            },
+          ]}
+        >
+          <View style={styles.typingRow}>
+            <ActivityIndicator size="small" color={theme.text.brand} />
+            <Text
+              style={[styles.typingText, { color: theme.text.secondary }]}
+            >
+              Zencoder is thinking...
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  }, [sending, theme]);
+
   return (
     <>
       {loading && !data ? (
@@ -65,71 +160,16 @@ const ChatThreadMessages = React.memo(function ChatThreadMessages({
           <LoadingSkeleton variant="text" />
         </View>
       ) : null}
-
-      {messages.map((message) => {
-        const bubbleType = getBubbleStyle(message.role);
-        const isUser = bubbleType === "user";
-        const isSystem = bubbleType === "system";
-
-        return (
-          <View
-            key={message.id}
-            style={[
-              styles.messageRow,
-              isUser ? styles.userRow : styles.assistantRow,
-            ]}
-          >
-            <View
-              style={[
-                styles.messageBubble,
-                {
-                  borderColor: theme.border.default,
-                  backgroundColor: isUser
-                    ? theme.bg.brandSubtle
-                    : isSystem
-                      ? theme.bg.subtle
-                      : theme.bg.surface,
-                },
-                isUser ? styles.userBubble : styles.assistantBubble,
-              ]}
-            >
-              <Text style={[styles.messageAuthor, { color: theme.text.secondary }]}>
-                {message.authorName}
-              </Text>
-              <Text style={[styles.messageContent, { color: theme.text.primary }]}>
-                {message.content}
-              </Text>
-              <Text style={[styles.messageTime, { color: theme.text.tertiary }]}>
-                {formatTimestamp(message.createdAtIso)}
-              </Text>
-            </View>
-          </View>
-        );
-      })}
-
-      {sending ? (
-        <View style={[styles.messageRow, styles.assistantRow]}>
-          <View
-            style={[
-              styles.messageBubble,
-              styles.assistantBubble,
-              {
-                borderColor: theme.border.default,
-                backgroundColor: theme.bg.surface,
-              },
-            ]}
-          >
-            <View style={styles.typingRow}>
-              <ActivityIndicator size="small" color={theme.text.brand} />
-              <Text
-                style={[styles.typingText, { color: theme.text.secondary }]}
-              >
-                Zencoder is thinking...
-              </Text>
-            </View>
-          </View>
-        </View>
-      ) : null}
+      <CustomList
+        flatListProps={{
+          data: messages,
+          renderItem: renderMessage,
+          keyExtractor: keyMessage,
+          scrollEnabled: false,
+          contentContainerStyle: styles.messageList,
+          ListFooterComponent: sendingIndicator,
+        }}
+      />
     </>
   );
 });
@@ -199,6 +239,7 @@ const ChatThreadComposer = React.memo(function ChatThreadComposer({
 
 export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { chatService } = useAppDependencies();
   const orgId = useAppSelector(selectOrgId);
   const { data, loading, error, refetch } = useChatThread(tab, chatId);
@@ -264,7 +305,15 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
   }, [chatId, orgId, tab, chatService]);
 
   if (error) {
-    return <ErrorState message={error} onRetry={() => void refetch()} />;
+    return (
+      <ErrorState
+        message={error}
+        onRetry={() => void refetch()}
+        fullScreen
+        showHomeButton
+        onGoHome={() => router.replace(ROUTES.ROOT as never)}
+      />
+    );
   }
 
   return (
@@ -305,6 +354,9 @@ const styles = StyleSheet.create({
   },
   messageRow: {
     flexDirection: "row",
+  },
+  messageList: {
+    gap: spacing[4],
   },
   assistantRow: {
     justifyContent: "flex-start",

@@ -46,3 +46,12 @@ export {
   selectSlackIntegrationEnabled,
   type SettingsState,
 } from "./settingsSlice";
+
+export {
+  chatHistorySlice,
+  setChatHistorySelectedTopics,
+  toggleChatHistorySelectedTopic,
+  clearChatHistorySelectedTopics,
+  selectChatHistorySelectedTopics,
+  type ChatHistoryState,
+} from "./chatHistorySlice";

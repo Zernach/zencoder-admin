@@ -32,8 +32,19 @@ export {
   selectSelectedCurrency,
   selectEmailNotificationsEnabled,
   selectSlackIntegrationEnabled,
+  chatHistorySlice,
+  setChatHistorySelectedTopics,
+  toggleChatHistorySelectedTopic,
+  clearChatHistorySelectedTopics,
+  selectChatHistorySelectedTopics,
 } from "./slices";
-export type { SidebarState, NavigationHistoryState, ModalState, SettingsState } from "./slices";
+export type {
+  SidebarState,
+  NavigationHistoryState,
+  ModalState,
+  SettingsState,
+  ChatHistoryState,
+} from "./slices";
 export {
   analyticsApi,
   useGetOverviewQuery,

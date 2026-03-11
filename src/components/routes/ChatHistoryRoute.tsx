@@ -1,6 +1,5 @@
-import { usePathname, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
-import { TABS, isTab, resolveTabFromPathname } from "@/constants/routes";
 import { ChatHistoryScreen } from "@/features/chat/screens";
 import { CHAT_HISTORY_TOPIC_OPTIONS } from "@/features/chat/filters";
 import type { ChatTopic } from "@/features/chat/types";
@@ -16,22 +15,8 @@ function parseTopicsParam(raw: string | string[] | undefined): ChatTopic[] | und
 }
 
 export function ChatHistoryRoute() {
-  const pathname = usePathname();
-  const { topics: topicsParam, tab: tabParam } = useLocalSearchParams<{ topics?: string; tab?: string }>();
-  const mostRecentTab = useAppSelector(selectMostRecentTab);
-  const pathnameTab = resolveTabFromPathname(pathname);
-  const tab = useMemo(() => {
-    const value = Array.isArray(tabParam) ? tabParam[0] : tabParam;
-    if (value != null && isTab(value) && value !== TABS.CHAT) {
-      return value;
-    }
-
-    if (pathnameTab !== TABS.CHAT) {
-      return pathnameTab;
-    }
-
-    return mostRecentTab;
-  }, [tabParam, pathnameTab, mostRecentTab]);
+  const { topics: topicsParam } = useLocalSearchParams<{ topics?: string }>();
+  const tab = useAppSelector(selectMostRecentTab);
 
   const initialTopics = useMemo(() => parseTopicsParam(topicsParam), [topicsParam]);
 

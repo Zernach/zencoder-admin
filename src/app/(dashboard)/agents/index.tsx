@@ -18,7 +18,7 @@ import { CreateAgentModal } from "@/features/analytics/components/CreateAgentMod
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { useSectionRef } from "@/hooks/useRegisterSection";
 import { keyExtractors } from "@/constants";
-import { buildEntityRoute, resolveTabFromPathname } from "@/constants/routes";
+import { buildEntityRoute, resolveTabFromPathname, ROUTES } from "@/constants/routes";
 import { useAppDispatch, openModal, ModalName } from "@/store";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 
@@ -117,13 +117,11 @@ const AgentsReliabilitySection = React.memo(function AgentsReliabilitySection({
 interface AgentsAgentPerformanceSectionProps {
   data: AgentsHubResponse;
   navigateTo: AgentsNavigateTo;
-  onCreateAgent: () => void;
 }
 
 const AgentsAgentPerformanceSection = React.memo(function AgentsAgentPerformanceSection({
   data,
   navigateTo,
-  onCreateAgent,
 }: AgentsAgentPerformanceSectionProps) {
   const { t } = useTranslation();
   const { mode } = useThemeMode();
@@ -155,21 +153,7 @@ const AgentsAgentPerformanceSection = React.memo(function AgentsAgentPerformance
 
   return (
     <View ref={refFor("agent-performance")} nativeID="agent-performance" style={styles.section}>
-      <View style={styles.sectionRow}>
-        <View style={styles.sectionHeaderWrap}>
-          <SectionHeader title={t("agents.agentPerformance")} subtitle={t("agents.agentsWithActivity", { count: filteredAgents.length })} />
-        </View>
-        <CustomButton
-          onPress={onCreateAgent}
-          style={styles.createButton}
-          buttonMode="secondary"
-          buttonSize="compact"
-          label={t("agents.createAgent")}
-          textStyle={styles.createButtonText}
-          accessibilityRole="button"
-          accessibilityLabel={t("modals.createAgentTitle")}
-        />
-      </View>
+      <SectionHeader title={t("agents.agentPerformance")} subtitle={t("agents.agentsWithActivity", { count: filteredAgents.length })} />
       <DataTable
         columns={agentCols}
         data={filteredAgents}
@@ -353,12 +337,36 @@ export default function AgentsScreen() {
   );
 
   const headerProps = useMemo(
-    () => ({ title: t("navigation.agents"), subtitle, isLoading: loading }),
-    [subtitle, loading, t],
+    () => ({
+      title: t("navigation.agents"),
+      subtitle,
+      isLoading: loading,
+      rightComponent: (
+        <CustomButton
+          onPress={handleOpenCreateAgent}
+          style={styles.createButton}
+          buttonMode="secondary"
+          buttonSize="compact"
+          label={t("agents.createAgent")}
+          textStyle={styles.createButtonText}
+          accessibilityRole="button"
+          accessibilityLabel={t("modals.createAgentTitle")}
+        />
+      ),
+    }),
+    [handleOpenCreateAgent, loading, subtitle, t],
   );
 
   if (error) {
-    return <ErrorState message={error} onRetry={refetch} />;
+    return (
+      <ErrorState
+        message={error}
+        onRetry={refetch}
+        fullScreen
+        showHomeButton
+        onGoHome={() => router.replace(ROUTES.ROOT as never)}
+      />
+    );
   }
 
   return (
@@ -368,7 +376,6 @@ export default function AgentsScreen() {
         <AgentsAgentPerformanceSection
           data={data}
           navigateTo={navigateTo}
-          onCreateAgent={handleOpenCreateAgent}
         />
       ) : null}
       {data ? (

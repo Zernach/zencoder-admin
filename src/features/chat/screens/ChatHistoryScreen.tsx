@@ -1,77 +1,378 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { memo, useCallback, useEffect, useMemo } from "react";
+import { View, Text, StyleSheet, type ListRenderItemInfo } from "react-native";
 import { useRouter } from "expo-router";
 import type { TABS } from "@/constants/routes";
-import { buildChatThreadRoute, buildCreateChatRoute } from "@/constants/routes";
+import { buildChatThreadRoute, buildCreateChatRoute, ROUTES } from "@/constants/routes";
 import { ScreenWrapper } from "@/components/screen";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { CustomButton } from "@/components/buttons";
+import { CustomList } from "@/components/lists";
 import { ChatHistoryFilters } from "@/features/chat/components";
-import {
-  filterChatHistoryByTopics,
-  getDefaultTopicFiltersForTab,
-} from "@/features/chat/filters";
+import { filterChatHistoryByTopics } from "@/features/chat/filters";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { borderWidth, radius, spacing } from "@/theme/tokens";
 import { useChatHistory, useChatSearchSuggestions } from "@/features/chat/hooks";
-import type { ChatConversationStatus, ChatTopic } from "@/features/chat/types";
+import type {
+  ChatConversationStatus,
+  ChatConversationSummary,
+  ChatTopic,
+  GetChatHistoryResponse,
+} from "@/features/chat/types";
 import type { SearchSuggestion } from "@/features/analytics/types";
 import { formatRelativeTime } from "@/utils";
+import {
+  useAppDispatch,
+  useAppSelector,
+  clearChatHistorySelectedTopics,
+  selectChatHistorySelectedTopics,
+  setChatHistorySelectedTopics,
+  toggleChatHistorySelectedTopic,
+} from "@/store";
 
 interface ChatHistoryScreenProps {
   tab: TABS;
-  /** When provided, overrides the default topic filters for the initial render. */
+  /** When provided, seeds selected topics for the initial render. */
   initialTopics?: ChatTopic[];
 }
 
-export function ChatHistoryScreen({ tab, initialTopics }: ChatHistoryScreenProps) {
-  const router = useRouter();
+interface ChatHistoryContentProps {
+  data: GetChatHistoryResponse | undefined;
+  loading: boolean;
+  query: string;
+  onOpenConversation: (chatId: string) => void;
+}
+
+interface TopicBadgeItem {
+  id: string;
+  topic: ChatTopic;
+}
+
+interface ChatHistoryConversationCardProps {
+  item: ChatConversationSummary;
+  mode: "light" | "dark";
+  theme: ThemePalette;
+  onOpenConversation: (chatId: string) => void;
+}
+
+const ChatHistoryConversationCard = memo(function ChatHistoryConversationCard({
+  item,
+  mode,
+  theme,
+  onOpenConversation,
+}: ChatHistoryConversationCardProps) {
+  const primaryTopic = item.topics[0] ?? "Agents";
+  const railAccent = theme.border.default;
+  const topicBadgeAccent = theme.text.tertiary;
+  const statusAccent = resolveStatusAccent(item.status, theme);
+  const hasUnread = item.unreadCount > 0;
+
+  const topicBadges = useMemo<TopicBadgeItem[]>(
+    () =>
+      (item.topics.length > 0 ? item.topics : [primaryTopic]).map((topic) => ({
+        id: `${item.id}-${topic}`,
+        topic,
+      })),
+    [item.id, item.topics, primaryTopic],
+  );
+
+  const handleOpenConversation = useCallback(() => {
+    onOpenConversation(item.id);
+  }, [item.id, onOpenConversation]);
+
+  const renderTopicBadge = useCallback(
+    ({ item: badge }: ListRenderItemInfo<TopicBadgeItem>) => (
+      <View
+        style={[
+          styles.topicBadge,
+          {
+            backgroundColor: withAlpha(topicBadgeAccent, mode === "dark" ? 0.24 : 0.12),
+            borderColor: withAlpha(topicBadgeAccent, 0.55),
+          },
+        ]}
+      >
+        <Text style={[styles.topicBadgeText, { color: topicBadgeAccent }]}>{badge.topic}</Text>
+      </View>
+    ),
+    [mode, topicBadgeAccent],
+  );
+
+  const renderTopicBadgeSeparator = useCallback(
+    () => <View style={styles.topicBadgeSeparator} />,
+    [],
+  );
+
+  const keyTopicBadge = useCallback((badge: TopicBadgeItem) => badge.id, []);
+
+  return (
+    <CustomButton
+      onPress={handleOpenConversation}
+      style={[
+        styles.card,
+        {
+          borderColor: withAlpha(railAccent, 0.42),
+          backgroundColor: theme.bg.surface,
+          boxShadow:
+            mode === "dark"
+              ? "0px 10px 24px rgba(0, 0, 0, 0.28)"
+              : "0px 10px 24px rgba(15, 23, 32, 0.12)",
+          elevation: mode === "dark" ? 2 : 4,
+        },
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={`Open chat ${item.title}`}
+    >
+      <View style={[styles.cardAccentRail, { backgroundColor: statusAccent }]} />
+
+      <View style={styles.cardHeader}>
+        <Text
+          style={[styles.cardTitle, { color: theme.text.primary }]}
+          numberOfLines={1}
+        >
+          {item.title}
+        </Text>
+        <Text style={[styles.cardMeta, { color: theme.text.tertiary }]}>
+          {formatRelativeTime(item.updatedAtIso)}
+        </Text>
+      </View>
+
+      <Text
+        style={[styles.cardPreview, { color: theme.text.secondary }]}
+        numberOfLines={2}
+      >
+        {item.preview}
+      </Text>
+
+      <View style={styles.cardFooter}>
+        <View style={styles.cardMetaGroup}>
+          <View
+            style={[
+              styles.metaBadge,
+              {
+                backgroundColor: withAlpha(
+                  statusAccent,
+                  mode === "dark" ? 0.2 : 0.1,
+                ),
+                borderColor: withAlpha(statusAccent, 0.45),
+              },
+            ]}
+          >
+            <View
+              style={[styles.statusDot, { backgroundColor: statusAccent }]}
+            />
+            <Text style={[styles.metaBadgeText, { color: statusAccent }]}>
+              {formatStatusLabel(item.status)}
+            </Text>
+          </View>
+          {hasUnread && (
+            <View
+              style={[
+                styles.metaBadge,
+                styles.unreadMetaBadge,
+                {
+                  backgroundColor: theme.border.brand,
+                  borderColor: withAlpha(theme.border.brand, 0.65),
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.metaBadgeText,
+                  styles.unreadMetaBadgeText,
+                  { color: theme.text.onBrand },
+                ]}
+              >
+                {item.unreadCount} New
+              </Text>
+            </View>
+          )}
+          <View
+            style={[
+              styles.metaBadge,
+              {
+                backgroundColor:
+                  mode === "dark"
+                    ? "rgba(255, 255, 255, 0.04)"
+                    : "rgba(15, 23, 32, 0.04)",
+                borderColor: theme.border.subtle,
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.metaBadgeText,
+                { color: theme.text.secondary, fontWeight: "400" },
+              ]}
+            >
+              {formatMessageCount(item.messageCount)}
+            </Text>
+          </View>
+        </View>
+        <CustomList
+          flatListProps={{
+            data: topicBadges,
+            renderItem: renderTopicBadge,
+            keyExtractor: keyTopicBadge,
+            horizontal: true,
+            scrollEnabled: false,
+            showsHorizontalScrollIndicator: false,
+            style: styles.topicBadgeList,
+            contentContainerStyle: styles.topicBadgeRowFooter,
+            ItemSeparatorComponent: renderTopicBadgeSeparator,
+          }}
+        />
+      </View>
+    </CustomButton>
+  );
+});
+
+const ChatHistoryTopicFilterBar = memo(function ChatHistoryTopicFilterBar() {
+  const dispatch = useAppDispatch();
+  const selectedTopics = useAppSelector(selectChatHistorySelectedTopics);
+
+  const handleToggleTopic = useCallback(
+    (topic: ChatTopic) => {
+      dispatch(toggleChatHistorySelectedTopic(topic));
+    },
+    [dispatch],
+  );
+
+  const handleClearTopics = useCallback(() => {
+    dispatch(clearChatHistorySelectedTopics());
+  }, [dispatch]);
+
+  return (
+    <ChatHistoryFilters
+      selectedTopics={selectedTopics}
+      onToggleTopic={handleToggleTopic}
+      onClearTopics={handleClearTopics}
+    />
+  );
+});
+
+const ChatHistoryContent = memo(function ChatHistoryContent({
+  data,
+  loading,
+  query,
+  onOpenConversation,
+}: ChatHistoryContentProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
-  const [selectedTopics, setSelectedTopics] = useState<ChatTopic[]>(
-    () => initialTopics ?? getDefaultTopicFiltersForTab(tab),
+  const selectedTopics = useAppSelector(selectChatHistorySelectedTopics);
+
+  const filteredItems = useMemo(() => {
+    const topicFiltered = filterChatHistoryByTopics(data?.items ?? [], selectedTopics);
+    const trimmedQuery = query.trim().toLowerCase();
+    if (!trimmedQuery) return topicFiltered;
+
+    return topicFiltered.filter(
+      (item) =>
+        item.title.toLowerCase().includes(trimmedQuery) ||
+        item.preview.toLowerCase().includes(trimmedQuery),
+    );
+  }, [data?.items, query, selectedTopics]);
+
+  const renderConversation = useCallback(
+    ({ item }: ListRenderItemInfo<ChatConversationSummary>) => (
+      <ChatHistoryConversationCard
+        item={item}
+        mode={mode}
+        theme={theme}
+        onOpenConversation={onOpenConversation}
+      />
+    ),
+    [mode, onOpenConversation, theme],
   );
+
+  const renderCardSeparator = useCallback(
+    () => <View style={styles.cardSeparator} />,
+    [],
+  );
+
+  const keyConversation = useCallback(
+    (item: ChatConversationSummary) => item.id,
+    [],
+  );
+
+  if (loading && !data) {
+    return (
+      <View style={styles.loadingWrap}>
+        <LoadingSkeleton variant="table" rows={4} />
+      </View>
+    );
+  }
+
+  if (!loading && data && filteredItems.length === 0) {
+    return (
+      <View
+        style={[
+          styles.emptyState,
+          { borderColor: theme.border.default, backgroundColor: theme.bg.surface },
+        ]}
+      >
+        <Text style={[styles.emptyTitle, { color: theme.text.primary }]}>
+          No chat history available
+        </Text>
+        <Text style={[styles.emptySubtitle, { color: theme.text.secondary }]}>
+          {selectedTopics.length === 0
+            ? "Recent conversations will appear here automatically."
+            : "No conversations match the selected topics."}
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <CustomList
+      flatListProps={{
+        data: filteredItems,
+        renderItem: renderConversation,
+        keyExtractor: keyConversation,
+        scrollEnabled: false,
+        contentContainerStyle: styles.cardList,
+        ItemSeparatorComponent: renderCardSeparator,
+      }}
+    />
+  );
+});
+
+export function ChatHistoryScreen({ tab, initialTopics }: ChatHistoryScreenProps) {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const { data, loading, error, refetch } = useChatHistory(tab, { scope: "all" });
 
   const handleSuggestionSelect = useCallback(
     (suggestion: SearchSuggestion) => {
-      router.push(buildChatThreadRoute(tab, suggestion.id) as never);
+      router.push(buildChatThreadRoute(suggestion.id) as never);
     },
-    [router, tab],
+    [router],
   );
 
   const chatAutocomplete = useChatSearchSuggestions(data?.items, handleSuggestionSelect);
 
   useEffect(() => {
-    setSelectedTopics(initialTopics ?? getDefaultTopicFiltersForTab(tab));
-  }, [tab, initialTopics]);
+    if (initialTopics !== undefined) {
+      dispatch(setChatHistorySelectedTopics(initialTopics));
+    }
+  }, [dispatch, initialTopics]);
 
-  const filteredItems = useMemo(() => {
-    const topicFiltered = filterChatHistoryByTopics(data?.items ?? [], selectedTopics);
-    const trimmed = chatAutocomplete.query.trim().toLowerCase();
-    if (!trimmed) return topicFiltered;
-    return topicFiltered.filter(
-      (item) =>
-        item.title.toLowerCase().includes(trimmed) ||
-        item.preview.toLowerCase().includes(trimmed),
-    );
-  }, [data?.items, selectedTopics, chatAutocomplete.query]);
-
-  const handleToggleTopic = useCallback((topic: ChatTopic) => {
-    setSelectedTopics((current) =>
-      current.includes(topic)
-        ? current.filter((item) => item !== topic)
-        : [...current, topic],
-    );
-  }, []);
-
-  const handleClearTopics = useCallback(() => {
-    setSelectedTopics([]);
-  }, []);
+  const handleOpenConversation = useCallback(
+    (chatId: string) => {
+      router.push(buildChatThreadRoute(chatId) as never);
+    },
+    [router],
+  );
 
   if (error) {
-    return <ErrorState message={error} onRetry={() => void refetch()} />;
+    return (
+      <ErrorState
+        message={error}
+        onRetry={() => void refetch()}
+        fullScreen
+        showHomeButton
+        onGoHome={() => router.replace(ROUTES.ROOT as never)}
+      />
+    );
   }
 
   return (
@@ -100,139 +401,14 @@ export function ChatHistoryScreen({ tab, initialTopics }: ChatHistoryScreenProps
         ),
       }}
       showFilterBar={false}
-      topFilterBar={
-        <ChatHistoryFilters
-          selectedTopics={selectedTopics}
-          onToggleTopic={handleToggleTopic}
-          onClearTopics={handleClearTopics}
-        />
-      }
+      topFilterBar={<ChatHistoryTopicFilterBar />}
     >
-      {loading && !data ? (
-        <View style={styles.loadingWrap}>
-          <LoadingSkeleton variant="table" rows={4} />
-        </View>
-      ) : null}
-
-      {!loading && data && filteredItems.length === 0 ? (
-        <View style={[styles.emptyState, { borderColor: theme.border.default, backgroundColor: theme.bg.surface }]}>
-          <Text style={[styles.emptyTitle, { color: theme.text.primary }]}>No chat history available</Text>
-          <Text style={[styles.emptySubtitle, { color: theme.text.secondary }]}>
-            {selectedTopics.length === 0
-              ? "Recent conversations will appear here automatically."
-              : "No conversations match the selected topics."}
-          </Text>
-        </View>
-      ) : null}
-
-      <View style={styles.cardList}>
-        {filteredItems.map((item) => {
-          const primaryTopic = item.topics[0] ?? "Agents";
-          const railAccent = theme.border.default;
-          const topicBadgeAccent = theme.text.tertiary;
-          const statusAccent = resolveStatusAccent(item.status, theme);
-          const hasUnread = item.unreadCount > 0;
-
-          return (
-            <CustomButton
-              key={item.id}
-              onPress={() => router.push(buildChatThreadRoute(tab, item.id) as never)}
-              style={[
-                styles.card,
-                  {
-                  borderColor: withAlpha(railAccent, 0.42),
-                  backgroundColor: theme.bg.surface,
-                  boxShadow: mode === "dark"
-                    ? "0px 10px 24px rgba(0, 0, 0, 0.28)"
-                    : "0px 10px 24px rgba(15, 23, 32, 0.12)",
-                  elevation: mode === "dark" ? 2 : 4,
-                },
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel={`Open chat ${item.title}`}
-            >
-              <View style={[styles.cardAccentRail, { backgroundColor: statusAccent }]} />
-
-              <View style={styles.cardHeader}>
-                <Text style={[styles.cardTitle, { color: theme.text.primary }]} numberOfLines={1}>
-                  {item.title}
-                </Text>
-                <Text style={[styles.cardMeta, { color: theme.text.tertiary }]}>
-                  {formatRelativeTime(item.updatedAtIso)}
-                </Text>
-              </View>
-
-              <Text style={[styles.cardPreview, { color: theme.text.secondary }]} numberOfLines={2}>
-                {item.preview}
-              </Text>
-
-              <View style={styles.cardFooter}>
-                <View style={styles.cardMetaGroup}>
-                <View
-                  style={[
-                    styles.metaBadge,
-                    {
-                      backgroundColor: withAlpha(statusAccent, mode === "dark" ? 0.2 : 0.1),
-                      borderColor: withAlpha(statusAccent, 0.45),
-                    },
-                  ]}
-                >
-                  <View style={[styles.statusDot, { backgroundColor: statusAccent }]} />
-                  <Text style={[styles.metaBadgeText, { color: statusAccent }]}>
-                    {formatStatusLabel(item.status)}
-                  </Text>
-                </View>
-                {hasUnread && (
-                  <View
-                    style={[
-                      styles.metaBadge,
-                      styles.unreadMetaBadge,
-                      {
-                        backgroundColor: theme.border.brand,
-                        borderColor: withAlpha(theme.border.brand, 0.65),
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.metaBadgeText, styles.unreadMetaBadgeText, { color: theme.text.onBrand }]}>
-                      {item.unreadCount} New
-                    </Text>
-                  </View>
-                )}
-                <View
-                  style={[
-                    styles.metaBadge,
-                    {
-                      backgroundColor: mode === "dark" ? "rgba(255, 255, 255, 0.04)" : "rgba(15, 23, 32, 0.04)",
-                      borderColor: theme.border.subtle,
-                    },
-                  ]}
-                >
-                  <Text style={[styles.metaBadgeText, { color: theme.text.secondary, fontWeight: "400" }]}>
-                    {formatMessageCount(item.messageCount)}
-                  </Text>
-                </View>
-                </View>
-                <View style={styles.topicBadgeRowFooter}>
-                  {(item.topics.length > 0 ? item.topics : [primaryTopic]).map((topic) => (
-                    <View
-                      key={`${item.id}-${topic}`}
-                      style={[
-                        styles.topicBadge,
-                        {
-                          backgroundColor: withAlpha(topicBadgeAccent, mode === "dark" ? 0.24 : 0.12),
-                          borderColor: withAlpha(topicBadgeAccent, 0.55),
-                        },
-                      ]}
-                    >
-                      <Text style={[styles.topicBadgeText, { color: topicBadgeAccent }]}>{topic}</Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            </CustomButton>
-          );
-        })}
-      </View>
+      <ChatHistoryContent
+        data={data}
+        loading={loading}
+        query={chatAutocomplete.query}
+        onOpenConversation={handleOpenConversation}
+      />
     </ScreenWrapper>
   );
 }
@@ -265,9 +441,13 @@ function withAlpha(color: string, alpha: number): string {
     return color;
   }
 
-  const hex = normalizedColor.length === 3
-    ? normalizedColor.split("").map((char) => `${char}${char}`).join("")
-    : normalizedColor;
+  const hex =
+    normalizedColor.length === 3
+      ? normalizedColor
+          .split("")
+          .map((char) => `${char}${char}`)
+          .join("")
+      : normalizedColor;
   const parsed = Number.parseInt(hex, 16);
   if (Number.isNaN(parsed)) {
     return color;
@@ -309,7 +489,10 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   cardList: {
-    gap: spacing[10],
+    flexGrow: 1,
+  },
+  cardSeparator: {
+    height: spacing[10],
   },
   card: {
     borderWidth: borderWidth.hairline,
@@ -367,13 +550,16 @@ const styles = StyleSheet.create({
     gap: spacing[8],
     flex: 1,
   },
-  topicBadgeRowFooter: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing[6],
-    justifyContent: "flex-end",
-    alignSelf: "flex-end",
+  topicBadgeList: {
     maxWidth: "45%",
+    alignSelf: "flex-end",
+    flexGrow: 0,
+  },
+  topicBadgeRowFooter: {
+    justifyContent: "flex-end",
+  },
+  topicBadgeSeparator: {
+    width: spacing[6],
   },
   metaBadge: {
     borderWidth: borderWidth.hairline,

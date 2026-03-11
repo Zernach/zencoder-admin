@@ -1,11 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  FlatList,
+  Platform,
   StyleSheet,
   Text,
-  View,
-  type LayoutChangeEvent,
-  type ScrollView,
+  type ListRenderItemInfo,
+  type NativeSyntheticEvent,
+  type NativeTouchEvent,
 } from "react-native";
+import { Pressable as GesturePressable } from "react-native-gesture-handler";
 import Animated, {
   Easing,
   cancelAnimation,
@@ -19,7 +22,6 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import { CustomButton } from "@/components/buttons";
 import type { SuggestedPrompt } from "@/features/chat/constants/suggestedPrompts";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
@@ -37,6 +39,30 @@ interface InfiniteHorizontalScrollviewProps {
   initialScrollOffsetPx?: number;
 }
 
+interface PromptCardItem {
+  id: string;
+  prompt: SuggestedPrompt;
+  promptIndex: number;
+  sequenceIndex: 0 | 1;
+}
+
+interface SuggestedPromptCardProps {
+  item: PromptCardItem;
+}
+
+interface SuggestedPromptCardContextValue {
+  onPressPrompt: (promptMessage: string) => void;
+  onPressIn: () => void;
+  onPressOut: () => void;
+  onTouchStart: () => void;
+  onTouchEnd: () => void;
+  disabled: boolean;
+}
+
+const PROMPT_CARD_WIDTH = 280;
+const PROMPT_CARD_GAP = spacing[10];
+const SuggestedPromptCardContext = React.createContext<SuggestedPromptCardContextValue | null>(null);
+
 function normalizeOffset(offset: number, cycleWidth: number): number {
   "worklet";
   if (cycleWidth <= 0) {
@@ -52,7 +78,89 @@ function normalizeOffset(offset: number, cycleWidth: number): number {
   return offset;
 }
 
-export function InfiniteHorizontalScrollview({
+const SuggestedPromptCard = React.memo(function SuggestedPromptCard({
+  item,
+}: SuggestedPromptCardProps) {
+  const context = React.useContext(SuggestedPromptCardContext);
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  if (!context) {
+    throw new Error("SuggestedPromptCard must be rendered within SuggestedPromptCardContext.");
+  }
+  const {
+    onPressPrompt,
+    onPressIn,
+    onPressOut,
+    onTouchStart,
+    onTouchEnd,
+    disabled,
+  } = context;
+
+  const handleTouchStart = useCallback(
+    (_event: NativeSyntheticEvent<NativeTouchEvent>) => {
+      onPressIn();
+      onTouchStart();
+    },
+    [onPressIn, onTouchStart],
+  );
+
+  const handleTouchEnd = useCallback(
+    (_event: NativeSyntheticEvent<NativeTouchEvent>) => {
+      onPressOut();
+      onTouchEnd();
+    },
+    [onPressOut, onTouchEnd],
+  );
+
+  const handlePress = useCallback(() => {
+    onPressPrompt(item.prompt.message);
+  }, [item.prompt.message, onPressPrompt]);
+
+  return (
+    <GesturePressable
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      onPress={handlePress}
+      pressRetentionOffset={{
+        top: spacing[16],
+        bottom: spacing[16],
+        left: spacing[24],
+        right: spacing[24],
+      }}
+      hitSlop={{
+        top: spacing[6],
+        bottom: spacing[6],
+        left: spacing[6],
+        right: spacing[6],
+      }}
+      style={({ pressed }) => [
+        styles.promptCard,
+        {
+          borderColor: theme.border.default,
+          backgroundColor: theme.bg.surface,
+          opacity: pressed ? 0.85 : 1,
+        },
+      ]}
+      disabled={disabled}
+      accessibilityLabel={item.prompt.label}
+      testID={item.sequenceIndex === 0 ? `suggestion-${item.promptIndex}` : undefined}
+    >
+      <Text
+        style={[styles.promptText, { color: theme.text.primary }]}
+        numberOfLines={3}
+      >
+        {item.prompt.label}
+      </Text>
+    </GesturePressable>
+  );
+});
+
+SuggestedPromptCard.displayName = "SuggestedPromptCard";
+
+export const InfiniteHorizontalScrollview = React.memo(function InfiniteHorizontalScrollview({
   prompts,
   onPressPrompt,
   disabled = false,
@@ -60,15 +168,15 @@ export function InfiniteHorizontalScrollview({
   leadingOffsetPx = 0,
   initialScrollOffsetPx = 0,
 }: InfiniteHorizontalScrollviewProps) {
-  const { mode } = useThemeMode();
-  const theme = semanticThemes[mode];
-  const scrollRef = useAnimatedRef<ScrollView>();
+  const scrollRef = useAnimatedRef<FlatList<PromptCardItem>>();
   const cycleWidth = useSharedValue(0);
   const autoOffset = useSharedValue(0);
   const lastOffset = useSharedValue(0);
   const paused = useSharedValue(false);
   const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isCardTouchActive, setIsCardTouchActive] = useState(false);
   const shouldAnimate = prompts.length > 1;
+  const shouldAutoAnimate = shouldAnimate;
 
   const clearResumeTimer = useCallback(() => {
     if (resumeTimeoutRef.current == null) {
@@ -118,7 +226,7 @@ export function InfiniteHorizontalScrollview({
             false,
           );
         },
-      )(shouldAnimate, speedPixelsPerSecond, resetOffset, Math.max(0, initialScrollOffsetPx));
+      )(shouldAutoAnimate, speedPixelsPerSecond, resetOffset, Math.max(0, initialScrollOffsetPx));
     },
     [
       autoOffset,
@@ -127,7 +235,7 @@ export function InfiniteHorizontalScrollview({
       lastOffset,
       paused,
       scrollRef,
-      shouldAnimate,
+      shouldAutoAnimate,
       speedPixelsPerSecond,
     ],
   );
@@ -146,17 +254,6 @@ export function InfiniteHorizontalScrollview({
       startAutoScroll(false);
     }, RESUME_SCROLL_DELAY_MS);
   }, [clearResumeTimer, startAutoScroll]);
-
-  const handleSequenceLayout = useCallback(
-    (event: LayoutChangeEvent) => {
-      const sequenceWidth = event.nativeEvent.layout.width;
-      cycleWidth.value = sequenceWidth;
-      if (sequenceWidth > 0) {
-        startAutoScroll(false);
-      }
-    },
-    [cycleWidth, startAutoScroll],
-  );
 
   const animatedScrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -201,62 +298,136 @@ export function InfiniteHorizontalScrollview({
     };
   }, [clearResumeTimer, pauseAutoScroll]);
 
-  const renderedPrompts = useMemo(() => [prompts, prompts] as const, [prompts]);
+  const renderedPrompts = useMemo<PromptCardItem[]>(
+    () => [
+      ...prompts.map((prompt, promptIndex) => ({
+        id: `0-${prompt.label}-${promptIndex}`,
+        prompt,
+        promptIndex,
+        sequenceIndex: 0 as const,
+      })),
+      ...prompts.map((prompt, promptIndex) => ({
+        id: `1-${prompt.label}-${promptIndex}`,
+        prompt,
+        promptIndex,
+        sequenceIndex: 1 as const,
+      })),
+    ],
+    [prompts],
+  );
+
+  const cyclePixelWidth = useMemo(
+    () => prompts.length * (PROMPT_CARD_WIDTH + PROMPT_CARD_GAP),
+    [prompts.length],
+  );
+
+  const keyExtractor = useCallback((item: PromptCardItem) => item.id, []);
+
+  const handleCardPressIn = useCallback(() => {
+    pauseAutoScroll();
+  }, [pauseAutoScroll]);
+
+  const handleCardPressOut = useCallback(() => {
+    scheduleResume();
+  }, [scheduleResume]);
+
+  const handleCardTouchStart = useCallback(() => {
+    setIsCardTouchActive(true);
+    clearResumeTimer();
+    pauseAutoScroll();
+  }, [clearResumeTimer, pauseAutoScroll]);
+
+  const handleCardTouchEnd = useCallback(() => {
+    setIsCardTouchActive(false);
+    scheduleResume();
+  }, [scheduleResume]);
+
+  const suggestedPromptCardContextValue = useMemo<SuggestedPromptCardContextValue>(
+    () => ({
+      onPressPrompt,
+      onPressIn: handleCardPressIn,
+      onPressOut: handleCardPressOut,
+      onTouchStart: handleCardTouchStart,
+      onTouchEnd: handleCardTouchEnd,
+      disabled,
+    }),
+    [
+      disabled,
+      handleCardPressIn,
+      handleCardPressOut,
+      handleCardTouchStart,
+      handleCardTouchEnd,
+      onPressPrompt,
+    ],
+  );
+
+  const renderPromptCard = useCallback(
+    ({ item }: ListRenderItemInfo<PromptCardItem>) => (
+      <SuggestedPromptCard item={item} />
+    ),
+    [],
+  );
+
+  useEffect(() => {
+    cycleWidth.value = cyclePixelWidth;
+    if (cyclePixelWidth > 0) {
+      startAutoScroll(false);
+    }
+  }, [cyclePixelWidth, cycleWidth, startAutoScroll]);
+
+  const handleTouchStart = useCallback(
+    (_event: NativeSyntheticEvent<NativeTouchEvent>) => {
+      clearResumeTimer();
+      pauseAutoScroll();
+    },
+    [clearResumeTimer, pauseAutoScroll],
+  );
+
+  const handleTouchEnd = useCallback(
+    (_event: NativeSyntheticEvent<NativeTouchEvent>) => {
+      scheduleResume();
+    },
+    [scheduleResume],
+  );
 
   if (prompts.length === 0) {
     return null;
   }
 
   return (
-    <Animated.ScrollView
-      ref={scrollRef}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      bounces={false}
-      scrollEventThrottle={16}
-      contentContainerStyle={[
-        styles.contentContainer,
-        { paddingLeft: spacing[4] + Math.max(0, leadingOffsetPx) },
-      ]}
-      onScroll={animatedScrollHandler}
-      testID="infinite-horizontal-scrollview"
-    >
-      {renderedPrompts.map((promptSequence, sequenceIndex) => (
-        <View
-          key={`prompt-sequence-${sequenceIndex}`}
-          style={styles.promptSequence}
-          onLayout={sequenceIndex === 0 ? handleSequenceLayout : undefined}
-        >
-          {promptSequence.map((prompt, promptIndex) => (
-            <CustomButton
-              key={`${sequenceIndex}-${prompt.label}-${promptIndex}`}
-              onPress={() => onPressPrompt(prompt.message)}
-              style={[
-                styles.promptCard,
-                {
-                  borderColor: theme.border.default,
-                  backgroundColor: theme.bg.surface,
-                },
-              ]}
-              disabled={disabled}
-              accessibilityLabel={prompt.label}
-              testID={
-                sequenceIndex === 0 ? `suggestion-${promptIndex}` : undefined
-              }
-            >
-              <Text
-                style={[styles.promptText, { color: theme.text.primary }]}
-                numberOfLines={3}
-              >
-                {prompt.label}
-              </Text>
-            </CustomButton>
-          ))}
-        </View>
-      ))}
-    </Animated.ScrollView>
+    <SuggestedPromptCardContext.Provider value={suggestedPromptCardContextValue}>
+      <Animated.FlatList
+        ref={scrollRef}
+        data={renderedPrompts}
+        renderItem={renderPromptCard}
+        keyExtractor={keyExtractor}
+        horizontal
+        scrollEnabled={!disabled && shouldAnimate && !isCardTouchActive}
+        showsHorizontalScrollIndicator={false}
+        bounces={false}
+        scrollEventThrottle={16}
+        keyboardShouldPersistTaps="always"
+        disableScrollViewPanResponder={Platform.OS === "ios"}
+        // iOS: keep touches focused on child pressables while auto-scroll runs.
+        {...(Platform.OS === "ios" && {
+          delaysContentTouches: false,
+          canCancelContentTouches: false,
+        })}
+        contentContainerStyle={[
+          styles.contentContainer,
+          { paddingLeft: spacing[4] + Math.max(0, leadingOffsetPx) },
+        ]}
+        onScroll={animatedScrollHandler}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        testID="infinite-horizontal-scrollview"
+      />
+    </SuggestedPromptCardContext.Provider>
   );
-}
+});
+
+InfiniteHorizontalScrollview.displayName = "InfiniteHorizontalScrollview";
 
 const styles = StyleSheet.create({
   contentContainer: {
@@ -264,18 +435,14 @@ const styles = StyleSheet.create({
     paddingLeft: spacing[4],
     paddingRight: spacing[4],
   },
-  promptSequence: {
-    flexDirection: "row",
-    gap: spacing[10],
-    paddingRight: spacing[10],
-  },
   promptCard: {
-    width: 280,
+    width: PROMPT_CARD_WIDTH,
     minHeight: 74,
     borderWidth: borderWidth.hairline,
     borderRadius: radius.md,
     paddingHorizontal: spacing[16],
     paddingVertical: spacing[12],
+    marginRight: PROMPT_CARD_GAP,
     alignItems: "flex-start",
     justifyContent: "center",
   },
