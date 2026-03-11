@@ -1,13 +1,24 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import {
-  ScrollView,
   StyleSheet,
   Text,
   View,
   type LayoutChangeEvent,
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
+  type ScrollView,
 } from "react-native";
+import Animated, {
+  Easing,
+  cancelAnimation,
+  runOnJS,
+  runOnUI,
+  scrollTo,
+  useAnimatedRef,
+  useAnimatedScrollHandler,
+  useDerivedValue,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 import { CustomButton } from "@/components/buttons";
 import type { SuggestedPrompt } from "@/features/chat/constants/suggestedPrompts";
 import { useThemeMode } from "@/providers/ThemeProvider";
@@ -22,9 +33,12 @@ interface InfiniteHorizontalScrollviewProps {
   onPressPrompt: (promptMessage: string) => void;
   disabled?: boolean;
   speedPixelsPerSecond?: number;
+  leadingOffsetPx?: number;
+  initialScrollOffsetPx?: number;
 }
 
 function normalizeOffset(offset: number, cycleWidth: number): number {
+  "worklet";
   if (cycleWidth <= 0) {
     return offset;
   }
@@ -43,14 +57,16 @@ export function InfiniteHorizontalScrollview({
   onPressPrompt,
   disabled = false,
   speedPixelsPerSecond = DEFAULT_SPEED_PIXELS_PER_SECOND,
+  leadingOffsetPx = 0,
+  initialScrollOffsetPx = 0,
 }: InfiniteHorizontalScrollviewProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
-  const scrollRef = useRef<ScrollView>(null);
-  const cycleWidthRef = useRef(0);
-  const offsetRef = useRef(0);
-  const animationFrameRef = useRef<number | null>(null);
-  const pausedRef = useRef(false);
+  const scrollRef = useAnimatedRef<ScrollView>();
+  const cycleWidth = useSharedValue(0);
+  const autoOffset = useSharedValue(0);
+  const lastOffset = useSharedValue(0);
+  const paused = useSharedValue(false);
   const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const shouldAnimate = prompts.length > 1;
 
@@ -62,120 +78,128 @@ export function InfiniteHorizontalScrollview({
     resumeTimeoutRef.current = null;
   }, []);
 
+  const startAutoScroll = useCallback(
+    (resetOffset: boolean) => {
+      runOnUI(
+        (
+          shouldAutoAnimate: boolean,
+          speed: number,
+          shouldResetOffset: boolean,
+          initialOffset: number,
+        ) => {
+          "worklet";
+          cancelAnimation(autoOffset);
+          paused.value = false;
+          if (shouldResetOffset) {
+            autoOffset.value = initialOffset;
+            lastOffset.value = initialOffset;
+            scrollTo(scrollRef, initialOffset, 0, false);
+          }
+
+          if (!shouldAutoAnimate || speed <= 0 || cycleWidth.value <= 0) {
+            return;
+          }
+
+          const normalizedStart = normalizeOffset(
+            lastOffset.value,
+            cycleWidth.value,
+          );
+          autoOffset.value = normalizedStart;
+          const durationMs = Math.max(
+            Math.round((cycleWidth.value / speed) * 1000),
+            16,
+          );
+          autoOffset.value = withRepeat(
+            withTiming(normalizedStart + cycleWidth.value, {
+              duration: durationMs,
+              easing: Easing.linear,
+            }),
+            -1,
+            false,
+          );
+        },
+      )(shouldAnimate, speedPixelsPerSecond, resetOffset, Math.max(0, initialScrollOffsetPx));
+    },
+    [
+      autoOffset,
+      cycleWidth,
+      initialScrollOffsetPx,
+      lastOffset,
+      paused,
+      scrollRef,
+      shouldAnimate,
+      speedPixelsPerSecond,
+    ],
+  );
+
+  const pauseAutoScroll = useCallback(() => {
+    runOnUI(() => {
+      "worklet";
+      paused.value = true;
+      cancelAnimation(autoOffset);
+    })();
+  }, [autoOffset, paused]);
+
   const scheduleResume = useCallback(() => {
     clearResumeTimer();
     resumeTimeoutRef.current = setTimeout(() => {
-      pausedRef.current = false;
+      startAutoScroll(false);
     }, RESUME_SCROLL_DELAY_MS);
-  }, [clearResumeTimer]);
-
-  const rebaseOffset = useCallback(() => {
-    const cycleWidth = cycleWidthRef.current;
-    if (cycleWidth <= 0) {
-      return;
-    }
-    const normalized = normalizeOffset(offsetRef.current, cycleWidth);
-    if (Math.abs(normalized - offsetRef.current) > 0.5) {
-      offsetRef.current = normalized;
-      scrollRef.current?.scrollTo({ x: normalized, animated: false });
-    }
-  }, []);
-
-  const handleScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      offsetRef.current = event.nativeEvent.contentOffset.x;
-    },
-    [],
-  );
-
-  const handleScrollBeginDrag = useCallback(() => {
-    pausedRef.current = true;
-    clearResumeTimer();
-  }, [clearResumeTimer]);
-
-  const handleScrollEndDrag = useCallback(() => {
-    rebaseOffset();
-    scheduleResume();
-  }, [rebaseOffset, scheduleResume]);
-
-  const handleMomentumScrollEnd = useCallback(() => {
-    rebaseOffset();
-    scheduleResume();
-  }, [rebaseOffset, scheduleResume]);
+  }, [clearResumeTimer, startAutoScroll]);
 
   const handleSequenceLayout = useCallback(
     (event: LayoutChangeEvent) => {
-      cycleWidthRef.current = event.nativeEvent.layout.width;
-      rebaseOffset();
+      const sequenceWidth = event.nativeEvent.layout.width;
+      cycleWidth.value = sequenceWidth;
+      if (sequenceWidth > 0) {
+        startAutoScroll(false);
+      }
     },
-    [rebaseOffset],
+    [cycleWidth, startAutoScroll],
   );
 
-  useEffect(() => {
-    if (!shouldAnimate) {
-      return undefined;
+  const animatedScrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      const offsetX = event.contentOffset.x;
+      lastOffset.value =
+        cycleWidth.value > 0
+          ? normalizeOffset(offsetX, cycleWidth.value)
+          : offsetX;
+    },
+    onBeginDrag: () => {
+      paused.value = true;
+      cancelAnimation(autoOffset);
+      runOnJS(clearResumeTimer)();
+    },
+    onEndDrag: () => {
+      runOnJS(scheduleResume)();
+    },
+    onMomentumEnd: () => {
+      runOnJS(scheduleResume)();
+    },
+  });
+
+  useDerivedValue(() => {
+    if (paused.value || cycleWidth.value <= 0) {
+      return;
     }
 
-    let cancelled = false;
-    let lastTimestamp: number | null = null;
-
-    const step = (timestamp: number) => {
-      if (cancelled) {
-        return;
-      }
-
-      animationFrameRef.current = requestAnimationFrame(step);
-
-      if (pausedRef.current) {
-        lastTimestamp = timestamp;
-        return;
-      }
-
-      const cycleWidth = cycleWidthRef.current;
-      if (cycleWidth <= 0) {
-        lastTimestamp = timestamp;
-        return;
-      }
-
-      if (lastTimestamp == null) {
-        lastTimestamp = timestamp;
-        return;
-      }
-
-      const deltaMs = timestamp - lastTimestamp;
-      lastTimestamp = timestamp;
-      offsetRef.current = normalizeOffset(
-        offsetRef.current + (speedPixelsPerSecond * deltaMs) / 1000,
-        cycleWidth,
-      );
-      scrollRef.current?.scrollTo({ x: offsetRef.current, animated: false });
-    };
-
-    animationFrameRef.current = requestAnimationFrame(step);
-
-    return () => {
-      cancelled = true;
-      if (animationFrameRef.current != null) {
-        cancelAnimationFrame(animationFrameRef.current);
-        animationFrameRef.current = null;
-      }
-    };
-  }, [shouldAnimate, speedPixelsPerSecond]);
+    const nextOffset = normalizeOffset(autoOffset.value, cycleWidth.value);
+    lastOffset.value = nextOffset;
+    scrollTo(scrollRef, nextOffset, 0, false);
+  });
 
   useEffect(() => {
-    offsetRef.current = 0;
-    pausedRef.current = false;
-    scrollRef.current?.scrollTo({ x: 0, animated: false });
-  }, [prompts]);
+    clearResumeTimer();
+    startAutoScroll(true);
+  }, [clearResumeTimer, prompts, startAutoScroll]);
 
   useEffect(() => {
     return () => {
       clearResumeTimer();
-      if (animationFrameRef.current != null) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+      pauseAutoScroll();
     };
-  }, [clearResumeTimer]);
+  }, [clearResumeTimer, pauseAutoScroll]);
 
   const renderedPrompts = useMemo(() => [prompts, prompts] as const, [prompts]);
 
@@ -184,17 +208,17 @@ export function InfiniteHorizontalScrollview({
   }
 
   return (
-    <ScrollView
+    <Animated.ScrollView
       ref={scrollRef}
       horizontal
       showsHorizontalScrollIndicator={false}
       bounces={false}
       scrollEventThrottle={16}
-      contentContainerStyle={styles.contentContainer}
-      onScroll={handleScroll}
-      onScrollBeginDrag={handleScrollBeginDrag}
-      onScrollEndDrag={handleScrollEndDrag}
-      onMomentumScrollEnd={handleMomentumScrollEnd}
+      contentContainerStyle={[
+        styles.contentContainer,
+        { paddingLeft: spacing[4] + Math.max(0, leadingOffsetPx) },
+      ]}
+      onScroll={animatedScrollHandler}
       testID="infinite-horizontal-scrollview"
     >
       {renderedPrompts.map((promptSequence, sequenceIndex) => (
@@ -230,14 +254,15 @@ export function InfiniteHorizontalScrollview({
           ))}
         </View>
       ))}
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   contentContainer: {
     paddingVertical: spacing[2],
-    paddingHorizontal: spacing[4],
+    paddingLeft: spacing[4],
+    paddingRight: spacing[4],
   },
   promptSequence: {
     flexDirection: "row",

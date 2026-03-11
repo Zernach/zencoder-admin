@@ -19,12 +19,17 @@ import { selectOrgId } from "@/store/slices/filtersSlice";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { borderWidth, radius, spacing } from "@/theme/tokens";
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 import {
   getAllSuggestedPrompts,
   getWelcomeTitle,
   getWelcomeSubtitle,
 } from "@/features/chat/constants/suggestedPrompts";
 import { InfiniteHorizontalScrollview } from "@/features/chat/components";
+
+const SUGGESTION_CARD_WIDTH = 280;
+const SUGGESTION_CARD_GAP = 10;
+const BRICK_LANE_OFFSET = Math.round((SUGGESTION_CARD_WIDTH + SUGGESTION_CARD_GAP) / 2);
 
 export function CreateChatScreen() {
   const router = useRouter();
@@ -34,11 +39,20 @@ export function CreateChatScreen() {
   const tab = useAppSelector(selectMostRecentTab);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const bp = useBreakpoint();
   const insets = useSafeAreaInsets();
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const isMobileOrTablet = bp !== "desktop";
 
   const suggestedPrompts = useMemo(() => getAllSuggestedPrompts(t), [t]);
+  const [primaryPromptLane, secondaryPromptLane] = useMemo(() => {
+    const splitIndex = Math.ceil(suggestedPrompts.length / 2);
+    return [
+      suggestedPrompts.slice(0, splitIndex),
+      suggestedPrompts.slice(splitIndex),
+    ];
+  }, [suggestedPrompts]);
   const canSubmit = message.trim().length > 0 && !submitting;
 
   const submitMessage = useCallback(
@@ -181,11 +195,28 @@ export function CreateChatScreen() {
           >
             {t("chat.suggestedQuestions")}
           </Text>
-          <InfiniteHorizontalScrollview
-            prompts={suggestedPrompts}
-            onPressPrompt={handleSuggestionPress}
-            disabled={submitting}
-          />
+          {isMobileOrTablet ? (
+            <View style={styles.suggestionLanes}>
+              <InfiniteHorizontalScrollview
+                prompts={primaryPromptLane}
+                onPressPrompt={handleSuggestionPress}
+                disabled={submitting}
+              />
+              <InfiniteHorizontalScrollview
+                prompts={secondaryPromptLane}
+                onPressPrompt={handleSuggestionPress}
+                disabled={submitting}
+                leadingOffsetPx={BRICK_LANE_OFFSET}
+                initialScrollOffsetPx={SUGGESTION_CARD_WIDTH}
+              />
+            </View>
+          ) : (
+            <InfiniteHorizontalScrollview
+              prompts={suggestedPrompts}
+              onPressPrompt={handleSuggestionPress}
+              disabled={submitting}
+            />
+          )}
         </View>
       </View>
     </ScreenWrapper>
@@ -233,6 +264,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 0.5,
+  },
+  suggestionLanes: {
+    gap: spacing[10],
   },
   composerBar: {
     borderTopWidth: borderWidth.hairline,
