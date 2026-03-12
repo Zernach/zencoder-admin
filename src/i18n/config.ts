@@ -46,6 +46,7 @@ i18n.use(initReactI18next).init({
   },
   lng: "en",
   fallbackLng: "en",
+  showSupportNotice: false,
   interpolation: {
     escapeValue: false,
   },

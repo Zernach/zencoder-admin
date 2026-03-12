@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, Modal, StyleSheet } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, Modal, StyleSheet, Pressable, Platform } from "react-native";
 import type { StyleProp, ViewStyle } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists/CustomList";
@@ -34,6 +34,17 @@ export const CustomModal = React.memo(function CustomModal({
 
   const showHeader = showCloseButton || !!title;
 
+  useEffect(() => {
+    if (Platform.OS !== "web" || !visible) {
+      return;
+    }
+
+    const activeElement = document.activeElement;
+    if (activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
+  }, [visible]);
+
   return (
     <Modal
       transparent
@@ -42,7 +53,7 @@ export const CustomModal = React.memo(function CustomModal({
       onRequestClose={onClose}
     >
       <View style={[styles.overlay, { backgroundColor: theme.bg.overlay }]}>
-        <CustomButton
+        <Pressable
           style={StyleSheet.absoluteFillObject}
           onPress={onClose}
           accessibilityRole="button"

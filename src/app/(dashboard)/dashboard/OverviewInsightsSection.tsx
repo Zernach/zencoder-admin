@@ -236,3 +236,5 @@ export const OverviewInsightsSection = React.memo(function OverviewInsightsSecti
     </>
   );
 });
+
+export default OverviewInsightsSection;

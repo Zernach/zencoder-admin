@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { useSectionRef } from "@/hooks/useRegisterSection";
 import { useTranslation } from "react-i18next";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Platform } from "react-native";
 import { CustomButton } from "@/components/buttons";
 import { CustomSwitch } from "@/components/inputs";
 import {
@@ -42,6 +42,17 @@ const SEATS_PURCHASED = 100;
 const SEATS_USED = 73;
 const ORG_ID = "org_zencoder_001";
 
+function blurFocusedElementOnWeb(): void {
+  if (Platform.OS !== "web") {
+    return;
+  }
+
+  const activeElement = document.activeElement;
+  if (activeElement instanceof HTMLElement) {
+    activeElement.blur();
+  }
+}
+
 const SettingsProfileSection = React.memo(function SettingsProfileSection() {
   const { t } = useTranslation();
   const { mode } = useThemeMode();
@@ -71,8 +82,10 @@ const SettingsProfileSection = React.memo(function SettingsProfileSection() {
         </Text>
         <Text
           selectable={false}
-          style={[styles.profileEmail, { color: theme.text.secondary }]}
-          pointerEvents="none"
+          style={[
+            styles.profileEmail,
+            { color: theme.text.secondary, pointerEvents: "none" },
+          ]}
         >
           {t("settings.adminEmail")}
         </Text>
@@ -194,10 +207,12 @@ const SettingsInternationalizationSection = React.memo(function SettingsInternat
   }, [selectedCurrency]);
 
   const handleOpenLanguageSelection = useCallback(() => {
+    blurFocusedElementOnWeb();
     dispatch(openModal(ModalName.LanguageSelection));
   }, [dispatch]);
 
   const handleOpenCurrencySelection = useCallback(() => {
+    blurFocusedElementOnWeb();
     dispatch(openModal(ModalName.CurrencySelection));
   }, [dispatch]);
 
@@ -365,6 +380,7 @@ const SettingsDangerZoneSection = React.memo(function SettingsDangerZoneSection(
   const refFor = useSectionRef();
 
   const handleOpenSignOut = useCallback(() => {
+    blurFocusedElementOnWeb();
     dispatch(openModal(ModalName.SignOutNotice));
   }, [dispatch]);
 

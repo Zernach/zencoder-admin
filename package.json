@@ -4,7 +4,7 @@
   "engines": {
     "node": ">=22 <24"
   },
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "scripts": {
     "clean": "rm -rf node_modules ios android .expo package-lock.json dist && npm install",
     "figma:sync": "node --experimental-strip-types docs/designs/src/index.ts",
