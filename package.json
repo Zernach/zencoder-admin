@@ -6,6 +6,8 @@
   },
   "main": "index.ts",
   "scripts": {
+    "generate:web-html": "NODE_OPTIONS='--require tsx/cjs' node scripts/web/generate-index-html.ts",
+    "prebuild": "npm run generate:web-html",
     "clean": "rm -rf node_modules ios android .expo package-lock.json dist && npm install",
     "figma:sync": "node --experimental-strip-types docs/designs/src/index.ts",
     "ralph": "sh docs/ralph/ralph.sh",
@@ -18,7 +20,7 @@
     "lint": "eslint src/ --ext .ts,.tsx",
     "test:e2e": "npx playwright test --config e2e/playwright.config.ts",
     "contracts:openapi": "NODE_OPTIONS='--require tsx/cjs' node scripts/contracts/generate-openapi.ts",
-    "build": "NODE_OPTIONS='--require tsx/cjs' expo export --platform web",
+    "build": "npm run prebuild && NODE_OPTIONS='--require tsx/cjs' expo export --platform web",
     "deploy": "npm run build && npx wrangler pages deploy ./dist --project-name=zencoder-submission"
   },
   "dependencies": {
