@@ -604,6 +604,24 @@ function addMinutes(date: Date, minutes: number): Date {
   return new Date(date.getTime() + minutes * 60_000);
 }
 
+function buildShortSummary(source: string): string {
+  const words = source
+    .replace(/[^a-zA-Z0-9 ]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word.length > 0);
+
+  if (words.length >= 2) {
+    return words.slice(0, Math.min(4, words.length)).join(" ");
+  }
+
+  if (words.length === 1) {
+    return `${words[0]} overview`;
+  }
+
+  return "Chat overview";
+}
+
 function buildConversation(
   tab: TABS,
   index: number,
@@ -640,6 +658,7 @@ function buildConversation(
       id: chatId,
       tab,
       topics: template.topics,
+      shortSummary: buildShortSummary(template.title),
       title: template.title,
       preview: lastMessage ? lastMessage.content : "",
       updatedAtIso: lastMessage ? lastMessage.createdAtIso : now.toISOString(),
@@ -799,6 +818,7 @@ export class StubChatApi implements IChatApi {
       id: chatId,
       tab: request.tab,
       topics: [topic],
+      shortSummary: buildShortSummary(request.title || request.firstMessage),
       title: request.title,
       preview: assistantMessage.content,
       updatedAtIso: assistantMessage.createdAtIso,

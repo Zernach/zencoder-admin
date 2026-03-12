@@ -8,13 +8,12 @@ import {
   type ListRenderItemInfo,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { Sparkles } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ROUTES, type TABS } from "@/constants/routes";
 import { isIos } from "@/constants";
 import { ScreenWrapper } from "@/components/screen";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
-import { CustomButton } from "@/components/buttons";
-import { CustomTextInput } from "@/components/inputs";
 import { CustomList } from "@/components/lists";
 import { useAppDependencies } from "@/core/di";
 import { useAppSelector } from "@/store/hooks";
@@ -23,12 +22,15 @@ import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { borderWidth, radius, spacing } from "@/theme/tokens";
 import { useChatThread } from "@/features/chat/hooks";
+import { ChatComposerFooter } from "@/features/chat/components/ChatComposerFooter";
 import type { ChatMessage, ChatMessageRole } from "@/features/chat/types";
 
 interface ChatThreadScreenProps {
   tab: TABS;
   chatId: string;
 }
+
+const THREAD_HEADER_TITLE = "Thread";
 
 function formatTimestamp(iso: string): string {
   return new Date(iso).toLocaleString();
@@ -174,64 +176,73 @@ const ChatThreadMessages = React.memo(function ChatThreadMessages({
   );
 });
 
-interface ChatThreadComposerProps {
-  insetsBottom: number;
-  sending: boolean;
-  onSend: (content: string) => void;
+interface ChatThreadMetaCardProps {
+  data: ReturnType<typeof useChatThread>["data"];
 }
 
-const ChatThreadComposer = React.memo(function ChatThreadComposer({
-  insetsBottom,
-  sending,
-  onSend,
-}: ChatThreadComposerProps) {
+const ChatThreadMetaCard = React.memo(function ChatThreadMetaCard({
+  data,
+}: ChatThreadMetaCardProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
-  const [draft, setDraft] = useState("");
 
-  const handleSend = useCallback(() => {
-    const content = draft.trim();
-    if (content.length === 0 || sending) return;
-
-    setDraft("");
-    onSend(content);
-  }, [draft, onSend, sending]);
-
-  const canSend = draft.trim().length > 0 && !sending;
+  if (!data) {
+    return null;
+  }
 
   return (
     <View
       style={[
-        styles.composerContainer,
+        styles.metaCard,
         {
-          borderTopColor: theme.border.default,
-          backgroundColor: theme.bg.canvas,
-          paddingBottom: Math.max(spacing[8], insetsBottom),
+          borderColor: theme.border.default,
+          backgroundColor: theme.bg.surfaceElevated,
         },
       ]}
-      testID="chat-thread-composer"
+      testID="chat-thread-meta-card"
     >
-      <View style={styles.composerRow}>
-        <CustomTextInput
-          value={draft}
-          onChangeText={setDraft}
-          placeholder="Ask a follow-up..."
-          accessibilityLabel="Chat message input"
-          multiline
-          containerStyle={styles.composerInputContainer}
-          inputContainerStyle={styles.composerInputInner}
-          style={styles.composerInputText}
-        />
-        <CustomButton
-          onPress={handleSend}
-          label="Send"
-          buttonMode="primary"
-          buttonSize="compact"
-          accessibilityRole="button"
-          accessibilityLabel="Send chat message"
-          style={styles.sendButton}
-          disabled={!canSend}
-        />
+      <View style={styles.metaHeaderRow}>
+        <View style={[styles.metaIconWrap, { backgroundColor: theme.bg.brandSubtle }]}>
+          <Sparkles size={14} color={theme.text.brand} />
+        </View>
+        <View style={styles.metaTitleWrap}>
+          <Text style={[styles.metaLabel, { color: theme.text.tertiary }]}>
+            Conversation
+          </Text>
+          <Text
+            style={[styles.metaTitle, { color: theme.text.primary }]}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {data.chat.shortSummary ?? "Conversation summary"}
+          </Text>
+        </View>
+      </View>
+      <View style={styles.metaFooterRow}>
+        <Text style={[styles.metaTimestamp, { color: theme.text.secondary }]}>
+          Updated {formatTimestamp(data.chat.updatedAtIso)}
+        </Text>
+        <Text style={[styles.metaStats, { color: theme.text.tertiary }]}>
+          {data.chat.messageCount} msgs
+        </Text>
+      </View>
+      <View style={styles.metaTopicsRow}>
+        {data.chat.topics.map((topic) => (
+          <View
+            key={topic}
+            style={[
+              styles.metaTopicChip,
+              {
+                borderColor: theme.border.subtle,
+                backgroundColor: theme.bg.surface,
+              },
+            ]}
+          >
+            <Text style={[styles.metaTopicText, { color: theme.text.secondary }]}>
+              {topic}
+            </Text>
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -245,6 +256,7 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
   const { data, loading, error, refetch } = useChatThread(tab, chatId);
   const [extraMessages, setExtraMessages] = useState<ChatMessage[]>([]);
   const [sending, setSending] = useState(false);
+  const [draft, setDraft] = useState("");
   const sendingRef = useRef(false);
 
   const allMessages = useMemo(() => {
@@ -252,21 +264,10 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
     return [...base, ...extraMessages];
   }, [data?.messages, extraMessages]);
 
-  const headerProps = useMemo(() => {
-    if (!data) {
-      return {
-        title: "Chat",
-        subtitle: loading ? "Loading conversation" : "Conversation",
-        isLoading: loading,
-      };
-    }
-
-    return {
-      title: data.chat.title,
-      subtitle: `Updated ${formatTimestamp(data.chat.updatedAtIso)}`,
-      isLoading: loading,
-    };
-  }, [data, loading]);
+  const headerProps = useMemo(() => ({
+    title: THREAD_HEADER_TITLE,
+    isLoading: loading,
+  }), [loading]);
 
   const handleSend = useCallback((content: string) => {
     if (sendingRef.current) return;
@@ -304,6 +305,14 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
       });
   }, [chatId, orgId, tab, chatService]);
 
+  const handleComposerSend = useCallback(() => {
+    const content = draft.trim();
+    if (content.length === 0 || sending) return;
+
+    setDraft("");
+    handleSend(content);
+  }, [draft, handleSend, sending]);
+
   if (error) {
     return (
       <ErrorState
@@ -327,13 +336,22 @@ export function ChatThreadScreen({ tab, chatId }: ChatThreadScreenProps) {
         headerProps={headerProps}
         showFilterBar={false}
         bottomAccessory={(
-          <ChatThreadComposer
+          <ChatComposerFooter
+            value={draft}
+            onChangeText={setDraft}
+            onSend={handleComposerSend}
+            canSend={draft.trim().length > 0 && !sending}
             insetsBottom={insets.bottom}
-            sending={sending}
-            onSend={handleSend}
+            placeholder="Ask a follow-up..."
+            inputAccessibilityLabel="Chat message input"
+            sendAccessibilityLabel="Send chat message"
+            containerTestID="chat-thread-composer"
+            attachmentButtonTestID="chat-thread-attach-button"
+            attachmentNoticeTestID="chat-thread-attach-tooltip"
           />
         )}
       >
+        <ChatThreadMetaCard data={data} />
         <ChatThreadMessages
           data={data}
           loading={loading}
@@ -356,7 +374,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   messageList: {
-    gap: spacing[4],
+    gap: spacing[8],
+    paddingTop: spacing[4],
   },
   assistantRow: {
     justifyContent: "flex-start",
@@ -366,16 +385,16 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     borderWidth: borderWidth.hairline,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing[12],
-    gap: spacing[6],
-    maxWidth: "86%",
+    gap: spacing[8],
+    maxWidth: "88%",
   },
   assistantBubble: {
-    borderTopLeftRadius: spacing[4],
+    borderTopLeftRadius: spacing[6],
   },
   userBubble: {
-    borderTopRightRadius: spacing[4],
+    borderTopRightRadius: spacing[6],
   },
   messageAuthor: {
     fontSize: 11,
@@ -388,31 +407,6 @@ const styles = StyleSheet.create({
   messageTime: {
     fontSize: 10,
   },
-  composerContainer: {
-    borderTopWidth: borderWidth.hairline,
-    paddingHorizontal: spacing[12],
-    paddingTop: spacing[8],
-  },
-  composerRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: spacing[8],
-  },
-  composerInputContainer: {
-    gap: spacing[0],
-    flex: 1,
-  },
-  composerInputInner: {
-    minHeight: 44,
-    paddingVertical: spacing[8],
-  },
-  composerInputText: {
-    minHeight: 20,
-    lineHeight: 20,
-  },
-  sendButton: {
-    marginBottom: spacing[2],
-  },
   typingRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -422,5 +416,69 @@ const styles = StyleSheet.create({
   typingText: {
     fontSize: 13,
     fontStyle: "italic",
+  },
+  metaCard: {
+    borderRadius: radius.lg,
+    borderWidth: borderWidth.hairline,
+    padding: spacing[12],
+    gap: spacing[10],
+  },
+  metaHeaderRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing[10],
+  },
+  metaIconWrap: {
+    width: 26,
+    height: 26,
+    borderRadius: radius.full,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: spacing[2],
+  },
+  metaTitleWrap: {
+    flex: 1,
+    minWidth: 0,
+    gap: spacing[4],
+  },
+  metaLabel: {
+    fontSize: 11,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    fontWeight: "600",
+  },
+  metaTitle: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: "600",
+  },
+  metaFooterRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: spacing[8],
+  },
+  metaTimestamp: {
+    fontSize: 12,
+    flexShrink: 1,
+  },
+  metaStats: {
+    fontSize: 11,
+    fontWeight: "600",
+  },
+  metaTopicsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing[8],
+  },
+  metaTopicChip: {
+    borderWidth: borderWidth.hairline,
+    borderRadius: radius.full,
+    paddingHorizontal: spacing[8],
+    paddingVertical: spacing[4],
+  },
+  metaTopicText: {
+    fontSize: 11,
+    fontWeight: "500",
   },
 });

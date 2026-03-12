@@ -96,7 +96,7 @@ jest.mock("@/components/screen", () => {
 
 jest.mock("@/features/chat/components", () => {
   const React = require("react");
-  const { Pressable, Text, View } = require("react-native");
+  const { Pressable, Text, View, TextInput } = require("react-native");
 
   return {
     InfiniteHorizontalScrollview: ({
@@ -119,6 +119,24 @@ jest.mock("@/features/chat/components", () => {
             <Text>{prompt.label}</Text>
           </Pressable>
         ))}
+      </View>
+    ),
+    ChatComposerFooter: ({
+      value,
+      onChangeText,
+      onSend,
+      canSend,
+    }: {
+      value: string;
+      onChangeText: (text: string) => void;
+      onSend: () => void;
+      canSend: boolean;
+    }) => (
+      <View>
+        <TextInput value={value} onChangeText={onChangeText} accessibilityLabel="chat.messageInput" />
+        <Pressable onPress={canSend ? onSend : undefined}>
+          <Text>Send</Text>
+        </Pressable>
       </View>
     ),
   };

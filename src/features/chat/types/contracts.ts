@@ -19,6 +19,7 @@ export interface ChatConversationSummary {
   id: string;
   tab: TABS;
   topics: ChatTopic[];
+  shortSummary?: string;
   title: string;
   preview: string;
   updatedAtIso: string;

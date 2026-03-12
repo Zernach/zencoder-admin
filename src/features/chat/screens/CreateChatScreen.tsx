@@ -1,17 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
+import { View, Text, StyleSheet, Platform, KeyboardAvoidingView } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Sparkles, Send } from "lucide-react-native";
-import Animated, {
-  useAnimatedKeyboard,
-  useAnimatedStyle,
-} from "react-native-reanimated";
+import { Sparkles } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buildChatThreadRoute } from "@/constants/routes";
+import { isIos } from "@/constants";
 import { ScreenWrapper } from "@/components/screen";
-import { CustomButton } from "@/components/buttons";
-import { CustomTextInput } from "@/components/inputs";
 import { useAppDependencies } from "@/core/di";
 import { useAppSelector } from "@/store/hooks";
 import { selectMostRecentTab } from "@/store";
@@ -25,7 +20,10 @@ import {
   getWelcomeTitle,
   getWelcomeSubtitle,
 } from "@/features/chat/constants/suggestedPrompts";
-import { InfiniteHorizontalScrollview } from "@/features/chat/components";
+import {
+  InfiniteHorizontalScrollview,
+  ChatComposerFooter,
+} from "@/features/chat/components";
 
 const SUGGESTION_CARD_WIDTH = 280;
 const SUGGESTION_CARD_GAP = 10;
@@ -101,140 +99,111 @@ export function CreateChatScreen() {
     [submitMessage],
   );
 
-  const keyboard = useAnimatedKeyboard();
-  const restingBottom = insets.bottom > 0 ? insets.bottom : spacing[8];
-
-  const composerAnimatedStyle = useAnimatedStyle(() => ({
-    paddingBottom:
-      keyboard.height.value > 0 ? keyboard.height.value : restingBottom,
-  }));
-
-  const composerAccessory = (
-    <Animated.View
-      style={[
-        styles.composerBar,
-        {
-          borderTopColor: theme.border.default,
-          backgroundColor: theme.bg.surface,
-        },
-        Platform.OS !== "web" ? composerAnimatedStyle : { paddingBottom: restingBottom },
-      ]}
-    >
-      <View style={styles.composerRow}>
-        <CustomTextInput
-          value={message}
-          onChangeText={setMessage}
-          placeholder={t("chat.askAnything")}
-          accessibilityLabel={t("chat.messageInput")}
-          multiline
-          containerStyle={styles.composerInputContainer}
-          inputContainerStyle={styles.composerInputInner}
-          style={styles.composerInputText}
-        />
-        <CustomButton
-          onPress={handleCreate}
-          style={[
-            styles.sendBtn,
-            {
-              backgroundColor: canSubmit
-                ? theme.border.brand
-                : theme.bg.subtle,
-            },
-          ]}
-          accessibilityLabel={t("chat.sendMessage")}
-          disabled={!canSubmit}
-        >
-          <Send
-            size={18}
-            color={canSubmit ? theme.text.onBrand : theme.text.tertiary}
-          />
-        </CustomButton>
-      </View>
-    </Animated.View>
-  );
-
   return (
-    <ScreenWrapper
-      showTopBar={false}
-      headerProps={{
-        title: t("chat.newChat"),
-        subtitle: t("chat.startConversation"),
-        isLoading: submitting,
-      }}
-      showFilterBar={false}
-      bottomAccessory={composerAccessory}
+    <KeyboardAvoidingView
+      behavior={isIos ? "padding" : "height"}
+      keyboardVerticalOffset={0}
+      style={styles.keyboardAvoiding}
     >
-      <View style={styles.container}>
-        {/* Welcome area */}
-        <View
-          style={[
-            styles.welcomeCard,
-            {
-              backgroundColor: theme.bg.subtle,
-              borderColor: theme.border.default,
-            },
-          ]}
-        >
-          <View style={styles.welcomeRow}>
-            <View
-              style={[
-                styles.sparkleCircle,
-                { backgroundColor: theme.bg.brandSubtle },
-              ]}
-            >
-              <Sparkles size={20} color={theme.text.brand} />
-            </View>
-            <View style={styles.welcomeTextWrap}>
-              <Text
-                style={[styles.welcomeTitle, { color: theme.text.primary }]}
+      <ScreenWrapper
+        showTopBar={false}
+        headerProps={{
+          title: t("chat.newChat"),
+          subtitle: t("chat.startConversation"),
+          isLoading: submitting,
+        }}
+        showFilterBar={false}
+        bottomAccessory={(
+          <ChatComposerFooter
+            value={message}
+            onChangeText={setMessage}
+            onSend={handleCreate}
+            canSend={canSubmit}
+            insetsBottom={insets.bottom}
+            placeholder={t("chat.askAnything")}
+            inputAccessibilityLabel={t("chat.messageInput")}
+            sendAccessibilityLabel={t("chat.sendMessage")}
+            containerTestID="create-chat-composer"
+            attachmentButtonTestID="create-chat-attach-button"
+            attachmentNoticeTestID="create-chat-attach-tooltip"
+          />
+        )}
+      >
+        <View style={styles.container}>
+          {/* Welcome area */}
+          <View
+            style={[
+              styles.welcomeCard,
+              {
+                backgroundColor: theme.bg.subtle,
+                borderColor: theme.border.default,
+              },
+            ]}
+          >
+            <View style={styles.welcomeRow}>
+              <View
+                style={[
+                  styles.sparkleCircle,
+                  { backgroundColor: theme.bg.brandSubtle },
+                ]}
               >
-                {getWelcomeTitle(t)}
-              </Text>
-              <Text
-                style={[styles.welcomeSubtitle, { color: theme.text.secondary }]}
-              >
-                {getWelcomeSubtitle(tab, t)}
-              </Text>
+                <Sparkles size={20} color={theme.text.brand} />
+              </View>
+              <View style={styles.welcomeTextWrap}>
+                <Text
+                  style={[styles.welcomeTitle, { color: theme.text.primary }]}
+                >
+                  {getWelcomeTitle(t)}
+                </Text>
+                <Text
+                  style={[styles.welcomeSubtitle, { color: theme.text.secondary }]}
+                >
+                  {getWelcomeSubtitle(tab, t)}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* Suggested prompts */}
-        <View style={styles.suggestionsSection}>
-          <Text
-            style={[styles.suggestionsLabel, { color: theme.text.tertiary }]}
-          >
-            {t("chat.suggestedQuestions")}
-          </Text>
-          {isMobileOrTablet ? (
-            <View style={styles.suggestionLanes}>
+          {/* Suggested prompts */}
+          <View style={styles.suggestionsSection}>
+            <Text
+              style={[styles.suggestionsLabel, { color: theme.text.tertiary }]}
+            >
+              {t("chat.suggestedQuestions")}
+            </Text>
+            {isMobileOrTablet ? (
+              <View style={styles.suggestionLanes}>
+                <InfiniteHorizontalScrollview
+                  prompts={primaryPromptLane}
+                  onPressPrompt={handleSuggestionPress}
+                  disabled={submitting}
+                />
+                <InfiniteHorizontalScrollview
+                  prompts={secondaryPromptLane}
+                  onPressPrompt={handleSuggestionPress}
+                  disabled={submitting}
+                  leadingOffsetPx={BRICK_LANE_OFFSET}
+                  initialScrollOffsetPx={SUGGESTION_CARD_WIDTH}
+                />
+              </View>
+            ) : (
               <InfiniteHorizontalScrollview
-                prompts={primaryPromptLane}
+                prompts={suggestedPrompts}
                 onPressPrompt={handleSuggestionPress}
                 disabled={submitting}
               />
-              <InfiniteHorizontalScrollview
-                prompts={secondaryPromptLane}
-                onPressPrompt={handleSuggestionPress}
-                disabled={submitting}
-                leadingOffsetPx={BRICK_LANE_OFFSET}
-                initialScrollOffsetPx={SUGGESTION_CARD_WIDTH}
-              />
-            </View>
-          ) : (
-            <InfiniteHorizontalScrollview
-              prompts={suggestedPrompts}
-              onPressPrompt={handleSuggestionPress}
-              disabled={submitting}
-            />
-          )}
+            )}
+          </View>
         </View>
-      </View>
-    </ScreenWrapper>
+      </ScreenWrapper>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  keyboardAvoiding: {
+    flex: 1,
+  },
   container: {
     gap: spacing[20],
   },
@@ -278,36 +247,5 @@ const styles = StyleSheet.create({
   },
   suggestionLanes: {
     gap: spacing[10],
-  },
-  composerBar: {
-    borderTopWidth: borderWidth.hairline,
-    paddingTop: spacing[10],
-    paddingHorizontal: spacing[12],
-  },
-  composerRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: spacing[10],
-  },
-  composerInputContainer: {
-    gap: spacing[0],
-    flex: 1,
-  },
-  composerInputInner: {
-    minHeight: 44,
-    paddingVertical: spacing[8],
-  },
-  composerInputText: {
-    minHeight: 24,
-    lineHeight: 20,
-    fontSize: 14,
-  },
-  sendBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.full,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: spacing[2],
   },
 });
