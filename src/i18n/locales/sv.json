@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "Något gick fel.",
     "somethingWentWrong": "Något gick fel. Vänligen försök igen.",
     "failedToLoad": "Det gick inte att ladda data."
   },

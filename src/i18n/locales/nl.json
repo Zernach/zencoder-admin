@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "Er is iets misgegaan.",
     "somethingWentWrong": "Er is iets misgegaan. Probeer het opnieuw.",
     "failedToLoad": "Gegevens konden niet worden geladen."
   },

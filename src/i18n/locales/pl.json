@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "Coś poszło nie tak.",
     "somethingWentWrong": "Coś poszło nie tak. Spróbuj ponownie.",
     "failedToLoad": "Nie udało się załadować danych."
   },

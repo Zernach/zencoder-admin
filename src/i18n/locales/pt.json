@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "Ocorreu um problema.",
     "somethingWentWrong": "Algo deu errado. Por favor, tente novamente.",
     "failedToLoad": "Falha ao carregar os dados."
   },

@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "Nešto je pošlo po krivu.",
     "somethingWentWrong": "Nešto je pošlo po krivu. Molimo pokušajte ponovo.",
     "failedToLoad": "Neuspjelo učitavanje podataka."
   },

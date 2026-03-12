@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "Hiba történt.",
     "somethingWentWrong": "Valami hiba történt. Kérjük, próbálja újra.",
     "failedToLoad": "Az adatok betöltése sikertelen."
   },

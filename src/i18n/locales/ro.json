@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "Ceva nu a mers bine.",
     "somethingWentWrong": "Ceva nu a funcționat. Vă rugăm încercați din nou.",
     "failedToLoad": "Încărcarea datelor a eșuat."
   },

@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "Něco se pokazilo.",
     "somethingWentWrong": "Něco se pokazilo. Zkuste to prosím znovu.",
     "failedToLoad": "Nepodařilo se načíst data."
   },

@@ -434,6 +434,7 @@
     }
   },
   "errors": {
+    "title": "Es ist ein Fehler aufgetreten.",
     "somethingWentWrong": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
     "failedToLoad": "Daten konnten nicht geladen werden."
   },
