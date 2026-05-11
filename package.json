@@ -21,7 +21,7 @@
     "test:e2e": "npx playwright test --config e2e/playwright.config.ts",
     "contracts:openapi": "NODE_OPTIONS='--require tsx/cjs' node scripts/contracts/generate-openapi.ts",
     "build": "npm run prebuild && NODE_OPTIONS='--require tsx/cjs' expo export --platform web",
-    "deploy": "npm run build && npx wrangler pages deploy ./dist --project-name=zencoder-submission"
+    "deploy": "npm run build && npx wrangler pages deploy ./dist --project-name=clarium"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
