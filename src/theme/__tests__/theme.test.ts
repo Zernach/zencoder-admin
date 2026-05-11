@@ -14,9 +14,9 @@ describe("theme tokens", () => {
     expect(breakpoints.desktop).toBe(1024);
   });
 
-  it("dark theme canvas is #0a0a0a and accent is #f64a00", () => {
+  it("dark theme canvas is #0a0a0a and accent is #3D8BF2", () => {
     expect(semanticThemes.dark.bg.canvas).toBe("#0a0a0a");
-    expect(semanticThemes.dark.border.brand).toBe("#f64a00");
+    expect(semanticThemes.dark.border.brand).toBe("#3D8BF2");
   });
 
   it("ease values are defined", () => {

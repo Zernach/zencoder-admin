@@ -9,6 +9,7 @@ const mockUseAgentsHub = jest.fn();
 const mockDispatch = jest.fn();
 const mockSectionRef = jest.fn((_sectionId: string) => jest.fn());
 const mockDataTable = jest.fn();
+const mockSparkLine = jest.fn();
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -103,7 +104,10 @@ jest.mock("@/components/charts", () => {
       </View>
     ),
     LineChart: () => <View />,
-    SparkLine: () => <View />,
+    SparkLine: (props: { variant?: string }) => {
+      mockSparkLine(props);
+      return <View />;
+    },
     BarChart: ({
       data,
       truncateLabels,
@@ -272,6 +276,7 @@ describe("AgentsScreen", () => {
   beforeEach(() => {
     mockSectionRef.mockClear();
     mockDataTable.mockClear();
+    mockSparkLine.mockClear();
   });
 
   it("passes truncateLabels=false to failure categories breakdown chart", () => {
@@ -451,5 +456,20 @@ describe("AgentsScreen", () => {
 
     expect(getByText("Did the response include concrete next actions?")).toBeTruthy();
     expect(getByText("agents.evaluationDirectionImproving +2.0%")).toBeTruthy();
+  });
+
+  it("renders evaluation trend sparklines as candlesticks", () => {
+    mockUseAgentsHub.mockReturnValue({
+      data: createAgentsHubData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    render(<AgentsScreen />);
+
+    expect(mockSparkLine).toHaveBeenCalled();
+    const variants = mockSparkLine.mock.calls.map(([props]) => (props as { variant?: string }).variant);
+    expect(variants.every((variant) => variant === "candlestick")).toBe(true);
   });
 });

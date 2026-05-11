@@ -340,7 +340,7 @@ const TopBarProfileButton = React.memo(function TopBarProfileButton() {
   return (
     <CustomButton
       style={styles.profileBtnOutline}
-      buttonMode="unstyled"
+      buttonMode="secondary"
       buttonSize="none"
       accessibilityRole="button"
       accessibilityLabel="Open settings"
@@ -474,12 +474,8 @@ const styles = StyleSheet.create({
   profileBtnOutline: {
     width: CONTROL_HEIGHT,
     height: CONTROL_HEIGHT,
-    borderRadius: radius.full,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "#E65100",
   },
   profileIconOffset: {
     marginTop: 0.5,

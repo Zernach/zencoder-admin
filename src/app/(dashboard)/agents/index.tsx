@@ -174,7 +174,6 @@ interface EvaluationQuestionTableRow extends GoldenQuestionEvaluation {
 interface TimeSeriesColumnDef<T> extends Omit<ColumnDef<T>, "render"> {
   kind: "timeseries";
   valuesAccessor: (row: T) => number[];
-  colorAccessor?: (row: T) => string | undefined;
   sparklineWidth?: number;
   sparklineHeight?: number;
 }
@@ -194,12 +193,6 @@ const AgentsEvaluationsSection = React.memo(function AgentsEvaluationsSection({
   if (projects.length === 0) {
     return null;
   }
-
-  const getTrendColor = (delta: number): string => {
-    if (delta > 0.002) return theme.state.success;
-    if (delta < -0.002) return theme.state.error;
-    return theme.text.secondary;
-  };
 
   const getDeltaLabel = (delta: number): string => {
     const pct = Math.abs(delta * 100);
@@ -290,7 +283,6 @@ const AgentsEvaluationsSection = React.memo(function AgentsEvaluationsSection({
       align: "center",
       kind: "timeseries",
       valuesAccessor: (row) => row.trendValues,
-      colorAccessor: (row) => getTrendColor(row.scoreDelta),
       sparklineWidth: 110,
       sparklineHeight: 26,
       sortAccessor: (row) => row.latestScore,
@@ -306,9 +298,9 @@ const AgentsEvaluationsSection = React.memo(function AgentsEvaluationsSection({
             <View style={localStyles.evaluationSparklineWrap}>
               <SparkLine
                 data={column.valuesAccessor(row)}
-                color={column.colorAccessor?.(row)}
                 width={column.sparklineWidth}
                 height={column.sparklineHeight}
+                variant="candlestick"
               />
             </View>
           ),

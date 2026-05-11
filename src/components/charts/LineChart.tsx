@@ -71,7 +71,7 @@ export const LineChart = React.memo(function LineChart({
     [mode],
   );
   const chartCardHeaderActionContext = useContext(ChartCardHeaderActionContext);
-  const lineStrokeColor = theme.state.success;
+  const lineStrokeColor = theme.data.seriesSecondary;
   const isPercentagesVariant = variant === "percentages";
   const shouldRenderArea = variant === "area";
   const isInsideChartCard = chartCardHeaderActionContext !== null;

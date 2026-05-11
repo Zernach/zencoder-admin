@@ -53,7 +53,7 @@ export const ProviderCostChart = React.memo(function ProviderCostChart({
     const slices: PieChartDatum[] = s.map((row, index) => ({
       id: row.provider,
       value: row.totalCostUsd,
-      color: colors[index] ?? "#f64a00",
+      color: colors[index] ?? "#6805F2",
       tooltipRows: [
         { label: "Provider", value: PROVIDER_LABELS[row.provider] },
         { label: "Cost", value: formatCurrency(row.totalCostUsd) },
@@ -124,7 +124,7 @@ export const ProviderCostChart = React.memo(function ProviderCostChart({
                 <View
                   style={[
                     styles.swatch,
-                    { backgroundColor: providerColors[row.provider] ?? "#f64a00" },
+                    { backgroundColor: providerColors[row.provider] ?? "#6805F2" },
                   ]}
                 />
                 <Text

@@ -69,13 +69,13 @@ describe("LineChart", () => {
     expect(rendered).toContain('"fillOpacity":0.16');
   });
 
-  it("renders line mode with the shared green success stroke", () => {
+  it("renders line mode with the shared blue series stroke", () => {
     const { toJSON } = render(
       <LineChart data={sampleData} />
     );
     const rendered = JSON.stringify(toJSON());
 
-    expect(rendered).toContain(`"stroke":"${semanticThemes.dark.state.success}"`);
+    expect(rendered).toContain(`"stroke":"${semanticThemes.dark.data.seriesSecondary}"`);
   });
 
   it("renders normalized axis labels for zero-to-one metrics", () => {
