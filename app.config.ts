@@ -2,16 +2,16 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: "Zencoder Admin",
-  slug: "zencoder-admin",
-  scheme: "zencoder-admin",
+  name: "Clarium Admin",
+  slug: "clarium-admin",
+  scheme: "clarium-admin",
   icon: "./src/assets/images/zencoder-orange.png",
   android: {
-    package: "org.archlife.zencoderadmin",
+    package: "org.archlife.clariumadmin",
     icon: "./src/assets/images/zencoder-orange.png",
   },
   ios: {
-    bundleIdentifier: "org.archlife.zencoderadmin",
+    bundleIdentifier: "org.archlife.clariumadmin",
     icon: "./src/assets/images/zencoder-orange.png",
   },
   web: {

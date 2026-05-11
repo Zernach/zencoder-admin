@@ -68,12 +68,12 @@ export function countFailed(runs: RunListRow[]): number {
 }
 
 export const LIVE_TASKS = [
-  "Analyzing repository changes",
-  "Generating implementation plan",
-  "Running focused unit tests",
-  "Executing lint and type checks",
-  "Refactoring service layer",
-  "Applying dashboard UI updates",
-  "Validating pull request changes",
-  "Summarizing runtime findings",
+  "Scanning supplier feeds for disruption signals",
+  "Recommending clinically equivalent substitutes",
+  "Forecasting OR consumption for next 14 days",
+  "Reconciling EHR consumption with ERP picks",
+  "Checking FDA recall feed against current inventory",
+  "Optimizing procedure card supply usage",
+  "Evaluating OTIF performance by supplier",
+  "Generating resiliency briefing for materials team",
 ] as const;

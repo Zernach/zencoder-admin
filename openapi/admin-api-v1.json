@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Zencoder Admin API",
+    "title": "Clarium Admin API",
     "version": "v1",
     "description": "Generated endpoint contract from frontend endpoint registry."
   },

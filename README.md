@@ -1,17 +1,17 @@
-# Zencoder Admin Dashboard
+# Clarium Admin Dashboard
 
-**[View Production Site](https://zencoder-submission.pages.dev/)**
+**[View Production Site](https://clarium-admin.pages.dev/)**
 
 <p>
-  <img src="src/assets/images/zencoder-text-dark-bg.png" width="300" alt="Zencoder Admin icon">
+  <img src="src/assets/images/zencoder-text-dark-bg.png" width="300" alt="Clarium Admin icon">
 </p>
 
 
 <p>
-  <img src="docs/gifs/demo.gif" width="800" alt="Zencoder Admin demo - desktop and mobile views">
+  <img src="docs/gifs/demo.gif" width="800" alt="Clarium Admin demo - desktop and mobile views">
 </p>
 
-Cross-platform admin dashboard for AI coding agent analytics, built with Expo + React Native + TypeScript.
+Cross-platform admin dashboard for Clarium's Astra OS — an AI-powered healthcare supply-chain operating system. Built with Expo + React Native + TypeScript.
 
 ## ⚙️ Overview
 
@@ -173,9 +173,9 @@ Notes:
 
 ## ⚙️ Deployment
 
-`npm run deploy` exports the web build and deploys `dist/` to Cloudflare Pages using Wrangler (`zencoder-submission`).
+`npm run deploy` exports the web build and deploys `dist/` to Cloudflare Pages using Wrangler (`clarium-admin`).
 
 ## ⚙️ License
 
-https://zencoder.ai/
+https://clarium.io/
 All rights reserved.

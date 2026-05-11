@@ -98,68 +98,68 @@ interface StubConfig {
 }
 
 const BASE_RULE_DESCRIPTIONS: Record<string, string> = {
-  "Data Retention":
-    "Blocks agent operations that retain prompts, outputs, or intermediate artifacts beyond approved project retention windows unless legal hold metadata is explicitly attached.",
-  "Access Controls":
-    "Requires every agent action to execute with least-privilege credentials, denying attempts to access repositories, services, or secrets outside the assigned project and team scope.",
-  "Audit Logging":
-    "Enforces immutable audit trail coverage for every policy-relevant action, including actor identity, request context, target resources, and change diffs for downstream investigations.",
-  "Encryption at Rest":
-    "Prevents storage operations on unencrypted data stores and ensures generated artifacts are written only to locations that satisfy organization encryption-at-rest control requirements.",
-  "PII Protection":
-    "Scans prompts and outputs for personally identifiable information and redacts or blocks policy-violating content when sensitivity thresholds are exceeded by model responses.",
-  "Rate Limiting":
-    "Applies per-agent and per-team guardrails for execution volume, preventing runaway automation loops and protecting shared infrastructure during burst traffic conditions.",
+  "HIPAA PHI Protection":
+    "Blocks agent operations that surface protected health information beyond minimum-necessary scope and redacts patient identifiers from supplier and analytics feeds.",
+  "Controlled Substance Access":
+    "Requires every controlled-substance procurement or substitution action to execute with DEA-compliant authorization, chain-of-custody capture, and witnessed approval.",
+  "DSCSA Track and Trace":
+    "Enforces lot, serial, and transaction history capture for every prescription drug movement so the network can respond to recalls and trace exceptions end to end.",
+  "FDA UDI Capture":
+    "Prevents implant, device, and high-risk supply transactions that lack a captured Unique Device Identifier (UDI) so post-market surveillance and recall response stay accurate.",
+  "Clinically Equivalent Substitution":
+    "Limits substitute recommendations to products mapped as clinically equivalent by pharmacy and clinical leadership, with audit-ready evidence for each swap.",
+  "Preferred Vendor Contract Compliance":
+    "Blocks procurement events that route to non-contracted vendors or violate negotiated pricing tiers, surfacing leakage and protecting GPO commitments.",
 };
 
 const EVALUATION_QUESTION_LIBRARY = {
-  support: [
-    "Did the agent acknowledge the customer's issue and requested outcome in the first response?",
-    "Was the resolution aligned with current support policy and refund constraints?",
-    "Did the response include concrete next actions with clear ownership?",
-    "Did the agent avoid hallucinating unavailable product capabilities?",
-    "Was escalation triggered for high-severity or security-sensitive cases?",
-    "Did the final response stay empathetic while remaining concise?",
+  disruption: [
+    "Did the disruption alert correctly identify the impacted SKUs and impacted facilities?",
+    "Was the predicted shortage window accurate within +/- 3 days of actual onset?",
+    "Did the agent surface upstream root cause (weather, geopolitical, supplier capacity)?",
+    "Were affected procedure cards and clinical workflows flagged for review?",
+    "Was the recommended mitigation prioritized by clinical criticality?",
+    "Did the agent avoid false-positive disruption alerts during normal demand variance?",
   ],
-  data: [
-    "Did the generated query return the correct business metric for the requested time range?",
-    "Did the pipeline run include all required source systems without schema drift?",
-    "Were anomaly explanations backed by the underlying event data?",
-    "Did the summary call out confidence limits and missing data caveats?",
-    "Did the workflow correctly recover from partial upstream failures?",
-    "Were generated transformations idempotent across reruns?",
+  substitute: [
+    "Was the substitute confirmed as clinically equivalent by pharmacy and clinical leadership?",
+    "Did the recommendation respect contracted preferred-vendor relationships?",
+    "Were lot, expiration, and UDI requirements preserved for the suggested substitute?",
+    "Did the agent flag substitutes with allergy or contraindication conflicts?",
+    "Was prior-authorization or formulary status checked before recommending?",
+    "Did the agent escalate when no clinically equivalent substitute was available?",
   ],
-  code: [
-    "Did the review catch correctness issues that could block deployment?",
-    "Were security findings grounded in repository context instead of generic advice?",
-    "Did suggestions preserve existing architecture and naming conventions?",
-    "Did the output include minimal, testable patch recommendations?",
-    "Were CI-failure explanations mapped to actionable next steps?",
-    "Did the reviewer avoid noisy comments on unchanged files?",
+  procedure: [
+    "Did optimization recommendations preserve required surgical kit completeness?",
+    "Were waste-reduction suggestions backed by EHR consumption data?",
+    "Did the agent respect surgeon-specific preferences captured in the procedure card?",
+    "Was cost-per-case reduction quantified against historical baseline?",
+    "Were single-use vs. reusable swaps validated by sterile processing?",
+    "Did the agent surface procedure cards with the highest waste signal?",
   ],
-  sales: [
-    "Did the lead summary prioritize high-intent signals over vanity metrics?",
-    "Was account risk classification consistent with historical close rates?",
-    "Did outreach recommendations align with the buyer's segment and stage?",
-    "Were competitive claims tied to verified data sources?",
-    "Did the model flag compliance-sensitive outreach language?",
-    "Did the generated plan include measurable conversion milestones?",
+  resiliency: [
+    "Did the resiliency report identify all single-source dependencies?",
+    "Were OTIF underperformers grounded in 90-day delivery data?",
+    "Did the agent recommend qualified backup vendors for at-risk SKUs?",
+    "Was lead-time variability surfaced with confidence intervals?",
+    "Did the analysis incorporate upstream raw-material risk signals?",
+    "Were mitigation actions tied to measurable resiliency-score improvement?",
   ],
-  content: [
-    "Did generated copy match the requested tone and audience constraints?",
-    "Were factual claims supported by approved source material?",
-    "Did the output avoid repeated phrasing across sections?",
-    "Was the structure optimized for readability and scanability?",
-    "Did the agent preserve brand terminology and style guidelines?",
-    "Were calls-to-action specific enough to drive the intended action?",
+  assistant: [
+    "Did the assistant answer supply-chain questions with grounded ERP and EHR data?",
+    "Were responses scoped to the user's role and facility permissions?",
+    "Did the agent cite source systems (Epic, Cerner, GHX, supplier portal) for claims?",
+    "Were follow-up actions tied to specific work queues or owners?",
+    "Did the agent avoid surfacing PHI beyond minimum necessary?",
+    "Did the response stay aligned with formulary and contracting policy?",
   ],
   generic: [
-    "Did the response answer the user's request without skipping required constraints?",
-    "Was tool usage grounded in the available project context?",
-    "Did the result include verifiable evidence for key claims?",
+    "Did the response answer the supply-chain request without skipping required constraints?",
+    "Was tool usage grounded in the available facility and contract context?",
+    "Did the result include verifiable evidence from ERP, EHR, or supplier feeds?",
     "Were failure modes detected and surfaced before finalizing the output?",
-    "Did the workflow finish within expected latency targets?",
-    "Did the output remain consistent across repeated runs of the same prompt?",
+    "Did the workflow finish within expected latency targets for clinical operations?",
+    "Did the output remain consistent across repeated runs for the same scenario?",
   ],
 } as const;
 
@@ -325,11 +325,11 @@ export class StubAnalyticsApi implements IAnalyticsApi {
 
   private resolveEvaluationQuestionSet(projectName: string): readonly string[] {
     const normalized = projectName.toLowerCase();
-    if (normalized.includes("support")) return EVALUATION_QUESTION_LIBRARY.support;
-    if (normalized.includes("pipeline") || normalized.includes("data")) return EVALUATION_QUESTION_LIBRARY.data;
-    if (normalized.includes("code") || normalized.includes("review")) return EVALUATION_QUESTION_LIBRARY.code;
-    if (normalized.includes("sales")) return EVALUATION_QUESTION_LIBRARY.sales;
-    if (normalized.includes("content")) return EVALUATION_QUESTION_LIBRARY.content;
+    if (normalized.includes("disruption")) return EVALUATION_QUESTION_LIBRARY.disruption;
+    if (normalized.includes("substitute")) return EVALUATION_QUESTION_LIBRARY.substitute;
+    if (normalized.includes("procedure") || normalized.includes("card")) return EVALUATION_QUESTION_LIBRARY.procedure;
+    if (normalized.includes("resiliency") || normalized.includes("network")) return EVALUATION_QUESTION_LIBRARY.resiliency;
+    if (normalized.includes("assistant") || normalized.includes("astra")) return EVALUATION_QUESTION_LIBRARY.assistant;
     return EVALUATION_QUESTION_LIBRARY.generic;
   }
 

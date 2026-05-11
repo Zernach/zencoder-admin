@@ -8,7 +8,7 @@ describe("useDashboardFilters", () => {
     const { result } = renderHook(() => useDashboardFilters(), { wrapper });
     // Test wrapper sets custom time range to match seed data
     expect(result.current.preset).toBe("custom");
-    expect(result.current.filters.orgId).toBe("org_zencoder_001");
+    expect(result.current.filters.orgId).toBe("org_clarium_001");
     expect(result.current.filters.timeRange).toBeDefined();
   });
 

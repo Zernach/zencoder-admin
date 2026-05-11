@@ -139,7 +139,7 @@ describe("Language Integration", () => {
   describe("fallback behavior", () => {
     it("unknown locale falls back to English", async () => {
       await i18n.changeLanguage("xx");
-      expect(i18n.t("common.appName")).toBe("Zencoder");
+      expect(i18n.t("common.appName")).toBe("Clarium");
       expect(i18n.t("navigation.home")).toBe("Home");
     });
 

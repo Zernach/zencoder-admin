@@ -28,7 +28,7 @@ function timeRangeFromRuns(runs: { startedAtIso: string }[]): { fromIso: string;
 }
 
 const defaultFilters: AnalyticsFilters = {
-  orgId: "org_zencoder_001",
+  orgId: "org_clarium_001",
   timeRange: timeRangeFromRuns(seedData.runs),
 };
 
@@ -356,7 +356,7 @@ describe("getSearchSuggestions", () => {
     };
 
     const svc = new AnalyticsService(mockApi);
-    const request = { orgId: "org_zencoder_001", query: "agent" };
+    const request = { orgId: "org_clarium_001", query: "agent" };
     const res = await svc.getSearchSuggestions(request);
 
     expect(mockApi.getSearchSuggestions).toHaveBeenCalledWith(request);
@@ -365,7 +365,7 @@ describe("getSearchSuggestions", () => {
 
   it("returns grouped suggestions from stub", async () => {
     const res = await service.getSearchSuggestions({
-      orgId: "org_zencoder_001",
+      orgId: "org_clarium_001",
       query: "a",
     });
     expect(res.groups.length).toBeGreaterThan(0);

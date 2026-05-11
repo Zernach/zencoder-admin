@@ -19,7 +19,7 @@ function timeRangeFromRuns(runs: { startedAtIso: string }[]): { fromIso: string;
 }
 
 const defaultFilters: AnalyticsFilters = {
-  orgId: "org_zencoder_001",
+  orgId: "org_clarium_001",
   timeRange: timeRangeFromRuns(seedData.runs),
 };
 

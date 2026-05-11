@@ -63,12 +63,12 @@ const DAY_MS = 86_400_000;
 const HOUR_MS = 3_600_000;
 
 const TEAM_NAMES = [
-  "Platform",
-  "ML Infrastructure",
-  "Frontend",
-  "Backend Services",
-  "DevOps",
-  "Data Science",
+  "Mercy Health Network",
+  "St. Vincent Medical Center",
+  "Cleveland Heart Hospital",
+  "Boston Children's Network",
+  "Pacific Surgical Group",
+  "Mountainview Regional Health",
 ];
 
 const FIRST_NAMES = [
@@ -100,73 +100,77 @@ const LAST_NAMES = [
 ];
 
 const NAMED_PROJECTS = [
-  "Customer Support AI",
-  "Data Pipeline Automation",
-  "Code Review Assistant",
-  "Sales Intelligence",
-  "Content Generator",
+  "Disruption Monitoring",
+  "Substitute Management",
+  "Procedure Card Optimization",
+  "Resiliency Monitoring",
+  "Astra Assistant",
 ];
 
 const GENERATED_PROJECT_PREFIXES = [
-  "Analytics", "Monitoring", "Billing", "Auth", "Search", "Reporting",
-  "Workflow", "Integration", "Migration", "Testing", "Security", "Infra",
-  "Cache", "Notification", "Scheduler", "Gateway", "Config", "Logging",
-  "Metrics", "Dashboard", "Deployment", "CI/CD", "Compliance", "Audit",
+  "Operating Room", "Cardiology", "Orthopedics", "Oncology", "Emergency",
+  "ICU", "Pediatrics", "Neurology", "Pharmacy", "Radiology",
+  "Surgical", "Laboratory", "Materials", "Sterile Processing", "Inventory",
+  "Procurement", "Clinical Engineering", "Catheter Lab", "Endoscopy", "Anesthesia",
+  "Wound Care", "Infusion", "Labor & Delivery", "Transplant",
 ];
 
 const GENERATED_PROJECT_SUFFIXES = [
-  "Service", "Engine", "Pipeline", "Tool", "Framework", "Module",
-  "Agent", "System", "Platform", "Hub", "API", "Processor",
+  "Workflow", "Operations", "Supply Chain", "Resiliency", "Optimization",
+  "Forecasting", "Compliance", "Network", "Insights", "Hub",
+  "Planning", "Tracking",
 ];
 
 const NAMED_AGENTS = [
-  "Ticket Classifier",
-  "Response Generator",
-  "ETL Orchestrator",
-  "Data Validator",
-  "PR Reviewer",
-  "Lead Scorer",
+  "Disruption Monitor",
+  "Substitute Recommender",
+  "Procedure Card Optimizer",
+  "Resiliency Analyst",
+  "Inventory Forecaster",
+  "OTIF Tracker",
 ];
 
 const GENERATED_AGENT_PREFIXES = [
-  "Log", "Schema", "Test", "Deploy", "Build", "Scan", "Sync",
-  "Parse", "Index", "Cache", "Route", "Alert", "Transform",
-  "Validate", "Optimize", "Monitor", "Archive", "Migrate",
-  "Generate", "Analyze", "Filter", "Merge", "Split", "Format",
+  "Stockout", "Backorder", "Lead Time", "OTIF", "Recall", "Lot",
+  "Expiration", "Substitute", "Vendor", "Contract", "Demand", "Shortage",
+  "Resiliency", "Compliance", "PHI", "DSCSA", "Procedure", "Supplier",
+  "Network", "Order", "Inventory", "Cost", "PAR Level", "Disruption",
 ];
 
 const GENERATED_AGENT_SUFFIXES = [
-  "Analyzer", "Runner", "Inspector", "Handler", "Worker", "Manager",
-  "Checker", "Resolver", "Watcher", "Reporter",
+  "Monitor", "Predictor", "Optimizer", "Analyzer", "Tracker", "Forecaster",
+  "Validator", "Detector", "Reporter", "Assistant",
 ];
 
 const VIOLATION_REASONS = [
-  "PII Detection",
-  "Rate Limit Exceeded",
-  "Unauthorized API Access",
-  "Content Policy Violation",
-  "Data Exfiltration Attempt",
-  "Credential Exposure",
+  "PHI Exposure Detected",
+  "Controlled Substance Access",
+  "FDA Recall Bypassed",
+  "DSCSA Lot Tracking Missing",
+  "Expired Product Dispensed",
+  "Non-Equivalent Substitute Used",
+  "Non-Contracted Vendor Order",
+  "UDI Capture Missing",
 ];
 
 const SECURITY_EVENT_TYPES = [
-  "Secret Detected",
-  "Data Egress Alert",
-  "Anomalous Behavior",
+  "PHI Access Anomaly",
+  "EHR Query Spike",
   "Authentication Failure",
+  "Audit Log Gap",
 ];
 
 const POLICY_ACTIONS = [
-  "Updated rate limit policy",
-  "Modified network access rule",
-  "Added IP whitelist entry",
-  "Changed data retention period",
-  "Enabled PII redaction",
-  "Updated model access controls",
-  "Modified audit log retention",
-  "Changed encryption settings",
-  "Updated compliance policy",
-  "Modified agent permissions",
+  "Updated preferred vendor list",
+  "Modified clinically equivalent substitute mapping",
+  "Added FDA recall alert workflow",
+  "Changed PAR level threshold",
+  "Enabled PHI redaction in supplier feeds",
+  "Updated DSCSA tracking requirements",
+  "Modified controlled substance access policy",
+  "Changed procurement approval threshold",
+  "Updated USP <797> compounding policy",
+  "Modified procedure card substitution rules",
 ];
 
 const MODEL_IDS: Record<ModelProvider, string[]> = {
@@ -208,7 +212,7 @@ export function generateSeedData(seed: number = 42): SeedData {
       users.push({
         id: padId("user", userCounter),
         name: `${first} ${last}`,
-        email: `${first.toLowerCase()}.${last.toLowerCase()}@zencoder.dev`,
+        email: `${first.toLowerCase()}.${last.toLowerCase()}@clarium.health`,
         teamId: team.id,
       });
       userCounter++;
@@ -279,22 +283,22 @@ export function generateSeedData(seed: number = 42): SeedData {
 
   // ── Agents ────────────────────────────────────────────
   const AGENT_DESCRIPTIONS: Record<string, string> = {
-    "Ticket Classifier": "Classifies incoming support tickets by category, priority, and sentiment using NLP. Routes tickets to the appropriate team queue.",
-    "Response Generator": "Generates context-aware customer support responses by analyzing ticket history, knowledge base articles, and prior interactions.",
-    "ETL Orchestrator": "Orchestrates extract-transform-load pipelines across data warehouses. Monitors job health, retries failures, and reports anomalies.",
-    "Data Validator": "Validates incoming data against schema definitions and business rules. Flags data quality issues and generates validation reports.",
-    "PR Reviewer": "Reviews pull requests for code quality, security vulnerabilities, and adherence to team coding standards. Provides inline suggestions.",
-    "Lead Scorer": "Scores inbound leads using behavioral signals, firmographic data, and engagement patterns. Outputs a 0-100 propensity score.",
+    "Disruption Monitor": "Continuously scans supplier, weather, and geopolitical signals to detect supply-chain disruptions. Forecasts shortage risk and alerts materials managers before stockouts occur.",
+    "Substitute Recommender": "Maps clinically equivalent substitutes when a primary product is unavailable. Cross-references hospital formulary, contracts, and prior approvals to suggest safe swaps.",
+    "Procedure Card Optimizer": "Analyzes OR procedure card usage against actual consumption data. Identifies waste, expired items, and opportunities to reduce supply costs per case.",
+    "Resiliency Analyst": "Monitors upstream supplier network health, lead times, and OTIF performance. Flags single-source dependencies and recommends backup vendors.",
+    "Inventory Forecaster": "Predicts PAR-level adjustments based on case volume, seasonality, and clinical demand signals. Reduces emergency procurement and overstock.",
+    "OTIF Tracker": "Tracks on-time-in-full delivery performance across suppliers, surfaces chronic underperformers, and quantifies impact on clinical operations.",
   };
   const GENERIC_DESCRIPTIONS = [
-    "Automates repetitive workflow tasks by monitoring event triggers and executing predefined action sequences.",
-    "Processes incoming data streams, applies transformation rules, and forwards normalized results to downstream consumers.",
-    "Monitors system health metrics, detects anomalies, and triggers alerts when thresholds are breached.",
-    "Generates structured reports from raw data sources, applying aggregation and formatting rules.",
-    "Performs automated quality checks on outputs, flagging items that fail validation criteria for manual review.",
-    "Manages scheduled batch operations, handling retries, logging, and completion notifications.",
-    "Analyzes text inputs using configurable rule sets and returns categorized, structured results.",
-    "Coordinates multi-step processes across integrated services, ensuring consistent state and error recovery.",
+    "Monitors inventory thresholds across the supply chain and triggers reorder workflows when PAR levels drop below safety stock.",
+    "Ingests upstream supplier signals, normalizes lead-time and fulfillment data, and forwards risk-scored events to procurement teams.",
+    "Watches FDA, DSCSA, and recall feeds for impacted lots and alerts pharmacy and materials managers when affected products are in stock.",
+    "Generates resiliency reports from contract, vendor, and clinical-usage data, highlighting single-source risk and substitution gaps.",
+    "Validates incoming purchase orders against contract pricing, preferred-vendor lists, and clinical substitution rules before submission.",
+    "Manages scheduled cycle counts and reconciliation jobs, handling retries and reporting variances against EHR consumption data.",
+    "Analyzes procedure-card supply usage by service line and surfaces over-picking, waste, and standardization opportunities.",
+    "Coordinates substitute approval workflows across pharmacy, OR, and clinical leadership, ensuring traceability and audit compliance.",
   ];
   const agents: Agent[] = [];
   for (let i = 0; i < 30; i++) {
@@ -520,12 +524,12 @@ export function generateSeedData(seed: number = 42): SeedData {
 
   // ── Policy Violations ─────────────────────────────────
   const SEED_RULES = [
-    { id: "rule_seed_1", title: "Data Retention" },
-    { id: "rule_seed_2", title: "Access Controls" },
-    { id: "rule_seed_3", title: "Audit Logging" },
-    { id: "rule_seed_4", title: "Encryption at Rest" },
-    { id: "rule_seed_5", title: "PII Protection" },
-    { id: "rule_seed_6", title: "Rate Limiting" },
+    { id: "rule_seed_1", title: "HIPAA PHI Protection" },
+    { id: "rule_seed_2", title: "Controlled Substance Access" },
+    { id: "rule_seed_3", title: "DSCSA Track and Trace" },
+    { id: "rule_seed_4", title: "FDA UDI Capture" },
+    { id: "rule_seed_5", title: "Clinically Equivalent Substitution" },
+    { id: "rule_seed_6", title: "Preferred Vendor Contract Compliance" },
   ];
   const policyViolations: PolicyViolationRow[] = [];
   const violationCount = randInt(rng, 150, 200);
@@ -600,12 +604,12 @@ export function generateSeedData(seed: number = 42): SeedData {
 
   // ── Compliance Items ──────────────────────────────────
   const complianceItems: ComplianceItem[] = [
-    { label: "Data Retention", status: "compliant" },
-    { label: "Access Controls", status: "compliant" },
-    { label: "Audit Logging", status: "compliant" },
-    { label: "Encryption at Rest", status: "compliant" },
-    { label: "PII Protection", status: "warning" },
-    { label: "Rate Limiting", status: "warning" },
+    { label: "HIPAA PHI Protection", status: "compliant" },
+    { label: "FDA UDI Tracking", status: "compliant" },
+    { label: "DSCSA Track and Trace", status: "compliant" },
+    { label: "Joint Commission Standards", status: "compliant" },
+    { label: "Controlled Substance Logging", status: "warning" },
+    { label: "USP <797> Compounding", status: "warning" },
   ];
 
   return {

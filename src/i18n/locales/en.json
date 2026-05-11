@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Zencoder",
+    "appName": "Clarium",
     "submit": "Submit",
     "cancel": "Cancel",
     "save": "Save",
@@ -73,8 +73,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Your Organization's Agents & Analytics",
-    "subtitleWithData": "Your Organization's Agents & Analytics",
+    "subtitle": "Your Health System's Supply-Chain Operations",
+    "subtitleWithData": "Your Health System's Supply-Chain Operations",
     "keyMetrics": "Key Metrics",
     "keyMetricsSubtitle": "At a glance",
     "trends": "Trends",
@@ -86,31 +86,31 @@
     "wauTrend": "Weekly Active Users (WAU)",
     "mauTrend": "Monthly Active Users (MAU)",
     "outcomes": "Outcomes",
-    "outcomesSubtitle": "Code quality & delivery",
-    "automatedMergeRequestsPerDay": "Automated Merge Requests per Day",
+    "outcomesSubtitle": "Clinical & operational impact",
+    "automatedMergeRequestsPerDay": "Automated Substitution Approvals per Day",
     "reliabilityAndProviderMix": "Reliability & Provider Mix",
     "anomalies": "Anomalies",
     "anomaliesSubtitle": "Notable outliers",
     "run": "Run ",
     "live": {
       "title": "Live",
-      "subtitle": "AI Assistants in Action",
+      "subtitle": "Astra OS Workflow Apps in Action",
       "succeeded": "Succeeded",
       "queued": "Queued",
       "running": "Running",
       "emptyMessages": {
-        "resting": "Agents are resting right now.",
+        "resting": "Workflow apps are idle right now.",
         "quiet": "It's quiet in here.",
-        "noMembers": "No team members are running agents right now.",
-        "waiting": "Waiting for the next agent workflow."
+        "noMembers": "No staff are running workflow apps right now.",
+        "waiting": "Waiting for the next supply-chain workflow."
       },
-      "emptySubtitle": "New live sessions will appear automatically as engineers start runs."
+      "emptySubtitle": "New live sessions will appear automatically as staff start workflow apps."
     },
     "title": "Admin Home"
   },
   "agents": {
-    "subtitle": "Intelligent Workflow Automations",
-    "subtitleWithData": "Intelligent Workflow Automations",
+    "subtitle": "Astra OS Workflow Apps",
+    "subtitleWithData": "Astra OS Workflow Apps",
     "reliability": "Reliability",
     "reliabilitySubtitle": "Observability & Analytics",
     "successRate": "Success Rate",
@@ -168,8 +168,8 @@
     "evaluationTrend": "Trend"
   },
   "costs": {
-    "subtitle": "Spending trends and budget tracking",
-    "subtitleWithData": "{{totalCost}} spent across {{projectCount}} projects",
+    "subtitle": "Supply spend trends and budget tracking",
+    "subtitleWithData": "{{totalCost}} spent across {{projectCount}} service lines",
     "costSummary": "Cost per Team",
     "totalCost": "Total Cost",
     "avgPerRun": "Average Cost per Run",
@@ -198,8 +198,8 @@
     }
   },
   "governance": {
-    "subtitle": "Manage Teams, Users & Rules",
-    "subtitleWithData": "{{violations}} violations, {{securityEvents}} security events",
+    "subtitle": "Manage Facilities, Staff & Compliance Rules",
+    "subtitleWithData": "{{violations}} compliance violations, {{securityEvents}} security events",
     "overview": "Overview",
     "violations": "Violations",
     "blockedNetwork": "Blocked Network",
@@ -453,7 +453,7 @@
   },
   "chat": {
     "newChat": "New Chat",
-    "startConversation": "Discuss topics with your AI",
+    "startConversation": "Ask Astra about your supply chain",
     "askAnything": "Ask anything...",
     "messageInput": "Chat message input",
     "sendMessage": "Send message",
@@ -469,121 +469,121 @@
     "noConversationsYet": "No conversations yet.",
     "noConversationsMatchTopics": "No conversations match the selected topics.",
     "openChat": "Open chat {{title}}",
-    "welcomeTitle": "Hi! How can I help you?",
+    "welcomeTitle": "Hi! How can Astra help?",
     "welcomeSubtitle": {
-      "dashboard": "Ask about agent performance, activity trends, or get a quick status check.",
-      "agents": "Dig into agent health, compare performance, or troubleshoot issues.",
-      "costs": "Explore spending patterns, find savings, or investigate cost spikes.",
-      "governance": "Check compliance status, review violations, or audit your policies.",
-      "settings": "Get help with agents, costs, governance, or support."
+      "dashboard": "Ask about supply-chain health, OTIF, disruption signals, or get a quick status check.",
+      "agents": "Dig into workflow-app performance, compare apps, or troubleshoot integrations.",
+      "costs": "Explore supply spend patterns, find contract savings, or investigate cost spikes.",
+      "governance": "Check compliance status, review violations, or audit your supply-chain policies.",
+      "settings": "Get help with workflow apps, supply spend, compliance, or support."
     },
     "topics": {
       "agents": {
         "label": "Which failure categories are trending up and need triage?",
-        "message": "Group failures by model family and show which categories are trending up week over week. Which need triage?"
+        "message": "Group workflow-app failures by category and show which are trending up week over week. Which need triage?"
       },
       "costs": {
-        "label": "What's driving cost increases and how can we contain them?",
-        "message": "Costs jumped recently. What changed by project and model? How can we contain this without breaking response quality?"
+        "label": "What's driving supply spend increases and how can we contain them?",
+        "message": "Supply spend jumped recently. What changed by service line and contract tier? How can we contain this without delaying clinical operations?"
       },
       "governance": {
-        "label": "Summarize violations by severity — what should I prioritize?",
-        "message": "Break down violations by policy class and flag anything accelerating. What should I prioritize first?"
+        "label": "Summarize compliance violations by severity — what should I prioritize?",
+        "message": "Break down compliance violations by category (HIPAA, DSCSA, UDI) and flag anything accelerating. What should I prioritize first?"
       },
       "support": {
-        "label": "Help me prepare a rollout checklist or team communication",
-        "message": "Help me prepare a rollout checklist or draft user-facing communication for an upcoming change."
+        "label": "Help me prepare a rollout checklist for a clinical communication",
+        "message": "Help me prepare a rollout checklist or draft a clinician-facing communication for an upcoming supply-chain change."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "How are my agents performing this week?",
-          "message": "How are my agents performing this week? Summarize success rates, error trends, and any standout agents."
+          "label": "How is my supply chain performing this week?",
+          "message": "How is the supply chain performing this week? Summarize OTIF, disruption alerts handled, and any standout service lines."
         },
         "activity": {
-          "label": "Show me today's activity summary",
-          "message": "Give me a summary of today's agent activity — runs, completions, failures, and anything unusual."
+          "label": "Show me today's supply-chain activity",
+          "message": "Give me a summary of today's supply-chain activity — workflow-app runs, substitutions, alerts, and anything unusual."
         },
         "teams": {
-          "label": "Which teams are most active?",
-          "message": "Which teams have been most active recently? Show me a breakdown of agent usage by team."
+          "label": "Which facilities are most active?",
+          "message": "Which facilities have been most active recently? Show me a breakdown of workflow-app usage by hospital."
         },
         "issues": {
           "label": "Any issues I should know about?",
-          "message": "Are there any issues or anomalies I should be aware of? Flag errors, spikes, or policy violations."
+          "message": "Are there any disruptions, stockout risks, or compliance violations I should be aware of? Flag anything critical."
         }
       },
       "agents": {
         "errors": {
-          "label": "Which agents have the most errors?",
-          "message": "Which agents have the highest error rates right now? List them with failure counts and recent trends."
+          "label": "Which workflow apps have the most errors?",
+          "message": "Which workflow apps have the highest error rates right now? List them with failure counts and recent trends."
         },
         "compare": {
-          "label": "Compare top agents by success rate",
-          "message": "Compare my top agents by success rate this month. Show rankings and any notable changes."
+          "label": "Compare top workflow apps by success rate",
+          "message": "Compare my top workflow apps by success rate this month. Show rankings and any notable changes."
         },
         "inactive": {
-          "label": "List inactive agents",
-          "message": "List agents that haven't had any runs in the past 7 days. Are any of them supposed to be active?"
+          "label": "List inactive workflow apps",
+          "message": "List workflow apps that haven't run in the past 7 days. Are any of them supposed to be active?"
         },
         "history": {
-          "label": "Explain an agent's recent run history",
-          "message": "Pick the agent with the most interesting recent activity and walk me through its run history."
+          "label": "Explain a workflow app's recent run history",
+          "message": "Pick the workflow app with the most interesting recent activity and walk me through its run history."
         }
       },
       "costs": {
         "trending": {
-          "label": "Where are costs trending upwards?",
-          "message": "Where are costs trending upward? Show me which agents or teams are driving the increase."
+          "label": "Where is supply spend trending upwards?",
+          "message": "Where is supply spend trending upward? Show me which service lines or facilities are driving the increase."
         },
         "breakdown": {
-          "label": "Show cost breakdown by team",
-          "message": "Break down costs by team for this month. How does it compare to last month?"
+          "label": "Show supply spend by facility",
+          "message": "Break down supply spend by facility for this month. How does it compare to last month?"
         },
         "unusual": {
           "label": "Flag unusual spending",
-          "message": "Flag any unusual or unexpected spending patterns. Are there cost spikes I should investigate?"
+          "message": "Flag any unusual or unexpected spending patterns. Are there off-contract orders or cost spikes I should investigate?"
         },
         "reduce": {
-          "label": "How can I reduce costs?",
-          "message": "Analyze my current agent usage and suggest ways to reduce costs without impacting performance."
+          "label": "How can I reduce supply spend?",
+          "message": "Analyze current workflow-app usage and procedure cards, and suggest ways to reduce supply spend without clinical impact."
         }
       },
       "governance": {
         "violations": {
-          "label": "Any new policy violations?",
-          "message": "Are there any new policy violations since my last review? Summarize severity and affected agents."
+          "label": "Any new compliance violations?",
+          "message": "Are there any new compliance violations since my last review? Summarize severity and affected workflow apps."
         },
         "compliance": {
           "label": "Show compliance summary",
-          "message": "Give me an overall compliance summary — how many rules are passing, failing, or need attention?"
+          "message": "Give me an overall compliance summary — how many rules (HIPAA, DSCSA, UDI) are passing, failing, or need attention?"
         },
         "unresolved": {
           "label": "List unresolved violations",
-          "message": "List all unresolved violations sorted by severity. Which ones should I prioritize?"
+          "message": "List all unresolved compliance violations sorted by severity. Which ones should I prioritize?"
         },
         "rules": {
-          "label": "Review governance rules",
-          "message": "Walk me through the active governance rules. Are there any that haven't triggered recently?"
+          "label": "Review compliance rules",
+          "message": "Walk me through the active compliance rules. Are there any that haven't triggered recently?"
         }
       },
       "settings": {
         "addMember": {
-          "label": "How do I add a new team member?",
-          "message": "Walk me through adding a new team member and setting up their permissions."
+          "label": "How do I add a new staff member?",
+          "message": "Walk me through adding a new staff member and setting up their role-based permissions."
         },
         "integrations": {
           "label": "What integrations are available?",
-          "message": "What integrations are available for connecting to external tools and services?"
+          "message": "What integrations are available for connecting to Epic, Cerner, GHX, or other source systems?"
         },
         "notifications": {
           "label": "Review notification settings",
-          "message": "Show me my current notification settings. Am I missing any important alerts?"
+          "message": "Show me my current notification settings. Am I missing any critical disruption or compliance alerts?"
         },
         "configure": {
-          "label": "Help me configure an agent",
-          "message": "Help me configure a new agent — what settings and parameters should I consider?"
+          "label": "Help me configure a workflow app",
+          "message": "Help me configure a new workflow app — what settings, thresholds, and integrations should I consider?"
         }
       }
     }

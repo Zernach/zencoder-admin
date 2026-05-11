@@ -1,5 +1,5 @@
 {
-  "name": "zencoder-admin",
+  "name": "clarium-admin",
   "private": true,
   "engines": {
     "node": ">=22 <24"

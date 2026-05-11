@@ -10,7 +10,7 @@ describe("i18n config", () => {
   });
 
   it("loads English translations for common.appName", () => {
-    expect(i18n.t("common.appName")).toBe("Zencoder");
+    expect(i18n.t("common.appName")).toBe("Clarium");
   });
 
   it("loads English translations for navigation keys", () => {
@@ -39,7 +39,7 @@ describe("i18n config", () => {
 
   it("falls back to English for missing keys in other languages", () => {
     const result = i18n.t("common.appName", { lng: "fr" });
-    expect(result).toBe("Zencoder");
+    expect(result).toBe("Clarium");
   });
 
   it("returns key path for completely missing keys", () => {
