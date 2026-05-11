@@ -112,6 +112,27 @@ const BASE_RULE_DESCRIPTIONS: Record<string, string> = {
     "Blocks procurement events that route to non-contracted vendors or violate negotiated pricing tiers, surfacing leakage and protecting GPO commitments.",
 };
 
+type EvaluationArchetype =
+  | "strongImproving"
+  | "softImproving"
+  | "flat"
+  | "softRegressing"
+  | "strongRegressing"
+  | "recovering"
+  | "degrading"
+  | "volatile";
+
+const EVALUATION_PROJECT_ARCHETYPES: readonly EvaluationArchetype[] = [
+  "strongImproving",
+  "softImproving",
+  "flat",
+  "softRegressing",
+  "strongRegressing",
+  "recovering",
+  "degrading",
+  "volatile",
+];
+
 const EVALUATION_QUESTION_LIBRARY = {
   disruption: [
     "Did the disruption alert correctly identify the impacted SKUs and impacted facilities?",
@@ -333,44 +354,96 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     return EVALUATION_QUESTION_LIBRARY.generic;
   }
 
+  /**
+   * Returns the archetype's expected score at a normalized timeline
+   * position [0..1]. Each archetype produces a distinct shape so projects
+   * (and questions within them) trend differently across the same window.
+   */
+  private archetypeValueAt(archetype: EvaluationArchetype, position: number): number {
+    switch (archetype) {
+      case "strongImproving":
+        return 0.68 + 0.26 * position;
+      case "softImproving":
+        return 0.79 + 0.10 * position;
+      case "flat":
+        return 0.84 + Math.sin(position * Math.PI * 3) * 0.012;
+      case "softRegressing":
+        return 0.89 - 0.10 * position;
+      case "strongRegressing":
+        return 0.93 - 0.23 * position;
+      case "recovering": {
+        const trough = 0.40;
+        return position <= trough
+          ? 0.88 - 0.21 * (position / trough)
+          : 0.67 + 0.25 * ((position - trough) / (1 - trough));
+      }
+      case "degrading": {
+        const peak = 0.45;
+        return position <= peak
+          ? 0.79 + 0.15 * (position / peak)
+          : 0.94 - 0.22 * ((position - peak) / (1 - peak));
+      }
+      case "volatile": {
+        const wave1 = Math.sin(position * Math.PI * 4.3) * 0.06;
+        const wave2 = Math.cos(position * Math.PI * 7.1) * 0.03;
+        return 0.80 + wave1 + wave2;
+      }
+    }
+  }
+
   private buildProjectEvaluations(
     projectBreakdown: ProjectBreakdownRow[],
     runs: RunListRow[],
   ): ProjectEvaluationSection[] {
-    const fallbackTrend = this
-      .bucketByDay(runs, (dayRuns) => safeRate(countSucceeded(dayRuns), dayRuns.length))
-      .map((point) => ({ tsIso: point.tsIso, value: this.clampScore(point.value) }));
+    const fallbackTimeline = this.bucketByDay(runs, () => 0).map((p) => p.tsIso);
 
     return projectBreakdown.map((project) => {
       const projectRuns = runs.filter((run) => run.projectId === project.projectId);
-      const projectTrendSource = this.bucketByDay(
-        projectRuns,
-        (dayRuns) => safeRate(countSucceeded(dayRuns), dayRuns.length),
-      );
-      const projectTrend = (projectTrendSource.length > 0 ? projectTrendSource : fallbackTrend)
-        .map((point) => ({ tsIso: point.tsIso, value: this.clampScore(point.value) }));
+      const projectTimelineSource = this.bucketByDay(projectRuns, () => 0).map((p) => p.tsIso);
+      const timeline = projectTimelineSource.length > 0 ? projectTimelineSource : fallbackTimeline;
+
+      const projectHash = hashString(project.projectId);
+      const projectArchetype = EVALUATION_PROJECT_ARCHETYPES[
+        projectHash % EVALUATION_PROJECT_ARCHETYPES.length
+      ]!;
 
       const questions = this.resolveEvaluationQuestionSet(project.projectName);
-      const questionCount = 4 + (hashString(project.projectId) % 3);
+      const questionCount = 4 + (projectHash % 3);
       const questionOffset = hashString(`${project.projectId}:questions`) % questions.length;
 
       const goldenQuestions = Array.from({ length: questionCount }, (_unused, questionIndex) => {
         const prompt = questions[(questionOffset + questionIndex) % questions.length]!;
         const id = `${project.projectId}_q_${questionIndex + 1}`;
-        const questionTrend = projectTrend.map((point, trendIndex, allPoints) => {
-          const relativePosition = allPoints.length > 1 ? trendIndex / (allPoints.length - 1) : 1;
-          const waveSeed = hashString(`${id}:${point.tsIso}`) % 21;
-          const wave = ((waveSeed - 10) / 1000) * 0.9;
-          const slopeBias = (questionIndex - 2) * 0.008 * relativePosition;
-          const shaped = this.clampScore(point.value + wave + slopeBias);
-          return {
-            tsIso: point.tsIso,
-            value: Math.round(shaped * 1000) / 1000,
-          };
+        const questionHash = hashString(id);
+
+        // ~70% of questions follow the project archetype; the rest diverge so
+        // each project's table mixes improving and regressing rows.
+        const followsProject = questionHash % 10 < 7;
+        const questionArchetype: EvaluationArchetype = followsProject
+          ? projectArchetype
+          : EVALUATION_PROJECT_ARCHETYPES[
+              (questionHash >>> 3) % EVALUATION_PROJECT_ARCHETYPES.length
+            ]!;
+
+        // Per-question baseline offset so two questions in the same project
+        // sit at different score levels even with the same archetype.
+        const baseOffset = ((questionHash % 17) - 8) / 200; // ~±0.04
+
+        const trendLength = timeline.length;
+        const questionTrend = timeline.map((tsIso, idx) => {
+          const position = trendLength > 1 ? idx / (trendLength - 1) : 1;
+          const archetypeValue = this.archetypeValueAt(questionArchetype, position);
+          const noiseSeed = hashString(`${id}:${tsIso}`) % 31;
+          const noise = ((noiseSeed - 15) / 1000) * 1.4; // ~±0.021
+          const value = this.clampScore(archetypeValue + baseOffset + noise);
+          return { tsIso, value: Math.round(value * 1000) / 1000 };
         });
 
         const latestScore = questionTrend[questionTrend.length - 1]?.value ?? project.successRate;
-        const previousScore = questionTrend[questionTrend.length - 2]?.value ?? latestScore;
+        // Delta against ~14 days ago — single-day diffs are dominated by
+        // noise and misclassify trends as "flat".
+        const comparisonIdx = Math.max(0, questionTrend.length - 15);
+        const earlierScore = questionTrend[comparisonIdx]?.value ?? latestScore;
         const baseEvaluations = Math.max(12, Math.round(project.totalRuns * 0.08));
         const evaluationCount = baseEvaluations + questionIndex * 3;
 
@@ -378,7 +451,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
           id,
           question: prompt,
           latestScore,
-          scoreDelta: Math.round((latestScore - previousScore) * 1000) / 1000,
+          scoreDelta: Math.round((latestScore - earlierScore) * 1000) / 1000,
           evaluationCount,
           trend: questionTrend,
         };
