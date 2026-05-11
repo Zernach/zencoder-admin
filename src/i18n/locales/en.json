@@ -73,8 +73,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Your Health System's Supply-Chain Operations",
-    "subtitleWithData": "Your Health System's Supply-Chain Operations",
+    "subtitle": "Your Health System's Responsible Supply-Chain AI",
+    "subtitleWithData": "Your Health System's Responsible Supply-Chain AI",
     "keyMetrics": "Key Metrics",
     "keyMetricsSubtitle": "At a glance",
     "trends": "Trends",
@@ -106,7 +106,7 @@
       },
       "emptySubtitle": "New live sessions will appear automatically as staff start workflow apps."
     },
-    "title": "Admin Home"
+    "title": "AstraOS Operations Quality"
   },
   "agents": {
     "subtitle": "Astra OS Workflow Apps",
