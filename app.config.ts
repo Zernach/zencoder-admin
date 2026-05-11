@@ -2,7 +2,7 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: "Clarium Admin",
+  name: "Clarium Responsible AI",
   slug: "clarium-admin",
   scheme: "clarium-admin",
   icon: "./src/assets/images/zencoder-orange.png",
