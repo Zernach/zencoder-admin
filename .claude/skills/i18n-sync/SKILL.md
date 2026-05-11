@@ -78,4 +78,3 @@ If a translation is genuinely ambiguous (e.g. a single English word with multipl
 - Do not rewrite `src/i18n/config.ts` unless the user explicitly asks.
 - Do not add new top-level features or keys beyond what exists in `en.json`.
 - Do not run the app, start dev servers, or open browsers — this is a pure file-sync task.
-- Do not commit, push, or open PRs unless explicitly requested.
