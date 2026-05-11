@@ -17,7 +17,7 @@ describe("Sidebar Subsection Navigation — contract", () => {
   });
 
   it("agents subsections have matching nativeID anchors defined", () => {
-    const expectedIds = ["reliability", "agent-performance", "project-breakdown", "recent-runs"];
+    const expectedIds = ["reliability", "evaluations", "agent-performance", "project-breakdown", "recent-runs"];
     const agentSubs = SUBSECTIONS[ROUTES.AGENTS];
     expect(agentSubs.map((s) => s.id)).toEqual(expectedIds);
   });

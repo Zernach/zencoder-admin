@@ -103,6 +103,7 @@ jest.mock("@/components/charts", () => {
       </View>
     ),
     LineChart: () => <View />,
+    SparkLine: () => <View />,
     BarChart: ({
       data,
       truncateLabels,
@@ -184,6 +185,36 @@ function createAgentsHubData(): AgentsHubResponse {
     peakConcurrencyTrend: [
       { tsIso: "2026-03-01T00:00:00.000Z", value: 15 },
       { tsIso: "2026-03-02T00:00:00.000Z", value: 20 },
+    ],
+    projectEvaluations: [
+      {
+        projectId: "project_1",
+        projectName: "Frontend App",
+        goldenQuestions: [
+          {
+            id: "project_1_q_1",
+            question: "Did the response include concrete next actions?",
+            latestScore: 0.93,
+            scoreDelta: 0.02,
+            evaluationCount: 37,
+            trend: [
+              { tsIso: "2026-03-01T00:00:00.000Z", value: 0.91 },
+              { tsIso: "2026-03-02T00:00:00.000Z", value: 0.93 },
+            ],
+          },
+          {
+            id: "project_1_q_2",
+            question: "Did the output avoid hallucinations?",
+            latestScore: 0.87,
+            scoreDelta: -0.01,
+            evaluationCount: 29,
+            trend: [
+              { tsIso: "2026-03-01T00:00:00.000Z", value: 0.88 },
+              { tsIso: "2026-03-02T00:00:00.000Z", value: 0.87 },
+            ],
+          },
+        ],
+      },
     ],
     agentBreakdown: [
       {
@@ -272,6 +303,7 @@ describe("AgentsScreen", () => {
     expect(sectionIds).toEqual(
       expect.arrayContaining([
         "reliability",
+        "evaluations",
         "agent-performance",
         "project-breakdown",
         "recent-runs",
@@ -355,7 +387,7 @@ describe("AgentsScreen", () => {
     const tableCalls = mockDataTable.mock.calls.map(([props]) => props as { paginate?: boolean; columns: Array<{ key: string }> });
     const paginatedCalls = tableCalls.filter((props) => props.paginate === true);
 
-    expect(tableCalls.length).toBe(3);
+    expect(tableCalls.length).toBe(4);
     expect(paginatedCalls.length).toBe(1);
     expect(paginatedCalls[0]?.columns.some((column) => column.key === "id")).toBe(true);
   });
@@ -405,5 +437,19 @@ describe("AgentsScreen", () => {
 
     expect(getByText("agents.reliabilityTrend")).toBeTruthy();
     expect(getByText("agents.failureCategories")).toBeTruthy();
+  });
+
+  it("renders evaluations in table rows", () => {
+    mockUseAgentsHub.mockReturnValue({
+      data: createAgentsHubData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText } = render(<AgentsScreen />);
+
+    expect(getByText("Did the response include concrete next actions?")).toBeTruthy();
+    expect(getByText("agents.evaluationDirectionImproving +2.0%")).toBeTruthy();
   });
 });

@@ -1,16 +1,23 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
 import { SectionHeader, CardGrid, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
-import { ChartCard, LineChart, BarChart, type BarChartBreakdownDatum } from "@/components/charts";
+import { ChartCard, LineChart, BarChart, SparkLine, type BarChartBreakdownDatum } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
 import { formatPercent, formatDuration, formatCompactNumber } from "@/features/analytics/utils/formatters";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
-import type { AgentBreakdownRow, AgentsHubResponse, ProjectBreakdownRow, RunListRow } from "@/features/analytics/types";
+import type {
+  AgentBreakdownRow,
+  AgentsHubResponse,
+  GoldenQuestionEvaluation,
+  ProjectBreakdownRow,
+  ProjectEvaluationSection,
+  RunListRow,
+} from "@/features/analytics/types";
 import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import { CreateProjectModal } from "@/features/analytics/components/CreateProjectModal";
@@ -21,8 +28,50 @@ import { keyExtractors } from "@/constants";
 import { buildEntityRoute, resolveTabFromPathname, ROUTES } from "@/constants/routes";
 import { useAppDispatch, openModal, ModalName } from "@/store";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { semanticThemes } from "@/theme/themes";
+import { radius, spacing } from "@/theme/tokens";
 
 const styles = sectionStyles;
+const localStyles = StyleSheet.create({
+  evaluationProjectTableWrap: {
+    borderWidth: 1,
+    borderRadius: radius.md,
+    padding: spacing[12],
+    gap: spacing[12],
+  },
+  evaluationQuestionMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing[8],
+    flexWrap: "wrap",
+  },
+  evaluationMetricText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  evaluationDeltaBadge: {
+    borderWidth: 1,
+    borderRadius: radius.full,
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[8],
+  },
+  evaluationDeltaText: {
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  evaluationSparklineWrap: {
+    justifyContent: "center",
+    minHeight: 28,
+  },
+  evaluationProjectTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  evaluationProjectSubtitle: {
+    fontSize: 12,
+    fontWeight: "500",
+  },
+});
 
 const SKELETON_4 = Array.from({ length: 4 });
 
@@ -110,6 +159,205 @@ const AgentsReliabilitySection = React.memo(function AgentsReliabilitySection({
           </CustomList>
         </>
       ) : null}
+    </View>
+  );
+});
+
+interface AgentsEvaluationsSectionProps {
+  data: AgentsHubResponse;
+}
+
+interface EvaluationQuestionTableRow extends GoldenQuestionEvaluation {
+  trendValues: number[];
+}
+
+interface TimeSeriesColumnDef<T> extends Omit<ColumnDef<T>, "render"> {
+  kind: "timeseries";
+  valuesAccessor: (row: T) => number[];
+  colorAccessor?: (row: T) => string | undefined;
+  sparklineWidth?: number;
+  sparklineHeight?: number;
+}
+
+type EvaluationColumnDef<T> = ColumnDef<T> | TimeSeriesColumnDef<T>;
+
+const AgentsEvaluationsSection = React.memo(function AgentsEvaluationsSection({
+  data,
+}: AgentsEvaluationsSectionProps) {
+  const { t } = useTranslation();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const refFor = useSectionRef();
+
+  const projects = data.projectEvaluations;
+
+  if (projects.length === 0) {
+    return null;
+  }
+
+  const getTrendColor = (delta: number): string => {
+    if (delta > 0.002) return theme.state.success;
+    if (delta < -0.002) return theme.state.error;
+    return theme.text.secondary;
+  };
+
+  const getDeltaLabel = (delta: number): string => {
+    const pct = Math.abs(delta * 100);
+    const direction = delta > 0.002
+      ? t("agents.evaluationDirectionImproving")
+      : delta < -0.002
+        ? t("agents.evaluationDirectionRegressing")
+        : t("agents.evaluationDirectionFlat");
+    const sign = delta >= 0 ? "+" : "\u2212";
+    return `${direction} ${sign}${pct.toFixed(1)}%`;
+  };
+
+  const getDeltaBadgeStyle = (delta: number) => {
+    if (delta > 0.002) {
+      return {
+        borderColor: theme.state.success,
+        backgroundColor: `${theme.state.success}1F`,
+        color: theme.state.success,
+      };
+    }
+    if (delta < -0.002) {
+      return {
+        borderColor: theme.state.error,
+        backgroundColor: `${theme.state.error}1F`,
+        color: theme.state.error,
+      };
+    }
+    return {
+      borderColor: theme.border.default,
+      backgroundColor: theme.bg.surfaceElevated,
+      color: theme.text.secondary,
+    };
+  };
+
+  const evaluationColumns = useMemo<EvaluationColumnDef<EvaluationQuestionTableRow>[]>(() => [
+    {
+      key: "question",
+      header: t("agents.evaluationQuestion"),
+      width: 420,
+      render: (row) => (
+        <Text style={{ color: theme.text.primary, fontSize: 13, lineHeight: 18 }}>{row.question}</Text>
+      ),
+    },
+    {
+      key: "latestScore",
+      header: t("agents.evaluationScore"),
+      width: 100,
+      align: "right",
+      render: (row) => <Text style={{ color: theme.text.primary }}>{formatPercent(row.latestScore * 100)}</Text>,
+      sortAccessor: (row) => row.latestScore,
+    },
+    {
+      key: "scoreDelta",
+      header: t("agents.evaluationChange"),
+      width: 160,
+      render: (row) => {
+        const deltaStyle = getDeltaBadgeStyle(row.scoreDelta);
+        return (
+          <View
+            style={[
+              localStyles.evaluationDeltaBadge,
+              {
+                borderColor: deltaStyle.borderColor,
+                backgroundColor: deltaStyle.backgroundColor,
+              },
+            ]}
+          >
+            <Text style={[localStyles.evaluationDeltaText, { color: deltaStyle.color }]}>
+              {getDeltaLabel(row.scoreDelta)}
+            </Text>
+          </View>
+        );
+      },
+      sortAccessor: (row) => row.scoreDelta,
+    },
+    {
+      key: "evaluationCount",
+      header: t("agents.evaluationSamples"),
+      width: 100,
+      align: "right",
+      render: (row) => <Text style={{ color: theme.text.primary }}>{formatCompactNumber(row.evaluationCount)}</Text>,
+      sortAccessor: (row) => row.evaluationCount,
+    },
+    {
+      key: "trend",
+      header: t("agents.evaluationTrend"),
+      width: 140,
+      align: "center",
+      kind: "timeseries",
+      valuesAccessor: (row) => row.trendValues,
+      colorAccessor: (row) => getTrendColor(row.scoreDelta),
+      sparklineWidth: 110,
+      sparklineHeight: 26,
+      sortAccessor: (row) => row.latestScore,
+    },
+  ], [t, theme.text.primary]);
+
+  const tableColumns = useMemo<ColumnDef<EvaluationQuestionTableRow>[]>(() =>
+    evaluationColumns.map((column) => {
+      if ("kind" in column && column.kind === "timeseries") {
+        return {
+          ...column,
+          render: (row: EvaluationQuestionTableRow) => (
+            <View style={localStyles.evaluationSparklineWrap}>
+              <SparkLine
+                data={column.valuesAccessor(row)}
+                color={column.colorAccessor?.(row)}
+                width={column.sparklineWidth}
+                height={column.sparklineHeight}
+              />
+            </View>
+          ),
+        } satisfies ColumnDef<EvaluationQuestionTableRow>;
+      }
+      return column satisfies ColumnDef<EvaluationQuestionTableRow>;
+    }),
+  [evaluationColumns]);
+
+  const projectTables = projects.map((project: ProjectEvaluationSection) => {
+    const rows: EvaluationQuestionTableRow[] = project.goldenQuestions.map((question) => ({
+      ...question,
+      trendValues: question.trend.map((point) => point.value),
+    }));
+
+    return (
+      <View
+        key={project.projectId}
+        style={[
+          localStyles.evaluationProjectTableWrap,
+          { borderColor: theme.border.subtle, backgroundColor: theme.bg.surface },
+        ]}
+      >
+        <View>
+          <Text style={[localStyles.evaluationProjectTitle, { color: theme.text.primary }]}>
+            {project.projectName}
+          </Text>
+          <Text style={[localStyles.evaluationProjectSubtitle, { color: theme.text.secondary }]}>
+            {t("agents.goldenQuestionsCount", { count: rows.length })}
+          </Text>
+        </View>
+        <DataTable
+          columns={tableColumns}
+          data={rows}
+          keyExtractor={(row) => row.id}
+          initialSortBy="latestScore"
+          initialSortDirection="desc"
+        />
+      </View>
+    );
+  });
+
+  return (
+    <View ref={refFor("evaluations")} nativeID="evaluations" style={styles.section}>
+      <SectionHeader
+        title={t("agents.evaluations")}
+        subtitle={t("agents.evaluationsSubtitle", { count: projects.length })}
+      />
+      <View style={styles.section}>{projectTables}</View>
     </View>
   );
 });
@@ -372,6 +620,7 @@ export default function AgentsScreen() {
   return (
     <ScreenWrapper headerProps={headerProps}>
       <AgentsReliabilitySection data={data} loading={loading} />
+      {data ? <AgentsEvaluationsSection data={data} /> : null}
       {data ? (
         <AgentsAgentPerformanceSection
           data={data}

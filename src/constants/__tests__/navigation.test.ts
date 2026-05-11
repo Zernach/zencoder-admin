@@ -49,11 +49,12 @@ describe("SUBSECTIONS", () => {
     ]);
   });
 
-  it("agents has 4 subsections", () => {
+  it("agents has 5 subsections", () => {
     const items = SUBSECTIONS[ROUTES.AGENTS];
-    expect(items.length).toBe(4);
+    expect(items.length).toBe(5);
     expect(items.map((i) => i.label)).toEqual([
       "navigation.subsections.reliability",
+      "navigation.subsections.evaluations",
       "navigation.subsections.agentPerformance",
       "navigation.subsections.projectBreakdown",
       "navigation.subsections.recentRuns",

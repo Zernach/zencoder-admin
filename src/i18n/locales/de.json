@@ -68,7 +68,8 @@
       "organization": "Organisation",
       "dangerZone": "Gefahrenzone",
       "costPerProject": "Kosten pro Projekt",
-      "violations": "Verstöße"
+      "violations": "Verstöße",
+      "evaluations": "Evaluations"
     }
   },
   "dashboard": {
@@ -152,7 +153,19 @@
       "tokens": "Token",
       "provider": "Anbieter"
     },
-    "reliabilitySubtitle": "Beobachtbarkeit und Analytik"
+    "reliabilitySubtitle": "Beobachtbarkeit und Analytik",
+    "evaluations": "Evaluations",
+    "evaluationsSubtitle": "Golden question quality trends across {{count}} projects",
+    "goldenQuestionsCount": "{{count}} Golden Questions",
+    "evaluationScore": "Score",
+    "evaluationSampleCount": "{{count}} evals",
+    "evaluationDirectionImproving": "Improving",
+    "evaluationDirectionRegressing": "Regressing",
+    "evaluationDirectionFlat": "Flat",
+    "evaluationQuestion": "Golden Question",
+    "evaluationChange": "Change",
+    "evaluationSamples": "Samples",
+    "evaluationTrend": "Trend"
   },
   "costs": {
     "subtitle": "Ausgabentrends und Budgetverfolgung",

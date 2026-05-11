@@ -68,7 +68,8 @@
       "organization": "Организација",
       "dangerZone": "Опасна зона",
       "costPerProject": "Трошак по пројекту",
-      "violations": "Кршења"
+      "violations": "Кршења",
+      "evaluations": "Evaluations"
     }
   },
   "dashboard": {
@@ -152,7 +153,19 @@
       "tokens": "Токени",
       "provider": "Провајдер"
     },
-    "reliabilitySubtitle": "Посматрање и аналитика"
+    "reliabilitySubtitle": "Посматрање и аналитика",
+    "evaluations": "Evaluations",
+    "evaluationsSubtitle": "Golden question quality trends across {{count}} projects",
+    "goldenQuestionsCount": "{{count}} Golden Questions",
+    "evaluationScore": "Score",
+    "evaluationSampleCount": "{{count}} evals",
+    "evaluationDirectionImproving": "Improving",
+    "evaluationDirectionRegressing": "Regressing",
+    "evaluationDirectionFlat": "Flat",
+    "evaluationQuestion": "Golden Question",
+    "evaluationChange": "Change",
+    "evaluationSamples": "Samples",
+    "evaluationTrend": "Trend"
   },
   "costs": {
     "subtitle": "Трендови потрошње и праћење буџета",

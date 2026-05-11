@@ -72,6 +72,7 @@ export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
   ],
   [ROUTES.AGENTS]: [
     { id: "reliability", label: "navigation.subsections.reliability" },
+    { id: "evaluations", label: "navigation.subsections.evaluations" },
     { id: "agent-performance", label: "navigation.subsections.agentPerformance" },
     { id: "project-breakdown", label: "navigation.subsections.projectBreakdown" },
     { id: "recent-runs", label: "navigation.subsections.recentRuns" },

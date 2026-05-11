@@ -107,6 +107,21 @@ export interface ProjectBreakdownRow {
   agentCount: number;
 }
 
+export interface GoldenQuestionEvaluation {
+  id: string;
+  question: string;
+  latestScore: number;
+  scoreDelta: number;
+  evaluationCount: number;
+  trend: TimeSeriesPoint[];
+}
+
+export interface ProjectEvaluationSection {
+  projectId: string;
+  projectName: string;
+  goldenQuestions: GoldenQuestionEvaluation[];
+}
+
 export interface ProviderCostRow {
   provider: ModelProvider; totalCostUsd: number; runCount: number;
   totalTokens: number;
@@ -315,6 +330,7 @@ export interface AgentsHubResponse {
   p95DurationTrend: TimeSeriesPoint[];
   p95QueueWaitTrend: TimeSeriesPoint[];
   peakConcurrencyTrend: TimeSeriesPoint[];
+  projectEvaluations: ProjectEvaluationSection[];
   agentBreakdown: AgentBreakdownRow[];
   // Project breakdown
   totalProjects: number;

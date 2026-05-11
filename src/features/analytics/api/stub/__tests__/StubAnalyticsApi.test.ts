@@ -464,6 +464,9 @@ describe("getAgentsHub", () => {
     expect(typeof res.totalProjects).toBe("number");
     expect(typeof res.activeProjects).toBe("number");
     expect(res.projectBreakdown.length).toBeGreaterThan(0);
+    expect(res.projectEvaluations.length).toBeGreaterThan(0);
+    expect(res.projectEvaluations[0]!.goldenQuestions.length).toBeGreaterThanOrEqual(4);
+    expect(res.projectEvaluations[0]!.goldenQuestions.length).toBeLessThanOrEqual(6);
     // Recent runs
     expect(res.recentRuns.length).toBeGreaterThan(0);
     expect(res.recentRuns.length).toBeLessThanOrEqual(25);

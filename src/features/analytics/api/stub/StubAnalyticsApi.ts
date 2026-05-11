@@ -58,6 +58,8 @@ import type {
   PolicyViolationRow,
   TeamViolationMetric,
   CostPerTeamRow,
+  ProjectBreakdownRow,
+  ProjectEvaluationSection,
 } from "@/features/analytics/types";
 import {
   conflictError,
@@ -109,6 +111,57 @@ const BASE_RULE_DESCRIPTIONS: Record<string, string> = {
   "Rate Limiting":
     "Applies per-agent and per-team guardrails for execution volume, preventing runaway automation loops and protecting shared infrastructure during burst traffic conditions.",
 };
+
+const EVALUATION_QUESTION_LIBRARY = {
+  support: [
+    "Did the agent acknowledge the customer's issue and requested outcome in the first response?",
+    "Was the resolution aligned with current support policy and refund constraints?",
+    "Did the response include concrete next actions with clear ownership?",
+    "Did the agent avoid hallucinating unavailable product capabilities?",
+    "Was escalation triggered for high-severity or security-sensitive cases?",
+    "Did the final response stay empathetic while remaining concise?",
+  ],
+  data: [
+    "Did the generated query return the correct business metric for the requested time range?",
+    "Did the pipeline run include all required source systems without schema drift?",
+    "Were anomaly explanations backed by the underlying event data?",
+    "Did the summary call out confidence limits and missing data caveats?",
+    "Did the workflow correctly recover from partial upstream failures?",
+    "Were generated transformations idempotent across reruns?",
+  ],
+  code: [
+    "Did the review catch correctness issues that could block deployment?",
+    "Were security findings grounded in repository context instead of generic advice?",
+    "Did suggestions preserve existing architecture and naming conventions?",
+    "Did the output include minimal, testable patch recommendations?",
+    "Were CI-failure explanations mapped to actionable next steps?",
+    "Did the reviewer avoid noisy comments on unchanged files?",
+  ],
+  sales: [
+    "Did the lead summary prioritize high-intent signals over vanity metrics?",
+    "Was account risk classification consistent with historical close rates?",
+    "Did outreach recommendations align with the buyer's segment and stage?",
+    "Were competitive claims tied to verified data sources?",
+    "Did the model flag compliance-sensitive outreach language?",
+    "Did the generated plan include measurable conversion milestones?",
+  ],
+  content: [
+    "Did generated copy match the requested tone and audience constraints?",
+    "Were factual claims supported by approved source material?",
+    "Did the output avoid repeated phrasing across sections?",
+    "Was the structure optimized for readability and scanability?",
+    "Did the agent preserve brand terminology and style guidelines?",
+    "Were calls-to-action specific enough to drive the intended action?",
+  ],
+  generic: [
+    "Did the response answer the user's request without skipping required constraints?",
+    "Was tool usage grounded in the available project context?",
+    "Did the result include verifiable evidence for key claims?",
+    "Were failure modes detected and surfaced before finalizing the output?",
+    "Did the workflow finish within expected latency targets?",
+    "Did the output remain consistent across repeated runs of the same prompt?",
+  ],
+} as const;
 
 class StubLiveAgentSessionsSocket implements LiveAgentSessionsSocket {
   public readonly protocol = "ws" as const;
@@ -264,6 +317,79 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   private pctChange(current: number, previous: number): number {
     if (previous === 0) return current > 0 ? 100 : 0;
     return Math.round(((current - previous) / previous) * 1000) / 10;
+  }
+
+  private clampScore(value: number): number {
+    return Math.max(0.55, Math.min(0.99, value));
+  }
+
+  private resolveEvaluationQuestionSet(projectName: string): readonly string[] {
+    const normalized = projectName.toLowerCase();
+    if (normalized.includes("support")) return EVALUATION_QUESTION_LIBRARY.support;
+    if (normalized.includes("pipeline") || normalized.includes("data")) return EVALUATION_QUESTION_LIBRARY.data;
+    if (normalized.includes("code") || normalized.includes("review")) return EVALUATION_QUESTION_LIBRARY.code;
+    if (normalized.includes("sales")) return EVALUATION_QUESTION_LIBRARY.sales;
+    if (normalized.includes("content")) return EVALUATION_QUESTION_LIBRARY.content;
+    return EVALUATION_QUESTION_LIBRARY.generic;
+  }
+
+  private buildProjectEvaluations(
+    projectBreakdown: ProjectBreakdownRow[],
+    runs: RunListRow[],
+  ): ProjectEvaluationSection[] {
+    const fallbackTrend = this
+      .bucketByDay(runs, (dayRuns) => safeRate(countSucceeded(dayRuns), dayRuns.length))
+      .map((point) => ({ tsIso: point.tsIso, value: this.clampScore(point.value) }));
+
+    return projectBreakdown.map((project) => {
+      const projectRuns = runs.filter((run) => run.projectId === project.projectId);
+      const projectTrendSource = this.bucketByDay(
+        projectRuns,
+        (dayRuns) => safeRate(countSucceeded(dayRuns), dayRuns.length),
+      );
+      const projectTrend = (projectTrendSource.length > 0 ? projectTrendSource : fallbackTrend)
+        .map((point) => ({ tsIso: point.tsIso, value: this.clampScore(point.value) }));
+
+      const questions = this.resolveEvaluationQuestionSet(project.projectName);
+      const questionCount = 4 + (hashString(project.projectId) % 3);
+      const questionOffset = hashString(`${project.projectId}:questions`) % questions.length;
+
+      const goldenQuestions = Array.from({ length: questionCount }, (_unused, questionIndex) => {
+        const prompt = questions[(questionOffset + questionIndex) % questions.length]!;
+        const id = `${project.projectId}_q_${questionIndex + 1}`;
+        const questionTrend = projectTrend.map((point, trendIndex, allPoints) => {
+          const relativePosition = allPoints.length > 1 ? trendIndex / (allPoints.length - 1) : 1;
+          const waveSeed = hashString(`${id}:${point.tsIso}`) % 21;
+          const wave = ((waveSeed - 10) / 1000) * 0.9;
+          const slopeBias = (questionIndex - 2) * 0.008 * relativePosition;
+          const shaped = this.clampScore(point.value + wave + slopeBias);
+          return {
+            tsIso: point.tsIso,
+            value: Math.round(shaped * 1000) / 1000,
+          };
+        });
+
+        const latestScore = questionTrend[questionTrend.length - 1]?.value ?? project.successRate;
+        const previousScore = questionTrend[questionTrend.length - 2]?.value ?? latestScore;
+        const baseEvaluations = Math.max(12, Math.round(project.totalRuns * 0.08));
+        const evaluationCount = baseEvaluations + questionIndex * 3;
+
+        return {
+          id,
+          question: prompt,
+          latestScore,
+          scoreDelta: Math.round((latestScore - previousScore) * 1000) / 1000,
+          evaluationCount,
+          trend: questionTrend,
+        };
+      });
+
+      return {
+        projectId: project.projectId,
+        projectName: project.projectName,
+        goldenQuestions: goldenQuestions.sort((a, b) => b.latestScore - a.latestScore),
+      };
+    });
   }
 
   /**
@@ -1255,6 +1381,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const queueWaits = runs.map((r) => r.queueWaitMs).sort((a, b) => a - b);
 
     const projectBreakdown = buildProjectBreakdown(runs, this.seed.projects, this.seed.teams);
+    const projectEvaluations = this.buildProjectEvaluations(projectBreakdown, runs);
 
     const recentRuns = [...runs]
       .sort((a, b) => b.startedAtIso.localeCompare(a.startedAtIso))
@@ -1273,6 +1400,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       p95DurationTrend: this.bucketByDay(runs, (d) => percentile(d.map((r) => r.durationMs).sort((a, b) => a - b), 95)),
       p95QueueWaitTrend: this.bucketByDay(runs, (d) => percentile(d.map((r) => r.queueWaitMs).sort((a, b) => a - b), 95)),
       peakConcurrencyTrend: this.bucketByDay(runs, (d) => computePeakConcurrency(d)),
+      projectEvaluations,
       agentBreakdown: buildAgentBreakdown(runs, this.seed.agents, this.seed.projects),
       totalProjects: this.seed.projects.length,
       activeProjects: projectBreakdown.length,
