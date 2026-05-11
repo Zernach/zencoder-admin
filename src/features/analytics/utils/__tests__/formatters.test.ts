@@ -11,24 +11,24 @@ import {
 } from "../formatters";
 
 describe("formatCurrency", () => {
-  describe("defaults to EUR", () => {
+  describe("defaults to USD", () => {
     it("zero", () => {
-      expect(formatCurrency(0)).toBe("€0.00");
+      expect(formatCurrency(0)).toBe("$0.00");
     });
     it("normal", () => {
-      expect(formatCurrency(47823)).toBe("€47,823.00");
+      expect(formatCurrency(47823)).toBe("$47,823.00");
     });
     it("with cents", () => {
-      expect(formatCurrency(1234.56)).toBe("€1,234.56");
+      expect(formatCurrency(1234.56)).toBe("$1,234.56");
     });
     it("large", () => {
-      expect(formatCurrency(1000000)).toBe("€1,000,000.00");
+      expect(formatCurrency(1000000)).toBe("$1,000,000.00");
     });
     it("small decimal", () => {
-      expect(formatCurrency(3.06)).toBe("€3.06");
+      expect(formatCurrency(3.06)).toBe("$3.06");
     });
     it("negative value", () => {
-      expect(formatCurrency(-50)).toBe("€-50.00");
+      expect(formatCurrency(-50)).toBe("$-50.00");
     });
   });
 
@@ -55,9 +55,9 @@ describe("formatCurrency", () => {
 });
 
 describe("formatCostPerToken", () => {
-  it("formats with EUR symbol by default", () => {
+  it("formats with USD symbol by default", () => {
     const result = formatCostPerToken(0.123456);
-    expect(result).toContain("€");
+    expect(result).toContain("$");
     expect(result).toContain("micro-units/token");
   });
   it("formats with USD symbol", () => {
@@ -79,8 +79,8 @@ describe("formatCompactCurrency", () => {
   it("JPY small (no decimals)", () => {
     expect(formatCompactCurrency(500, "JPY")).toBe("¥500");
   });
-  it("defaults to EUR", () => {
-    expect(formatCompactCurrency(1500)).toBe("€1.5K");
+  it("defaults to USD", () => {
+    expect(formatCompactCurrency(1500)).toBe("$1.5K");
   });
 });
 

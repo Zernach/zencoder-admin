@@ -200,7 +200,7 @@ const SettingsInternationalizationSection = React.memo(function SettingsInternat
     );
 
     if (!selectedCurrencyOption) {
-      return "EUR";
+      return "USD";
     }
 
     return `${selectedCurrencyOption.symbol} ${selectedCurrencyOption.code}`;

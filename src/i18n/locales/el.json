@@ -156,6 +156,7 @@
     },
     "evaluations": "Αξιολογήσεις",
     "evaluationsSubtitle": "Τάσεις ποιότητας χρυσών ερωτημάτων σε {{count}} έργα",
+    "createEvaluation": "+ Δημιουργία Αξιολόγησης",
     "goldenQuestionsCount": "{{count}} χρυσά ερωτήματα",
     "evaluationScore": "Βαθμολογία",
     "evaluationSampleCount": "{{count}} αξιολογήσεις",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Δημιουργία Έργου",
     "createTeamTitle": "Δημιουργία Ομάδας",
     "createComplianceRuleTitle": "Δημιουργία Κανόνα Συμμόρφωσης",
+    "createEvaluationTitle": "Δημιουργία Αξιολόγησης",
     "createAgent": {
       "agentName": "Όνομα Πράκτορα",
       "agentNamePlaceholder": "π.χ. Bot Ελέγχου Κώδικα",
@@ -355,6 +357,15 @@
       "severityLabel": "Σοβαρότητα (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Μη έγκυρη σοβαρότητα"
+    },
+    "createEvaluation": {
+      "subtitle": "Επιλέξτε ένα έργο και τα κριτήρια προς αξιολόγηση.",
+      "projectId": "ID Έργου",
+      "projectIdPlaceholder": "π.χ. proj_dashboard",
+      "projectIdRequired": "Το ID έργου είναι υποχρεωτικό",
+      "criteriaLabel": "Κριτήρια αξιολόγησης",
+      "criteriaHelp": "Επιλέξτε ένα ή περισσότερα κριτήρια. Κάθε κριτήριο μετατρέπεται σε ένα χρυσό ερώτημα που βαθμολογείται σε κάθε εκτέλεση.",
+      "criteriaRequired": "Επιλέξτε τουλάχιστον ένα κριτήριο αξιολόγησης"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30η",
     "short90d": "90η",
     "shortCustom": "Προσ."
+  },
+  "environment": {
+    "selectEnvironment": "Επιλογή περιβάλλοντος",
+    "openSelector": "Άνοιγμα επιλογής περιβάλλοντος",
+    "closeSelector": "Κλείσιμο επιλογής περιβάλλοντος",
+    "development": "Ανάπτυξη",
+    "production": "Παραγωγή",
+    "local": "Τοπικό",
+    "shortDev": "Αναπτ.",
+    "shortProd": "Παρ.",
+    "shortLocal": "Τοπ."
   },
   "entityDetail": {
     "runs": "Εκτελέσεις",

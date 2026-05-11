@@ -156,6 +156,7 @@
     },
     "evaluations": "Avaliações",
     "evaluationsSubtitle": "Tendências de qualidade das perguntas de referência em {{count}} projetos",
+    "createEvaluation": "+ Criar avaliação",
     "goldenQuestionsCount": "{{count}} perguntas de referência",
     "evaluationScore": "Pontuação",
     "evaluationSampleCount": "{{count}} avaliações",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Criar projeto",
     "createTeamTitle": "Criar equipe",
     "createComplianceRuleTitle": "Criar regra de conformidade",
+    "createEvaluationTitle": "Criar avaliação",
     "createAgent": {
       "agentName": "Nome do agente",
       "agentNamePlaceholder": "ex. Bot de revisão de código",
@@ -355,6 +357,15 @@
       "severityLabel": "Severidade (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Severidade inválida"
+    },
+    "createEvaluation": {
+      "subtitle": "Escolha um projeto e selecione os critérios a serem avaliados.",
+      "projectId": "ID do projeto",
+      "projectIdPlaceholder": "ex. proj_dashboard",
+      "projectIdRequired": "O ID do projeto é obrigatório",
+      "criteriaLabel": "Critérios de avaliação",
+      "criteriaHelp": "Selecione um ou mais critérios. Cada critério se torna uma pergunta de referência pontuada a cada execução.",
+      "criteriaRequired": "Selecione pelo menos um critério de avaliação"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30d",
     "short90d": "90d",
     "shortCustom": "Personalizado"
+  },
+  "environment": {
+    "selectEnvironment": "Selecionar ambiente",
+    "openSelector": "Abrir seletor de ambiente",
+    "closeSelector": "Fechar seletor de ambiente",
+    "development": "Desenvolvimento",
+    "production": "Produção",
+    "local": "Local",
+    "shortDev": "Dev",
+    "shortProd": "Prod",
+    "shortLocal": "Local"
   },
   "entityDetail": {
     "runs": "Execuções",

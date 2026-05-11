@@ -22,7 +22,7 @@ function renderWithStore(ui: React.ReactElement, preloadedState?: {
           settings: {
             deviceDefaultLanguage: "en",
             selectedLanguage: "en",
-            selectedCurrency: "EUR",
+            selectedCurrency: "USD",
             emailNotificationsEnabled: true,
             slackIntegrationEnabled: true,
             ...preloadedState.settings,
@@ -145,10 +145,10 @@ describe("Settings Preferences Integration", () => {
       expect(getByText("English")).toBeTruthy();
     });
 
-    it("shows Currency row with EUR as default", () => {
+    it("shows Currency row with USD as default", () => {
       const { getByText } = renderWithStore(<SettingsScreen />);
       expect(getByText("settings.currency")).toBeTruthy();
-      expect(getByText("€ EUR")).toBeTruthy();
+      expect(getByText("$ USD")).toBeTruthy();
     });
   });
 
@@ -209,15 +209,15 @@ describe("Settings Preferences Integration", () => {
     it("Currency row updates when currency changes in store", () => {
       const { getByText, queryByText, store } = renderWithStore(<SettingsScreen />);
 
-      expect(getByText("€ EUR")).toBeTruthy();
+      expect(getByText("$ USD")).toBeTruthy();
 
       const { act } = require("@testing-library/react-native");
       act(() => {
-        store.dispatch(setCurrency("USD"));
+        store.dispatch(setCurrency("EUR"));
       });
 
-      expect(getByText("$ USD")).toBeTruthy();
-      expect(queryByText("€ EUR")).toBeNull();
+      expect(getByText("€ EUR")).toBeTruthy();
+      expect(queryByText("$ USD")).toBeNull();
     });
 
     it("can switch to various currencies and display correct symbol + code", () => {

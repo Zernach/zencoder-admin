@@ -22,6 +22,7 @@ import { ScreenWrapper, sectionStyles } from "@/components/screen";
 import { useSearchFilter } from "@/hooks/useSearchFilter";
 import { CreateProjectModal } from "@/features/analytics/components/CreateProjectModal";
 import { CreateAgentModal } from "@/features/analytics/components/CreateAgentModal";
+import { CreateEvaluationModal } from "@/features/analytics/components/CreateEvaluationModal";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { useSectionRef } from "@/hooks/useRegisterSection";
 import { keyExtractors } from "@/constants";
@@ -165,6 +166,7 @@ const AgentsReliabilitySection = React.memo(function AgentsReliabilitySection({
 
 interface AgentsEvaluationsSectionProps {
   data: AgentsHubResponse;
+  onCreateEvaluation: () => void;
 }
 
 interface EvaluationQuestionTableRow extends GoldenQuestionEvaluation {
@@ -182,6 +184,7 @@ type EvaluationColumnDef<T> = ColumnDef<T> | TimeSeriesColumnDef<T>;
 
 const AgentsEvaluationsSection = React.memo(function AgentsEvaluationsSection({
   data,
+  onCreateEvaluation,
 }: AgentsEvaluationsSectionProps) {
   const { t } = useTranslation();
   const { mode } = useThemeMode();
@@ -345,10 +348,24 @@ const AgentsEvaluationsSection = React.memo(function AgentsEvaluationsSection({
 
   return (
     <View ref={refFor("evaluations")} nativeID="evaluations" style={styles.section}>
-      <SectionHeader
-        title={t("agents.evaluations")}
-        subtitle={t("agents.evaluationsSubtitle", { count: projects.length })}
-      />
+      <View style={styles.sectionRow}>
+        <View style={styles.sectionHeaderWrap}>
+          <SectionHeader
+            title={t("agents.evaluations")}
+            subtitle={t("agents.evaluationsSubtitle", { count: projects.length })}
+          />
+        </View>
+        <CustomButton
+          onPress={onCreateEvaluation}
+          style={styles.createButton}
+          buttonMode="secondary"
+          buttonSize="compact"
+          label={t("agents.createEvaluation")}
+          textStyle={styles.createButtonText}
+          accessibilityRole="button"
+          accessibilityLabel={t("modals.createEvaluationTitle")}
+        />
+      </View>
       <View style={styles.section}>{projectTables}</View>
     </View>
   );
@@ -566,6 +583,11 @@ export default function AgentsScreen() {
     [dispatch],
   );
 
+  const handleOpenCreateEvaluation = useCallback(
+    () => dispatch(openModal(ModalName.CreateEvaluation)),
+    [dispatch],
+  );
+
   const subtitle = useMemo(() => data
     ? t("agents.subtitleWithData", {
       successRate: formatPercent(data.runSuccessRate * 100),
@@ -612,7 +634,12 @@ export default function AgentsScreen() {
   return (
     <ScreenWrapper headerProps={headerProps}>
       <AgentsReliabilitySection data={data} loading={loading} />
-      {data ? <AgentsEvaluationsSection data={data} /> : null}
+      {data ? (
+        <AgentsEvaluationsSection
+          data={data}
+          onCreateEvaluation={handleOpenCreateEvaluation}
+        />
+      ) : null}
       {data ? (
         <AgentsAgentPerformanceSection
           data={data}
@@ -629,6 +656,7 @@ export default function AgentsScreen() {
       {data ? <AgentsRecentRunsSection data={data} navigateTo={navigateTo} /> : null}
       <CreateAgentModal />
       <CreateProjectModal />
+      <CreateEvaluationModal />
     </ScreenWrapper>
   );
 }

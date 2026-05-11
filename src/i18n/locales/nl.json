@@ -156,6 +156,7 @@
     },
     "evaluations": "Evaluaties",
     "evaluationsSubtitle": "Kwaliteitstrends van referentievragen over {{count}} projecten",
+    "createEvaluation": "+ Evaluatie aanmaken",
     "goldenQuestionsCount": "{{count}} referentievragen",
     "evaluationScore": "Score",
     "evaluationSampleCount": "{{count}} metingen",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Project aanmaken",
     "createTeamTitle": "Team aanmaken",
     "createComplianceRuleTitle": "Nalevingsregel aanmaken",
+    "createEvaluationTitle": "Evaluatie aanmaken",
     "createAgent": {
       "agentName": "Agentnaam",
       "agentNamePlaceholder": "bijv. Codereview Bot",
@@ -355,6 +357,15 @@
       "severityLabel": "Ernst (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Ongeldige ernst"
+    },
+    "createEvaluation": {
+      "subtitle": "Kies een project en selecteer criteria om tegen te evalueren.",
+      "projectId": "Project-ID",
+      "projectIdPlaceholder": "bijv. proj_dashboard",
+      "projectIdRequired": "Project-ID is verplicht",
+      "criteriaLabel": "Evaluatiecriteria",
+      "criteriaHelp": "Selecteer een of meer criteria. Elk criterium wordt een referentievraag die bij elke uitvoering wordt gescoord.",
+      "criteriaRequired": "Selecteer minstens één evaluatiecriterium"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30d",
     "short90d": "90d",
     "shortCustom": "Aangepast"
+  },
+  "environment": {
+    "selectEnvironment": "Omgeving kiezen",
+    "openSelector": "Omgevingskiezer openen",
+    "closeSelector": "Omgevingskiezer sluiten",
+    "development": "Ontwikkeling",
+    "production": "Productie",
+    "local": "Lokaal",
+    "shortDev": "Dev",
+    "shortProd": "Prod",
+    "shortLocal": "Lokaal"
   },
   "entityDetail": {
     "runs": "Uitvoeringen",

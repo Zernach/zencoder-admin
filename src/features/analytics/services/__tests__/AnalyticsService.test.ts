@@ -229,6 +229,7 @@ describe("delegation via mock", () => {
       createProject: jest.fn(),
       createTeam: jest.fn(),
       createAgent: jest.fn(),
+      createEvaluation: jest.fn(),
       updateAgentDescription: jest.fn(),
     };
 
@@ -296,6 +297,7 @@ describe("delegation via mock", () => {
       createProject: jest.fn(),
       createTeam: jest.fn(),
       createAgent: jest.fn(),
+      createEvaluation: jest.fn(),
       updateAgentDescription: jest.fn(),
     };
 
@@ -352,6 +354,7 @@ describe("getSearchSuggestions", () => {
       createProject: jest.fn(),
       createTeam: jest.fn(),
       createAgent: jest.fn(),
+      createEvaluation: jest.fn(),
       updateAgentDescription: jest.fn(),
     };
 

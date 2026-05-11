@@ -156,6 +156,7 @@
     },
     "evaluations": "Оцінювання",
     "evaluationsSubtitle": "Тенденції якості еталонних запитань у {{count}} проєктах",
+    "createEvaluation": "+ Створити оцінювання",
     "goldenQuestionsCount": "{{count}} еталонних запитань",
     "evaluationScore": "Бал",
     "evaluationSampleCount": "{{count}} оцінок",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Створити проєкт",
     "createTeamTitle": "Створити команду",
     "createComplianceRuleTitle": "Створити правило відповідності",
+    "createEvaluationTitle": "Створити оцінювання",
     "createAgent": {
       "agentName": "Назва агента",
       "agentNamePlaceholder": "напр. Бот для перевірки коду",
@@ -355,6 +357,15 @@
       "severityLabel": "Серйозність (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Недійсна серйозність"
+    },
+    "createEvaluation": {
+      "subtitle": "Виберіть проєкт і критерії, за якими буде проводитися оцінювання.",
+      "projectId": "ID проєкту",
+      "projectIdPlaceholder": "напр. proj_dashboard",
+      "projectIdRequired": "ID проєкту обов'язковий",
+      "criteriaLabel": "Критерії оцінювання",
+      "criteriaHelp": "Виберіть один або кілька критеріїв. Кожен критерій стає еталонним запитанням, що оцінюється при кожному запуску.",
+      "criteriaRequired": "Виберіть щонайменше один критерій оцінювання"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30д",
     "short90d": "90д",
     "shortCustom": "Довільний"
+  },
+  "environment": {
+    "selectEnvironment": "Вибір середовища",
+    "openSelector": "Відкрити вибір середовища",
+    "closeSelector": "Закрити вибір середовища",
+    "development": "Розробка",
+    "production": "Продакшн",
+    "local": "Локальне",
+    "shortDev": "Розр",
+    "shortProd": "Прод",
+    "shortLocal": "Лок"
   },
   "entityDetail": {
     "runs": "Запуски",

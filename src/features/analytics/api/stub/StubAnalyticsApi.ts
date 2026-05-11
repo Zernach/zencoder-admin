@@ -53,6 +53,8 @@ import type {
   CreateTeamResponse,
   CreateAgentRequest,
   CreateAgentResponse,
+  CreateEvaluationRequest,
+  CreateEvaluationResponse,
   UpdateAgentDescriptionRequest,
   UpdateAgentDescriptionResponse,
   PolicyViolationRow,
@@ -60,7 +62,9 @@ import type {
   CostPerTeamRow,
   ProjectBreakdownRow,
   ProjectEvaluationSection,
+  GoldenQuestionEvaluation,
 } from "@/features/analytics/types";
+import { EVALUATION_CRITERIA_OPTIONS, getCriteriaPromptById } from "@/features/analytics/constants/evaluationCriteria";
 import {
   conflictError,
   internalError,
@@ -263,6 +267,12 @@ export class StubAnalyticsApi implements IAnalyticsApi {
   private createdProjects: Array<{ id: string; name: string; teamId: string }> = [];
   private createdTeams: Array<{ id: string; name: string }> = [];
   private createdAgents: Array<{ id: string; name: string; projectId: string; description: string }> = [];
+  private createdEvaluations: Array<{
+    id: string;
+    projectId: string;
+    question: string;
+    createdAtIso: string;
+  }> = [];
   private ruleAssignments: Map<string, { agentIds: string[]; projectIds: string[] }> = new Map();
 
   constructor(seedData: SeedData, config: StubConfig = {}) {
@@ -457,10 +467,47 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         };
       });
 
+      const userCreated = this.buildUserCreatedEvaluationsForProject(project.projectId, timeline);
+      const merged = [...goldenQuestions, ...userCreated];
+
       return {
         projectId: project.projectId,
         projectName: project.projectName,
-        goldenQuestions: goldenQuestions.sort((a, b) => b.latestScore - a.latestScore),
+        goldenQuestions: merged.sort((a, b) => b.latestScore - a.latestScore),
+      };
+    });
+  }
+
+  private buildUserCreatedEvaluationsForProject(
+    projectId: string,
+    timeline: string[],
+  ): GoldenQuestionEvaluation[] {
+    const created = this.createdEvaluations.filter((entry) => entry.projectId === projectId);
+    if (created.length === 0 || timeline.length === 0) return [];
+
+    return created.map((entry) => {
+      const baseHash = hashString(entry.id);
+      const baseScore = 0.74 + (baseHash % 18) / 100; // 0.74 - 0.91
+      const trend = timeline.map((tsIso, idx) => {
+        const position = timeline.length > 1 ? idx / (timeline.length - 1) : 1;
+        const trendValue = baseScore + position * 0.04;
+        const noiseSeed = hashString(`${entry.id}:${tsIso}`) % 21;
+        const noise = ((noiseSeed - 10) / 1000) * 1.2;
+        const value = this.clampScore(trendValue + noise);
+        return { tsIso, value: Math.round(value * 1000) / 1000 };
+      });
+
+      const latestScore = trend[trend.length - 1]?.value ?? baseScore;
+      const comparisonIdx = Math.max(0, trend.length - 15);
+      const earlierScore = trend[comparisonIdx]?.value ?? latestScore;
+
+      return {
+        id: entry.id,
+        question: entry.question,
+        latestScore,
+        scoreDelta: Math.round((latestScore - earlierScore) * 1000) / 1000,
+        evaluationCount: 6 + (baseHash % 8),
+        trend,
       };
     });
   }
@@ -2050,6 +2097,59 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       agent,
       createdAtIso: new Date().toISOString(),
     };
+  }
+
+  async createEvaluation(request: CreateEvaluationRequest): Promise<CreateEvaluationResponse> {
+    await this.simulate();
+    this.assertOrgId(request.orgId);
+
+    const projectId = request.projectId.trim();
+    if (!projectId) {
+      throw validationError("projectId is required", [
+        { field: "projectId", code: "required", message: "Provide a projectId." },
+      ]);
+    }
+
+    const allProjects = [...this.seed.projects, ...this.createdProjects];
+    const project = allProjects.find((p) => p.id === projectId);
+    if (!project) {
+      throw notFoundError("Project", projectId);
+    }
+
+    const criteriaIds = Array.from(new Set(request.criteriaIds.filter((id) => id.trim().length > 0)));
+    if (criteriaIds.length === 0) {
+      throw validationError("Select at least one evaluation criterion", [
+        { field: "criteriaIds", code: "required", message: "Select at least one criterion." },
+      ]);
+    }
+
+    const validIds = new Set(EVALUATION_CRITERIA_OPTIONS.map((option) => option.id));
+    for (const id of criteriaIds) {
+      if (!validIds.has(id)) {
+        throw validationError(`Unknown criterion id "${id}"`, [
+          { field: "criteriaIds", code: "invalid", message: `Unknown criterion id "${id}".` },
+        ]);
+      }
+    }
+
+    const createdAtIso = new Date().toISOString();
+    const evaluations: GoldenQuestionEvaluation[] = criteriaIds.map((criterionId) => {
+      const prompt = getCriteriaPromptById(criterionId)!;
+      const id = this.nextId(`eval_${projectId}_${criterionId}`);
+      this.createdEvaluations.push({ id, projectId, question: prompt, createdAtIso });
+      const baseHash = hashString(id);
+      const latestScore = this.clampScore(0.74 + (baseHash % 18) / 100);
+      return {
+        id,
+        question: prompt,
+        latestScore,
+        scoreDelta: 0,
+        evaluationCount: 0,
+        trend: [{ tsIso: createdAtIso, value: latestScore }],
+      };
+    });
+
+    return { projectId, evaluations, createdAtIso };
   }
 
   async updateAgentDescription(request: UpdateAgentDescriptionRequest): Promise<UpdateAgentDescriptionResponse> {

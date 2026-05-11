@@ -156,6 +156,7 @@
     },
     "evaluations": "Értékelések",
     "evaluationsSubtitle": "Aranykérdés-minőségi trendek {{count}} projektben",
+    "createEvaluation": "+ Értékelés létrehozása",
     "goldenQuestionsCount": "{{count}} aranykérdés",
     "evaluationScore": "Pontszám",
     "evaluationSampleCount": "{{count}} értékelés",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Projekt létrehozása",
     "createTeamTitle": "Csapat létrehozása",
     "createComplianceRuleTitle": "Megfelelőségi szabály létrehozása",
+    "createEvaluationTitle": "Értékelés létrehozása",
     "createAgent": {
       "agentName": "Ágens neve",
       "agentNamePlaceholder": "pl. Kódellenőrző bot",
@@ -355,6 +357,15 @@
       "severityLabel": "Súlyosság (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Érvénytelen súlyosság"
+    },
+    "createEvaluation": {
+      "subtitle": "Válasszon projektet és értékelési szempontokat.",
+      "projectId": "Projekt ID",
+      "projectIdPlaceholder": "pl. proj_dashboard",
+      "projectIdRequired": "A projekt ID kötelező",
+      "criteriaLabel": "Értékelési szempontok",
+      "criteriaHelp": "Válasszon ki egy vagy több szempontot. Minden szempont egy aranykérdéssé válik, amelyet minden futtatáskor pontozunk.",
+      "criteriaRequired": "Válasszon ki legalább egy értékelési szempontot"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30n",
     "short90d": "90n",
     "shortCustom": "Egyéni"
+  },
+  "environment": {
+    "selectEnvironment": "Környezet kiválasztása",
+    "openSelector": "Környezetválasztó megnyitása",
+    "closeSelector": "Környezetválasztó bezárása",
+    "development": "Fejlesztés",
+    "production": "Éles",
+    "local": "Helyi",
+    "shortDev": "Fejl.",
+    "shortProd": "Éles",
+    "shortLocal": "Helyi"
   },
   "entityDetail": {
     "runs": "Futtatások",

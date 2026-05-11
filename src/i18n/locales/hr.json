@@ -156,6 +156,7 @@
     },
     "evaluations": "Evaluacije",
     "evaluationsSubtitle": "Trendovi kvalitete zlatnih pitanja na {{count}} projekata",
+    "createEvaluation": "+ Stvori evaluaciju",
     "goldenQuestionsCount": "{{count}} zlatnih pitanja",
     "evaluationScore": "Ocjena",
     "evaluationSampleCount": "{{count}} evaluacija",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Stvori projekt",
     "createTeamTitle": "Stvori tim",
     "createComplianceRuleTitle": "Stvori pravilo sukladnosti",
+    "createEvaluationTitle": "Stvori evaluaciju",
     "createAgent": {
       "agentName": "Ime agenta",
       "agentNamePlaceholder": "npr. Bot za pregled koda",
@@ -355,6 +357,15 @@
       "severityLabel": "Ozbiljnost (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Nevažeća ozbiljnost"
+    },
+    "createEvaluation": {
+      "subtitle": "Odaberite projekt i kriterije prema kojima će se vršiti evaluacija.",
+      "projectId": "ID projekta",
+      "projectIdPlaceholder": "npr. proj_dashboard",
+      "projectIdRequired": "ID projekta je obavezan",
+      "criteriaLabel": "Kriteriji evaluacije",
+      "criteriaHelp": "Odaberite jedan ili više kriterija. Svaki kriterij postaje zlatno pitanje koje se ocjenjuje pri svakom izvođenju.",
+      "criteriaRequired": "Odaberite barem jedan kriterij evaluacije"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30d",
     "short90d": "90d",
     "shortCustom": "Prilag."
+  },
+  "environment": {
+    "selectEnvironment": "Odaberi okruženje",
+    "openSelector": "Otvori odabir okruženja",
+    "closeSelector": "Zatvori odabir okruženja",
+    "development": "Razvoj",
+    "production": "Produkcija",
+    "local": "Lokalno",
+    "shortDev": "Razv.",
+    "shortProd": "Prod.",
+    "shortLocal": "Lok."
   },
   "entityDetail": {
     "runs": "Izvršavanja",

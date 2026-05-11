@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { CustomButton } from "@/components/buttons";
 import { CustomModal } from "@/components/modals";
 import type { TextInput as TextInputHandle } from "react-native";
-import { Search, Clock, X, User } from "lucide-react-native";
+import { Search, Clock, X, User, Server } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import {
@@ -50,6 +50,30 @@ const PRESET_SHORT_LABEL_KEYS: Record<TimeRangePreset, string> = {
   "30d": "timeRange.short30d",
   "90d": "timeRange.short90d",
   custom: "timeRange.shortCustom",
+};
+
+type EnvironmentValue = "dev" | "prod" | "local";
+
+const ENVIRONMENT_OPTIONS: {
+  value: EnvironmentValue;
+  labelKey: string;
+  fullLabelKey: string;
+}[] = [
+  { value: "dev", labelKey: "environment.shortDev", fullLabelKey: "environment.development" },
+  { value: "prod", labelKey: "environment.shortProd", fullLabelKey: "environment.production" },
+  { value: "local", labelKey: "environment.shortLocal", fullLabelKey: "environment.local" },
+];
+
+const ENVIRONMENT_LABEL_KEYS: Record<EnvironmentValue, string> = {
+  dev: "environment.development",
+  prod: "environment.production",
+  local: "environment.local",
+};
+
+const ENVIRONMENT_SHORT_LABEL_KEYS: Record<EnvironmentValue, string> = {
+  dev: "environment.shortDev",
+  prod: "environment.shortProd",
+  local: "environment.shortLocal",
 };
 
 const CONTROL_HORIZONTAL_PADDING = 12;
@@ -323,6 +347,102 @@ const TopBarTimeRange = React.memo(function TopBarTimeRange() {
 });
 
 /**
+ * Isolated environment selector — dummy values (dev/prod/local) since no backend
+ * exists for environment switching. State is local to this subtree.
+ */
+const TopBarEnvironment = React.memo(function TopBarEnvironment() {
+  const { t } = useTranslation();
+  const breakpoint = useBreakpoint();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const [environment, setEnvironment] = useState<EnvironmentValue>("dev");
+  const [isEnvOverlayVisible, setEnvOverlayVisible] = useState(false);
+
+  const openEnvOverlay = useCallback(() => setEnvOverlayVisible(true), []);
+  const closeEnvOverlay = useCallback(() => setEnvOverlayVisible(false), []);
+
+  const handleSelectEnvironment = useCallback((next: EnvironmentValue) => {
+    setEnvironment(next);
+    setEnvOverlayVisible(false);
+  }, []);
+
+  const envHandlerCache = useRef(new Map<string, () => void>()).current;
+  const handleSelectEnvironmentRef = useRef(handleSelectEnvironment);
+  handleSelectEnvironmentRef.current = handleSelectEnvironment;
+  const getEnvHandler = useCallback((value: EnvironmentValue) => {
+    let handler = envHandlerCache.get(value);
+    if (!handler) {
+      handler = () => handleSelectEnvironmentRef.current(value);
+      envHandlerCache.set(value, handler);
+    }
+    return handler;
+  }, [envHandlerCache]);
+
+  const envButtonLabel =
+    breakpoint === "mobile"
+      ? t(ENVIRONMENT_SHORT_LABEL_KEYS[environment])
+      : t(ENVIRONMENT_LABEL_KEYS[environment]);
+
+  return (
+    <>
+      <CustomButton
+        style={styles.presetBtn}
+        buttonMode="surface"
+        accessibilityRole="button"
+        accessibilityLabel={t("environment.openSelector")}
+        onPress={openEnvOverlay}
+      >
+        <Server size={14} color={theme.text.secondary} />
+        <Text
+          allowFontScaling={false}
+          style={[styles.presetText, { color: theme.text.secondary }]}
+        >
+          {envButtonLabel}
+        </Text>
+      </CustomButton>
+      <CustomModal
+        visible={isEnvOverlayVisible}
+        onClose={closeEnvOverlay}
+        accessibilityLabel={t("environment.closeSelector")}
+        title={t("environment.selectEnvironment")}
+        panelWidth={320}
+        panelStyle={styles.timeRangePanel}
+      >
+        <View style={styles.overlayOptions}>
+          {ENVIRONMENT_OPTIONS.map((option) => {
+            const isSelected = environment === option.value;
+            return (
+              <CustomButton
+                key={option.value}
+                style={[
+                  styles.overlayOptionButton,
+                  { backgroundColor: theme.bg.surface, borderColor: theme.border.default },
+                  isSelected && { borderColor: theme.border.brand, backgroundColor: theme.bg.brandSubtle },
+                ]}
+                onPress={getEnvHandler(option.value)}
+                accessibilityRole="button"
+                accessibilityLabel={t(option.fullLabelKey)}
+                accessibilityState={{ selected: isSelected }}
+              >
+                <Text
+                  style={[
+                    styles.overlayOptionText,
+                    { color: theme.text.secondary },
+                    isSelected && { color: theme.text.brand },
+                  ]}
+                >
+                  {t(option.fullLabelKey)}
+                </Text>
+              </CustomButton>
+            );
+          })}
+        </View>
+      </CustomModal>
+    </>
+  );
+});
+
+/**
  * Isolated profile button — doesn't re-render when search or time-range state changes.
  */
 const TopBarProfileButton = React.memo(function TopBarProfileButton() {
@@ -381,6 +501,7 @@ export const TopBar = React.memo(function TopBar({
       </View>
       <View style={styles.right}>
         {showTimeRange && <TopBarTimeRange />}
+        <TopBarEnvironment />
         <TopBarProfileButton />
       </View>
     </View>

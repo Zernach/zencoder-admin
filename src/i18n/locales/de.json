@@ -156,6 +156,7 @@
     },
     "evaluations": "Auswertungen",
     "evaluationsSubtitle": "Qualitätstrends der Golden Questions über {{count}} Projekte",
+    "createEvaluation": "+ Auswertung erstellen",
     "goldenQuestionsCount": "{{count}} Referenzfragen",
     "evaluationScore": "Score",
     "evaluationSampleCount": "{{count}} Auswertungen",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Projekt erstellen",
     "createTeamTitle": "Team erstellen",
     "createComplianceRuleTitle": "Compliance-Regel erstellen",
+    "createEvaluationTitle": "Auswertung erstellen",
     "createAgent": {
       "agentName": "Agentenname",
       "agentNamePlaceholder": "z.B. Code Review Bot",
@@ -355,6 +357,15 @@
       "severityLabel": "Schweregrad (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Ungültiger Schweregrad"
+    },
+    "createEvaluation": {
+      "subtitle": "Wählen Sie ein Projekt und Kriterien aus, gegen die ausgewertet werden soll.",
+      "projectId": "Projekt-ID",
+      "projectIdPlaceholder": "z.B. proj_dashboard",
+      "projectIdRequired": "Projekt-ID ist erforderlich",
+      "criteriaLabel": "Auswertungskriterien",
+      "criteriaHelp": "Wählen Sie ein oder mehrere Kriterien aus. Jedes Kriterium wird zu einer Referenzfrage, die bei jedem Lauf bewertet wird.",
+      "criteriaRequired": "Wählen Sie mindestens ein Auswertungskriterium aus"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30T",
     "short90d": "90T",
     "shortCustom": "Eigen"
+  },
+  "environment": {
+    "selectEnvironment": "Umgebung auswählen",
+    "openSelector": "Umgebungsauswahl öffnen",
+    "closeSelector": "Umgebungsauswahl schließen",
+    "development": "Entwicklung",
+    "production": "Produktion",
+    "local": "Lokal",
+    "shortDev": "Dev",
+    "shortProd": "Prod",
+    "shortLocal": "Lokal"
   },
   "entityDetail": {
     "runs": "Ausführungen",

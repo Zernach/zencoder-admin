@@ -40,6 +40,7 @@ jest.mock("@/store", () => ({
     CreateSeat: "createSeat",
     CreateTeam: "createTeam",
     CreateAgent: "createAgent",
+    CreateEvaluation: "createEvaluation",
     SignOutNotice: "signOutNotice",
   },
 }));
@@ -62,6 +63,10 @@ jest.mock("@/features/analytics/components/CreateAgentModal", () => ({
 
 jest.mock("@/features/analytics/components/CreateProjectModal", () => ({
   CreateProjectModal: () => null,
+}));
+
+jest.mock("@/features/analytics/components/CreateEvaluationModal", () => ({
+  CreateEvaluationModal: () => null,
 }));
 
 jest.mock("@/components/screen", () => {

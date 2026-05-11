@@ -156,6 +156,7 @@
     },
     "evaluations": "Оценявания",
     "evaluationsSubtitle": "Тенденции в качеството на златните въпроси в {{count}} проекта",
+    "createEvaluation": "+ Създай оценяване",
     "goldenQuestionsCount": "{{count}} златни въпроса",
     "evaluationScore": "Резултат",
     "evaluationSampleCount": "{{count}} оценки",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Създай проект",
     "createTeamTitle": "Създай екип",
     "createComplianceRuleTitle": "Създай правило за съответствие",
+    "createEvaluationTitle": "Създай оценяване",
     "createAgent": {
       "agentName": "Име на агент",
       "agentNamePlaceholder": "напр. Бот за ревю на код",
@@ -355,6 +357,15 @@
       "severityLabel": "Тежест (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Невалидна тежест"
+    },
+    "createEvaluation": {
+      "subtitle": "Изберете проект и критерии, спрямо които да се извърши оценяването.",
+      "projectId": "ID на проект",
+      "projectIdPlaceholder": "напр. proj_dashboard",
+      "projectIdRequired": "ID на проекта е задължително",
+      "criteriaLabel": "Критерии за оценяване",
+      "criteriaHelp": "Изберете един или повече критерии. Всеки критерий се превръща в златен въпрос, оценяван при всяко изпълнение.",
+      "criteriaRequired": "Изберете поне един критерий за оценяване"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30д",
     "short90d": "90д",
     "shortCustom": "Друг"
+  },
+  "environment": {
+    "selectEnvironment": "Избор на среда",
+    "openSelector": "Отваряне на селектора на средата",
+    "closeSelector": "Затваряне на селектора на средата",
+    "development": "Разработка",
+    "production": "Продукция",
+    "local": "Локална",
+    "shortDev": "Дев",
+    "shortProd": "Прод",
+    "shortLocal": "Лок"
   },
   "entityDetail": {
     "runs": "Изпълнения",

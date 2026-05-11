@@ -20,6 +20,7 @@ export {
   useCreateProjectMutation,
   useCreateTeamMutation,
   useCreateAgentMutation,
+  useCreateEvaluationMutation,
   useUpdateAgentDescriptionMutation,
 } from "./analyticsApi";
 export { initializeService, getService } from "./serviceRegistry";

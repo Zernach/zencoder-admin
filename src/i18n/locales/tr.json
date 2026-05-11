@@ -156,6 +156,7 @@
     },
     "evaluations": "Değerlendirmeler",
     "evaluationsSubtitle": "{{count}} proje genelinde altın soru kalite eğilimleri",
+    "createEvaluation": "+ Değerlendirme Oluştur",
     "goldenQuestionsCount": "{{count}} altın soru",
     "evaluationScore": "Skor",
     "evaluationSampleCount": "{{count}} değerlendirme",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Proje Oluştur",
     "createTeamTitle": "Takım Oluştur",
     "createComplianceRuleTitle": "Uyumluluk Kuralı Oluştur",
+    "createEvaluationTitle": "Değerlendirme Oluştur",
     "createAgent": {
       "agentName": "Ajan Adı",
       "agentNamePlaceholder": "ör. Kod İnceleme Botu",
@@ -355,6 +357,15 @@
       "severityLabel": "Önem Derecesi (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Geçersiz önem derecesi"
+    },
+    "createEvaluation": {
+      "subtitle": "Bir proje seçin ve değerlendirme yapılacak kriterleri belirleyin.",
+      "projectId": "Proje ID",
+      "projectIdPlaceholder": "ör. proj_dashboard",
+      "projectIdRequired": "Proje ID gereklidir",
+      "criteriaLabel": "Değerlendirme kriterleri",
+      "criteriaHelp": "Bir veya daha fazla kriter seçin. Her kriter, her çalıştırmada puanlanan bir altın soruya dönüşür.",
+      "criteriaRequired": "En az bir değerlendirme kriteri seçin"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30g",
     "short90d": "90g",
     "shortCustom": "Özel"
+  },
+  "environment": {
+    "selectEnvironment": "Ortam seç",
+    "openSelector": "Ortam seçiciyi aç",
+    "closeSelector": "Ortam seçiciyi kapat",
+    "development": "Geliştirme",
+    "production": "Üretim",
+    "local": "Yerel",
+    "shortDev": "Gel.",
+    "shortProd": "Üre.",
+    "shortLocal": "Yerel"
   },
   "entityDetail": {
     "runs": "Çalıştırmalar",

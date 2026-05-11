@@ -29,7 +29,13 @@ describe("Currency Integration", () => {
         wrapper: createWrapper(store),
       });
 
-      // Default: EUR
+      // Default: USD — 100 EUR (seed data) → $108.00
+      expect(result.current.formatCurrency(100)).toBe("$108.00");
+
+      act(() => {
+        store.dispatch(setCurrency("EUR"));
+      });
+
       expect(result.current.formatCurrency(100)).toBe("€100.00");
 
       act(() => {
@@ -140,31 +146,31 @@ describe("Currency Integration", () => {
     });
   });
 
-  describe("default currency (EUR) produces correct symbol and no conversion", () => {
-    it("EUR rate is 1.0", () => {
-      expect(CONVERSION_RATES.EUR).toBe(1.0);
+  describe("default currency (USD) produces correct symbol and EUR→USD conversion", () => {
+    it("USD rate matches constants", () => {
+      expect(CONVERSION_RATES.USD).toBe(1.08);
     });
 
-    it("convertFromEUR with EUR returns same amount", () => {
-      expect(convertFromEUR(123.45, "EUR")).toBe(123.45);
+    it("convertFromEUR with USD applies USD rate", () => {
+      expect(convertFromEUR(100, "USD")).toBeCloseTo(108);
     });
 
-    it("EUR symbol is €", () => {
-      expect(getCurrencySymbol("EUR")).toBe("€");
+    it("USD symbol is $", () => {
+      expect(getCurrencySymbol("USD")).toBe("$");
     });
 
-    it("EUR has 2 decimals", () => {
-      expect(getCurrencyDecimals("EUR")).toBe(2);
+    it("USD has 2 decimals", () => {
+      expect(getCurrencyDecimals("USD")).toBe(2);
     });
 
-    it("useCurrencyFormatter defaults to EUR", () => {
+    it("useCurrencyFormatter defaults to USD", () => {
       const store = createSettingsStore();
       const { result } = renderHook(() => useCurrencyFormatter(), {
         wrapper: createWrapper(store),
       });
-      expect(result.current.currencyCode).toBe("EUR");
-      expect(result.current.currencySymbol).toBe("€");
-      expect(result.current.formatCurrency(50)).toBe("€50.00");
+      expect(result.current.currencyCode).toBe("USD");
+      expect(result.current.currencySymbol).toBe("$");
+      expect(result.current.formatCurrency(50)).toBe("$54.00");
     });
   });
 

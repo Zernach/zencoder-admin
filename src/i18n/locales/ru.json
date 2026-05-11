@@ -156,6 +156,7 @@
     },
     "evaluations": "Оценки",
     "evaluationsSubtitle": "Динамика качества эталонных вопросов по {{count}} проектам",
+    "createEvaluation": "+ Создать оценку",
     "goldenQuestionsCount": "{{count}} эталонных вопросов",
     "evaluationScore": "Балл",
     "evaluationSampleCount": "{{count}} оценок",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Создать проект",
     "createTeamTitle": "Создать команду",
     "createComplianceRuleTitle": "Создать правило соответствия",
+    "createEvaluationTitle": "Создать оценку",
     "createAgent": {
       "agentName": "Имя агента",
       "agentNamePlaceholder": "напр. Бот для ревью кода",
@@ -355,6 +357,15 @@
       "severityLabel": "Серьёзность (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Недопустимая серьёзность"
+    },
+    "createEvaluation": {
+      "subtitle": "Выберите проект и критерии, по которым будет проводиться оценка.",
+      "projectId": "ID проекта",
+      "projectIdPlaceholder": "напр. proj_dashboard",
+      "projectIdRequired": "ID проекта обязателен",
+      "criteriaLabel": "Критерии оценки",
+      "criteriaHelp": "Выберите один или несколько критериев. Каждый критерий становится эталонным вопросом, оцениваемым при каждом запуске.",
+      "criteriaRequired": "Выберите хотя бы один критерий оценки"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30д",
     "short90d": "90д",
     "shortCustom": "Другой"
+  },
+  "environment": {
+    "selectEnvironment": "Выбор среды",
+    "openSelector": "Открыть выбор среды",
+    "closeSelector": "Закрыть выбор среды",
+    "development": "Разработка",
+    "production": "Продакшен",
+    "local": "Локальная",
+    "shortDev": "Раз",
+    "shortProd": "Прод",
+    "shortLocal": "Лок"
   },
   "entityDetail": {
     "runs": "Запуски",

@@ -37,6 +37,8 @@ import type {
   CreateTeamResponse,
   CreateAgentRequest,
   CreateAgentResponse,
+  CreateEvaluationRequest,
+  CreateEvaluationResponse,
   UpdateAgentDescriptionRequest,
   UpdateAgentDescriptionResponse,
 } from "@/features/analytics/types";
@@ -300,6 +302,17 @@ export const analyticsApi = createApi({
       invalidatesTags: ["AgentsHub"],
     }),
 
+    createEvaluation: builder.mutation<CreateEvaluationResponse, CreateEvaluationRequest>({
+      queryFn: async (request) => {
+        try {
+          return { data: await getService().createEvaluation(request) };
+        } catch (e) {
+          return { error: toApiError(e) };
+        }
+      },
+      invalidatesTags: ["AgentsHub"],
+    }),
+
     updateAgentDescription: builder.mutation<UpdateAgentDescriptionResponse, UpdateAgentDescriptionRequest>({
       queryFn: async (request) => {
         try {
@@ -337,5 +350,6 @@ export const {
   useCreateProjectMutation,
   useCreateTeamMutation,
   useCreateAgentMutation,
+  useCreateEvaluationMutation,
   useUpdateAgentDescriptionMutation,
 } = analyticsApi;

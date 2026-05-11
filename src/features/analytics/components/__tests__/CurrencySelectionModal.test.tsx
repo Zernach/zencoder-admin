@@ -117,7 +117,7 @@ describe("CurrencySelectionModal", () => {
       </Provider>,
     );
 
-    // Default currency is EUR, so one Check should show
+    // Default currency is USD, so one Check should show
     expect(getAllByText("Check")).toHaveLength(1);
   });
 

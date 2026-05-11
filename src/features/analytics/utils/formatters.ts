@@ -1,19 +1,19 @@
 import { getCurrencySymbol, getCurrencyDecimals } from "@/constants/currencies";
 import type { CurrencyCode } from "@/types/settings";
 
-export function formatCurrency(amount: number, currencyCode: CurrencyCode = "EUR"): string {
+export function formatCurrency(amount: number, currencyCode: CurrencyCode = "USD"): string {
   const symbol = getCurrencySymbol(currencyCode);
   const decimals = getCurrencyDecimals(currencyCode);
   return `${symbol}${amount.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
 }
 
-export function formatCostPerToken(amountPerToken: number, currencyCode: CurrencyCode = "EUR"): string {
+export function formatCostPerToken(amountPerToken: number, currencyCode: CurrencyCode = "USD"): string {
   const symbol = getCurrencySymbol(currencyCode);
   const tenThousandthsOfPennyPerToken = Math.round(amountPerToken * 1_000_000);
   return `${symbol}${tenThousandthsOfPennyPerToken.toLocaleString("en-US")} micro-units/token`;
 }
 
-export function formatCompactCurrency(amount: number, currencyCode: CurrencyCode = "EUR"): string {
+export function formatCompactCurrency(amount: number, currencyCode: CurrencyCode = "USD"): string {
   const symbol = getCurrencySymbol(currencyCode);
   const decimals = getCurrencyDecimals(currencyCode);
   if (Math.abs(amount) >= 1_000_000) {

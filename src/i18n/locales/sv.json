@@ -156,6 +156,7 @@
     },
     "evaluations": "Utvärderingar",
     "evaluationsSubtitle": "Kvalitetstrender för referensfrågor över {{count}} projekt",
+    "createEvaluation": "+ Skapa utvärdering",
     "goldenQuestionsCount": "{{count}} referensfrågor",
     "evaluationScore": "Poäng",
     "evaluationSampleCount": "{{count}} utvärderingar",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Skapa projekt",
     "createTeamTitle": "Skapa team",
     "createComplianceRuleTitle": "Skapa efterlevnadsregel",
+    "createEvaluationTitle": "Skapa utvärdering",
     "createAgent": {
       "agentName": "Agentnamn",
       "agentNamePlaceholder": "t.ex. Kodgranskningsbot",
@@ -355,6 +357,15 @@
       "severityLabel": "Allvarlighetsgrad (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Ogiltig allvarlighetsgrad"
+    },
+    "createEvaluation": {
+      "subtitle": "Välj ett projekt och de kriterier som ska utvärderas mot.",
+      "projectId": "Projekt-ID",
+      "projectIdPlaceholder": "t.ex. proj_dashboard",
+      "projectIdRequired": "Projekt-ID krävs",
+      "criteriaLabel": "Utvärderingskriterier",
+      "criteriaHelp": "Välj ett eller flera kriterier. Varje kriterium blir en referensfråga som poängsätts vid varje körning.",
+      "criteriaRequired": "Välj minst ett utvärderingskriterium"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30d",
     "short90d": "90d",
     "shortCustom": "Anpassat"
+  },
+  "environment": {
+    "selectEnvironment": "Välj miljö",
+    "openSelector": "Öppna miljöväljare",
+    "closeSelector": "Stäng miljöväljare",
+    "development": "Utveckling",
+    "production": "Produktion",
+    "local": "Lokal",
+    "shortDev": "Utv",
+    "shortProd": "Prod",
+    "shortLocal": "Lokal"
   },
   "entityDetail": {
     "runs": "Körningar",

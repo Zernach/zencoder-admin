@@ -156,6 +156,7 @@
     },
     "evaluations": "Hodnocení",
     "evaluationsSubtitle": "Trendy kvality zlatých otázek napříč {{count}} projekty",
+    "createEvaluation": "+ Vytvořit hodnocení",
     "goldenQuestionsCount": "{{count}} zlatých otázek",
     "evaluationScore": "Skóre",
     "evaluationSampleCount": "{{count}} hodnocení",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Vytvořit projekt",
     "createTeamTitle": "Vytvořit tým",
     "createComplianceRuleTitle": "Vytvořit pravidlo shody",
+    "createEvaluationTitle": "Vytvořit hodnocení",
     "createAgent": {
       "agentName": "Název agenta",
       "agentNamePlaceholder": "např. Bot pro revizi kódu",
@@ -355,6 +357,15 @@
       "severityLabel": "Závažnost (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Neplatná závažnost"
+    },
+    "createEvaluation": {
+      "subtitle": "Vyberte projekt a kritéria, podle kterých se má hodnotit.",
+      "projectId": "ID projektu",
+      "projectIdPlaceholder": "např. proj_dashboard",
+      "projectIdRequired": "ID projektu je povinné",
+      "criteriaLabel": "Kritéria hodnocení",
+      "criteriaHelp": "Vyberte jedno nebo více kritérií. Každé kritérium se stává zlatou otázkou hodnocenou při každém spuštění.",
+      "criteriaRequired": "Vyberte alespoň jedno kritérium hodnocení"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30d",
     "short90d": "90d",
     "shortCustom": "Vlastní"
+  },
+  "environment": {
+    "selectEnvironment": "Vybrat prostředí",
+    "openSelector": "Otevřít výběr prostředí",
+    "closeSelector": "Zavřít výběr prostředí",
+    "development": "Vývoj",
+    "production": "Produkce",
+    "local": "Lokální",
+    "shortDev": "Dev",
+    "shortProd": "Prod",
+    "shortLocal": "Lok"
   },
   "entityDetail": {
     "runs": "Spuštění",

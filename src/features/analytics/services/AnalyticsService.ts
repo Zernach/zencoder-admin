@@ -36,6 +36,8 @@ import type {
   CreateTeamResponse,
   CreateAgentRequest,
   CreateAgentResponse,
+  CreateEvaluationRequest,
+  CreateEvaluationResponse,
   UpdateAgentDescriptionRequest,
   UpdateAgentDescriptionResponse,
 } from "@/features/analytics/types";
@@ -187,6 +189,10 @@ export class AnalyticsService implements IAnalyticsService {
 
   async createAgent(request: CreateAgentRequest): Promise<CreateAgentResponse> {
     return this.api.createAgent(request);
+  }
+
+  async createEvaluation(request: CreateEvaluationRequest): Promise<CreateEvaluationResponse> {
+    return this.api.createEvaluation(request);
   }
 
   async updateAgentDescription(request: UpdateAgentDescriptionRequest): Promise<UpdateAgentDescriptionResponse> {

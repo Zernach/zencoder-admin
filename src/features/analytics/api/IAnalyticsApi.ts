@@ -34,6 +34,8 @@ import type {
   CreateTeamResponse,
   CreateAgentRequest,
   CreateAgentResponse,
+  CreateEvaluationRequest,
+  CreateEvaluationResponse,
   UpdateAgentDescriptionRequest,
   UpdateAgentDescriptionResponse,
 } from "@/features/analytics/types";
@@ -60,5 +62,6 @@ export interface IAnalyticsApi {
   createProject(request: CreateProjectRequest): Promise<CreateProjectResponse>;
   createTeam(request: CreateTeamRequest): Promise<CreateTeamResponse>;
   createAgent(request: CreateAgentRequest): Promise<CreateAgentResponse>;
+  createEvaluation(request: CreateEvaluationRequest): Promise<CreateEvaluationResponse>;
   updateAgentDescription(request: UpdateAgentDescriptionRequest): Promise<UpdateAgentDescriptionResponse>;
 }

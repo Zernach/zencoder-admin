@@ -18,14 +18,14 @@ function createWrapper(store: ReturnType<typeof createSettingsStore>) {
 }
 
 describe("useCurrencyFormatter", () => {
-  it("reads selectedCurrency from store (defaults to EUR)", () => {
+  it("reads selectedCurrency from store (defaults to USD)", () => {
     const store = createSettingsStore();
     const { result } = renderHook(() => useCurrencyFormatter(), {
       wrapper: createWrapper(store),
     });
 
-    expect(result.current.currencyCode).toBe("EUR");
-    expect(result.current.currencySymbol).toBe("€");
+    expect(result.current.currencyCode).toBe("USD");
+    expect(result.current.currencySymbol).toBe("$");
   });
 
   it("formatCurrency formats in the store's selected currency", () => {
@@ -45,6 +45,7 @@ describe("useCurrencyFormatter", () => {
 
   it("formatCurrency returns EUR values when currency is EUR", () => {
     const store = createSettingsStore();
+    store.dispatch(setCurrency("EUR"));
     const { result } = renderHook(() => useCurrencyFormatter(), {
       wrapper: createWrapper(store),
     });
@@ -72,7 +73,7 @@ describe("useCurrencyFormatter", () => {
       wrapper: createWrapper(store),
     });
 
-    expect(result.current.currencyCode).toBe("EUR");
+    expect(result.current.currencyCode).toBe("USD");
 
     act(() => {
       store.dispatch(setCurrency("GBP"));

@@ -25,7 +25,7 @@ describe("settingsSlice", () => {
     const state = store.getState();
     expect(state.settings.selectedLanguage).toBe("en");
     expect(state.settings.deviceDefaultLanguage).toBe("en");
-    expect(state.settings.selectedCurrency).toBe("EUR");
+    expect(state.settings.selectedCurrency).toBe("USD");
     expect(state.settings.emailNotificationsEnabled).toBe(true);
     expect(state.settings.slackIntegrationEnabled).toBe(true);
   });

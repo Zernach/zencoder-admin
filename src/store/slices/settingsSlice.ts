@@ -12,7 +12,7 @@ export interface SettingsState {
 const initialState: SettingsState = {
   deviceDefaultLanguage: "en",
   selectedLanguage: "en",
-  selectedCurrency: "EUR",
+  selectedCurrency: "USD",
   emailNotificationsEnabled: true,
   slackIntegrationEnabled: true,
 };

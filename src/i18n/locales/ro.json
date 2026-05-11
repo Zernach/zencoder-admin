@@ -156,6 +156,7 @@
     },
     "evaluations": "Evaluări",
     "evaluationsSubtitle": "Tendințe de calitate ale întrebărilor etalon în {{count}} proiecte",
+    "createEvaluation": "+ Creează evaluare",
     "goldenQuestionsCount": "{{count}} întrebări etalon",
     "evaluationScore": "Scor",
     "evaluationSampleCount": "{{count}} evaluări",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Creează proiect",
     "createTeamTitle": "Creează echipă",
     "createComplianceRuleTitle": "Creează regulă de conformitate",
+    "createEvaluationTitle": "Creează evaluare",
     "createAgent": {
       "agentName": "Nume agent",
       "agentNamePlaceholder": "ex. Bot de revizuire cod",
@@ -355,6 +357,15 @@
       "severityLabel": "Severitate (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Severitate invalidă"
+    },
+    "createEvaluation": {
+      "subtitle": "Alegeți un proiect și selectați criteriile după care să se facă evaluarea.",
+      "projectId": "ID proiect",
+      "projectIdPlaceholder": "ex. proj_dashboard",
+      "projectIdRequired": "ID-ul proiectului este obligatoriu",
+      "criteriaLabel": "Criterii de evaluare",
+      "criteriaHelp": "Selectați unul sau mai multe criterii. Fiecare criteriu devine o întrebare etalon evaluată la fiecare execuție.",
+      "criteriaRequired": "Selectați cel puțin un criteriu de evaluare"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30z",
     "short90d": "90z",
     "shortCustom": "Personalizat"
+  },
+  "environment": {
+    "selectEnvironment": "Selectează mediul",
+    "openSelector": "Deschide selectorul de mediu",
+    "closeSelector": "Închide selectorul de mediu",
+    "development": "Dezvoltare",
+    "production": "Producție",
+    "local": "Local",
+    "shortDev": "Dev",
+    "shortProd": "Prod",
+    "shortLocal": "Local"
   },
   "entityDetail": {
     "runs": "Rulări",

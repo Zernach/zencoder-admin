@@ -59,8 +59,8 @@ describe("Preferences Interaction — Cross-Feature Tests", () => {
         wrapper: createWrapper(store),
       });
 
-      // Initial: EUR + English
-      expect(result.current.formatCurrency(100)).toBe("€100.00");
+      // Initial: USD + English (amounts are EUR-denominated from APIs)
+      expect(result.current.formatCurrency(100)).toBe("$108.00");
       expect(i18n.t("common.cost")).toBe("Cost");
 
       // Change currency to JPY
@@ -83,13 +83,13 @@ describe("Preferences Interaction — Cross-Feature Tests", () => {
     it("changing language does not affect currency", () => {
       const store = createSettingsStore();
 
-      expect(selectSelectedCurrency(store.getState())).toBe("EUR");
+      expect(selectSelectedCurrency(store.getState())).toBe("USD");
       expect(selectSelectedLanguage(store.getState())).toBe("en");
 
       store.dispatch(setLanguage("fr"));
 
       expect(selectSelectedLanguage(store.getState())).toBe("fr");
-      expect(selectSelectedCurrency(store.getState())).toBe("EUR");
+      expect(selectSelectedCurrency(store.getState())).toBe("USD");
     });
 
     it("changing currency does not affect language", () => {

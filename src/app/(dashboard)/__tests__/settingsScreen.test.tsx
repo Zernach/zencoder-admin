@@ -210,8 +210,8 @@ describe("SettingsScreen", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
     expect(getByText("settings.currency")).toBeTruthy();
-    // Default currency is EUR
-    expect(getByText("€ EUR")).toBeTruthy();
+    // Default currency is USD
+    expect(getByText("$ USD")).toBeTruthy();
   });
 
   it("dispatches openModal for CurrencySelection when Currency row is pressed", () => {

@@ -156,6 +156,7 @@
     },
     "evaluations": "Oceny",
     "evaluationsSubtitle": "Trendy jakości pytań referencyjnych w {{count}} projektach",
+    "createEvaluation": "+ Utwórz ocenę",
     "goldenQuestionsCount": "{{count}} pytań referencyjnych",
     "evaluationScore": "Wynik",
     "evaluationSampleCount": "{{count}} ocen",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Utwórz projekt",
     "createTeamTitle": "Utwórz zespół",
     "createComplianceRuleTitle": "Utwórz regułę zgodności",
+    "createEvaluationTitle": "Utwórz ocenę",
     "createAgent": {
       "agentName": "Nazwa agenta",
       "agentNamePlaceholder": "np. Bot do przeglądu kodu",
@@ -355,6 +357,15 @@
       "severityLabel": "Ważność (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Nieprawidłowa ważność"
+    },
+    "createEvaluation": {
+      "subtitle": "Wybierz projekt i kryteria, względem których ma zostać przeprowadzona ocena.",
+      "projectId": "ID projektu",
+      "projectIdPlaceholder": "np. proj_dashboard",
+      "projectIdRequired": "ID projektu jest wymagane",
+      "criteriaLabel": "Kryteria oceny",
+      "criteriaHelp": "Wybierz co najmniej jedno kryterium. Każde kryterium staje się pytaniem referencyjnym ocenianym przy każdym uruchomieniu.",
+      "criteriaRequired": "Wybierz co najmniej jedno kryterium oceny"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30d",
     "short90d": "90d",
     "shortCustom": "Własny"
+  },
+  "environment": {
+    "selectEnvironment": "Wybierz środowisko",
+    "openSelector": "Otwórz wybór środowiska",
+    "closeSelector": "Zamknij wybór środowiska",
+    "development": "Programistyczne",
+    "production": "Produkcyjne",
+    "local": "Lokalne",
+    "shortDev": "Dev",
+    "shortProd": "Prod",
+    "shortLocal": "Lok"
   },
   "entityDetail": {
     "runs": "Uruchomienia",

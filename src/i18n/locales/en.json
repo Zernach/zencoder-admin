@@ -156,6 +156,7 @@
     },
     "evaluations": "Evaluations",
     "evaluationsSubtitle": "Golden question quality trends across {{count}} projects",
+    "createEvaluation": "+ Create Evaluation",
     "goldenQuestionsCount": "{{count}} Golden Questions",
     "evaluationScore": "Score",
     "evaluationSampleCount": "{{count}} evals",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Create Project",
     "createTeamTitle": "Create Team",
     "createComplianceRuleTitle": "Create Compliance Rule",
+    "createEvaluationTitle": "Create Evaluation",
     "createAgent": {
       "agentName": "Agent Name",
       "agentNamePlaceholder": "e.g. Code Review Bot",
@@ -355,6 +357,15 @@
       "severityLabel": "Severity (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Invalid severity"
+    },
+    "createEvaluation": {
+      "subtitle": "Pick a project and select criteria to evaluate against.",
+      "projectId": "Project ID",
+      "projectIdPlaceholder": "e.g. proj_dashboard",
+      "projectIdRequired": "Project ID is required",
+      "criteriaLabel": "Evaluation criteria",
+      "criteriaHelp": "Select one or more criteria. Each criterion becomes a golden question scored on every run.",
+      "criteriaRequired": "Select at least one evaluation criterion"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30d",
     "short90d": "90d",
     "shortCustom": "Custom"
+  },
+  "environment": {
+    "selectEnvironment": "Select Environment",
+    "openSelector": "Open environment selector",
+    "closeSelector": "Close environment selector",
+    "development": "Development",
+    "production": "Production",
+    "local": "Local",
+    "shortDev": "Dev",
+    "shortProd": "Prod",
+    "shortLocal": "Local"
   },
   "entityDetail": {
     "runs": "Runs",

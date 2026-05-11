@@ -555,6 +555,24 @@ export interface CreateAgentResponse {
   createdAtIso: string;
 }
 
+export interface EvaluationCriteriaOption {
+  id: string;
+  label: string;
+  prompt: string;
+}
+
+export interface CreateEvaluationRequest {
+  orgId: string;
+  projectId: string;
+  criteriaIds: string[];
+}
+
+export interface CreateEvaluationResponse {
+  projectId: string;
+  evaluations: GoldenQuestionEvaluation[];
+  createdAtIso: string;
+}
+
 export interface UpdateAgentDescriptionRequest {
   orgId: string;
   agentId: string;

@@ -156,6 +156,7 @@
     },
     "evaluations": "Evalueringer",
     "evaluationsSubtitle": "Kvalitetstendenser for gyldne spørgsmål på tværs af {{count}} projekter",
+    "createEvaluation": "+ Opret evaluering",
     "goldenQuestionsCount": "{{count}} gyldne spørgsmål",
     "evaluationScore": "Score",
     "evaluationSampleCount": "{{count}} evalueringer",
@@ -312,6 +313,7 @@
     "createProjectTitle": "Opret projekt",
     "createTeamTitle": "Opret hold",
     "createComplianceRuleTitle": "Opret overholdelsesregel",
+    "createEvaluationTitle": "Opret evaluering",
     "createAgent": {
       "agentName": "Agentnavn",
       "agentNamePlaceholder": "f.eks. Kodegennemgangs-bot",
@@ -355,6 +357,15 @@
       "severityLabel": "Alvorlighed (HIGH, MEDIUM, LOW)",
       "severityPlaceholder": "MEDIUM",
       "severityInvalid": "Ugyldig alvorlighed"
+    },
+    "createEvaluation": {
+      "subtitle": "Vælg et projekt og de kriterier, der skal evalueres mod.",
+      "projectId": "Projekt-ID",
+      "projectIdPlaceholder": "f.eks. proj_dashboard",
+      "projectIdRequired": "Projekt-ID er påkrævet",
+      "criteriaLabel": "Evalueringskriterier",
+      "criteriaHelp": "Vælg et eller flere kriterier. Hvert kriterium bliver til et gyldent spørgsmål, der scores ved hver kørsel.",
+      "criteriaRequired": "Vælg mindst ét evalueringskriterium"
     }
   },
   "filters": {
@@ -395,6 +406,17 @@
     "short30d": "30d",
     "short90d": "90d",
     "shortCustom": "Tilpas"
+  },
+  "environment": {
+    "selectEnvironment": "Vælg miljø",
+    "openSelector": "Åbn miljøvælger",
+    "closeSelector": "Luk miljøvælger",
+    "development": "Udvikling",
+    "production": "Produktion",
+    "local": "Lokalt",
+    "shortDev": "Udv",
+    "shortProd": "Prod",
+    "shortLocal": "Lok"
   },
   "entityDetail": {
     "runs": "Kørsler",

@@ -23,6 +23,7 @@ jest.mock("lucide-react-native", () => ({
   X: () => null,
   CircleUserRound: () => null,
   User: () => null,
+  Server: () => null,
 }));
 
 jest.mock("@/providers/ThemeProvider", () => ({
