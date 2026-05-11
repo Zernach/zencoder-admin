@@ -18,12 +18,14 @@ import type {
   GetHumanDetailRequest,
   GetRunDetailRequest,
   GetRuleDetailRequest,
+  GetGoldenQuestionDetailRequest,
   AgentDetailResponse,
   ProjectDetailResponse,
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
   RuleDetailResponse,
+  GoldenQuestionDetailResponse,
   UpdateRuleRequest,
   UpdateRuleResponse,
   CreateComplianceRuleRequest,
@@ -165,6 +167,12 @@ export class AnalyticsService implements IAnalyticsService {
 
   async getRuleDetail(request: GetRuleDetailRequest): Promise<RuleDetailResponse> {
     return this.api.getRuleDetail(request);
+  }
+
+  async getGoldenQuestionDetail(
+    request: GetGoldenQuestionDetailRequest,
+  ): Promise<GoldenQuestionDetailResponse> {
+    return this.api.getGoldenQuestionDetail(request);
   }
 
   async updateRule(request: UpdateRuleRequest): Promise<UpdateRuleResponse> {

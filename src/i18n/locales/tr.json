@@ -166,7 +166,8 @@
     "evaluationQuestion": "Altın soru",
     "evaluationChange": "Değişim",
     "evaluationSamples": "Örnekler",
-    "evaluationTrend": "Eğilim"
+    "evaluationTrend": "Eğilim",
+    "viewEvaluationDetail": "{{question}} için değerlendirme geçmişini görüntüle"
   },
   "costs": {
     "subtitle": "Harcama trendleri ve bütçe takibi",
@@ -466,6 +467,27 @@
       "name": "Ad",
       "email": "E-posta",
       "projectName": "Proje Adı"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Son Skor",
+    "averageScore": "Ortalama Skor",
+    "passRate": "Geçme Oranı",
+    "totalEvaluations": "Toplam Değerlendirme",
+    "scoreTrend": "Skor Eğilimi",
+    "evaluationRuns": "Değerlendirme Çalıştırmaları",
+    "noEvaluations": "Henüz değerlendirme çalıştırması yok.",
+    "outcomePass": "Geçti",
+    "outcomeFail": "Kaldı",
+    "table": {
+      "scoredAt": "Puanlandı",
+      "score": "Skor",
+      "outcome": "Sonuç",
+      "model": "Model",
+      "provider": "Sağlayıcı",
+      "criteria": "Kriterler",
+      "duration": "Süre",
+      "cost": "Maliyet"
     }
   },
   "errors": {

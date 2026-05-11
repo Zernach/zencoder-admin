@@ -166,7 +166,8 @@
     "evaluationQuestion": "Χρυσό ερώτημα",
     "evaluationChange": "Αλλαγή",
     "evaluationSamples": "Δείγματα",
-    "evaluationTrend": "Τάση"
+    "evaluationTrend": "Τάση",
+    "viewEvaluationDetail": "Προβολή ιστορικού αξιολογήσεων για {{question}}"
   },
   "costs": {
     "subtitle": "Τάσεις δαπανών και παρακολούθηση προϋπολογισμού",
@@ -466,6 +467,27 @@
       "name": "Όνομα",
       "email": "Email",
       "projectName": "Όνομα Έργου"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Τελευταία Βαθμολογία",
+    "averageScore": "Μέση Βαθμολογία",
+    "passRate": "Ποσοστό Επιτυχίας",
+    "totalEvaluations": "Σύνολο Αξιολογήσεων",
+    "scoreTrend": "Τάση Βαθμολογίας",
+    "evaluationRuns": "Εκτελέσεις Αξιολόγησης",
+    "noEvaluations": "Δεν υπάρχουν ακόμη εκτελέσεις αξιολόγησης.",
+    "outcomePass": "Επιτυχία",
+    "outcomeFail": "Αποτυχία",
+    "table": {
+      "scoredAt": "Ώρα Βαθμολογίας",
+      "score": "Βαθμολογία",
+      "outcome": "Αποτέλεσμα",
+      "model": "Μοντέλο",
+      "provider": "Πάροχος",
+      "criteria": "Κριτήρια",
+      "duration": "Διάρκεια",
+      "cost": "Κόστος"
     }
   },
   "errors": {

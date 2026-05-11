@@ -166,7 +166,8 @@
     "evaluationQuestion": "Aranykérdés",
     "evaluationChange": "Változás",
     "evaluationSamples": "Minták",
-    "evaluationTrend": "Trend"
+    "evaluationTrend": "Trend",
+    "viewEvaluationDetail": "Értékelési előzmények megtekintése a következőhöz: {{question}}"
   },
   "costs": {
     "subtitle": "Kiadási trendek és költségvetés-követés",
@@ -466,6 +467,27 @@
       "name": "Név",
       "email": "E-mail",
       "projectName": "Projekt neve"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Legutóbbi pontszám",
+    "averageScore": "Átlagos pontszám",
+    "passRate": "Sikerességi arány",
+    "totalEvaluations": "Összes értékelés",
+    "scoreTrend": "Pontszámtrend",
+    "evaluationRuns": "Értékelési futtatások",
+    "noEvaluations": "Még nincsenek értékelési futtatások.",
+    "outcomePass": "Sikeres",
+    "outcomeFail": "Sikertelen",
+    "table": {
+      "scoredAt": "Értékelve",
+      "score": "Pontszám",
+      "outcome": "Eredmény",
+      "model": "Modell",
+      "provider": "Szolgáltató",
+      "criteria": "Kritériumok",
+      "duration": "Időtartam",
+      "cost": "Költség"
     }
   },
   "errors": {

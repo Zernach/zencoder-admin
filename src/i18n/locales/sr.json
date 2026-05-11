@@ -166,7 +166,8 @@
     "evaluationQuestion": "Златно питање",
     "evaluationChange": "Промена",
     "evaluationSamples": "Узорци",
-    "evaluationTrend": "Тренд"
+    "evaluationTrend": "Тренд",
+    "viewEvaluationDetail": "Преглед историје процена за {{question}}"
   },
   "costs": {
     "subtitle": "Трендови потрошње и праћење буџета",
@@ -466,6 +467,27 @@
       "name": "Име",
       "email": "Е-пошта",
       "projectName": "Име пројекта"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Последњи резултат",
+    "averageScore": "Просечан резултат",
+    "passRate": "Стопа успеха",
+    "totalEvaluations": "Укупно процена",
+    "scoreTrend": "Тренд резултата",
+    "evaluationRuns": "Покретања процена",
+    "noEvaluations": "Још нема покретања процена.",
+    "outcomePass": "Прошло",
+    "outcomeFail": "Пало",
+    "table": {
+      "scoredAt": "Време процене",
+      "score": "Резултат",
+      "outcome": "Исход",
+      "model": "Модел",
+      "provider": "Провајдер",
+      "criteria": "Критеријуми",
+      "duration": "Трајање",
+      "cost": "Трошак"
     }
   },
   "errors": {

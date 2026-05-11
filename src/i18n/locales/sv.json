@@ -166,7 +166,8 @@
     "evaluationQuestion": "Referensfråga",
     "evaluationChange": "Förändring",
     "evaluationSamples": "Stickprov",
-    "evaluationTrend": "Trend"
+    "evaluationTrend": "Trend",
+    "viewEvaluationDetail": "Visa utvärderingshistorik för {{question}}"
   },
   "costs": {
     "subtitle": "Utgiftstrender och budgetuppföljning",
@@ -466,6 +467,27 @@
       "name": "Namn",
       "email": "E-post",
       "projectName": "Projektnamn"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Senaste poäng",
+    "averageScore": "Genomsnittlig poäng",
+    "passRate": "Godkännandegrad",
+    "totalEvaluations": "Totalt antal utvärderingar",
+    "scoreTrend": "Poängtrend",
+    "evaluationRuns": "Utvärderingskörningar",
+    "noEvaluations": "Inga utvärderingskörningar ännu.",
+    "outcomePass": "Godkänd",
+    "outcomeFail": "Underkänd",
+    "table": {
+      "scoredAt": "Poängsatt",
+      "score": "Poäng",
+      "outcome": "Utfall",
+      "model": "Modell",
+      "provider": "Leverantör",
+      "criteria": "Kriterier",
+      "duration": "Varaktighet",
+      "cost": "Kostnad"
     }
   },
   "errors": {

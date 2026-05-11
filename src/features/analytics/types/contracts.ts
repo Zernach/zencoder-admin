@@ -122,6 +122,26 @@ export interface ProjectEvaluationSection {
   goldenQuestions: GoldenQuestionEvaluation[];
 }
 
+export interface EvaluationCriteriaScore {
+  criteriaId: string;
+  label: string;
+  score: number;
+}
+
+export interface EvaluationRunRow {
+  id: string;
+  questionId: string;
+  scoredAtIso: string;
+  score: number;
+  passed: boolean;
+  modelId: string;
+  provider: ModelProvider;
+  criteriaScores: EvaluationCriteriaScore[];
+  durationMs: number;
+  costUsd: number;
+  runId?: string;
+}
+
 export interface ProviderCostRow {
   provider: ModelProvider; totalCostUsd: number; runCount: number;
   totalTokens: number;
@@ -357,7 +377,15 @@ export interface GovernanceResponse {
 
 
 // ─── Search Autocomplete ────────────────────────────────
-export type SearchEntityType = "agent" | "project" | "team" | "human" | "run" | "rule" | "chat";
+export type SearchEntityType =
+  | "agent"
+  | "project"
+  | "team"
+  | "human"
+  | "run"
+  | "rule"
+  | "chat"
+  | "evaluation";
 
 export interface SearchSuggestion {
   id: string;
@@ -412,6 +440,11 @@ export interface GetRunDetailRequest {
 export interface GetRuleDetailRequest {
   orgId: string;
   ruleId: string;
+}
+
+export interface GetGoldenQuestionDetailRequest {
+  orgId: string;
+  questionId: string;
 }
 
 // ─── Entity Detail Responses ────────────────────────────
@@ -480,6 +513,18 @@ export interface RuleDetailResponse {
   allProjects: Project[];
   recentViolations: PolicyViolationRow[];
   recentRuns: RunListRow[];
+}
+
+export interface GoldenQuestionDetailResponse {
+  question: GoldenQuestionEvaluation;
+  projectId: string;
+  projectName: string;
+  teamName: string;
+  evaluationRuns: EvaluationRunRow[];
+  scoreTrend: TimeSeriesPoint[];
+  averageScore: number;
+  totalEvaluations: number;
+  passRate: number;
 }
 
 export interface UpdateRuleRequest {

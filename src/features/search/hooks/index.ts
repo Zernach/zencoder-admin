@@ -5,4 +5,5 @@ export {
   useHumanDetailScreen,
   useRunDetailScreen,
   useRuleDetailScreen,
+  useGoldenQuestionDetailScreen,
 } from "./useEntityDetail";

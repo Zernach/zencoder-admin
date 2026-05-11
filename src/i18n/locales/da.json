@@ -166,7 +166,8 @@
     "evaluationQuestion": "Gyldent spørgsmål",
     "evaluationChange": "Ændring",
     "evaluationSamples": "Prøver",
-    "evaluationTrend": "Trend"
+    "evaluationTrend": "Trend",
+    "viewEvaluationDetail": "Se evalueringshistorik for {{question}}"
   },
   "costs": {
     "subtitle": "Udgiftstendenser og budgetopfølgning",
@@ -466,6 +467,27 @@
       "name": "Navn",
       "email": "Email",
       "projectName": "Projektnavn"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Seneste score",
+    "averageScore": "Gennemsnitlig score",
+    "passRate": "Beståelsesrate",
+    "totalEvaluations": "Samlede evalueringer",
+    "scoreTrend": "Score-tendens",
+    "evaluationRuns": "Evalueringskørsler",
+    "noEvaluations": "Ingen evalueringskørsler endnu.",
+    "outcomePass": "Bestået",
+    "outcomeFail": "Ikke bestået",
+    "table": {
+      "scoredAt": "Scoret",
+      "score": "Score",
+      "outcome": "Resultat",
+      "model": "Model",
+      "provider": "Udbyder",
+      "criteria": "Kriterier",
+      "duration": "Varighed",
+      "cost": "Omkostning"
     }
   },
   "errors": {

@@ -166,7 +166,8 @@
     "evaluationQuestion": "Pergunta de referência",
     "evaluationChange": "Alteração",
     "evaluationSamples": "Amostras",
-    "evaluationTrend": "Tendência"
+    "evaluationTrend": "Tendência",
+    "viewEvaluationDetail": "Ver histórico de avaliações de {{question}}"
   },
   "costs": {
     "subtitle": "Tendências de gastos e acompanhamento de orçamento",
@@ -466,6 +467,27 @@
       "name": "Nome",
       "email": "E-mail",
       "projectName": "Nome do projeto"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Última pontuação",
+    "averageScore": "Pontuação média",
+    "passRate": "Taxa de aprovação",
+    "totalEvaluations": "Total de avaliações",
+    "scoreTrend": "Tendência de pontuação",
+    "evaluationRuns": "Execuções de avaliação",
+    "noEvaluations": "Ainda não há execuções de avaliação.",
+    "outcomePass": "Aprovado",
+    "outcomeFail": "Reprovado",
+    "table": {
+      "scoredAt": "Pontuado em",
+      "score": "Pontuação",
+      "outcome": "Resultado",
+      "model": "Modelo",
+      "provider": "Provedor",
+      "criteria": "Critérios",
+      "duration": "Duração",
+      "cost": "Custo"
     }
   },
   "errors": {

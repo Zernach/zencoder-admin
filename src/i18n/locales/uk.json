@@ -166,7 +166,8 @@
     "evaluationQuestion": "Еталонне запитання",
     "evaluationChange": "Зміна",
     "evaluationSamples": "Вибірки",
-    "evaluationTrend": "Тренд"
+    "evaluationTrend": "Тренд",
+    "viewEvaluationDetail": "Переглянути історію оцінювань для {{question}}"
   },
   "costs": {
     "subtitle": "Тенденції витрат та відстеження бюджету",
@@ -466,6 +467,27 @@
       "name": "Назва",
       "email": "Електронна пошта",
       "projectName": "Назва проєкту"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Останній бал",
+    "averageScore": "Середній бал",
+    "passRate": "Відсоток успішних",
+    "totalEvaluations": "Усього оцінювань",
+    "scoreTrend": "Динаміка балу",
+    "evaluationRuns": "Запуски оцінювань",
+    "noEvaluations": "Запусків оцінювань ще немає.",
+    "outcomePass": "Успішно",
+    "outcomeFail": "Невдало",
+    "table": {
+      "scoredAt": "Оцінено",
+      "score": "Бал",
+      "outcome": "Результат",
+      "model": "Модель",
+      "provider": "Провайдер",
+      "criteria": "Критерії",
+      "duration": "Тривалість",
+      "cost": "Вартість"
     }
   },
   "errors": {

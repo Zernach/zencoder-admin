@@ -34,12 +34,16 @@ import type {
   GetHumanDetailRequest,
   GetRunDetailRequest,
   GetRuleDetailRequest,
+  GetGoldenQuestionDetailRequest,
   AgentDetailResponse,
   ProjectDetailResponse,
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
   RuleDetailResponse,
+  GoldenQuestionDetailResponse,
+  EvaluationRunRow,
+  EvaluationCriteriaScore,
   UpdateRuleRequest,
   UpdateRuleResponse,
   CreateComplianceRuleRequest,
@@ -1934,6 +1938,132 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       allProjects: this.seed.projects,
       recentViolations,
       recentRuns,
+    };
+  }
+
+  async getGoldenQuestionDetail(
+    request: GetGoldenQuestionDetailRequest,
+  ): Promise<GoldenQuestionDetailResponse> {
+    await this.simulate();
+    this.assertOrgId(request.orgId);
+    const { questionId } = request;
+
+    const allRuns = this.seed.runs;
+    const projectBreakdown = buildProjectBreakdown(allRuns, this.seed.projects, this.seed.teams);
+    const projectEvaluations = this.buildProjectEvaluations(projectBreakdown, allRuns);
+
+    let questionSection: ProjectEvaluationSection | undefined;
+    let question: GoldenQuestionEvaluation | undefined;
+    for (const section of projectEvaluations) {
+      const match = section.goldenQuestions.find((q) => q.id === questionId);
+      if (match) {
+        question = match;
+        questionSection = section;
+        break;
+      }
+    }
+
+    if (!question || !questionSection) {
+      throw notFoundError("GoldenQuestion", questionId);
+    }
+
+    const project = [...this.seed.projects, ...this.createdProjects].find(
+      (p) => p.id === questionSection!.projectId,
+    );
+    const team = project ? this.seed.teams.find((t) => t.id === project.teamId) : undefined;
+
+    const projectRuns = allRuns.filter((r) => r.projectId === questionSection.projectId);
+    const providerPool: ModelProvider[] = projectRuns.length > 0
+      ? Array.from(new Set(projectRuns.map((r) => r.provider)))
+      : ["claude", "codex"];
+    const modelPool: string[] = projectRuns.length > 0
+      ? Array.from(new Set(projectRuns.map((r) => r.modelId)))
+      : ["claude-3-5-sonnet", "gpt-4o"];
+
+    const criteriaPool = EVALUATION_CRITERIA_OPTIONS;
+    const evaluationRuns: EvaluationRunRow[] = [];
+
+    question.trend.forEach((point, dayIdx) => {
+      const dayHash = hashString(`${questionId}:${point.tsIso}`);
+      const runsThisDay = 2 + (dayHash % 2); // 2 or 3
+      for (let i = 0; i < runsThisDay; i++) {
+        const runHash = hashString(`${questionId}:${point.tsIso}:${i}`);
+        // Spread across the day in hours.
+        const hour = (runHash % 22) + 1;
+        const minute = (runHash >>> 5) % 60;
+        const second = (runHash >>> 11) % 60;
+        const datePart = point.tsIso.slice(0, 10);
+        const scoredAtIso = `${datePart}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:${String(second).padStart(2, "0")}.000Z`;
+
+        // Score = day value + small noise
+        const noise = (((runHash >>> 17) % 41) - 20) / 1000; // ~±0.02
+        const score = this.clampScore(point.value + noise);
+        const passed = score >= 0.7;
+
+        const provider = providerPool[runHash % providerPool.length]!;
+        const modelId = modelPool[(runHash >>> 3) % modelPool.length]!;
+
+        const criteriaCount = 3 + (runHash % 2);
+        const criteriaOffset = (runHash >>> 7) % criteriaPool.length;
+        const criteriaScores: EvaluationCriteriaScore[] = Array.from(
+          { length: criteriaCount },
+          (_, ci) => {
+            const opt = criteriaPool[(criteriaOffset + ci) % criteriaPool.length]!;
+            const critNoise = (((runHash >>> (ci * 3 + 19)) % 51) - 25) / 1000;
+            const critScore = this.clampScore(score + critNoise);
+            return {
+              criteriaId: opt.id,
+              label: opt.label,
+              score: Math.round(critScore * 1000) / 1000,
+            };
+          },
+        );
+
+        const durationMs = 1800 + (runHash % 5400);
+        const costUsd = round4(0.012 + ((runHash >>> 13) % 80) / 1000);
+
+        const relatedRunIdx = projectRuns.length > 0
+          ? (dayIdx * runsThisDay + i) % projectRuns.length
+          : -1;
+        const relatedRun = relatedRunIdx >= 0 ? projectRuns[relatedRunIdx] : undefined;
+
+        evaluationRuns.push({
+          id: `${questionId}_run_${dayIdx + 1}_${i + 1}`,
+          questionId,
+          scoredAtIso,
+          score: Math.round(score * 1000) / 1000,
+          passed,
+          modelId,
+          provider,
+          criteriaScores,
+          durationMs,
+          costUsd,
+          runId: relatedRun?.id,
+        });
+      }
+    });
+
+    evaluationRuns.sort((a, b) => b.scoredAtIso.localeCompare(a.scoredAtIso));
+
+    const totalEvaluations = evaluationRuns.length;
+    const averageScore = totalEvaluations === 0
+      ? 0
+      : Math.round(
+        (evaluationRuns.reduce((sum, r) => sum + r.score, 0) / totalEvaluations) * 1000,
+      ) / 1000;
+    const passCount = evaluationRuns.filter((r) => r.passed).length;
+    const passRate = totalEvaluations === 0 ? 0 : safeRate(passCount, totalEvaluations);
+
+    return {
+      question,
+      projectId: questionSection.projectId,
+      projectName: questionSection.projectName,
+      teamName: team?.name ?? "Unknown",
+      evaluationRuns,
+      scoreTrend: question.trend,
+      averageScore,
+      totalEvaluations,
+      passRate,
     };
   }
 

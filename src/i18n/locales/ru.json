@@ -166,7 +166,8 @@
     "evaluationQuestion": "Эталонный вопрос",
     "evaluationChange": "Изменение",
     "evaluationSamples": "Выборки",
-    "evaluationTrend": "Тренд"
+    "evaluationTrend": "Тренд",
+    "viewEvaluationDetail": "Посмотреть историю оценок для {{question}}"
   },
   "costs": {
     "subtitle": "Тренды расходов и отслеживание бюджета",
@@ -466,6 +467,27 @@
       "name": "Имя",
       "email": "Email",
       "projectName": "Название проекта"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Последний балл",
+    "averageScore": "Средний балл",
+    "passRate": "Процент успешных",
+    "totalEvaluations": "Всего оценок",
+    "scoreTrend": "Динамика балла",
+    "evaluationRuns": "Запуски оценок",
+    "noEvaluations": "Запусков оценок пока нет.",
+    "outcomePass": "Успешно",
+    "outcomeFail": "Неуспешно",
+    "table": {
+      "scoredAt": "Время оценки",
+      "score": "Балл",
+      "outcome": "Результат",
+      "model": "Модель",
+      "provider": "Провайдер",
+      "criteria": "Критерии",
+      "duration": "Длительность",
+      "cost": "Стоимость"
     }
   },
   "errors": {

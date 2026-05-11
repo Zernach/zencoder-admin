@@ -166,7 +166,8 @@
     "evaluationQuestion": "Domanda di riferimento",
     "evaluationChange": "Variazione",
     "evaluationSamples": "Campioni",
-    "evaluationTrend": "Andamento"
+    "evaluationTrend": "Andamento",
+    "viewEvaluationDetail": "Visualizza la cronologia delle valutazioni per {{question}}"
   },
   "costs": {
     "subtitle": "Tendenze di spesa e monitoraggio del budget",
@@ -466,6 +467,27 @@
       "name": "Nome",
       "email": "Email",
       "projectName": "Nome progetto"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Ultimo punteggio",
+    "averageScore": "Punteggio medio",
+    "passRate": "Tasso di successo",
+    "totalEvaluations": "Valutazioni totali",
+    "scoreTrend": "Andamento del punteggio",
+    "evaluationRuns": "Esecuzioni di valutazione",
+    "noEvaluations": "Nessuna esecuzione di valutazione finora.",
+    "outcomePass": "Superato",
+    "outcomeFail": "Non superato",
+    "table": {
+      "scoredAt": "Valutato il",
+      "score": "Punteggio",
+      "outcome": "Esito",
+      "model": "Modello",
+      "provider": "Provider",
+      "criteria": "Criteri",
+      "duration": "Durata",
+      "cost": "Costo"
     }
   },
   "errors": {

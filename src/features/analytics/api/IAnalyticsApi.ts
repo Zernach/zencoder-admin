@@ -16,12 +16,14 @@ import type {
   GetHumanDetailRequest,
   GetRunDetailRequest,
   GetRuleDetailRequest,
+  GetGoldenQuestionDetailRequest,
   AgentDetailResponse,
   ProjectDetailResponse,
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
   RuleDetailResponse,
+  GoldenQuestionDetailResponse,
   UpdateRuleRequest,
   UpdateRuleResponse,
   CreateComplianceRuleRequest,
@@ -56,6 +58,7 @@ export interface IAnalyticsApi {
   getHumanDetail(request: GetHumanDetailRequest): Promise<HumanDetailResponse>;
   getRunDetail(request: GetRunDetailRequest): Promise<RunDetailResponse>;
   getRuleDetail(request: GetRuleDetailRequest): Promise<RuleDetailResponse>;
+  getGoldenQuestionDetail(request: GetGoldenQuestionDetailRequest): Promise<GoldenQuestionDetailResponse>;
   updateRule(request: UpdateRuleRequest): Promise<UpdateRuleResponse>;
   createComplianceRule(request: CreateComplianceRuleRequest): Promise<CreateComplianceRuleResponse>;
   createSeat(request: CreateSeatRequest): Promise<CreateSeatResponse>;

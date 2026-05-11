@@ -166,7 +166,8 @@
     "evaluationQuestion": "Златен въпрос",
     "evaluationChange": "Промяна",
     "evaluationSamples": "Извадки",
-    "evaluationTrend": "Тенденция"
+    "evaluationTrend": "Тенденция",
+    "viewEvaluationDetail": "Преглед на историята на оценките за {{question}}"
   },
   "costs": {
     "subtitle": "Тенденции на разходите и проследяване на бюджета",
@@ -466,6 +467,27 @@
       "name": "Име",
       "email": "Имейл",
       "projectName": "Име на проект"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Последен резултат",
+    "averageScore": "Среден резултат",
+    "passRate": "Процент успешни",
+    "totalEvaluations": "Общо оценки",
+    "scoreTrend": "Тенденция на резултата",
+    "evaluationRuns": "Изпълнения на оценки",
+    "noEvaluations": "Все още няма изпълнения на оценки.",
+    "outcomePass": "Успешно",
+    "outcomeFail": "Неуспешно",
+    "table": {
+      "scoredAt": "Време на оценка",
+      "score": "Резултат",
+      "outcome": "Резултат",
+      "model": "Модел",
+      "provider": "Доставчик",
+      "criteria": "Критерии",
+      "duration": "Продължителност",
+      "cost": "Цена"
     }
   },
   "errors": {

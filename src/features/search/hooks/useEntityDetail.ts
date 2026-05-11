@@ -6,6 +6,7 @@ import {
   useGetHumanDetailQuery,
   useGetRunDetailQuery,
   useGetRuleDetailQuery,
+  useGetGoldenQuestionDetailQuery,
 } from "@/store/api";
 import { getApiErrorMessage } from "@/contracts/http/errors";
 import { useDashboardOrgId } from "@/features/analytics/hooks/useDashboardFilters";
@@ -16,6 +17,7 @@ import type {
   HumanDetailResponse,
   RunDetailResponse,
   RuleDetailResponse,
+  GoldenQuestionDetailResponse,
 } from "@/features/analytics/types";
 
 interface DetailResult<T> {
@@ -90,6 +92,17 @@ export function useRuleDetailScreen(ruleId: string): DetailResult<RuleDetailResp
   const query = useGetRuleDetailQuery(
     { orgId, ruleId },
     { skip: !ruleId },
+  );
+  return useStableDetailResult(query);
+}
+
+export function useGoldenQuestionDetailScreen(
+  questionId: string,
+): DetailResult<GoldenQuestionDetailResponse> {
+  const orgId = useDashboardOrgId();
+  const query = useGetGoldenQuestionDetailQuery(
+    { orgId, questionId },
+    { skip: !questionId },
   );
   return useStableDetailResult(query);
 }

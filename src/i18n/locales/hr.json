@@ -166,7 +166,8 @@
     "evaluationQuestion": "Zlatno pitanje",
     "evaluationChange": "Promjena",
     "evaluationSamples": "Uzorci",
-    "evaluationTrend": "Trend"
+    "evaluationTrend": "Trend",
+    "viewEvaluationDetail": "Pregled povijesti evaluacija za {{question}}"
   },
   "costs": {
     "subtitle": "Trendovi potrošnje i praćenje proračuna",
@@ -466,6 +467,27 @@
       "name": "Ime",
       "email": "Email",
       "projectName": "Ime projekta"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Posljednja ocjena",
+    "averageScore": "Prosječna ocjena",
+    "passRate": "Stopa uspjeha",
+    "totalEvaluations": "Ukupno evaluacija",
+    "scoreTrend": "Trend ocjena",
+    "evaluationRuns": "Izvršavanja evaluacije",
+    "noEvaluations": "Još nema izvršavanja evaluacije.",
+    "outcomePass": "Prolaz",
+    "outcomeFail": "Pad",
+    "table": {
+      "scoredAt": "Ocijenjeno",
+      "score": "Ocjena",
+      "outcome": "Ishod",
+      "model": "Model",
+      "provider": "Pružatelj",
+      "criteria": "Kriteriji",
+      "duration": "Trajanje",
+      "cost": "Trošak"
     }
   },
   "errors": {

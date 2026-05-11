@@ -19,12 +19,14 @@ import type {
   GetHumanDetailRequest,
   GetRunDetailRequest,
   GetRuleDetailRequest,
+  GetGoldenQuestionDetailRequest,
   AgentDetailResponse,
   ProjectDetailResponse,
   TeamDetailResponse,
   HumanDetailResponse,
   RunDetailResponse,
   RuleDetailResponse,
+  GoldenQuestionDetailResponse,
   UpdateRuleRequest,
   UpdateRuleResponse,
   CreateComplianceRuleRequest,
@@ -61,6 +63,7 @@ export const analyticsApi = createApi({
     "HumanDetail",
     "RunDetail",
     "RuleDetail",
+    "GoldenQuestionDetail",
   ],
   endpoints: (builder) => ({
     // ─── Dashboard Queries ─────────────────────────────────
@@ -232,6 +235,19 @@ export const analyticsApi = createApi({
       ],
     }),
 
+    getGoldenQuestionDetail: builder.query<GoldenQuestionDetailResponse, GetGoldenQuestionDetailRequest>({
+      queryFn: async (request) => {
+        try {
+          return { data: await getService().getGoldenQuestionDetail(request) };
+        } catch (e) {
+          return { error: toApiError(e) };
+        }
+      },
+      providesTags: (_result, _error, { questionId }) => [
+        { type: "GoldenQuestionDetail", id: questionId },
+      ],
+    }),
+
     // ─── Mutations ─────────────────────────────────────────
     updateRule: builder.mutation<UpdateRuleResponse, UpdateRuleRequest>({
       queryFn: async (request) => {
@@ -344,6 +360,7 @@ export const {
   useGetHumanDetailQuery,
   useGetRunDetailQuery,
   useGetRuleDetailQuery,
+  useGetGoldenQuestionDetailQuery,
   useUpdateRuleMutation,
   useCreateComplianceRuleMutation,
   useCreateSeatMutation,

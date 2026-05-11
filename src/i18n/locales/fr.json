@@ -166,7 +166,8 @@
     "evaluationQuestion": "Question de référence",
     "evaluationChange": "Variation",
     "evaluationSamples": "Échantillons",
-    "evaluationTrend": "Tendance"
+    "evaluationTrend": "Tendance",
+    "viewEvaluationDetail": "Voir l'historique des évaluations pour {{question}}"
   },
   "costs": {
     "subtitle": "Tendances des dépenses et suivi budgétaire",
@@ -466,6 +467,27 @@
       "name": "Nom",
       "email": "Email",
       "projectName": "Nom du projet"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Dernier score",
+    "averageScore": "Score moyen",
+    "passRate": "Taux de réussite",
+    "totalEvaluations": "Total des évaluations",
+    "scoreTrend": "Tendance du score",
+    "evaluationRuns": "Exécutions d'évaluation",
+    "noEvaluations": "Aucune exécution d'évaluation pour l'instant.",
+    "outcomePass": "Réussite",
+    "outcomeFail": "Échec",
+    "table": {
+      "scoredAt": "Évalué le",
+      "score": "Score",
+      "outcome": "Résultat",
+      "model": "Modèle",
+      "provider": "Fournisseur",
+      "criteria": "Critères",
+      "duration": "Durée",
+      "cost": "Coût"
     }
   },
   "errors": {

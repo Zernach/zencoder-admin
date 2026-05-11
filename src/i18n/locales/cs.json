@@ -166,7 +166,8 @@
     "evaluationQuestion": "Zlatá otázka",
     "evaluationChange": "Změna",
     "evaluationSamples": "Vzorky",
-    "evaluationTrend": "Trend"
+    "evaluationTrend": "Trend",
+    "viewEvaluationDetail": "Zobrazit historii hodnocení pro {{question}}"
   },
   "costs": {
     "subtitle": "Trendy výdajů a sledování rozpočtu",
@@ -466,6 +467,27 @@
       "name": "Název",
       "email": "E-mail",
       "projectName": "Název projektu"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Poslední skóre",
+    "averageScore": "Průměrné skóre",
+    "passRate": "Míra úspěšnosti",
+    "totalEvaluations": "Celkem hodnocení",
+    "scoreTrend": "Trend skóre",
+    "evaluationRuns": "Spuštění hodnocení",
+    "noEvaluations": "Zatím žádná spuštění hodnocení.",
+    "outcomePass": "Úspěch",
+    "outcomeFail": "Neúspěch",
+    "table": {
+      "scoredAt": "Hodnoceno",
+      "score": "Skóre",
+      "outcome": "Výsledek",
+      "model": "Model",
+      "provider": "Poskytovatel",
+      "criteria": "Kritéria",
+      "duration": "Doba trvání",
+      "cost": "Náklady"
     }
   },
   "errors": {

@@ -80,7 +80,7 @@ const AGENT_SEARCH_KEYS: (keyof AgentBreakdownRow)[] = ["agentName", "projectNam
 const PROJECT_SEARCH_KEYS: (keyof ProjectBreakdownRow)[] = ["projectName", "teamName"];
 const RUN_SEARCH_KEYS: (keyof RunListRow)[] = ["id", "status", "provider"];
 
-type AgentsEntityType = "agent" | "project" | "team" | "human" | "run";
+type AgentsEntityType = "agent" | "project" | "team" | "human" | "run" | "evaluation";
 type AgentsNavigateTo = (entityType: AgentsEntityType, entityId: string) => void;
 
 interface AgentsReliabilitySectionProps {
@@ -167,6 +167,7 @@ const AgentsReliabilitySection = React.memo(function AgentsReliabilitySection({
 interface AgentsEvaluationsSectionProps {
   data: AgentsHubResponse;
   onCreateEvaluation: () => void;
+  navigateTo: AgentsNavigateTo;
 }
 
 interface EvaluationQuestionTableRow extends GoldenQuestionEvaluation {
@@ -185,10 +186,12 @@ type EvaluationColumnDef<T> = ColumnDef<T> | TimeSeriesColumnDef<T>;
 const AgentsEvaluationsSection = React.memo(function AgentsEvaluationsSection({
   data,
   onCreateEvaluation,
+  navigateTo,
 }: AgentsEvaluationsSectionProps) {
   const { t } = useTranslation();
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
+  const ct = cellText(mode);
   const refFor = useSectionRef();
 
   const projects = data.projectEvaluations;
@@ -236,7 +239,13 @@ const AgentsEvaluationsSection = React.memo(function AgentsEvaluationsSection({
       header: t("agents.evaluationQuestion"),
       width: 420,
       render: (row) => (
-        <Text style={{ color: theme.text.primary, fontSize: 13, lineHeight: 18 }}>{row.question}</Text>
+        <CustomButton
+          onPress={() => navigateTo("evaluation", row.id)}
+          accessibilityRole="link"
+          accessibilityLabel={t("agents.viewEvaluationDetail", { question: row.question })}
+        >
+          <Text style={[ct.link, { fontSize: 13, lineHeight: 18 }]}>{row.question}</Text>
+        </CustomButton>
       ),
     },
     {
@@ -290,7 +299,7 @@ const AgentsEvaluationsSection = React.memo(function AgentsEvaluationsSection({
       sparklineHeight: 26,
       sortAccessor: (row) => row.latestScore,
     },
-  ], [t, theme.text.primary]);
+  ], [ct.link, navigateTo, t, theme.text.primary]);
 
   const tableColumns = useMemo<ColumnDef<EvaluationQuestionTableRow>[]>(() =>
     evaluationColumns.map((column) => {
@@ -638,6 +647,7 @@ export default function AgentsScreen() {
         <AgentsEvaluationsSection
           data={data}
           onCreateEvaluation={handleOpenCreateEvaluation}
+          navigateTo={navigateTo}
         />
       ) : null}
       {data ? (

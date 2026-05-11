@@ -166,7 +166,8 @@
     "evaluationQuestion": "Întrebare etalon",
     "evaluationChange": "Modificare",
     "evaluationSamples": "Eșantioane",
-    "evaluationTrend": "Tendință"
+    "evaluationTrend": "Tendință",
+    "viewEvaluationDetail": "Vezi istoricul evaluărilor pentru {{question}}"
   },
   "costs": {
     "subtitle": "Tendințe de cheltuieli și urmărirea bugetului",
@@ -466,6 +467,27 @@
       "name": "Nume",
       "email": "E-mail",
       "projectName": "Nume proiect"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Ultimul scor",
+    "averageScore": "Scor mediu",
+    "passRate": "Rată de promovare",
+    "totalEvaluations": "Total evaluări",
+    "scoreTrend": "Tendință scor",
+    "evaluationRuns": "Rulări de evaluare",
+    "noEvaluations": "Încă nu există rulări de evaluare.",
+    "outcomePass": "Promovat",
+    "outcomeFail": "Nepromovat",
+    "table": {
+      "scoredAt": "Evaluat la",
+      "score": "Scor",
+      "outcome": "Rezultat",
+      "model": "Model",
+      "provider": "Furnizor",
+      "criteria": "Criterii",
+      "duration": "Durată",
+      "cost": "Cost"
     }
   },
   "errors": {

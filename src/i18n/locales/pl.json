@@ -166,7 +166,8 @@
     "evaluationQuestion": "Pytanie referencyjne",
     "evaluationChange": "Zmiana",
     "evaluationSamples": "Próbki",
-    "evaluationTrend": "Trend"
+    "evaluationTrend": "Trend",
+    "viewEvaluationDetail": "Wyświetl historię ocen dla {{question}}"
   },
   "costs": {
     "subtitle": "Trendy wydatków i śledzenie budżetu",
@@ -466,6 +467,27 @@
       "name": "Nazwa",
       "email": "E-mail",
       "projectName": "Nazwa projektu"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Ostatni wynik",
+    "averageScore": "Średni wynik",
+    "passRate": "Wskaźnik powodzenia",
+    "totalEvaluations": "Łączna liczba ocen",
+    "scoreTrend": "Trend wyników",
+    "evaluationRuns": "Uruchomienia ocen",
+    "noEvaluations": "Brak uruchomień ocen.",
+    "outcomePass": "Zaliczone",
+    "outcomeFail": "Niezaliczone",
+    "table": {
+      "scoredAt": "Oceniono",
+      "score": "Wynik",
+      "outcome": "Rezultat",
+      "model": "Model",
+      "provider": "Dostawca",
+      "criteria": "Kryteria",
+      "duration": "Czas trwania",
+      "cost": "Koszt"
     }
   },
   "errors": {

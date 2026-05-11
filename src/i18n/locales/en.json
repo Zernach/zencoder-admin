@@ -166,7 +166,8 @@
     "evaluationQuestion": "Golden Question",
     "evaluationChange": "Change",
     "evaluationSamples": "Samples",
-    "evaluationTrend": "Trend"
+    "evaluationTrend": "Trend",
+    "viewEvaluationDetail": "View evaluation history for {{question}}"
   },
   "costs": {
     "subtitle": "Supply spend trends and budget tracking",
@@ -466,6 +467,27 @@
       "name": "Name",
       "email": "Email",
       "projectName": "Project Name"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Latest Score",
+    "averageScore": "Average Score",
+    "passRate": "Pass Rate",
+    "totalEvaluations": "Total Evaluations",
+    "scoreTrend": "Score Trend",
+    "evaluationRuns": "Evaluation Runs",
+    "noEvaluations": "No evaluation runs yet.",
+    "outcomePass": "Pass",
+    "outcomeFail": "Fail",
+    "table": {
+      "scoredAt": "Scored At",
+      "score": "Score",
+      "outcome": "Outcome",
+      "model": "Model",
+      "provider": "Provider",
+      "criteria": "Criteria",
+      "duration": "Duration",
+      "cost": "Cost"
     }
   },
   "errors": {

@@ -14,6 +14,7 @@ export {
   useGetHumanDetailQuery,
   useGetRunDetailQuery,
   useGetRuleDetailQuery,
+  useGetGoldenQuestionDetailQuery,
   useUpdateRuleMutation,
   useCreateComplianceRuleMutation,
   useCreateSeatMutation,

@@ -166,7 +166,8 @@
     "evaluationQuestion": "Referentievraag",
     "evaluationChange": "Wijziging",
     "evaluationSamples": "Steekproeven",
-    "evaluationTrend": "Trend"
+    "evaluationTrend": "Trend",
+    "viewEvaluationDetail": "Evaluatiegeschiedenis voor {{question}} bekijken"
   },
   "costs": {
     "subtitle": "Uitgavetrends en budgetbewaking",
@@ -466,6 +467,27 @@
       "name": "Naam",
       "email": "E-mail",
       "projectName": "Projectnaam"
+    }
+  },
+  "goldenQuestionDetail": {
+    "latestScore": "Laatste score",
+    "averageScore": "Gemiddelde score",
+    "passRate": "Slagingspercentage",
+    "totalEvaluations": "Totaal aantal evaluaties",
+    "scoreTrend": "Score-trend",
+    "evaluationRuns": "Evaluatie-uitvoeringen",
+    "noEvaluations": "Nog geen evaluatie-uitvoeringen.",
+    "outcomePass": "Geslaagd",
+    "outcomeFail": "Mislukt",
+    "table": {
+      "scoredAt": "Beoordeeld op",
+      "score": "Score",
+      "outcome": "Uitkomst",
+      "model": "Model",
+      "provider": "Provider",
+      "criteria": "Criteria",
+      "duration": "Duur",
+      "cost": "Kosten"
     }
   },
   "errors": {
