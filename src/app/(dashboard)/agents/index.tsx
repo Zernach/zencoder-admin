@@ -5,7 +5,8 @@ import { useRouter, usePathname } from "expo-router";
 import { CustomButton } from "@/components/buttons";
 import { CustomList } from "@/components/lists";
 import { useAgentsHub } from "@/features/analytics/hooks/useAgentsHub";
-import { SectionHeader, CardGrid, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
+import { useMachineLearning } from "@/features/analytics/hooks/useMachineLearning";
+import { SectionHeader, CardGrid, KpiCard, LoadingSkeleton, ErrorState, StatusBadge } from "@/components/dashboard";
 import { ChartCard, LineChart, BarChart, SparkLine, type BarChartBreakdownDatum } from "@/components/charts";
 import { DataTable, type ColumnDef, cellText, getSuccessRateGreenShadeColor } from "@/components/tables";
 import { formatPercent, formatDuration, formatCompactNumber } from "@/features/analytics/utils/formatters";
@@ -14,6 +15,11 @@ import type {
   AgentBreakdownRow,
   AgentsHubResponse,
   GoldenQuestionEvaluation,
+  MachineLearningResponse,
+  MlDriftStatus,
+  MlModelRow,
+  MlModelStage,
+  MlTrainingRunRow,
   ProjectBreakdownRow,
   ProjectEvaluationSection,
   RunListRow,
@@ -70,6 +76,22 @@ const localStyles = StyleSheet.create({
   },
   evaluationProjectSubtitle: {
     fontSize: 12,
+    fontWeight: "500",
+  },
+  sectionGroup: {
+    gap: spacing[16],
+  },
+  sectionGroupHeader: {
+    borderLeftWidth: 3,
+    paddingLeft: spacing[12],
+    gap: spacing[2],
+  },
+  sectionGroupTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+  },
+  sectionGroupSubtitle: {
+    fontSize: 13,
     fontWeight: "500",
   },
 });
@@ -563,9 +585,211 @@ const AgentsRecentRunsSection = React.memo(function AgentsRecentRunsSection({
   );
 });
 
-export default function AgentsScreen() {
+// ─── Systems Section Group ──────────────────────────────
+// A Systems-screen "section": a labeled group (Agents, Machine Learning) that
+// bundles the detail sections for one class of intelligent system.
+
+interface SystemSectionGroupProps {
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+}
+
+const SystemSectionGroup = React.memo(function SystemSectionGroup({
+  title,
+  subtitle,
+  children,
+}: SystemSectionGroupProps) {
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+
+  return (
+    <View style={localStyles.sectionGroup}>
+      <View style={[localStyles.sectionGroupHeader, { borderLeftColor: theme.border.brand }]}>
+        <Text style={[localStyles.sectionGroupTitle, { color: theme.text.primary }]}>{title}</Text>
+        <Text style={[localStyles.sectionGroupSubtitle, { color: theme.text.secondary }]}>{subtitle}</Text>
+      </View>
+      {children}
+    </View>
+  );
+});
+
+// ─── Machine Learning Sections ──────────────────────────
+
+interface MachineLearningSectionProps {
+  data: MachineLearningResponse | undefined;
+  loading: boolean;
+}
+
+const MlPerformanceSection = React.memo(function MlPerformanceSection({
+  data,
+  loading,
+}: MachineLearningSectionProps) {
+  const { t } = useTranslation();
+  const bp = useBreakpoint();
+  const isLargeLayout = bp === "desktop" || bp === "tablet";
+  const refFor = useSectionRef();
+
+  const chartScrollProps = useMemo(() => ({
+    horizontal: !isLargeLayout,
+    showsHorizontalScrollIndicator: false,
+    contentContainerStyle: [styles.chartRow, isLargeLayout && styles.chartRowFill],
+  }), [isLargeLayout]);
+
+  return (
+    <View ref={refFor("ml-performance")} nativeID="ml-performance" style={styles.section}>
+      <SectionHeader
+        title={t("machineLearning.performance")}
+        subtitle={t("machineLearning.performanceSubtitle")}
+      />
+      {loading ? (
+        <CardGrid columns={4}>
+          {SKELETON_4.map((_, i) => (
+            <LoadingSkeleton key={i} variant="kpi" />
+          ))}
+        </CardGrid>
+      ) : data ? (
+        <>
+          <CardGrid columns={4}>
+            <KpiCard
+              title={t("machineLearning.modelsInProduction")}
+              value={`${data.modelsInProduction} / ${data.totalModels}`}
+            />
+            <KpiCard
+              title={t("machineLearning.predictionsServed")}
+              value={formatCompactNumber(data.predictionsServed24h)}
+            />
+            <KpiCard
+              title={t("machineLearning.avgAccuracy")}
+              value={formatPercent(data.avgModelAccuracy * 100)}
+            />
+            <KpiCard
+              title={t("machineLearning.driftAlerts")}
+              value={String(data.driftAlerts)}
+            />
+          </CardGrid>
+          <CustomList scrollViewProps={chartScrollProps}>
+            <ChartCard title={t("machineLearning.accuracyTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+              <LineChart data={data.accuracyTrend} variant="percentages" xTickCount={4} />
+            </ChartCard>
+            <ChartCard title={t("machineLearning.predictionVolumeTrend")} style={isLargeLayout ? styles.chartCardFill : undefined}>
+              <LineChart data={data.predictionVolumeTrend} variant="line" xTickCount={4} />
+            </ChartCard>
+          </CustomList>
+        </>
+      ) : null}
+    </View>
+  );
+});
+
+interface MachineLearningDataSectionProps {
+  data: MachineLearningResponse;
+}
+
+const MlModelsSection = React.memo(function MlModelsSection({
+  data,
+}: MachineLearningDataSectionProps) {
+  const { t } = useTranslation();
+  const { mode } = useThemeMode();
+  const theme = semanticThemes[mode];
+  const ct = cellText(mode);
+  const refFor = useSectionRef();
+
+  const stageColor = (stage: MlModelStage): string => {
+    switch (stage) {
+      case "production": return theme.state.success;
+      case "staging": return theme.state.warning;
+      case "training": return theme.text.brand;
+      case "retired": return theme.text.tertiary;
+    }
+  };
+
+  const driftColor = (status: MlDriftStatus): string => {
+    if (status === "critical") return theme.state.error;
+    if (status === "drifting") return theme.state.warning;
+    return theme.state.success;
+  };
+
+  const typeBreakdownData = useMemo<BarChartBreakdownDatum[]>(
+    () => data.modelTypeBreakdown.map((entry) => ({
+      key: entry.key,
+      value: entry.value,
+      hoverRows: [],
+    })),
+    [data.modelTypeBreakdown],
+  );
+
+  const modelCols = useMemo<ColumnDef<MlModelRow>[]>(() => [
+    { key: "name", header: t("machineLearning.table.model"), width: 200, render: (row) => <Text style={ct.primary} numberOfLines={1}>{row.name}</Text> },
+    { key: "modelType", header: t("machineLearning.table.type"), width: 150, render: (row) => <Text style={ct.secondary}>{t(`machineLearning.modelType.${row.modelType}`)}</Text> },
+    { key: "stage", header: t("machineLearning.table.stage"), width: 110, render: (row) => <Text style={[ct.primary, { color: stageColor(row.stage) }]}>{t(`machineLearning.stage.${row.stage}`)}</Text> },
+    { key: "version", header: t("machineLearning.table.version"), width: 90, render: (row) => <Text style={ct.secondary}>{row.version}</Text> },
+    { key: "metricLabel", header: t("machineLearning.table.metric"), width: 130, render: (row) => <Text style={ct.secondary}>{row.metricLabel}</Text> },
+    { key: "metricValue", header: t("machineLearning.table.score"), width: 90, align: "right", render: (row) => <Text style={[ct.primary, { color: getSuccessRateGreenShadeColor(row.metricValue, mode) }]}>{formatPercent(row.metricValue * 100)}</Text>, sortAccessor: (row) => row.metricValue },
+    { key: "driftStatus", header: t("machineLearning.table.drift"), width: 100, render: (row) => <Text style={[ct.primary, { color: driftColor(row.driftStatus) }]}>{t(`machineLearning.drift.${row.driftStatus}`)}</Text> },
+    { key: "predictionsServed", header: t("machineLearning.table.predictions"), width: 110, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.predictionsServed)}</Text> },
+    { key: "p95LatencyMs", header: t("machineLearning.table.latency"), width: 100, align: "right", render: (row) => <Text style={ct.primary}>{row.p95LatencyMs > 0 ? formatDuration(row.p95LatencyMs) : "—"}</Text> },
+    { key: "lastTrainedIso", header: t("machineLearning.table.lastTrained"), width: 130, render: (row) => <Text style={ct.secondary}>{new Date(row.lastTrainedIso).toLocaleDateString()}</Text> },
+  ], [ct, mode, t, theme]);
+
+  return (
+    <View ref={refFor("ml-models")} nativeID="ml-models" style={styles.section}>
+      <SectionHeader
+        title={t("machineLearning.modelRegistry")}
+        subtitle={t("machineLearning.modelRegistrySubtitle", { count: data.models.length })}
+      />
+      <ChartCard title={t("machineLearning.modelTypeBreakdown")}>
+        <BarChart data={typeBreakdownData} variant="horizontal-bar" truncateLabels={false} />
+      </ChartCard>
+      <DataTable
+        columns={modelCols}
+        data={data.models}
+        keyExtractor={keyExtractors.byId}
+        initialSortBy="metricValue"
+        initialSortDirection="desc"
+      />
+    </View>
+  );
+});
+
+const MlTrainingSection = React.memo(function MlTrainingSection({
+  data,
+}: MachineLearningDataSectionProps) {
+  const { t } = useTranslation();
+  const { mode } = useThemeMode();
+  const ct = cellText(mode);
+  const refFor = useSectionRef();
+
+  const trainingCols = useMemo<ColumnDef<MlTrainingRunRow>[]>(() => [
+    { key: "id", header: t("machineLearning.table.runId"), width: 110, render: (row) => <Text style={ct.primary} numberOfLines={1}>{row.id}</Text> },
+    { key: "modelName", header: t("machineLearning.table.model"), width: 200, render: (row) => <Text style={ct.primary} numberOfLines={1}>{row.modelName}</Text> },
+    { key: "status", header: t("machineLearning.table.status"), width: 110, render: (row) => <StatusBadge variant="run-status" status={row.status} /> },
+    { key: "startedAtIso", header: t("machineLearning.table.started"), width: 160, render: (row) => <Text style={ct.primary}>{new Date(row.startedAtIso).toLocaleString()}</Text> },
+    { key: "durationMs", header: t("machineLearning.table.duration"), width: 100, align: "right", render: (row) => <Text style={ct.primary}>{row.durationMs > 0 ? formatDuration(row.durationMs) : "—"}</Text> },
+    { key: "datasetSize", header: t("machineLearning.table.dataset"), width: 110, align: "right", render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.datasetSize)}</Text> },
+    { key: "epochs", header: t("machineLearning.table.epochs"), width: 80, align: "right", render: (row) => <Text style={ct.primary}>{row.epochs}</Text> },
+    { key: "metricValue", header: t("machineLearning.table.score"), width: 90, align: "right", render: (row) => <Text style={ct.primary}>{row.metricValue > 0 ? formatPercent(row.metricValue * 100) : "—"}</Text>, sortAccessor: (row) => row.metricValue },
+  ], [ct, t]);
+
+  return (
+    <View ref={refFor("ml-training")} nativeID="ml-training" style={styles.section}>
+      <SectionHeader
+        title={t("machineLearning.trainingRuns")}
+        subtitle={t("machineLearning.trainingRunsSubtitle", { count: data.trainingRuns.length })}
+      />
+      <DataTable
+        columns={trainingCols}
+        data={data.trainingRuns}
+        keyExtractor={keyExtractors.byId}
+      />
+    </View>
+  );
+});
+
+export default function SystemsScreen() {
   const { t } = useTranslation();
   const { data, loading, error, refetch } = useAgentsHub();
+  const { data: mlData, loading: mlLoading } = useMachineLearning();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const pathname = usePathname();
@@ -597,19 +821,18 @@ export default function AgentsScreen() {
     [dispatch],
   );
 
-  const subtitle = useMemo(() => data
-    ? t("agents.subtitleWithData", {
-      successRate: formatPercent(data.runSuccessRate * 100),
-      p50Duration: formatDuration(data.p50RunDurationMs),
+  const subtitle = useMemo(() => (data && mlData)
+    ? t("systems.subtitleWithData", {
       agentCount: data.agentBreakdown.length,
+      modelCount: mlData.totalModels,
     })
-    : t("agents.subtitle"),
-  [data, t],
+    : t("systems.subtitle"),
+  [data, mlData, t],
   );
 
   const headerProps = useMemo(
     () => ({
-      title: t("navigation.agents"),
+      title: t("systems.title"),
       subtitle,
       isLoading: loading,
       rightComponent: (
@@ -642,28 +865,41 @@ export default function AgentsScreen() {
 
   return (
     <ScreenWrapper headerProps={headerProps}>
-      <AgentsReliabilitySection data={data} loading={loading} />
-      {data ? (
-        <AgentsEvaluationsSection
-          data={data}
-          onCreateEvaluation={handleOpenCreateEvaluation}
-          navigateTo={navigateTo}
-        />
-      ) : null}
-      {data ? (
-        <AgentsAgentPerformanceSection
-          data={data}
-          navigateTo={navigateTo}
-        />
-      ) : null}
-      {data ? (
-        <AgentsProjectBreakdownSection
-          data={data}
-          navigateTo={navigateTo}
-          onCreateProject={handleOpenCreateProject}
-        />
-      ) : null}
-      {data ? <AgentsRecentRunsSection data={data} navigateTo={navigateTo} /> : null}
+      <SystemSectionGroup
+        title={t("systems.agentsGroupTitle")}
+        subtitle={t("systems.agentsGroupSubtitle")}
+      >
+        <AgentsReliabilitySection data={data} loading={loading} />
+        {data ? (
+          <AgentsEvaluationsSection
+            data={data}
+            onCreateEvaluation={handleOpenCreateEvaluation}
+            navigateTo={navigateTo}
+          />
+        ) : null}
+        {data ? (
+          <AgentsAgentPerformanceSection
+            data={data}
+            navigateTo={navigateTo}
+          />
+        ) : null}
+        {data ? (
+          <AgentsProjectBreakdownSection
+            data={data}
+            navigateTo={navigateTo}
+            onCreateProject={handleOpenCreateProject}
+          />
+        ) : null}
+        {data ? <AgentsRecentRunsSection data={data} navigateTo={navigateTo} /> : null}
+      </SystemSectionGroup>
+      <SystemSectionGroup
+        title={t("systems.machineLearningGroupTitle")}
+        subtitle={t("systems.machineLearningGroupSubtitle")}
+      >
+        <MlPerformanceSection data={mlData} loading={mlLoading} />
+        {mlData ? <MlModelsSection data={mlData} /> : null}
+        {mlData ? <MlTrainingSection data={mlData} /> : null}
+      </SystemSectionGroup>
       <CreateAgentModal />
       <CreateProjectModal />
       <CreateEvaluationModal />

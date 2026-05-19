@@ -147,7 +147,7 @@ const ChatThreadMessages = React.memo(function ChatThreadMessages({
             <Text
               style={[styles.typingText, { color: theme.text.secondary }]}
             >
-              Astra is thinking...
+              Somm is thinking...
             </Text>
           </View>
         </View>

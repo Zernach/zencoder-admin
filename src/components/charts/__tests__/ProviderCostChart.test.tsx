@@ -33,9 +33,9 @@ jest.mock("@/features/analytics/hooks/useCurrencyFormatter", () => ({
 }));
 
 const providerData: ProviderCostRow[] = [
-  { provider: "codex", totalCostUsd: 6500, runCount: 300, totalTokens: 500_000_000, percentOfTotal: 0.52 },
-  { provider: "claude", totalCostUsd: 4000, runCount: 200, totalTokens: 500_000_000, percentOfTotal: 0.32 },
-  { provider: "other", totalCostUsd: 2000, runCount: 100, totalTokens: 500_000_000, percentOfTotal: 0.16 },
+  { provider: "openai", totalCostUsd: 6500, runCount: 300, totalTokens: 500_000_000, percentOfTotal: 0.52 },
+  { provider: "anthropic", totalCostUsd: 4000, runCount: 200, totalTokens: 500_000_000, percentOfTotal: 0.32 },
+  { provider: "gemini", totalCostUsd: 2000, runCount: 100, totalTokens: 500_000_000, percentOfTotal: 0.16 },
 ];
 
 describe("ProviderCostChart", () => {
@@ -50,8 +50,8 @@ describe("ProviderCostChart", () => {
     fireEvent.press(getByTestId("bar-pie-chart-mode-bar"));
 
     expect(getByTestId("bar-pie-chart-current-mode-bar")).toBeTruthy();
-    expect(getAllByText("Codex").length).toBeGreaterThanOrEqual(1);
-    expect(getAllByText("Claude").length).toBeGreaterThanOrEqual(1);
-    expect(getAllByText("Other").length).toBeGreaterThanOrEqual(1);
+    expect(getAllByText("OpenAI").length).toBeGreaterThanOrEqual(1);
+    expect(getAllByText("Anthropic").length).toBeGreaterThanOrEqual(1);
+    expect(getAllByText("Gemini").length).toBeGreaterThanOrEqual(1);
   });
 });

@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Verzenden",
     "cancel": "Annuleren",
     "save": "Opslaan",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Start",
-    "agents": "Agenten",
+    "systems": "Systemen",
     "costs": "Kosten",
     "governance": "Governance",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Internationalisatie",
       "organization": "Organisatie",
       "dangerZone": "Gevarenzone",
-      "evaluations": "Evaluaties"
+      "evaluations": "Evaluaties",
+      "mlPerformance": "Modelprestaties",
+      "mlModels": "Modelregister",
+      "mlTraining": "Trainingsuitvoeringen"
     }
   },
   "dashboard": {
-    "subtitle": "Agenten en analyses van uw organisatie",
-    "subtitleWithData": "Agenten en analyses van uw organisatie",
+    "subtitle": "De verantwoorde AI voor de wijnvoorraad van uw kelder",
+    "subtitleWithData": "De verantwoorde AI voor de wijnvoorraad van uw kelder",
     "keyMetrics": "Belangrijke statistieken",
     "keyMetricsSubtitle": "In een oogopslag",
     "trends": "Trends",
@@ -86,7 +89,7 @@
     "wauTrend": "Wekelijks actieve gebruikers (WAU)",
     "mauTrend": "Maandelijks actieve gebruikers (MAU)",
     "outcomes": "Resultaten",
-    "outcomesSubtitle": "Codekwaliteit en leveringen",
+    "outcomesSubtitle": "Impact op kelder en bedrijfsvoering",
     "automatedMergeRequestsPerDay": "Geautomatiseerde substitutiegoedkeuringen per dag",
     "reliabilityAndProviderMix": "Betrouwbaarheid en providerverdeling",
     "anomalies": "Anomalieën",
@@ -94,7 +97,7 @@
     "run": "Uitvoering ",
     "live": {
       "title": "Live",
-      "subtitle": "AI-assistenten in actie",
+      "subtitle": "Cellar OS-workflow-apps in actie",
       "succeeded": "Geslaagd",
       "queued": "In wachtrij",
       "running": "Actief",
@@ -102,15 +105,15 @@
         "resting": "Agenten rusten op dit moment.",
         "quiet": "Het is hier rustig.",
         "noMembers": "Er zijn momenteel geen teamleden die agenten uitvoeren.",
-        "waiting": "Wachten op de volgende agentworkflow."
+        "waiting": "Wachten op de volgende kelderworkflow."
       },
       "emptySubtitle": "Nieuwe livesessies verschijnen automatisch wanneer engineers uitvoeringen starten."
     },
-    "title": "Admin Startpagina"
+    "title": "Cellar OS-operationele kwaliteit"
   },
   "agents": {
-    "subtitle": "Intelligente Workflow-automatiseringen",
-    "subtitleWithData": "Intelligente Workflow-automatiseringen",
+    "subtitle": "Cellar OS-workflow-apps",
+    "subtitleWithData": "Cellar OS-workflow-apps",
     "reliability": "Betrouwbaarheid",
     "reliabilitySubtitle": "Observeerbaarheid en analyses",
     "successRate": "Slagingspercentage",
@@ -169,9 +172,70 @@
     "evaluationTrend": "Trend",
     "viewEvaluationDetail": "Evaluatiegeschiedenis voor {{question}} bekijken"
   },
+  "systems": {
+    "title": "Systemen",
+    "subtitle": "Elk intelligent systeem dat CellarTracker aandrijft",
+    "subtitleWithData": "{{agentCount}} agenten en {{modelCount}} ML-modellen in gebruik",
+    "agentsGroupTitle": "Agenten",
+    "agentsGroupSubtitle": "Agentische LLM-systemen — uitvoeringen, evaluaties en betrouwbaarheid",
+    "machineLearningGroupTitle": "Machine learning",
+    "machineLearningGroupSubtitle": "Getrainde ML-modellen — prestaties, drift en trainingsgeschiedenis"
+  },
+  "machineLearning": {
+    "performance": "Modelprestaties",
+    "performanceSubtitle": "Nauwkeurigheid en voorspellingsdoorvoer over geïmplementeerde modellen",
+    "totalModels": "Totaal aantal modellen",
+    "modelsInProduction": "Modellen in productie",
+    "predictionsServed": "Voorspellingen (24u)",
+    "avgAccuracy": "Gem. modelnauwkeurigheid",
+    "driftAlerts": "Drift-waarschuwingen",
+    "accuracyTrend": "Trend modelnauwkeurigheid",
+    "predictionVolumeTrend": "Voorspellingsvolume",
+    "modelRegistry": "Modelregister",
+    "modelRegistrySubtitle": "{{count}} geregistreerde modellen",
+    "modelTypeBreakdown": "Modellen per type",
+    "trainingRuns": "Trainingsuitvoeringen",
+    "trainingRunsSubtitle": "{{count}} recente trainingstaken",
+    "table": {
+      "model": "Model",
+      "type": "Type",
+      "stage": "Fase",
+      "version": "Versie",
+      "metric": "Statistiek",
+      "score": "Score",
+      "drift": "Drift",
+      "predictions": "Voorspellingen",
+      "latency": "p95-latentie",
+      "lastTrained": "Laatst getraind",
+      "runId": "Uitvoering-ID",
+      "status": "Status",
+      "started": "Gestart",
+      "duration": "Duur",
+      "dataset": "Dataset",
+      "epochs": "Epochs"
+    },
+    "stage": {
+      "production": "Productie",
+      "staging": "Staging",
+      "training": "Training",
+      "retired": "Buiten gebruik"
+    },
+    "modelType": {
+      "classification": "Classificatie",
+      "regression": "Regressie",
+      "forecasting": "Prognose",
+      "recommendation": "Aanbeveling",
+      "anomaly_detection": "Anomaliedetectie"
+    },
+    "drift": {
+      "stable": "Stabiel",
+      "drifting": "Driftend",
+      "critical": "Kritiek"
+    }
+  },
   "costs": {
-    "subtitle": "Uitgavetrends en budgetbewaking",
-    "subtitleWithData": "{{totalCost}} besteed aan {{projectCount}} projecten",
+    "subtitle": "Trends in kelderuitgaven en budgetbewaking",
+    "subtitleWithData": "{{totalCost}} uitgegeven verdeeld over {{projectCount}} projecten",
     "costSummary": "Kosten per Team",
     "totalCost": "Totale kosten",
     "avgPerRun": "Gemiddelde kosten per uitvoering",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Beleidshandhaving en beveiligingsmonitoring",
+    "subtitle": "Beheer teams, personeel en nalevingsregels",
     "subtitleWithData": "{{violations}} overtredingen, {{securityEvents}} beveiligingsgebeurtenissen",
     "overview": "Overzicht",
     "violations": "Overtredingen",
@@ -375,17 +439,14 @@
     "project": "Project",
     "projects": "Projecten",
     "provider": "Provider",
+    "model": "Model",
     "status": "Status",
     "filterBy": "Filteren op {{category}}",
     "closeFilterDropdown": "Filtermenu sluiten",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Aanbieders",
+    "modelsLabel": "Modellen",
     "statusesLabel": "Statussen",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Overig"
-    },
     "statuses": {
       "succeeded": "Geslaagd",
       "failed": "Mislukt",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Nieuw gesprek",
-    "startConversation": "Bespreek onderwerpen met je AI",
+    "startConversation": "Vraag Somm over uw kelder",
     "askAnything": "Vraag wat je wilt...",
     "messageInput": "Chatbericht invoeren",
     "sendMessage": "Bericht verzenden",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Nog geen gesprekken.",
     "noConversationsMatchTopics": "Geen gesprekken komen overeen met de geselecteerde onderwerpen.",
     "openChat": "Chat openen {{title}}",
-    "welcomeTitle": "Hallo! Hoe kan ik je helpen?",
+    "welcomeTitle": "Hallo! Hoe kan Somm helpen?",
     "welcomeSubtitle": {
-      "dashboard": "Vraag naar agentprestaties, activiteitstrends of krijg een snelle statuscontrole.",
+      "dashboard": "Vraag naar de gezondheid van de kelder, tijdige levering, verstoringssignalen of krijg een snelle statuscontrole.",
       "agents": "Duik in de gezondheid van agenten, vergelijk prestaties of los problemen op.",
-      "costs": "Verken bestedingspatronen, vind besparingen of onderzoek kostenpieken.",
-      "governance": "Controleer de nalevingsstatus, bekijk overtredingen of audit uw beleid.",
-      "settings": "Krijg hulp met agenten, kosten, governance of ondersteuning."
+      "costs": "Verken patronen in kelderuitgaven, vind besparingen op contracten of onderzoek kostenpieken.",
+      "governance": "Controleer de nalevingsstatus, bekijk overtredingen of audit uw kelderbeleid.",
+      "settings": "Krijg hulp bij workflow-apps, kelderuitgaven, naleving of ondersteuning."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Groepeer fouten per modelfamilie en toon welke categorieën week na week toenemen. Welke vereisen triage?"
       },
       "costs": {
-        "label": "Wat drijft de kostenstijgingen en hoe kunnen we ze beheersen?",
-        "message": "De kosten zijn recent gestegen. Wat is er veranderd per project en model? Hoe kunnen we dit beheersen zonder de responskwaliteit aan te tasten?"
+        "label": "Wat veroorzaakt de stijging van de kelderuitgaven en hoe kunnen we die beteugelen?",
+        "message": "De kelderuitgaven zijn onlangs gestegen. Wat is er veranderd per wijnprogramma en contractniveau? Hoe kunnen we dit beteugelen zonder proeverijen te vertragen?"
       },
       "governance": {
         "label": "Vat overtredingen samen op ernst — wat moet ik prioriteren?",
-        "message": "Splits overtredingen op per beleidsklasse en markeer alles wat versnelt. Wat moet ik als eerste prioriteren?"
+        "message": "Splits de nalevingsovertredingen uit per categorie (leeftijdsverificatie, TTB, COLA) en markeer alles wat versnelt. Wat moet ik als eerste prioriteren?"
       },
       "support": {
-        "label": "Help me een uitrolchecklist of teamcommunicatie voor te bereiden",
-        "message": "Help me een uitrolchecklist voor te bereiden of een gebruikersgerichte communicatie op te stellen voor een aanstaande wijziging."
+        "label": "Help me een uitrolchecklist voor te bereiden voor een personeelscommunicatie",
+        "message": "Help me een uitrolchecklist voor te bereiden of een communicatie voor het personeel op te stellen over een aankomende kelderwijziging."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Hoe presteren mijn agenten deze week?",
-          "message": "Hoe presteren mijn agenten deze week? Vat succespercentages, fouttrends en opvallende agenten samen."
+          "label": "Hoe presteert mijn kelder deze week?",
+          "message": "Hoe presteert de kelder deze week? Vat tijdige leveringen, afgehandelde verstoringsmeldingen en eventuele opvallende wijnprogramma's samen."
         },
         "activity": {
-          "label": "Toon me de activiteitssamenvatting van vandaag",
-          "message": "Geef me een samenvatting van de agentactiviteit vandaag — uitvoeringen, voltooiingen, fouten en alles wat ongebruikelijk is."
+          "label": "Toon me de kelderactiviteit van vandaag",
+          "message": "Geef me een samenvatting van de kelderactiviteit van vandaag — uitvoeringen van workflow-apps, vervangingen, meldingen en alles wat ongewoon is."
         },
         "teams": {
-          "label": "Welke teams zijn het meest actief?",
-          "message": "Welke teams zijn recentelijk het meest actief geweest? Toon me een uitsplitsing van het agentgebruik per team."
+          "label": "Welke teams zijn het actiefst?",
+          "message": "Welke teams zijn de laatste tijd het actiefst geweest? Toon me een uitsplitsing van het gebruik van workflow-apps per team."
         },
         "issues": {
           "label": "Zijn er problemen waar ik van moet weten?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Waar stijgen de kosten?",
-          "message": "Waar stijgen de kosten? Toon me welke agenten of teams de stijging veroorzaken."
+          "label": "Waar stijgen de kelderuitgaven?",
+          "message": "Waar stijgen de kelderuitgaven? Toon me welke wijnprogramma's of kelders de stijging veroorzaken."
         },
         "breakdown": {
-          "label": "Kostenuitsplitsing per team tonen",
-          "message": "Splits de kosten uit per team voor deze maand. Hoe verhoudt het zich tot vorige maand?"
+          "label": "Toon kelderuitgaven per locatie",
+          "message": "Splits de kelderuitgaven uit per locatie voor deze maand. Hoe verhoudt zich dat tot vorige maand?"
         },
         "unusual": {
           "label": "Ongebruikelijke uitgaven markeren",
           "message": "Markeer ongebruikelijke of onverwachte bestedingspatronen. Zijn er kostenpieken die ik moet onderzoeken?"
         },
         "reduce": {
-          "label": "Hoe kan ik kosten verlagen?",
-          "message": "Analyseer mijn huidige agentgebruik en stel manieren voor om kosten te verlagen zonder de prestaties te beïnvloeden."
+          "label": "Hoe kan ik de kelderuitgaven verlagen?",
+          "message": "Analyseer het huidige gebruik van workflow-apps en de wijnkaarten, en stel manieren voor om de kelderuitgaven te verlagen zonder de proeverijen te beïnvloeden."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Nalevingsoverzicht tonen",
-          "message": "Geef me een algemeen nalevingsoverzicht — hoeveel regels slagen, falen of hebben aandacht nodig?"
+          "message": "Geef me een algemeen nalevingsoverzicht — hoeveel regels (leeftijdsverificatie, TTB, COLA) slagen, falen of vereisen aandacht?"
         },
         "unresolved": {
           "label": "Onopgeloste overtredingen weergeven",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Welke integraties zijn beschikbaar?",
-          "message": "Welke integraties zijn beschikbaar om verbinding te maken met externe tools en diensten?"
+          "message": "Welke integraties zijn beschikbaar voor verbinding met POS, voorraadsystemen, distributeursportalen of andere bronsystemen?"
         },
         "notifications": {
           "label": "Meldingsinstellingen controleren",

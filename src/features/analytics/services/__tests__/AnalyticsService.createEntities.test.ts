@@ -10,6 +10,7 @@ function createMockApi(): IAnalyticsApi {
     getReliability: jest.fn(),
     getGovernance: jest.fn(),
     getAgentsHub: jest.fn(),
+    getMachineLearning: jest.fn(),
     connectLiveAgentSessionsSocket: jest.fn(),
     getSearchSuggestions: jest.fn(),
     getAgentDetail: jest.fn(),

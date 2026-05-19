@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Küldés",
     "cancel": "Mégse",
     "save": "Mentés",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Kezdőlap",
-    "agents": "Ágensek",
+    "systems": "Rendszerek",
     "costs": "Költségek",
     "governance": "Irányítás",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Nemzetköziesítés",
       "organization": "Szervezet",
       "dangerZone": "Veszélyzóna",
-      "evaluations": "Értékelések"
+      "evaluations": "Értékelések",
+      "mlPerformance": "Modellteljesítmény",
+      "mlModels": "Modellnyilvántartás",
+      "mlTraining": "Betanítási futtatások"
     }
   },
   "dashboard": {
-    "subtitle": "Szervezete ügynökei és elemzései",
-    "subtitleWithData": "Szervezete ügynökei és elemzései",
+    "subtitle": "A pincéje felelős borkészlet-mesterséges intelligenciája",
+    "subtitleWithData": "A pincéje felelős borkészlet-mesterséges intelligenciája",
     "keyMetrics": "Kulcsmutatók",
     "keyMetricsSubtitle": "Egy pillantásra",
     "trends": "Trendek",
@@ -86,7 +89,7 @@
     "wauTrend": "Heti aktív felhasználók (WAU)",
     "mauTrend": "Havi aktív felhasználók (MAU)",
     "outcomes": "Eredmények",
-    "outcomesSubtitle": "Kódminőség és szállítás",
+    "outcomesSubtitle": "Pince- és működési hatás",
     "automatedMergeRequestsPerDay": "Automatikus helyettesítési jóváhagyások naponta",
     "reliabilityAndProviderMix": "Megbízhatóság és szolgáltatói összetétel",
     "anomalies": "Anomáliák",
@@ -94,7 +97,7 @@
     "run": "Futtatás ",
     "live": {
       "title": "Élő",
-      "subtitle": "AI asszisztensek működés közben",
+      "subtitle": "Cellar OS munkafolyamat-alkalmazások működés közben",
       "succeeded": "Sikeres",
       "queued": "Várólistán",
       "running": "Futó",
@@ -102,15 +105,15 @@
         "resting": "Az ágensek jelenleg pihennek.",
         "quiet": "Csend van itt.",
         "noMembers": "Jelenleg egyetlen csapattag sem futtat ágenseket.",
-        "waiting": "Várakozás a következő ágens-munkafolyamatra."
+        "waiting": "Várakozás a következő pince-munkafolyamatra."
       },
       "emptySubtitle": "Új élő munkamenetek automatikusan megjelennek, amint a mérnökök futtatásokat indítanak."
     },
-    "title": "Admin Kezdőlap"
+    "title": "Cellar OS működési minőség"
   },
   "agents": {
-    "subtitle": "Intelligens Munkafolyamat-automatizálások",
-    "subtitleWithData": "Intelligens Munkafolyamat-automatizálások",
+    "subtitle": "Cellar OS munkafolyamat-alkalmazások",
+    "subtitleWithData": "Cellar OS munkafolyamat-alkalmazások",
     "reliability": "Megbízhatóság",
     "reliabilitySubtitle": "Megfigyelhetőség és elemzés",
     "successRate": "Sikerességi arány",
@@ -169,8 +172,69 @@
     "evaluationTrend": "Trend",
     "viewEvaluationDetail": "Értékelési előzmények megtekintése a következőhöz: {{question}}"
   },
+  "systems": {
+    "title": "Rendszerek",
+    "subtitle": "Minden intelligens rendszer, amely a CellarTrackert működteti",
+    "subtitleWithData": "{{agentCount}} ágens és {{modelCount}} ML-modell üzemben",
+    "agentsGroupTitle": "Ágensek",
+    "agentsGroupSubtitle": "Ágens alapú LLM-rendszerek — futtatások, értékelések és megbízhatóság",
+    "machineLearningGroupTitle": "Gépi tanulás",
+    "machineLearningGroupSubtitle": "Betanított ML-modellek — teljesítmény, eltolódás és betanítási előzmények"
+  },
+  "machineLearning": {
+    "performance": "Modellteljesítmény",
+    "performanceSubtitle": "Pontosság és predikciós átbocsátóképesség a telepített modelleknél",
+    "totalModels": "Összes modell",
+    "modelsInProduction": "Éles modellek",
+    "predictionsServed": "Predikciók (24 óra)",
+    "avgAccuracy": "Átlagos modellpontosság",
+    "driftAlerts": "Eltolódási riasztások",
+    "accuracyTrend": "Modellpontosság trendje",
+    "predictionVolumeTrend": "Predikciós volumen",
+    "modelRegistry": "Modellnyilvántartás",
+    "modelRegistrySubtitle": "{{count}} regisztrált modell",
+    "modelTypeBreakdown": "Modellek típus szerint",
+    "trainingRuns": "Betanítási futtatások",
+    "trainingRunsSubtitle": "{{count}} legutóbbi betanítási feladat",
+    "table": {
+      "model": "Modell",
+      "type": "Típus",
+      "stage": "Szakasz",
+      "version": "Verzió",
+      "metric": "Mutató",
+      "score": "Pontszám",
+      "drift": "Eltolódás",
+      "predictions": "Predikciók",
+      "latency": "p95 késleltetés",
+      "lastTrained": "Utolsó betanítás",
+      "runId": "Futtatás ID",
+      "status": "Állapot",
+      "started": "Elkezdve",
+      "duration": "Időtartam",
+      "dataset": "Adathalmaz",
+      "epochs": "Epochok"
+    },
+    "stage": {
+      "production": "Éles",
+      "staging": "Teszt",
+      "training": "Betanítás",
+      "retired": "Kivonva"
+    },
+    "modelType": {
+      "classification": "Osztályozás",
+      "regression": "Regresszió",
+      "forecasting": "Előrejelzés",
+      "recommendation": "Ajánlás",
+      "anomaly_detection": "Anomáliadetektálás"
+    },
+    "drift": {
+      "stable": "Stabil",
+      "drifting": "Eltolódó",
+      "critical": "Kritikus"
+    }
+  },
   "costs": {
-    "subtitle": "Kiadási trendek és költségvetés-követés",
+    "subtitle": "Pinceköltési trendek és költségvetés-követés",
     "subtitleWithData": "{{totalCost}} elköltve {{projectCount}} projektben",
     "costSummary": "Költség csapatonként",
     "totalCost": "Összes költség",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Szabályzat-érvényesítés és biztonsági felügyelet",
+    "subtitle": "Csapatok, személyzet és megfelelőségi szabályok kezelése",
     "subtitleWithData": "{{violations}} szabálysértés, {{securityEvents}} biztonsági esemény",
     "overview": "Áttekintés",
     "violations": "Szabálysértések",
@@ -375,17 +439,14 @@
     "project": "Projekt",
     "projects": "Projektek",
     "provider": "Szolgáltató",
+    "model": "Modell",
     "status": "Állapot",
     "filterBy": "Szűrés {{category}} szerint",
     "closeFilterDropdown": "Szűrő legördülő bezárása",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Szolgáltatók",
+    "modelsLabel": "Modellek",
     "statusesLabel": "Állapotok",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Egyéb"
-    },
     "statuses": {
       "succeeded": "Sikeres",
       "failed": "Sikertelen",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Új csevegés",
-    "startConversation": "Beszélgess témákról az AI-oddal",
+    "startConversation": "Kérdezze Sommot a pincéjéről",
     "askAnything": "Kérdezz bármit...",
     "messageInput": "Csevegés üzenet beviteli mező",
     "sendMessage": "Üzenet küldése",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Még nincsenek beszélgetések.",
     "noConversationsMatchTopics": "Nincs a kiválasztott témáknak megfelelő beszélgetés.",
     "openChat": "Csevegés megnyitása {{title}}",
-    "welcomeTitle": "Szia! Hogyan segíthetek?",
+    "welcomeTitle": "Üdv! Miben segíthet Somm?",
     "welcomeSubtitle": {
-      "dashboard": "Kérdezz az ágensek teljesítményéről, aktivitási trendekről, vagy kérj gyors állapotjelentést.",
+      "dashboard": "Kérdezzen a pince állapotáról, az időben történő szállításról, a fennakadásjelzésekről, vagy kérjen gyors állapotellenőrzést.",
       "agents": "Vizsgáld meg az ágensek állapotát, hasonlítsd össze a teljesítményt, vagy hárítsd el a problémákat.",
-      "costs": "Fedezd fel a kiadási mintákat, találj megtakarításokat, vagy vizsgáld meg a költségnövekedéseket.",
-      "governance": "Ellenőrizd a megfelelőségi állapotot, tekintsd át a szabálysértéseket, vagy auditáld a szabályzatokat.",
-      "settings": "Kérj segítséget az ágensekkel, költségekkel, irányítással vagy támogatással kapcsolatban."
+      "costs": "Fedezze fel a pinceköltési mintákat, találjon megtakarításokat a szerződéseken, vagy vizsgálja meg a költségugrásokat.",
+      "governance": "Ellenőrizze a megfelelőségi állapotot, tekintse át a szabálysértéseket, vagy auditálja a pince szabályzatait.",
+      "settings": "Kérjen segítséget a munkafolyamat-alkalmazásokkal, a pinceköltéssel, a megfelelőséggel vagy a támogatással kapcsolatban."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Csoportosítsd a hibákat modellcsalád szerint, és mutasd meg, mely kategóriák mutatnak hétről hétre növekvő trendet. Melyek igényelnek priorizálást?"
       },
       "costs": {
-        "label": "Mi okozza a költségnövekedést és hogyan fékezhetjük meg?",
-        "message": "A költségek nemrég megnőttek. Mi változott projekt és modell szerint? Hogyan fékezhetjük meg ezt a válaszminőség romlása nélkül?"
+        "label": "Mi okozza a pinceköltség növekedését, és hogyan tudjuk visszafogni?",
+        "message": "A pinceköltség nemrég megugrott. Mi változott borprogramonként és szerződési szintenként? Hogyan tudjuk ezt visszafogni a kóstolók késleltetése nélkül?"
       },
       "governance": {
         "label": "Foglald össze a szabálysértéseket súlyosság szerint — mit priorizáljak?",
-        "message": "Bontsd le a szabálysértéseket szabályzatosztály szerint, és jelöld meg a gyorsuló tendenciákat. Mit priorizáljak először?"
+        "message": "Bontsa le a megfelelőségi szabálysértéseket kategória szerint (életkor-ellenőrzés, TTB, COLA), és jelölje meg mindazt, ami felgyorsul. Mit kell először priorizálnom?"
       },
       "support": {
-        "label": "Segíts egy bevezetési ellenőrzőlista vagy csapatkommunikáció elkészítésében",
-        "message": "Segíts egy bevezetési ellenőrzőlista elkészítésében, vagy egy felhasználóknak szóló kommunikáció megírásában egy közelgő változtatásról."
+        "label": "Segítsen elkészíteni egy bevezetési ellenőrzőlistát egy személyzeti közleményhez",
+        "message": "Segítsen elkészíteni egy bevezetési ellenőrzőlistát, vagy megfogalmazni egy személyzetnek szóló közleményt egy közelgő pinceváltozásról."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Hogyan teljesítenek az ágenseim ezen a héten?",
-          "message": "Hogyan teljesítenek az ágenseim ezen a héten? Foglald össze a sikerességi arányokat, hibatrendeket és a kiemelkedő ágenseket."
+          "label": "Hogyan teljesít a pincém ezen a héten?",
+          "message": "Hogyan teljesít a pince ezen a héten? Foglalja össze az időben történő szállításokat, a kezelt fennakadásriasztásokat és a kiemelkedő borprogramokat."
         },
         "activity": {
-          "label": "Mutasd a mai aktivitás összefoglalóját",
-          "message": "Adj összefoglalót a mai ágenstevékenységről — futtatások, befejezések, hibák és bármi szokatlan."
+          "label": "Mutasd meg a mai pinceaktivitást",
+          "message": "Adj egy összefoglalót a mai pinceaktivitásról — munkafolyamat-alkalmazások futtatásai, helyettesítések, riasztások és minden szokatlan dolog."
         },
         "teams": {
           "label": "Mely csapatok a legaktívabbak?",
-          "message": "Mely csapatok voltak a legaktívabbak az utóbbi időben? Mutasd meg az ágenshasználat bontását csapatonként."
+          "message": "Mely csapatok voltak a legaktívabbak az utóbbi időben? Mutasd meg a munkafolyamat-alkalmazások használatának lebontását csapatonként."
         },
         "issues": {
           "label": "Van valami probléma, amiről tudnom kellene?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Hol emelkednek a költségek?",
-          "message": "Hol emelkednek a költségek? Mutasd meg, mely ágensek vagy csapatok okozzák a növekedést."
+          "label": "Hol növekszik a pinceköltség?",
+          "message": "Hol növekszik a pinceköltség? Mutasd meg, mely borprogramok vagy pincék okozzák a növekedést."
         },
         "breakdown": {
-          "label": "Mutasd a költségbontást csapatonként",
-          "message": "Bontsd le a költségeket csapatonként ebben a hónapban. Hogyan viszonyul az előző hónaphoz?"
+          "label": "Pinceköltség megjelenítése helyszín szerint",
+          "message": "Bontsa le a pinceköltséget helyszín szerint erre a hónapra. Hogyan viszonyul az előző hónaphoz?"
         },
         "unusual": {
           "label": "Jelöld meg a szokatlan kiadásokat",
           "message": "Jelöld meg a szokatlan vagy váratlan kiadási mintákat. Vannak költségkiugrások, amelyeket meg kellene vizsgálnom?"
         },
         "reduce": {
-          "label": "Hogyan csökkkenthetem a költségeket?",
-          "message": "Elemezd a jelenlegi ágenshasználatomat, és javasolj módokat a költségek csökkentésére a teljesítmény romlása nélkül."
+          "label": "Hogyan csökkenthetem a pinceköltséget?",
+          "message": "Elemezze a munkafolyamat-alkalmazások jelenlegi használatát és a borlapokat, és javasoljon módokat a pinceköltség csökkentésére a kóstolók befolyásolása nélkül."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Mutasd a megfelelőségi összefoglalót",
-          "message": "Adj egy átfogó megfelelőségi összefoglalót — hány szabály teljesül, hány nem, és hány igényel figyelmet?"
+          "message": "Adj egy átfogó megfelelőségi összefoglalót — hány szabály (életkor-ellenőrzés, TTB, COLA) felel meg, bukik el vagy igényel figyelmet?"
         },
         "unresolved": {
           "label": "Listázd a megoldatlan szabálysértéseket",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Milyen integrációk érhetők el?",
-          "message": "Milyen integrációk érhetők el külső eszközökhöz és szolgáltatásokhoz való csatlakozáshoz?"
+          "message": "Milyen integrációk érhetők el a POS-hoz, készletrendszerekhez, forgalmazói portálokhoz vagy más forrásrendszerekhez való csatlakozáshoz?"
         },
         "notifications": {
           "label": "Tekintsd át az értesítési beállításokat",

@@ -1,16 +1,16 @@
-# Clarium Admin Dashboard
+# CellarTracker Admin Dashboard
 
-**[View Production Site](https://clarium-admin.pages.dev/)**
+**[View Production Site](https://cellartracker-admin.pages.dev/)**
 
 <p>
-  <img src="src/assets/images/cellartracker-logo.png" width="300" alt="Clarium Admin icon">
+  <img src="src/assets/images/cellartracker-logo.png" width="300" alt="CellarTracker Admin icon">
 </p>
 
 <p>
-  <img src="docs/gifs/demo.gif" width="800" alt="Clarium Admin demo - desktop and mobile views">
+  <img src="docs/gifs/demo.gif" width="800" alt="CellarTracker Admin demo - desktop and mobile views">
 </p>
 
-Cross-platform admin dashboard for Clarium's Astra OS — an AI-powered healthcare supply-chain operating system. Built with Expo + React Native + TypeScript.
+Cross-platform admin dashboard for CellarTracker's Cellar OS — an AI-powered wine cellar and inventory operating system. Built with Expo + React Native + TypeScript.
 
 ## ⚙️ Overview
 
@@ -172,9 +172,9 @@ Notes:
 
 ## ⚙️ Deployment
 
-`npm run deploy` exports the web build and deploys `dist/` to Cloudflare Pages using Wrangler (`clarium-admin`).
+`npm run deploy` exports the web build and deploys `dist/` to Cloudflare Pages using Wrangler (`cellartracker-admin`).
 
 ## ⚙️ License
 
-https://clarium.io/
+https://cellartracker.wine/
 All rights reserved.

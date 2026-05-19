@@ -52,7 +52,7 @@ export const DonutChart = React.memo(function DonutChart({
       return data.map((datum, index) => ({
         id: datum.key,
         value: datum.value,
-        color: colors[index] ?? "#6805F2",
+        color: colors[index] ?? "#9B2FB5",
         tooltipRows: [
           { label: datum.key, value: resolvedFormatValue(datum.value) },
           { label: "Share", value: formatPercent((datum.value / safeTotal) * 100) },
@@ -117,7 +117,7 @@ export const DonutChart = React.memo(function DonutChart({
                   style={[
                     styles.swatch,
                     {
-                      backgroundColor: pieData[i]?.color ?? "#6805F2",
+                      backgroundColor: pieData[i]?.color ?? "#9B2FB5",
                     },
                   ]}
                 />

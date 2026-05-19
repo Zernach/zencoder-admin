@@ -28,7 +28,7 @@ function timeRangeFromRuns(runs: { startedAtIso: string }[]): { fromIso: string;
 }
 
 const defaultFilters: AnalyticsFilters = {
-  orgId: "org_clarium_001",
+  orgId: "org_cellartracker_001",
   timeRange: timeRangeFromRuns(seedData.runs),
 };
 
@@ -192,8 +192,10 @@ describe("delegation via mock", () => {
         seatAdoptionRate: 0.8123,
         runSuccessRate: 0.7234,
         totalCostUsd: 47823.456,
-        providerShareCodex: 0.4512,
-        providerShareClaude: 0.4321,
+        providerShares: [
+          { provider: "openai", share: 0.4512 },
+          { provider: "anthropic", share: 0.4321 },
+        ],
         policyViolationCount: 5,
       },
       deltas: {
@@ -215,6 +217,7 @@ describe("delegation via mock", () => {
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
       getAgentsHub: jest.fn(),
+      getMachineLearning: jest.fn(),
       connectLiveAgentSessionsSocket: jest.fn(),
       getSearchSuggestions: jest.fn(),
       getAgentDetail: jest.fn(),
@@ -284,6 +287,7 @@ describe("delegation via mock", () => {
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
       getAgentsHub: jest.fn(),
+      getMachineLearning: jest.fn(),
       connectLiveAgentSessionsSocket: jest.fn(),
       getSearchSuggestions: jest.fn(),
       getAgentDetail: jest.fn(),
@@ -342,6 +346,7 @@ describe("getSearchSuggestions", () => {
       getReliability: jest.fn(),
       getGovernance: jest.fn(),
       getAgentsHub: jest.fn(),
+      getMachineLearning: jest.fn(),
       connectLiveAgentSessionsSocket: jest.fn(),
       getSearchSuggestions: jest.fn().mockResolvedValue(mockResponse),
       getAgentDetail: jest.fn(),
@@ -362,7 +367,7 @@ describe("getSearchSuggestions", () => {
     };
 
     const svc = new AnalyticsService(mockApi);
-    const request = { orgId: "org_clarium_001", query: "agent" };
+    const request = { orgId: "org_cellartracker_001", query: "agent" };
     const res = await svc.getSearchSuggestions(request);
 
     expect(mockApi.getSearchSuggestions).toHaveBeenCalledWith(request);
@@ -371,7 +376,7 @@ describe("getSearchSuggestions", () => {
 
   it("returns grouped suggestions from stub", async () => {
     const res = await service.getSearchSuggestions({
-      orgId: "org_clarium_001",
+      orgId: "org_cellartracker_001",
       query: "a",
     });
     expect(res.groups.length).toBeGreaterThan(0);

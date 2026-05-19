@@ -8,6 +8,12 @@ import { ChevronDown, X, Filter } from "lucide-react-native";
 import { useDashboardFilters } from "@/features/analytics/hooks/useDashboardFilters";
 import { useAppDependencies } from "@/core/di/AppDependencies";
 import type { ModelProvider, RunStatus, Option, FilterChip } from "@/features/analytics/types";
+import {
+  PROVIDER_VALUES,
+  PROVIDER_LABELS,
+  MODEL_VALUES,
+  MODEL_LABELS,
+} from "@/features/analytics/constants/providers";
 import { useThemeMode } from "@/providers/ThemeProvider";
 import { semanticThemes } from "@/theme/themes";
 import { spacing, radius } from "@/theme/tokens";
@@ -24,11 +30,9 @@ const CHIP_SCROLL_PROPS = {
   contentContainerStyle: { flexDirection: "row", gap: spacing[6], paddingVertical: spacing[32] } as const,
 } as const;
 
-const PROVIDER_VALUES: ModelProvider[] = ["codex", "claude", "other"];
-
 const STATUS_VALUES: RunStatus[] = ["succeeded", "failed", "running", "queued", "canceled"];
 
-type FilterCategory = "team" | "project" | "provider" | "status";
+type FilterCategory = "team" | "project" | "provider" | "model" | "status";
 
 interface FilterCategoryConfig {
   category: FilterCategory;
@@ -52,6 +56,7 @@ export const FilterBar = React.memo(function FilterBar({ visibleFilters }: Filte
     setTeamFilter,
     setProjectFilter,
     setProviderFilter,
+    setModelFilter,
     setStatusFilter,
     clearAll,
     activeFilterCount,
@@ -62,9 +67,16 @@ export const FilterBar = React.memo(function FilterBar({ visibleFilters }: Filte
 
   const closeDropdown = useCallback(() => setOpenDropdown(null), []);
 
+  // Provider and model labels are brand names — sourced from the shared
+  // providers constants rather than i18n (identical in every locale).
   const providerOptions: Option<ModelProvider>[] = useMemo(
-    () => PROVIDER_VALUES.map((v) => ({ label: t(`filters.providers.${v}`), value: v })),
-    [t],
+    () => PROVIDER_VALUES.map((v) => ({ label: PROVIDER_LABELS[v], value: v })),
+    [],
+  );
+
+  const modelOptions: Option[] = useMemo(
+    () => MODEL_VALUES.map((id) => ({ label: MODEL_LABELS[id] ?? id, value: id })),
+    [],
   );
 
   const statusOptions: Option<RunStatus>[] = useMemo(
@@ -137,6 +149,14 @@ export const FilterBar = React.memo(function FilterBar({ visibleFilters }: Filte
           ),
       },
       {
+        category: "model",
+        singularLabel: t("filters.model"),
+        pluralLabel: t("filters.modelsLabel"),
+        options: modelOptions,
+        selected: filters.modelIds ?? [],
+        onToggle: (v) => toggleArrayValue(v, filters.modelIds, setModelFilter),
+      },
+      {
         category: "status",
         singularLabel: t("filters.status"),
         pluralLabel: t("filters.statusesLabel"),
@@ -155,12 +175,14 @@ export const FilterBar = React.memo(function FilterBar({ visibleFilters }: Filte
       teamOptions,
       projectOptions,
       providerOptions,
+      modelOptions,
       statusOptions,
       filters,
       toggleArrayValue,
       setTeamFilter,
       setProjectFilter,
       setProviderFilter,
+      setModelFilter,
       setStatusFilter,
     ],
   );

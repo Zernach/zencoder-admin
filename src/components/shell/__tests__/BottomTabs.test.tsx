@@ -29,7 +29,7 @@ jest.mock("lucide-react-native", () => {
 
   return {
     Home: Icon,
-    Bot: Icon,
+    Cpu: Icon,
     DollarSign: Icon,
     Shield: Icon,
     MessageSquare: Icon,
@@ -54,7 +54,7 @@ describe("BottomTabs", () => {
     mockPathname = ROUTES.DASHBOARD;
     const { getByLabelText } = render(<BottomTabs />);
 
-    fireEvent.press(getByLabelText("navigation.agents"));
+    fireEvent.press(getByLabelText("navigation.systems"));
 
     expect(mockDispatch).toHaveBeenCalledTimes(1);
     expect(mockDispatch).toHaveBeenCalledWith(TabActions.jumpTo(TABS.AGENTS));
@@ -65,7 +65,7 @@ describe("BottomTabs", () => {
     mockPathname = ROUTES.AGENTS;
     const { getByLabelText } = render(<BottomTabs />);
 
-    fireEvent.press(getByLabelText("navigation.agents"));
+    fireEvent.press(getByLabelText("navigation.systems"));
 
     expect(mockDispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
@@ -80,7 +80,7 @@ describe("BottomTabs", () => {
 
     const { getByLabelText } = render(<BottomTabs />);
 
-    fireEvent.press(getByLabelText("navigation.agents"));
+    fireEvent.press(getByLabelText("navigation.systems"));
 
     expect(mockDispatch).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledTimes(1);

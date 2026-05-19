@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Submit",
     "cancel": "Cancel",
     "save": "Save",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Home",
-    "agents": "Agents",
+    "systems": "Systems",
     "costs": "Costs",
     "governance": "Governance",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Internationalization",
       "organization": "Organization",
       "dangerZone": "Danger Zone",
-      "evaluations": "Evaluations"
+      "evaluations": "Evaluations",
+      "mlPerformance": "Model Performance",
+      "mlModels": "Model Registry",
+      "mlTraining": "Training Runs"
     }
   },
   "dashboard": {
-    "subtitle": "Your Health System's Responsible Supply-Chain AI",
-    "subtitleWithData": "Your Health System's Responsible Supply-Chain AI",
+    "subtitle": "Your Cellar's Responsible Wine-Inventory AI",
+    "subtitleWithData": "Your Cellar's Responsible Wine-Inventory AI",
     "keyMetrics": "Key Metrics",
     "keyMetricsSubtitle": "At a glance",
     "trends": "Trends",
@@ -86,7 +89,7 @@
     "wauTrend": "Weekly Active Users (WAU)",
     "mauTrend": "Monthly Active Users (MAU)",
     "outcomes": "Outcomes",
-    "outcomesSubtitle": "Clinical & operational impact",
+    "outcomesSubtitle": "Cellar & operational impact",
     "automatedMergeRequestsPerDay": "Automated Substitution Approvals per Day",
     "reliabilityAndProviderMix": "Reliability & Provider Mix",
     "anomalies": "Anomalies",
@@ -94,7 +97,7 @@
     "run": "Run ",
     "live": {
       "title": "Live",
-      "subtitle": "Astra OS Workflow Apps in Action",
+      "subtitle": "Cellar OS Workflow Apps in Action",
       "succeeded": "Succeeded",
       "queued": "Queued",
       "running": "Running",
@@ -102,15 +105,15 @@
         "resting": "Workflow apps are idle right now.",
         "quiet": "It's quiet in here.",
         "noMembers": "No staff are running workflow apps right now.",
-        "waiting": "Waiting for the next supply-chain workflow."
+        "waiting": "Waiting for the next cellar workflow."
       },
       "emptySubtitle": "New live sessions will appear automatically as staff start workflow apps."
     },
-    "title": "AstraOS Operations Quality"
+    "title": "Cellar OS Operations Quality"
   },
   "agents": {
-    "subtitle": "Astra OS Workflow Apps",
-    "subtitleWithData": "Astra OS Workflow Apps",
+    "subtitle": "Cellar OS Workflow Apps",
+    "subtitleWithData": "Cellar OS Workflow Apps",
     "reliability": "Reliability",
     "reliabilitySubtitle": "Observability & Analytics",
     "successRate": "Success Rate",
@@ -169,9 +172,70 @@
     "evaluationTrend": "Trend",
     "viewEvaluationDetail": "View evaluation history for {{question}}"
   },
+  "systems": {
+    "title": "Systems",
+    "subtitle": "Every intelligent system powering CellarTracker",
+    "subtitleWithData": "{{agentCount}} agents and {{modelCount}} ML models in operation",
+    "agentsGroupTitle": "Agents",
+    "agentsGroupSubtitle": "Agentic LLM systems — runs, evaluations, and reliability",
+    "machineLearningGroupTitle": "Machine Learning",
+    "machineLearningGroupSubtitle": "Trained ML models — performance, drift, and training history"
+  },
+  "machineLearning": {
+    "performance": "Model Performance",
+    "performanceSubtitle": "Accuracy and prediction throughput across deployed models",
+    "totalModels": "Total Models",
+    "modelsInProduction": "Models in Production",
+    "predictionsServed": "Predictions (24h)",
+    "avgAccuracy": "Avg Model Accuracy",
+    "driftAlerts": "Drift Alerts",
+    "accuracyTrend": "Model Accuracy Trend",
+    "predictionVolumeTrend": "Prediction Volume",
+    "modelRegistry": "Model Registry",
+    "modelRegistrySubtitle": "{{count}} registered models",
+    "modelTypeBreakdown": "Models by Type",
+    "trainingRuns": "Training Runs",
+    "trainingRunsSubtitle": "{{count}} recent training jobs",
+    "table": {
+      "model": "Model",
+      "type": "Type",
+      "stage": "Stage",
+      "version": "Version",
+      "metric": "Metric",
+      "score": "Score",
+      "drift": "Drift",
+      "predictions": "Predictions",
+      "latency": "p95 Latency",
+      "lastTrained": "Last Trained",
+      "runId": "Run ID",
+      "status": "Status",
+      "started": "Started",
+      "duration": "Duration",
+      "dataset": "Dataset",
+      "epochs": "Epochs"
+    },
+    "stage": {
+      "production": "Production",
+      "staging": "Staging",
+      "training": "Training",
+      "retired": "Retired"
+    },
+    "modelType": {
+      "classification": "Classification",
+      "regression": "Regression",
+      "forecasting": "Forecasting",
+      "recommendation": "Recommendation",
+      "anomaly_detection": "Anomaly Detection"
+    },
+    "drift": {
+      "stable": "Stable",
+      "drifting": "Drifting",
+      "critical": "Critical"
+    }
+  },
   "costs": {
-    "subtitle": "Supply spend trends and budget tracking",
-    "subtitleWithData": "{{totalCost}} spent across {{projectCount}} service lines",
+    "subtitle": "Cellar spend trends and budget tracking",
+    "subtitleWithData": "{{totalCost}} spent across {{projectCount}} projects",
     "costSummary": "Cost per Team",
     "totalCost": "Total Cost",
     "avgPerRun": "Average Cost per Run",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Manage Facilities, Staff & Compliance Rules",
+    "subtitle": "Manage Teams, Staff & Compliance Rules",
     "subtitleWithData": "{{violations}} compliance violations, {{securityEvents}} security events",
     "overview": "Overview",
     "violations": "Violations",
@@ -375,17 +439,14 @@
     "project": "Project",
     "projects": "Projects",
     "provider": "Provider",
+    "model": "Model",
     "status": "Status",
     "filterBy": "Filter by {{category}}",
     "closeFilterDropdown": "Close filter dropdown",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Providers",
+    "modelsLabel": "Models",
     "statusesLabel": "Statuses",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Other"
-    },
     "statuses": {
       "succeeded": "Succeeded",
       "failed": "Failed",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "New Chat",
-    "startConversation": "Ask Astra about your supply chain",
+    "startConversation": "Ask Somm about your cellar",
     "askAnything": "Ask anything...",
     "messageInput": "Chat message input",
     "sendMessage": "Send message",
@@ -513,13 +574,13 @@
     "noConversationsYet": "No conversations yet.",
     "noConversationsMatchTopics": "No conversations match the selected topics.",
     "openChat": "Open chat {{title}}",
-    "welcomeTitle": "Hi! How can Astra help?",
+    "welcomeTitle": "Hi! How can Somm help?",
     "welcomeSubtitle": {
-      "dashboard": "Ask about supply-chain health, OTIF, disruption signals, or get a quick status check.",
+      "dashboard": "Ask about cellar health, on-time delivery, disruption signals, or get a quick status check.",
       "agents": "Dig into workflow-app performance, compare apps, or troubleshoot integrations.",
-      "costs": "Explore supply spend patterns, find contract savings, or investigate cost spikes.",
-      "governance": "Check compliance status, review violations, or audit your supply-chain policies.",
-      "settings": "Get help with workflow apps, supply spend, compliance, or support."
+      "costs": "Explore cellar spend patterns, find contract savings, or investigate cost spikes.",
+      "governance": "Check compliance status, review violations, or audit your cellar policies.",
+      "settings": "Get help with workflow apps, cellar spend, compliance, or support."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Group workflow-app failures by category and show which are trending up week over week. Which need triage?"
       },
       "costs": {
-        "label": "What's driving supply spend increases and how can we contain them?",
-        "message": "Supply spend jumped recently. What changed by service line and contract tier? How can we contain this without delaying clinical operations?"
+        "label": "What's driving cellar spend increases and how can we contain them?",
+        "message": "Cellar spend jumped recently. What changed by wine program and contract tier? How can we contain this without delaying tastings?"
       },
       "governance": {
         "label": "Summarize compliance violations by severity — what should I prioritize?",
-        "message": "Break down compliance violations by category (HIPAA, DSCSA, UDI) and flag anything accelerating. What should I prioritize first?"
+        "message": "Break down compliance violations by category (age verification, TTB, COLA) and flag anything accelerating. What should I prioritize first?"
       },
       "support": {
-        "label": "Help me prepare a rollout checklist for a clinical communication",
-        "message": "Help me prepare a rollout checklist or draft a clinician-facing communication for an upcoming supply-chain change."
+        "label": "Help me prepare a rollout checklist for a staff communication",
+        "message": "Help me prepare a rollout checklist or draft a staff-facing communication for an upcoming cellar change."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "How is my supply chain performing this week?",
-          "message": "How is the supply chain performing this week? Summarize OTIF, disruption alerts handled, and any standout service lines."
+          "label": "How is my cellar performing this week?",
+          "message": "How is the cellar performing this week? Summarize on-time delivery, disruption alerts handled, and any standout wine programs."
         },
         "activity": {
-          "label": "Show me today's supply-chain activity",
-          "message": "Give me a summary of today's supply-chain activity — workflow-app runs, substitutions, alerts, and anything unusual."
+          "label": "Show me today's cellar activity",
+          "message": "Give me a summary of today's cellar activity — workflow-app runs, substitutions, alerts, and anything unusual."
         },
         "teams": {
-          "label": "Which facilities are most active?",
-          "message": "Which facilities have been most active recently? Show me a breakdown of workflow-app usage by hospital."
+          "label": "Which teams are most active?",
+          "message": "Which teams have been most active recently? Show me a breakdown of workflow-app usage by team."
         },
         "issues": {
           "label": "Any issues I should know about?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Where is supply spend trending upwards?",
-          "message": "Where is supply spend trending upward? Show me which service lines or facilities are driving the increase."
+          "label": "Where is cellar spend trending upwards?",
+          "message": "Where is cellar spend trending upward? Show me which wine programs or cellars are driving the increase."
         },
         "breakdown": {
-          "label": "Show supply spend by facility",
-          "message": "Break down supply spend by facility for this month. How does it compare to last month?"
+          "label": "Show cellar spend by location",
+          "message": "Break down cellar spend by location for this month. How does it compare to last month?"
         },
         "unusual": {
           "label": "Flag unusual spending",
           "message": "Flag any unusual or unexpected spending patterns. Are there off-contract orders or cost spikes I should investigate?"
         },
         "reduce": {
-          "label": "How can I reduce supply spend?",
-          "message": "Analyze current workflow-app usage and procedure cards, and suggest ways to reduce supply spend without clinical impact."
+          "label": "How can I reduce cellar spend?",
+          "message": "Analyze current workflow-app usage and wine lists, and suggest ways to reduce cellar spend without affecting tastings."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Show compliance summary",
-          "message": "Give me an overall compliance summary — how many rules (HIPAA, DSCSA, UDI) are passing, failing, or need attention?"
+          "message": "Give me an overall compliance summary — how many rules (age verification, TTB, COLA) are passing, failing, or need attention?"
         },
         "unresolved": {
           "label": "List unresolved violations",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "What integrations are available?",
-          "message": "What integrations are available for connecting to Epic, Cerner, GHX, or other source systems?"
+          "message": "What integrations are available for connecting to POS, inventory systems, distributor portals, or other source systems?"
         },
         "notifications": {
           "label": "Review notification settings",

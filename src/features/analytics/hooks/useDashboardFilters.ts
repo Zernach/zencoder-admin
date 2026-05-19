@@ -33,6 +33,7 @@ interface DashboardFilterActions {
   setUserFilter: (ids?: string[]) => void;
   setProjectFilter: (ids?: string[]) => void;
   setProviderFilter: (providers?: ModelProvider[]) => void;
+  setModelFilter: (modelIds?: string[]) => void;
   setStatusFilter: (statuses?: RunStatus[]) => void;
   setSearchQuery: (query: string) => void;
   clearAll: () => void;
@@ -81,6 +82,10 @@ export function useDashboardFilterActions(): DashboardFilterActions {
     (p?: ModelProvider[]) => dispatch(filtersSlice.actions.setProviderFilter(p)),
     [dispatch],
   );
+  const setModelFilter = useCallback(
+    (m?: string[]) => dispatch(filtersSlice.actions.setModelFilter(m)),
+    [dispatch],
+  );
   const setStatusFilter = useCallback(
     (s?: RunStatus[]) => dispatch(filtersSlice.actions.setStatusFilter(s)),
     [dispatch],
@@ -102,6 +107,7 @@ export function useDashboardFilterActions(): DashboardFilterActions {
       setUserFilter,
       setProjectFilter,
       setProviderFilter,
+      setModelFilter,
       setStatusFilter,
       setSearchQuery,
       clearAll,
@@ -113,6 +119,7 @@ export function useDashboardFilterActions(): DashboardFilterActions {
       setUserFilter,
       setProjectFilter,
       setProviderFilter,
+      setModelFilter,
       setStatusFilter,
       setSearchQuery,
       clearAll,

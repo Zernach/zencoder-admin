@@ -175,7 +175,7 @@ export const Sidebar = React.memo(function Sidebar() {
                 resizeMode="contain"
                 accessibilityIgnoresInvertColors
               />
-              <Text style={[styles.brandText, { color: theme.text.primary }]}>clarium</Text>
+              <Text style={[styles.brandText, { color: theme.text.primary }]}>CellarTracker</Text>
             </View>
           )
         )}

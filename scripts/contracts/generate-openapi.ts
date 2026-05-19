@@ -89,7 +89,7 @@ function buildOpenApiDocument(): Record<string, unknown> {
   return {
     openapi: "3.1.0",
     info: {
-      title: "Clarium Admin API",
+      title: "CellarTrackerAdmin API",
       version: API_VERSION,
       description: "Generated endpoint contract from frontend endpoint registry.",
     },

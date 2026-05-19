@@ -39,8 +39,8 @@ describe("filter propagation", () => {
 
     expect(filtersResult.current.filters.providers).toBeUndefined();
 
-    act(() => filtersResult.current.setProviderFilter(["codex"]));
-    expect(filtersResult.current.filters.providers).toEqual(["codex"]);
+    act(() => filtersResult.current.setProviderFilter(["openai"]));
+    expect(filtersResult.current.filters.providers).toEqual(["openai"]);
     expect(filtersResult.current.activeFilterCount).toBe(1);
 
     act(() => filtersResult.current.setProviderFilter(undefined));
@@ -84,7 +84,7 @@ describe("filter propagation", () => {
 
     act(() => {
       filtersResult.current.setTeamFilter(["team_01"]);
-      filtersResult.current.setProviderFilter(["codex"]);
+      filtersResult.current.setProviderFilter(["openai"]);
       filtersResult.current.setStatusFilter(["failed"]);
     });
     expect(filtersResult.current.activeFilterCount).toBe(3);

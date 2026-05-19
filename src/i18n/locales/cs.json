@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Odeslat",
     "cancel": "Zrušit",
     "save": "Uložit",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Domů",
-    "agents": "Agenti",
+    "systems": "Systémy",
     "costs": "Náklady",
     "governance": "Správa",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Internacionalizace",
       "organization": "Organizace",
       "dangerZone": "Nebezpečná zóna",
-      "evaluations": "Hodnocení"
+      "evaluations": "Hodnocení",
+      "mlPerformance": "Výkon modelů",
+      "mlModels": "Registr modelů",
+      "mlTraining": "Tréninková spuštění"
     }
   },
   "dashboard": {
-    "subtitle": "Agenti a analytika vaší organizace",
-    "subtitleWithData": "Agenti a analytika vaší organizace",
+    "subtitle": "Zodpovědná AI pro inventář vína vašeho sklepa",
+    "subtitleWithData": "Zodpovědná AI pro inventář vína vašeho sklepa",
     "keyMetrics": "Klíčové ukazatele",
     "keyMetricsSubtitle": "Na první pohled",
     "trends": "Trendy",
@@ -86,7 +89,7 @@
     "wauTrend": "Týdenní aktivní uživatelé (WAU)",
     "mauTrend": "Měsíční aktivní uživatelé (MAU)",
     "outcomes": "Výsledky",
-    "outcomesSubtitle": "Kvalita kódu a doručování",
+    "outcomesSubtitle": "Dopad na sklep a provoz",
     "automatedMergeRequestsPerDay": "Automatická schválení substituce za den",
     "reliabilityAndProviderMix": "Spolehlivost a rozložení poskytovatelů",
     "anomalies": "Anomálie",
@@ -94,7 +97,7 @@
     "run": "Spuštění ",
     "live": {
       "title": "Živě",
-      "subtitle": "AI asistenti v akci",
+      "subtitle": "Pracovní aplikace Cellar OS v akci",
       "succeeded": "Úspěšné",
       "queued": "Ve frontě",
       "running": "Běžící",
@@ -102,15 +105,15 @@
         "resting": "Agenti právě odpočívají.",
         "quiet": "Tady je ticho.",
         "noMembers": "Žádný člen týmu právě nespouští agenty.",
-        "waiting": "Čekání na další pracovní postup agenta."
+        "waiting": "Čeká se na další pracovní postup sklepa."
       },
       "emptySubtitle": "Nové živé relace se zobrazí automaticky, jakmile inženýři zahájí spuštění."
     },
-    "title": "Hlavní panel"
+    "title": "Kvalita provozu Cellar OS"
   },
   "agents": {
-    "subtitle": "Inteligentní Automatizace Pracovních Toků",
-    "subtitleWithData": "Inteligentní Automatizace Pracovních Toků",
+    "subtitle": "Pracovní aplikace Cellar OS",
+    "subtitleWithData": "Pracovní aplikace Cellar OS",
     "reliability": "Spolehlivost",
     "reliabilitySubtitle": "Pozorovatelnost a analytika",
     "successRate": "Míra úspěšnosti",
@@ -169,8 +172,69 @@
     "evaluationTrend": "Trend",
     "viewEvaluationDetail": "Zobrazit historii hodnocení pro {{question}}"
   },
+  "systems": {
+    "title": "Systémy",
+    "subtitle": "Každý inteligentní systém pohánějící CellarTracker",
+    "subtitleWithData": "{{agentCount}} agentů a {{modelCount}} ML modelů v provozu",
+    "agentsGroupTitle": "Agenti",
+    "agentsGroupSubtitle": "Agentní systémy LLM — spuštění, hodnocení a spolehlivost",
+    "machineLearningGroupTitle": "Strojové učení",
+    "machineLearningGroupSubtitle": "Natrénované ML modely — výkon, drift a historie trénování"
+  },
+  "machineLearning": {
+    "performance": "Výkon modelů",
+    "performanceSubtitle": "Přesnost a propustnost predikcí napříč nasazenými modely",
+    "totalModels": "Celkem modelů",
+    "modelsInProduction": "Modely v produkci",
+    "predictionsServed": "Predikce (24 h)",
+    "avgAccuracy": "Prům. přesnost modelu",
+    "driftAlerts": "Upozornění na drift",
+    "accuracyTrend": "Trend přesnosti modelu",
+    "predictionVolumeTrend": "Objem predikcí",
+    "modelRegistry": "Registr modelů",
+    "modelRegistrySubtitle": "{{count}} registrovaných modelů",
+    "modelTypeBreakdown": "Modely podle typu",
+    "trainingRuns": "Tréninková spuštění",
+    "trainingRunsSubtitle": "{{count}} nedávných tréninkových úloh",
+    "table": {
+      "model": "Model",
+      "type": "Typ",
+      "stage": "Fáze",
+      "version": "Verze",
+      "metric": "Metrika",
+      "score": "Skóre",
+      "drift": "Drift",
+      "predictions": "Predikce",
+      "latency": "Latence p95",
+      "lastTrained": "Naposledy trénováno",
+      "runId": "ID spuštění",
+      "status": "Stav",
+      "started": "Zahájeno",
+      "duration": "Doba trvání",
+      "dataset": "Datová sada",
+      "epochs": "Epochy"
+    },
+    "stage": {
+      "production": "Produkce",
+      "staging": "Staging",
+      "training": "Trénování",
+      "retired": "Vyřazeno"
+    },
+    "modelType": {
+      "classification": "Klasifikace",
+      "regression": "Regrese",
+      "forecasting": "Prognózování",
+      "recommendation": "Doporučování",
+      "anomaly_detection": "Detekce anomálií"
+    },
+    "drift": {
+      "stable": "Stabilní",
+      "drifting": "Driftuje",
+      "critical": "Kritický"
+    }
+  },
   "costs": {
-    "subtitle": "Trendy výdajů a sledování rozpočtu",
+    "subtitle": "Trendy výdajů sklepa a sledování rozpočtu",
     "subtitleWithData": "{{totalCost}} utraceno v {{projectCount}} projektech",
     "costSummary": "Náklady na tým",
     "totalCost": "Celkové náklady",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Vynucování politik a monitorování bezpečnosti",
+    "subtitle": "Správa týmů, personálu a pravidel souladu",
     "subtitleWithData": "{{violations}} porušení, {{securityEvents}} bezpečnostních událostí",
     "overview": "Přehled",
     "violations": "Porušení",
@@ -375,17 +439,14 @@
     "project": "Projekt",
     "projects": "Projekty",
     "provider": "Poskytovatel",
+    "model": "Model",
     "status": "Stav",
     "filterBy": "Filtrovat dle {{category}}",
     "closeFilterDropdown": "Zavřít nabídku filtrů",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Poskytovatelé",
+    "modelsLabel": "Modely",
     "statusesLabel": "Stavy",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Ostatní"
-    },
     "statuses": {
       "succeeded": "Úspěšné",
       "failed": "Neúspěšné",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Nový chat",
-    "startConversation": "Diskutujte o tématech se svou AI",
+    "startConversation": "Zeptejte se Somm na svůj sklep",
     "askAnything": "Zeptejte se na cokoliv...",
     "messageInput": "Pole pro zadání zprávy",
     "sendMessage": "Odeslat zprávu",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Zatím žádné konverzace.",
     "noConversationsMatchTopics": "Žádné konverzace neodpovídají vybraným tématům.",
     "openChat": "Otevřít chat {{title}}",
-    "welcomeTitle": "Ahoj! Jak vám mohu pomoci?",
+    "welcomeTitle": "Ahoj! Jak může Somm pomoci?",
     "welcomeSubtitle": {
-      "dashboard": "Zeptejte se na výkon agentů, trendy aktivity nebo získejte rychlý přehled.",
+      "dashboard": "Zeptejte se na stav sklepa, včasné dodávky, signály narušení nebo si vyžádejte rychlou kontrolu stavu.",
       "agents": "Prozkoumejte zdraví agentů, porovnejte výkon nebo řešte problémy.",
-      "costs": "Prozkoumejte vzorce výdajů, najděte úspory nebo vyšetřete skoky nákladů.",
-      "governance": "Zkontrolujte stav shody, prohlédněte porušení nebo proveďte audit politik.",
-      "settings": "Získejte pomoc s agenty, náklady, správou nebo podporou."
+      "costs": "Prozkoumejte vzorce výdajů sklepa, najděte úspory ve smlouvách nebo prošetřete náhlé zvýšení nákladů.",
+      "governance": "Zkontrolujte stav souladu, prohlédněte si porušení nebo proveďte audit zásad svého sklepa.",
+      "settings": "Získejte pomoc s pracovními aplikacemi, výdaji sklepa, souladem nebo podporou."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Seskupte selhání podle rodiny modelů a ukažte, které kategorie rostou týden po týdnu. Které vyžadují prioritní pozornost?"
       },
       "costs": {
-        "label": "Co způsobuje růst nákladů a jak je omezit?",
-        "message": "Náklady nedávno vzrostly. Co se změnilo podle projektů a modelů? Jak je omezit bez zhoršení kvality odpovědí?"
+        "label": "Co způsobuje růst výdajů sklepa a jak je můžeme omezit?",
+        "message": "Výdaje sklepa nedávno vzrostly. Co se změnilo podle vinařských programů a úrovní smluv? Jak to můžeme omezit, aniž bychom zdržovali degustace?"
       },
       "governance": {
         "label": "Shrnutí porušení podle závažnosti — co prioritizovat?",
-        "message": "Rozdělte porušení podle třídy politik a označte ta, která se zrychlují. Co bych měl prioritizovat?"
+        "message": "Rozdělte porušení souladu podle kategorií (ověření věku, TTB, COLA) a označte vše, co se zrychluje. Co bych měl upřednostnit jako první?"
       },
       "support": {
-        "label": "Pomozte připravit kontrolní seznam pro nasazení nebo komunikaci s týmem",
-        "message": "Pomozte mi připravit kontrolní seznam pro nasazení nebo sestavit sdělení pro uživatele o nadcházející změně."
+        "label": "Pomozte mi připravit kontrolní seznam pro zavedení sdělení pro personál",
+        "message": "Pomozte mi připravit kontrolní seznam pro zavedení nebo navrhnout sdělení pro personál ohledně nadcházející změny ve sklepě."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Jak si vedou moji agenti tento týden?",
-          "message": "Jak si vedou moji agenti tento týden? Shrňte míru úspěšnosti, trendy chyb a vynikající agenty."
+          "label": "Jak si můj sklep vede tento týden?",
+          "message": "Jak si sklep vede tento týden? Shrňte včasné dodávky, vyřízené výstrahy o narušení a všechny vynikající vinařské programy."
         },
         "activity": {
-          "label": "Ukažte mi dnešní souhrn aktivity",
-          "message": "Dejte mi souhrn dnešní aktivity agentů — spuštění, dokončení, selhání a cokoli neobvyklého."
+          "label": "Ukažte mi dnešní aktivitu sklepa",
+          "message": "Dejte mi přehled dnešní aktivity sklepa — spuštění pracovních aplikací, náhrady, výstrahy a cokoli neobvyklého."
         },
         "teams": {
           "label": "Které týmy jsou nejaktivnější?",
-          "message": "Které týmy byly v poslední době nejaktivnější? Ukažte mi rozložení využití agentů podle týmů."
+          "message": "Které týmy byly v poslední době nejaktivnější? Ukažte mi rozdělení používání pracovních aplikací podle týmu."
         },
         "issues": {
           "label": "Jsou nějaké problémy, o kterých bych měl vědět?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Kde náklady rostou?",
-          "message": "Kde náklady vykazují rostoucí trend? Ukažte, kteří agenti nebo týmy způsobují nárůst."
+          "label": "Kde výdaje sklepa rostou?",
+          "message": "Kde výdaje sklepa rostou? Ukažte mi, které vinařské programy nebo sklepy způsobují nárůst."
         },
         "breakdown": {
-          "label": "Ukažte rozložení nákladů podle týmů",
-          "message": "Rozdělte náklady podle týmů za tento měsíc. Jak to vypadá ve srovnání s minulým měsícem?"
+          "label": "Zobrazit výdaje sklepa podle lokality",
+          "message": "Rozdělte výdaje sklepa podle lokality za tento měsíc. Jak se to srovnává s minulým měsícem?"
         },
         "unusual": {
           "label": "Označte neobvyklé výdaje",
           "message": "Označte neobvyklé nebo neočekávané vzorce výdajů. Jsou nějaké skoky nákladů, které by stálo za to prozkoumat?"
         },
         "reduce": {
-          "label": "Jak mohu snížit náklady?",
-          "message": "Analyzujte mé aktuální využití agentů a navrhněte způsoby, jak snížit náklady bez dopadu na výkon."
+          "label": "Jak mohu snížit výdaje sklepa?",
+          "message": "Analyzujte současné používání pracovních aplikací a vinné lístky a navrhněte způsoby, jak snížit výdaje sklepa, aniž by to ovlivnilo degustace."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Ukažte souhrn shody",
-          "message": "Dejte mi celkový souhrn shody — kolik pravidel prochází, neprochází nebo vyžaduje pozornost?"
+          "message": "Dejte mi celkový přehled o souladu — kolik pravidel (ověření věku, TTB, COLA) prochází, selhává nebo vyžaduje pozornost?"
         },
         "unresolved": {
           "label": "Seznam nevyřešených porušení",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Jaké integrace jsou k dispozici?",
-          "message": "Jaké integrace jsou k dispozici pro připojení k externím nástrojům a službám?"
+          "message": "Jaké integrace jsou k dispozici pro připojení k POS, systémům inventáře, portálům distributorů nebo jiným zdrojovým systémům?"
         },
         "notifications": {
           "label": "Zkontrolujte nastavení oznámení",

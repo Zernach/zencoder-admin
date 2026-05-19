@@ -185,7 +185,7 @@ describe("SettingsScreen", () => {
   it("renders org info rows with seat progress", () => {
     const { getByText } = renderWithStore(<SettingsScreen />);
 
-    expect(getByText("org_clarium_001")).toBeTruthy();
+    expect(getByText("org_cellartracker_001")).toBeTruthy();
     expect(getByText("settings.enterprise")).toBeTruthy();
     expect(getByText("73 / 100")).toBeTruthy();
     expect(getByText(/settings\.seatsUsed/)).toBeTruthy();

@@ -11,6 +11,7 @@ import type {
   ReliabilityResponse,
   GovernanceResponse,
   AgentsHubResponse,
+  MachineLearningResponse,
   SearchSuggestionsRequest,
   SearchSuggestionsResponse,
   GetAgentDetailRequest,
@@ -56,6 +57,7 @@ export const analyticsApi = createApi({
     "Reliability",
     "Governance",
     "AgentsHub",
+    "MachineLearning",
     "Search",
     "AgentDetail",
     "ProjectDetail",
@@ -142,6 +144,17 @@ export const analyticsApi = createApi({
         }
       },
       providesTags: ["AgentsHub"],
+    }),
+
+    getMachineLearning: builder.query<MachineLearningResponse, AnalyticsFilters>({
+      queryFn: async (filters) => {
+        try {
+          return { data: await getService().getMachineLearning(filters) };
+        } catch (e) {
+          return { error: toApiError(e) };
+        }
+      },
+      providesTags: ["MachineLearning"],
     }),
 
     // ─── Search ────────────────────────────────────────────
@@ -353,6 +366,7 @@ export const {
   useGetReliabilityQuery,
   useGetGovernanceQuery,
   useGetAgentsHubQuery,
+  useGetMachineLearningQuery,
   useGetSearchSuggestionsQuery,
   useGetAgentDetailQuery,
   useGetProjectDetailQuery,

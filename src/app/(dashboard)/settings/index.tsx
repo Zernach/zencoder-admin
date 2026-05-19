@@ -40,7 +40,7 @@ import {
 
 const SEATS_PURCHASED = 100;
 const SEATS_USED = 73;
-const ORG_ID = "org_clarium_001";
+const ORG_ID = "org_cellartracker_001";
 
 function blurFocusedElementOnWeb(): void {
   if (Platform.OS !== "web") {

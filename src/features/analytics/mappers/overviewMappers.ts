@@ -1,5 +1,6 @@
 import type { OverviewResponse, OutcomesResponse, TimeSeriesPoint, RunAnomaly, DeltaPolarity } from "../types";
 import { formatPercent, formatCompactNumber } from "../utils/formatters";
+import { PROVIDER_LABELS } from "../constants/providers";
 import { ROUTES } from "@/constants/routes";
 
 export interface KpiCardData {
@@ -38,8 +39,11 @@ export function mapOverviewToViewModel(
     ],
     reliabilityKpis: [
       { title: "Success Rate", value: formatPercent(k.runSuccessRate * 100), delta: d.runSuccessRate },
-      { title: "Codex Share", value: formatPercent(k.providerShareCodex * 100), caption: "Provider mix" },
-      { title: "Claude Share", value: formatPercent(k.providerShareClaude * 100), caption: "Provider mix" },
+      ...k.providerShares.slice(0, 2).map((entry) => ({
+        title: `${PROVIDER_LABELS[entry.provider]} Share`,
+        value: formatPercent(entry.share * 100),
+        caption: "Provider mix",
+      })),
     ],
     usageKpis: [],
     outcomesKpis: outcomes

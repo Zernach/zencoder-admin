@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import type { ProviderCostRow } from "@/features/analytics/types";
+import { PROVIDER_LABELS } from "@/features/analytics/constants/providers";
 import { formatCompactNumber, formatPercent } from "@/features/analytics/utils/formatters";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { BarChart, type BarChartBreakdownDatum } from "./BarChart";
@@ -7,12 +8,6 @@ import { BarChart, type BarChartBreakdownDatum } from "./BarChart";
 interface ProviderTokenCostBarChartProps {
   data: ProviderCostRow[];
 }
-
-const PROVIDER_LABELS: Record<ProviderCostRow["provider"], string> = {
-  codex: "Codex",
-  claude: "Claude",
-  other: "Other",
-};
 
 function computeCostPerToken(row: ProviderCostRow): number {
   if (row.totalTokens <= 0) return 0;

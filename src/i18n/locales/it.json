@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Invia",
     "cancel": "Annulla",
     "save": "Salva",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Home",
-    "agents": "Agenti",
+    "systems": "Sistemi",
     "costs": "Costi",
     "governance": "Governance",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Internazionalizzazione",
       "organization": "Organizzazione",
       "dangerZone": "Zona pericolosa",
-      "evaluations": "Valutazioni"
+      "evaluations": "Valutazioni",
+      "mlPerformance": "Prestazioni dei modelli",
+      "mlModels": "Registro dei modelli",
+      "mlTraining": "Esecuzioni di addestramento"
     }
   },
   "dashboard": {
-    "subtitle": "Agenti e analisi della tua organizzazione",
-    "subtitleWithData": "Agenti e analisi della tua organizzazione",
+    "subtitle": "L'IA responsabile per l'inventario dei vini della tua cantina",
+    "subtitleWithData": "L'IA responsabile per l'inventario dei vini della tua cantina",
     "keyMetrics": "Metriche chiave",
     "keyMetricsSubtitle": "A colpo d'occhio",
     "trends": "Tendenze",
@@ -86,7 +89,7 @@
     "wauTrend": "Utenti attivi settimanali (WAU)",
     "mauTrend": "Utenti attivi mensili (MAU)",
     "outcomes": "Risultati",
-    "outcomesSubtitle": "Qualità del codice e consegna",
+    "outcomesSubtitle": "Impatto sulla cantina e sulle operazioni",
     "automatedMergeRequestsPerDay": "Approvazioni automatiche di sostituzione al giorno",
     "reliabilityAndProviderMix": "Affidabilità e mix provider",
     "anomalies": "Anomalie",
@@ -94,7 +97,7 @@
     "run": "Esecuzione ",
     "live": {
       "title": "In diretta",
-      "subtitle": "Assistenti IA in azione",
+      "subtitle": "App di flusso di lavoro Cellar OS in azione",
       "succeeded": "Completato",
       "queued": "In coda",
       "running": "In esecuzione",
@@ -102,15 +105,15 @@
         "resting": "Gli agenti stanno riposando.",
         "quiet": "È tutto tranquillo qui.",
         "noMembers": "Nessun membro del team sta eseguendo agenti in questo momento.",
-        "waiting": "In attesa del prossimo workflow dell'agente."
+        "waiting": "In attesa del prossimo flusso di lavoro della cantina."
       },
       "emptySubtitle": "Le nuove sessioni appariranno automaticamente quando gli sviluppatori avvieranno le esecuzioni."
     },
-    "title": "Home Amministratore"
+    "title": "Qualità operativa di Cellar OS"
   },
   "agents": {
-    "subtitle": "Automazioni Intelligenti dei Flussi di Lavoro",
-    "subtitleWithData": "Automazioni Intelligenti dei Flussi di Lavoro",
+    "subtitle": "App di flusso di lavoro Cellar OS",
+    "subtitleWithData": "App di flusso di lavoro Cellar OS",
     "reliability": "Affidabilità",
     "reliabilitySubtitle": "Osservabilità e analisi",
     "successRate": "Tasso di successo",
@@ -169,9 +172,70 @@
     "evaluationTrend": "Andamento",
     "viewEvaluationDetail": "Visualizza la cronologia delle valutazioni per {{question}}"
   },
+  "systems": {
+    "title": "Sistemi",
+    "subtitle": "Ogni sistema intelligente che alimenta CellarTracker",
+    "subtitleWithData": "{{agentCount}} agenti e {{modelCount}} modelli ML in funzione",
+    "agentsGroupTitle": "Agenti",
+    "agentsGroupSubtitle": "Sistemi LLM agentici — esecuzioni, valutazioni e affidabilità",
+    "machineLearningGroupTitle": "Machine Learning",
+    "machineLearningGroupSubtitle": "Modelli ML addestrati — prestazioni, deriva e cronologia di addestramento"
+  },
+  "machineLearning": {
+    "performance": "Prestazioni dei modelli",
+    "performanceSubtitle": "Accuratezza e throughput di previsione tra i modelli distribuiti",
+    "totalModels": "Modelli totali",
+    "modelsInProduction": "Modelli in produzione",
+    "predictionsServed": "Previsioni (24 h)",
+    "avgAccuracy": "Accuratezza media dei modelli",
+    "driftAlerts": "Avvisi di deriva",
+    "accuracyTrend": "Andamento dell'accuratezza dei modelli",
+    "predictionVolumeTrend": "Volume di previsioni",
+    "modelRegistry": "Registro dei modelli",
+    "modelRegistrySubtitle": "{{count}} modelli registrati",
+    "modelTypeBreakdown": "Modelli per tipo",
+    "trainingRuns": "Esecuzioni di addestramento",
+    "trainingRunsSubtitle": "{{count}} job di addestramento recenti",
+    "table": {
+      "model": "Modello",
+      "type": "Tipo",
+      "stage": "Fase",
+      "version": "Versione",
+      "metric": "Metrica",
+      "score": "Punteggio",
+      "drift": "Deriva",
+      "predictions": "Previsioni",
+      "latency": "Latenza p95",
+      "lastTrained": "Ultimo addestramento",
+      "runId": "ID esecuzione",
+      "status": "Stato",
+      "started": "Avviato",
+      "duration": "Durata",
+      "dataset": "Dataset",
+      "epochs": "Epoche"
+    },
+    "stage": {
+      "production": "Produzione",
+      "staging": "Staging",
+      "training": "Addestramento",
+      "retired": "Ritirato"
+    },
+    "modelType": {
+      "classification": "Classificazione",
+      "regression": "Regressione",
+      "forecasting": "Previsione",
+      "recommendation": "Raccomandazione",
+      "anomaly_detection": "Rilevamento anomalie"
+    },
+    "drift": {
+      "stable": "Stabile",
+      "drifting": "In deriva",
+      "critical": "Critica"
+    }
+  },
   "costs": {
-    "subtitle": "Tendenze di spesa e monitoraggio del budget",
-    "subtitleWithData": "{{totalCost}} speso per {{projectCount}} progetti",
+    "subtitle": "Tendenze di spesa della cantina e monitoraggio del budget",
+    "subtitleWithData": "{{totalCost}} spesi su {{projectCount}} progetti",
     "costSummary": "Costo per Team",
     "totalCost": "Costo totale",
     "avgPerRun": "Media / esec.",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Applicazione delle policy e monitoraggio della sicurezza",
+    "subtitle": "Gestisci team, personale e regole di conformità",
     "subtitleWithData": "{{violations}} violazioni, {{securityEvents}} eventi di sicurezza",
     "overview": "Panoramica",
     "violations": "Violazioni",
@@ -375,17 +439,14 @@
     "project": "Progetto",
     "projects": "Progetti",
     "provider": "Provider",
+    "model": "Modello",
     "status": "Stato",
     "filterBy": "Filtra per {{category}}",
     "closeFilterDropdown": "Chiudi filtro",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Provider",
+    "modelsLabel": "Modelli",
     "statusesLabel": "Stati",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Altro"
-    },
     "statuses": {
       "succeeded": "Completato",
       "failed": "Fallito",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Nuova chat",
-    "startConversation": "Discuti argomenti con la tua IA",
+    "startConversation": "Chiedi a Somm informazioni sulla tua cantina",
     "askAnything": "Chiedi qualsiasi cosa...",
     "messageInput": "Input messaggio chat",
     "sendMessage": "Invia messaggio",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Nessuna conversazione ancora.",
     "noConversationsMatchTopics": "Nessuna conversazione corrisponde agli argomenti selezionati.",
     "openChat": "Apri chat {{title}}",
-    "welcomeTitle": "Ciao! Come posso aiutarti?",
+    "welcomeTitle": "Ciao! Come può aiutarti Somm?",
     "welcomeSubtitle": {
-      "dashboard": "Chiedi informazioni sulle prestazioni degli agenti, le tendenze delle attività o ottieni un rapido controllo dello stato.",
+      "dashboard": "Chiedi informazioni sullo stato della cantina, sulle consegne puntuali, sui segnali di interruzione o ottieni un rapido controllo dello stato.",
       "agents": "Approfondisci lo stato degli agenti, confronta le prestazioni o risolvi i problemi.",
-      "costs": "Esplora i modelli di spesa, trova risparmi o indaga sui picchi di costi.",
-      "governance": "Verifica lo stato di conformità, esamina le violazioni o controlla le tue policy.",
-      "settings": "Ottieni aiuto con agenti, costi, governance o supporto."
+      "costs": "Esplora i modelli di spesa della cantina, trova risparmi sui contratti o indaga sui picchi di costo.",
+      "governance": "Controlla lo stato di conformità, esamina le violazioni o verifica le politiche della tua cantina.",
+      "settings": "Ottieni assistenza con le app di flusso di lavoro, la spesa della cantina, la conformità o il supporto."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Raggruppa gli errori per famiglia di modello e mostra quali categorie sono in aumento settimana dopo settimana. Quali richiedono triage?"
       },
       "costs": {
-        "label": "Cosa sta causando l'aumento dei costi e come possiamo contenerli?",
-        "message": "I costi sono aumentati di recente. Cosa è cambiato per progetto e modello? Come possiamo contenere questo senza compromettere la qualità delle risposte?"
+        "label": "Cosa sta determinando l'aumento della spesa della cantina e come possiamo contenerlo?",
+        "message": "La spesa della cantina è aumentata di recente. Cosa è cambiato per programma vinicolo e livello di contratto? Come possiamo contenere questo senza ritardare le degustazioni?"
       },
       "governance": {
         "label": "Riassumi le violazioni per gravità — cosa devo dare priorità?",
-        "message": "Suddividi le violazioni per classe di policy e segnala tutto ciò che si sta accelerando. Cosa devo dare priorità per primo?"
+        "message": "Suddividi le violazioni di conformità per categoria (verifica dell'età, TTB, COLA) e segnala tutto ciò che sta accelerando. Cosa dovrei dare priorità per primo?"
       },
       "support": {
-        "label": "Aiutami a preparare una checklist di rilascio o una comunicazione al team",
-        "message": "Aiutami a preparare una checklist di rilascio o a redigere una comunicazione per gli utenti riguardo a un cambiamento imminente."
+        "label": "Aiutami a preparare una lista di controllo per l'implementazione di una comunicazione al personale",
+        "message": "Aiutami a preparare una lista di controllo per l'implementazione o a redigere una comunicazione rivolta al personale per un imminente cambiamento nella cantina."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Come stanno andando i miei agenti questa settimana?",
-          "message": "Come stanno andando i miei agenti questa settimana? Riassumi tassi di successo, tendenze degli errori e agenti di spicco."
+          "label": "Come sta andando la mia cantina questa settimana?",
+          "message": "Come sta andando la cantina questa settimana? Riepiloga le consegne puntuali, gli avvisi di interruzione gestiti ed eventuali programmi vinicoli di spicco."
         },
         "activity": {
-          "label": "Mostrami il riepilogo delle attività di oggi",
-          "message": "Dammi un riepilogo dell'attività degli agenti oggi — esecuzioni, completamenti, errori e qualsiasi cosa insolita."
+          "label": "Mostrami l'attività della cantina di oggi",
+          "message": "Dammi un riepilogo dell'attività della cantina di oggi: esecuzioni di app di flusso di lavoro, sostituzioni, avvisi e qualsiasi cosa insolita."
         },
         "teams": {
           "label": "Quali team sono più attivi?",
-          "message": "Quali team sono stati più attivi di recente? Mostrami una suddivisione dell'utilizzo degli agenti per team."
+          "message": "Quali team sono stati più attivi di recente? Mostrami una suddivisione dell'utilizzo delle app di flusso di lavoro per team."
         },
         "issues": {
           "label": "Ci sono problemi che dovrei sapere?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Dove stanno aumentando i costi?",
-          "message": "Dove stanno aumentando i costi? Mostrami quali agenti o team stanno causando l'aumento."
+          "label": "Dove sta aumentando la spesa della cantina?",
+          "message": "Dove sta aumentando la spesa della cantina? Mostrami quali programmi vinicoli o cantine stanno determinando l'aumento."
         },
         "breakdown": {
-          "label": "Mostra la suddivisione dei costi per team",
-          "message": "Suddividi i costi per team per questo mese. Come si confronta con il mese scorso?"
+          "label": "Mostra la spesa della cantina per sede",
+          "message": "Suddividi la spesa della cantina per sede per questo mese. Come si confronta con il mese scorso?"
         },
         "unusual": {
           "label": "Segnalare spese insolite",
           "message": "Segnala eventuali modelli di spesa insoliti o inaspettati. Ci sono picchi di costi che dovrei indagare?"
         },
         "reduce": {
-          "label": "Come posso ridurre i costi?",
-          "message": "Analizza il mio utilizzo attuale degli agenti e suggerisci modi per ridurre i costi senza compromettere le prestazioni."
+          "label": "Come posso ridurre la spesa della cantina?",
+          "message": "Analizza l'utilizzo attuale delle app di flusso di lavoro e le carte dei vini e suggerisci modi per ridurre la spesa della cantina senza influire sulle degustazioni."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Mostra il riepilogo di conformità",
-          "message": "Dammi un riepilogo generale della conformità — quante regole sono rispettate, violate o richiedono attenzione?"
+          "message": "Dammi un riepilogo generale della conformità: quante regole (verifica dell'età, TTB, COLA) sono conformi, non conformi o richiedono attenzione?"
         },
         "unresolved": {
           "label": "Elencare le violazioni non risolte",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Quali integrazioni sono disponibili?",
-          "message": "Quali integrazioni sono disponibili per connettersi a strumenti e servizi esterni?"
+          "message": "Quali integrazioni sono disponibili per connettersi a POS, sistemi di inventario, portali dei distributori o altri sistemi di origine?"
         },
         "notifications": {
           "label": "Verificare le impostazioni di notifica",

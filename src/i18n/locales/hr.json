@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Pošalji",
     "cancel": "Odustani",
     "save": "Spremi",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Početna",
-    "agents": "Agenti",
+    "systems": "Sustavi",
     "costs": "Troškovi",
     "governance": "Upravljanje",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Internacionalizacija",
       "organization": "Organizacija",
       "dangerZone": "Opasna zona",
-      "evaluations": "Evaluacije"
+      "evaluations": "Evaluacije",
+      "mlPerformance": "Performanse modela",
+      "mlModels": "Registar modela",
+      "mlTraining": "Izvršavanja treniranja"
     }
   },
   "dashboard": {
-    "subtitle": "Agenti i analitika vaše organizacije",
-    "subtitleWithData": "Agenti i analitika vaše organizacije",
+    "subtitle": "Odgovorna umjetna inteligencija za inventar vina vašeg podruma",
+    "subtitleWithData": "Odgovorna umjetna inteligencija za inventar vina vašeg podruma",
     "keyMetrics": "Ključne metrike",
     "keyMetricsSubtitle": "Na prvi pogled",
     "trends": "Trendovi",
@@ -86,7 +89,7 @@
     "wauTrend": "Tjedni aktivni korisnici (WAU)",
     "mauTrend": "Mjesečni aktivni korisnici (MAU)",
     "outcomes": "Ishodi",
-    "outcomesSubtitle": "Kvaliteta koda i isporuka",
+    "outcomesSubtitle": "Utjecaj na podrum i poslovanje",
     "automatedMergeRequestsPerDay": "Automatska odobrenja zamjene po danu",
     "reliabilityAndProviderMix": "Pouzdanost i miks pružatelja",
     "anomalies": "Anomalije",
@@ -94,7 +97,7 @@
     "run": "Izvršavanje ",
     "live": {
       "title": "Uživo",
-      "subtitle": "AI asistenti u akciji",
+      "subtitle": "Aplikacije za radne tijekove Cellar OS na djelu",
       "succeeded": "Uspjelo",
       "queued": "U redu",
       "running": "Izvršava se",
@@ -102,15 +105,15 @@
         "resting": "Agenti trenutno odmaraju.",
         "quiet": "Ovdje je tiho.",
         "noMembers": "Nijedan član tima trenutno ne pokreće agente.",
-        "waiting": "Čekanje sljedećeg radnog procesa agenta."
+        "waiting": "Čeka se sljedeći radni tijek podruma."
       },
       "emptySubtitle": "Nove sesije će se automatski pojaviti kada inženjeri pokrenu izvršavanja."
     },
-    "title": "Admin Početna"
+    "title": "Kvaliteta poslovanja Cellar OS"
   },
   "agents": {
-    "subtitle": "Inteligentne Automatizacije Tijekova Rada",
-    "subtitleWithData": "Inteligentne Automatizacije Tijekova Rada",
+    "subtitle": "Aplikacije za radne tijekove Cellar OS",
+    "subtitleWithData": "Aplikacije za radne tijekove Cellar OS",
     "reliability": "Pouzdanost",
     "reliabilitySubtitle": "Vidljivost i analitika",
     "successRate": "Stopa uspjeha",
@@ -169,9 +172,70 @@
     "evaluationTrend": "Trend",
     "viewEvaluationDetail": "Pregled povijesti evaluacija za {{question}}"
   },
+  "systems": {
+    "title": "Sustavi",
+    "subtitle": "Svaki inteligentni sustav koji pokreće CellarTracker",
+    "subtitleWithData": "{{agentCount}} agenata i {{modelCount}} ML modela u radu",
+    "agentsGroupTitle": "Agenti",
+    "agentsGroupSubtitle": "Agentni LLM sustavi — izvršavanja, evaluacije i pouzdanost",
+    "machineLearningGroupTitle": "Strojno učenje",
+    "machineLearningGroupSubtitle": "Trenirani ML modeli — performanse, drift i povijest treniranja"
+  },
+  "machineLearning": {
+    "performance": "Performanse modela",
+    "performanceSubtitle": "Točnost i propusnost predviđanja u implementiranim modelima",
+    "totalModels": "Ukupno modela",
+    "modelsInProduction": "Modeli u produkciji",
+    "predictionsServed": "Predviđanja (24h)",
+    "avgAccuracy": "Prosječna točnost modela",
+    "driftAlerts": "Upozorenja o driftu",
+    "accuracyTrend": "Trend točnosti modela",
+    "predictionVolumeTrend": "Volumen predviđanja",
+    "modelRegistry": "Registar modela",
+    "modelRegistrySubtitle": "{{count}} registriranih modela",
+    "modelTypeBreakdown": "Modeli po tipu",
+    "trainingRuns": "Izvršavanja treniranja",
+    "trainingRunsSubtitle": "{{count}} nedavnih poslova treniranja",
+    "table": {
+      "model": "Model",
+      "type": "Tip",
+      "stage": "Faza",
+      "version": "Verzija",
+      "metric": "Metrika",
+      "score": "Ocjena",
+      "drift": "Drift",
+      "predictions": "Predviđanja",
+      "latency": "p95 latencija",
+      "lastTrained": "Posljednje treniranje",
+      "runId": "ID izvršavanja",
+      "status": "Status",
+      "started": "Pokrenuto",
+      "duration": "Trajanje",
+      "dataset": "Skup podataka",
+      "epochs": "Epohe"
+    },
+    "stage": {
+      "production": "Produkcija",
+      "staging": "Staging",
+      "training": "Treniranje",
+      "retired": "Povučen iz upotrebe"
+    },
+    "modelType": {
+      "classification": "Klasifikacija",
+      "regression": "Regresija",
+      "forecasting": "Prognoziranje",
+      "recommendation": "Preporuke",
+      "anomaly_detection": "Otkrivanje anomalija"
+    },
+    "drift": {
+      "stable": "Stabilan",
+      "drifting": "Drifta",
+      "critical": "Kritičan"
+    }
+  },
   "costs": {
-    "subtitle": "Trendovi potrošnje i praćenje proračuna",
-    "subtitleWithData": "{{totalCost}} potrošeno za {{projectCount}} projekata",
+    "subtitle": "Trendovi potrošnje podruma i praćenje proračuna",
+    "subtitleWithData": "{{totalCost}} potrošeno na {{projectCount}} projekata",
     "costSummary": "Trošak po timu",
     "totalCost": "Ukupni trošak",
     "avgPerRun": "Prosječni trošak po izvršavanju",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Provođenje politika i nadzor sigurnosti",
+    "subtitle": "Upravljanje timovima, osobljem i pravilima usklađenosti",
     "subtitleWithData": "{{violations}} kršenja, {{securityEvents}} sigurnosnih događaja",
     "overview": "Pregled",
     "violations": "Kršenja",
@@ -375,17 +439,14 @@
     "project": "Projekt",
     "projects": "Projekti",
     "provider": "Pružatelj",
+    "model": "Model",
     "status": "Status",
     "filterBy": "Filtriraj po {{category}}",
     "closeFilterDropdown": "Zatvori filtar",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Pružatelji",
+    "modelsLabel": "Modeli",
     "statusesLabel": "Statusi",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Ostalo"
-    },
     "statuses": {
       "succeeded": "Uspjelo",
       "failed": "Neuspjelo",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Novi razgovor",
-    "startConversation": "Razgovarajte o temama sa svojom AI",
+    "startConversation": "Pitajte Somm o svojem podrumu",
     "askAnything": "Pitaj bilo što...",
     "messageInput": "Polje za unos poruke",
     "sendMessage": "Pošalji poruku",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Još nema razgovora.",
     "noConversationsMatchTopics": "Nijedan razgovor ne odgovara odabranim temama.",
     "openChat": "Otvori razgovor {{title}}",
-    "welcomeTitle": "Bok! Kako vam mogu pomoći?",
+    "welcomeTitle": "Bok! Kako Somm može pomoći?",
     "welcomeSubtitle": {
-      "dashboard": "Pitaj o performansama agenata, trendovima aktivnosti ili dobij brzu provjeru statusa.",
+      "dashboard": "Pitajte o stanju podruma, isporukama na vrijeme, signalima poremećaja ili zatražite brzu provjeru statusa.",
       "agents": "Istraži zdravlje agenata, usporedi performanse ili otkloni probleme.",
-      "costs": "Istraži obrasce potrošnje, pronađi uštede ili istraži skokove troškova.",
-      "governance": "Provjeri status sukladnosti, pregledaj kršenja ili revidiraj svoje politike.",
-      "settings": "Dobij pomoć s agentima, troškovima, upravljanjem ili podrškom."
+      "costs": "Istražite obrasce potrošnje podruma, pronađite uštede na ugovorima ili istražite skokove troškova.",
+      "governance": "Provjerite status usklađenosti, pregledajte kršenja ili revidirajte pravila svojeg podruma.",
+      "settings": "Dobijte pomoć s aplikacijama za radne tijekove, potrošnjom podruma, usklađenošću ili podrškom."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Grupiraj neuspjehe po obitelji modela i pokaži koje kategorije rastu iz tjedna u tjedan. Koje trebaju prioritizaciju?"
       },
       "costs": {
-        "label": "Što uzrokuje rast troškova i kako ih možemo obuzdati?",
-        "message": "Troškovi su nedavno porasli. Što se promijenilo po projektu i modelu? Kako to možemo obuzdati bez narušavanja kvalitete odgovora?"
+        "label": "Što potiče povećanje potrošnje podruma i kako je možemo obuzdati?",
+        "message": "Potrošnja podruma nedavno je naglo porasla. Što se promijenilo po programu vina i razini ugovora? Kako to možemo obuzdati bez odgađanja kušanja?"
       },
       "governance": {
         "label": "Sažmi kršenja po ozbiljnosti — što bih trebao/la prioritizirati?",
-        "message": "Raščlani kršenja po klasi politike i označi sve što ubrzava. Što bih trebao/la prioritizirati prvo?"
+        "message": "Raščlanite kršenja usklađenosti po kategorijama (provjera dobi, TTB, COLA) i označite sve što se ubrzava. Što bih trebao prvo prioritizirati?"
       },
       "support": {
-        "label": "Pomozi mi pripremiti kontrolnu listu za lansiranje ili komunikaciju za tim",
-        "message": "Pomozi mi pripremiti kontrolnu listu za lansiranje ili sastaviti komunikaciju za korisnike o nadolazećoj promjeni."
+        "label": "Pomozite mi pripremiti kontrolni popis za uvođenje obavijesti osoblju",
+        "message": "Pomozite mi pripremiti kontrolni popis za uvođenje ili sastaviti obavijest namijenjenu osoblju o nadolazećoj promjeni u podrumu."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Kako moji agenti performiraju ovaj tjedan?",
-          "message": "Kako moji agenti performiraju ovaj tjedan? Sažmi stope uspjeha, trendove pogrešaka i sve istaknute agente."
+          "label": "Kako moj podrum posluje ovaj tjedan?",
+          "message": "Kako podrum posluje ovaj tjedan? Sažmite isporuke na vrijeme, obrađena upozorenja o poremećajima i sve istaknute programe vina."
         },
         "activity": {
-          "label": "Pokaži mi sažetak današnje aktivnosti",
-          "message": "Daj mi sažetak današnje aktivnosti agenata — izvršavanja, završetci, neuspjesi i sve neobično."
+          "label": "Pokaži mi današnju aktivnost podruma",
+          "message": "Daj mi sažetak današnje aktivnosti podruma — pokretanja aplikacija za radne tijekove, zamjene, upozorenja i sve neobično."
         },
         "teams": {
-          "label": "Koji timovi su najaktivniji?",
-          "message": "Koji timovi su bili najaktivniji u posljednje vrijeme? Pokaži mi raščlambu korištenja agenata po timu."
+          "label": "Koji su timovi najaktivniji?",
+          "message": "Koji su timovi nedavno bili najaktivniji? Pokaži mi raščlambu korištenja aplikacija za radne tijekove po timu."
         },
         "issues": {
           "label": "Ima li problema o kojima bih trebao/la znati?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Gdje troškovi rastu?",
-          "message": "Gdje troškovi rastu? Pokaži mi koji agenti ili timovi uzrokuju povećanje."
+          "label": "Gdje potrošnja podruma raste?",
+          "message": "Gdje potrošnja podruma raste? Pokaži mi koji programi vina ili podrumi potiču povećanje."
         },
         "breakdown": {
-          "label": "Pokaži raščlambu troškova po timu",
-          "message": "Raščlani troškove po timu za ovaj mjesec. Kako se uspoređuje s prošlim mjesecom?"
+          "label": "Prikaži potrošnju podruma po lokaciji",
+          "message": "Raščlanite potrošnju podruma po lokaciji za ovaj mjesec. Kako se uspoređuje s prošlim mjesecom?"
         },
         "unusual": {
           "label": "Označi neobičnu potrošnju",
           "message": "Označi sve neobične ili neočekivane obrasce potrošnje. Postoje li skokovi troškova koje bih trebao/la istražiti?"
         },
         "reduce": {
-          "label": "Kako mogu smanjiti troškove?",
-          "message": "Analiziraj moje trenutno korištenje agenata i predloži načine za smanjenje troškova bez utjecaja na performanse."
+          "label": "Kako mogu smanjiti potrošnju podruma?",
+          "message": "Analizirajte trenutno korištenje aplikacija za radne tijekove i vinske karte te predložite načine za smanjenje potrošnje podruma bez utjecaja na kušanja."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Pokaži sažetak sukladnosti",
-          "message": "Daj mi ukupni sažetak sukladnosti — koliko pravila prolazi, ne prolazi ili zahtijeva pažnju?"
+          "message": "Daj mi cjelokupni sažetak usklađenosti — koliko pravila (provjera dobi, TTB, COLA) prolazi, ne uspijeva ili zahtijeva pozornost?"
         },
         "unresolved": {
           "label": "Navedi neriješena kršenja",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Koje integracije su dostupne?",
-          "message": "Koje integracije su dostupne za povezivanje s vanjskim alatima i uslugama?"
+          "message": "Koje su integracije dostupne za povezivanje s POS-om, sustavima inventara, portalima distributera ili drugim izvornim sustavima?"
         },
         "notifications": {
           "label": "Pregledaj postavke obavijesti",

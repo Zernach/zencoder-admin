@@ -7,6 +7,7 @@ import type {
   ReliabilityResponse,
   GovernanceResponse,
   AgentsHubResponse,
+  MachineLearningResponse,
   LiveAgentSessionsSocket,
   SearchSuggestionsRequest,
   SearchSuggestionsResponse,
@@ -50,6 +51,7 @@ export interface IAnalyticsApi {
   getReliability(filters: AnalyticsFilters): Promise<ReliabilityResponse>;
   getGovernance(filters: AnalyticsFilters): Promise<GovernanceResponse>;
   getAgentsHub(filters: AnalyticsFilters): Promise<AgentsHubResponse>;
+  getMachineLearning(filters: AnalyticsFilters): Promise<MachineLearningResponse>;
   connectLiveAgentSessionsSocket(filters: AnalyticsFilters): LiveAgentSessionsSocket;
   getSearchSuggestions(request: SearchSuggestionsRequest): Promise<SearchSuggestionsResponse>;
   getAgentDetail(request: GetAgentDetailRequest): Promise<AgentDetailResponse>;

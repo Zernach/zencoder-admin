@@ -111,7 +111,7 @@ function createCostData(): CostResponse {
       { key: "Customer Analytics Reporting Suite v2", totalCostUsd: 2000, runsStarted: 100, averageCostPerRunUsd: 20, percentOfTotal: 0.16 },
     ],
     providerBreakdown: [
-      { provider: "codex", totalCostUsd: 8000, runCount: 300, totalTokens: 500000, percentOfTotal: 0.64 },
+      { provider: "openai", totalCostUsd: 8000, runCount: 300, totalTokens: 500000, percentOfTotal: 0.64 },
     ],
     budget: {
       budgetUsd: 60000,

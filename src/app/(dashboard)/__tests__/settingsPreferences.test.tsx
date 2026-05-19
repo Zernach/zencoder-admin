@@ -267,7 +267,7 @@ describe("Settings Preferences Integration", () => {
     it("organization section still renders", () => {
       const { getByText } = renderWithStore(<SettingsScreen />);
       expect(getByText("settings.organization")).toBeTruthy();
-      expect(getByText("org_clarium_001")).toBeTruthy();
+      expect(getByText("org_cellartracker_001")).toBeTruthy();
       expect(getByText("settings.enterprise")).toBeTruthy();
       expect(getByText("73 / 100")).toBeTruthy();
     });

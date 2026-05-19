@@ -9,6 +9,10 @@ import type {
   ReliabilityResponse,
   GovernanceResponse,
   AgentsHubResponse,
+  MachineLearningResponse,
+  MlModelRow,
+  MlModelType,
+  MlTrainingRunRow,
   LiveAgentSessionsResponse,
   LiveAgentSessionsSocket,
   LiveAgentSessionsSocketMessage,
@@ -19,6 +23,7 @@ import type {
   RunAnomaly,
   KeyValueMetric,
   ProviderCostRow,
+  ProviderShareRow,
   ModelProvider,
   LiveAgentSession,
   SeatUserUsageRow,
@@ -69,13 +74,14 @@ import type {
   GoldenQuestionEvaluation,
 } from "@/features/analytics/types";
 import { EVALUATION_CRITERIA_OPTIONS, getCriteriaPromptById } from "@/features/analytics/constants/evaluationCriteria";
+import { PROVIDER_VALUES } from "@/features/analytics/constants/providers";
 import {
   conflictError,
   internalError,
   notFoundError,
   validationError,
 } from "@/contracts/http/errors";
-import { round2, round4 } from "../../utils/metricFormulas";
+import { round1, round2, round4 } from "../../utils/metricFormulas";
 import {
   percentile,
   hashString,
@@ -106,18 +112,18 @@ interface StubConfig {
 }
 
 const BASE_RULE_DESCRIPTIONS: Record<string, string> = {
-  "HIPAA PHI Protection":
-    "Blocks agent operations that surface protected health information beyond minimum-necessary scope and redacts patient identifiers from supplier and analytics feeds.",
-  "Controlled Substance Access":
-    "Requires every controlled-substance procurement or substitution action to execute with DEA-compliant authorization, chain-of-custody capture, and witnessed approval.",
-  "DSCSA Track and Trace":
-    "Enforces lot, serial, and transaction history capture for every prescription drug movement so the network can respond to recalls and trace exceptions end to end.",
-  "FDA UDI Capture":
-    "Prevents implant, device, and high-risk supply transactions that lack a captured Unique Device Identifier (UDI) so post-market surveillance and recall response stay accurate.",
-  "Clinically Equivalent Substitution":
-    "Limits substitute recommendations to products mapped as clinically equivalent by pharmacy and clinical leadership, with audit-ready evidence for each swap.",
-  "Preferred Vendor Contract Compliance":
-    "Blocks procurement events that route to non-contracted vendors or violate negotiated pricing tiers, surfacing leakage and protecting GPO commitments.",
+  "Sensitive Data Redaction":
+    "Blocks agent operations that surface customer PII, secrets, or credentials beyond minimum-necessary scope and redacts them from logs and analytics feeds.",
+  "Production Access Control":
+    "Requires every agent action against production systems to run with scoped, approved credentials and full chain-of-custody capture.",
+  "Agent Action Audit Trail":
+    "Enforces complete, tamper-evident logging of every agent action so the team can review, replay, and trace exceptions end to end.",
+  "Code Change Approval":
+    "Prevents agents from merging code changes that lack human review or that bypass required CI checks and approvals.",
+  "Approved Model Usage":
+    "Limits agent runs to the organization's approved model list, blocking unvetted or out-of-policy models.",
+  "Brand & Content Safety":
+    "Blocks agent-generated content that violates brand voice, tone, or content-safety guidelines before it is published.",
 };
 
 type EvaluationArchetype =
@@ -142,55 +148,145 @@ const EVALUATION_PROJECT_ARCHETYPES: readonly EvaluationArchetype[] = [
 ];
 
 const EVALUATION_QUESTION_LIBRARY = {
-  disruption: [
-    "Did the disruption alert correctly identify the impacted SKUs and impacted facilities?",
-    "Was the predicted shortage window accurate within +/- 3 days of actual onset?",
-    "Did the agent surface upstream root cause (weather, geopolitical, supplier capacity)?",
-    "Were affected procedure cards and clinical workflows flagged for review?",
-    "Was the recommended mitigation prioritized by clinical criticality?",
-    "Did the agent avoid false-positive disruption alerts during normal demand variance?",
+  engineering: [
+    "Did the agent's code change pass all existing tests without introducing regressions?",
+    "Was the change scoped to the requested files without unrelated edits?",
+    "Did the agent add or update tests covering the new behavior?",
+    "Were security and secret-handling checks respected in the diff?",
+    "Did the pull request include a clear, accurate summary of the change?",
+    "Did the agent follow the repository's lint and style conventions?",
   ],
-  substitute: [
-    "Was the substitute confirmed as clinically equivalent by pharmacy and clinical leadership?",
-    "Did the recommendation respect contracted preferred-vendor relationships?",
-    "Were lot, expiration, and UDI requirements preserved for the suggested substitute?",
-    "Did the agent flag substitutes with allergy or contraindication conflicts?",
-    "Was prior-authorization or formulary status checked before recommending?",
-    "Did the agent escalate when no clinically equivalent substitute was available?",
+  product: [
+    "Did the output accurately reflect the feature spec and acceptance criteria?",
+    "Were edge cases and error states for the feature addressed?",
+    "Did the agent ground recommendations in real cellar and usage data?",
+    "Was the response scoped to the user's plan and permissions?",
+    "Did the agent cite the data sources behind its recommendations?",
+    "Were follow-up actions tied to specific owners or work items?",
   ],
-  procedure: [
-    "Did optimization recommendations preserve required surgical kit completeness?",
-    "Were waste-reduction suggestions backed by EHR consumption data?",
-    "Did the agent respect surgeon-specific preferences captured in the procedure card?",
-    "Was cost-per-case reduction quantified against historical baseline?",
-    "Were single-use vs. reusable swaps validated by sterile processing?",
-    "Did the agent surface procedure cards with the highest waste signal?",
+  design: [
+    "Did the generated asset match the design brief and brand guidelines?",
+    "Was the output consistent with the CellarTracker design system?",
+    "Did the asset meet resolution and export-format requirements?",
+    "Were color contrast and accessibility guidelines respected?",
+    "Did the agent produce usable variants without manual rework?",
+    "Was the asset free of visual artifacts and layout defects?",
   ],
-  resiliency: [
-    "Did the resiliency report identify all single-source dependencies?",
-    "Were OTIF underperformers grounded in 90-day delivery data?",
-    "Did the agent recommend qualified backup vendors for at-risk SKUs?",
-    "Was lead-time variability surfaced with confidence intervals?",
-    "Did the analysis incorporate upstream raw-material risk signals?",
-    "Were mitigation actions tied to measurable resiliency-score improvement?",
-  ],
-  assistant: [
-    "Did the assistant answer supply-chain questions with grounded ERP and EHR data?",
-    "Were responses scoped to the user's role and facility permissions?",
-    "Did the agent cite source systems (Epic, Cerner, GHX, supplier portal) for claims?",
-    "Were follow-up actions tied to specific work queues or owners?",
-    "Did the agent avoid surfacing PHI beyond minimum necessary?",
-    "Did the response stay aligned with formulary and contracting policy?",
+  marketing: [
+    "Did the copy stay on-brand in tone, voice, and style?",
+    "Were claims about wine and product features accurate and substantiated?",
+    "Did the content meet the channel's format and length constraints?",
+    "Was the messaging targeted to the intended audience segment?",
+    "Did the agent include accurate calls to action and links?",
+    "Was the content free of factual, spelling, and compliance errors?",
   ],
   generic: [
-    "Did the response answer the supply-chain request without skipping required constraints?",
-    "Was tool usage grounded in the available facility and contract context?",
-    "Did the result include verifiable evidence from ERP, EHR, or supplier feeds?",
+    "Did the response answer the request without skipping required constraints?",
+    "Was the agent's output grounded in the available project context?",
+    "Did the result include verifiable evidence for the claims it made?",
     "Were failure modes detected and surfaced before finalizing the output?",
-    "Did the workflow finish within expected latency targets for clinical operations?",
+    "Did the workflow finish within expected latency targets?",
     "Did the output remain consistent across repeated runs for the same scenario?",
   ],
 } as const;
+
+// ─── Machine Learning Systems fixtures ───────────────────
+// Trained (non-agentic) ML models that power CellarTracker. These are kept
+// separate from the agentic-LLM data so the Systems screen can present every
+// intelligent system, not just agents.
+
+function mlModelTypeLabel(type: MlModelType): string {
+  switch (type) {
+    case "classification": return "Classification";
+    case "regression": return "Regression";
+    case "forecasting": return "Forecasting";
+    case "recommendation": return "Recommendation";
+    case "anomaly_detection": return "Anomaly Detection";
+  }
+}
+
+const ML_MODEL_CATALOG: readonly MlModelRow[] = [
+  {
+    id: "ml_demand_forecaster", name: "Demand Forecaster",
+    modelType: "forecasting", stage: "production", version: "v4.2.0",
+    metricLabel: "Forecast Accuracy", metricValue: 0.912, driftStatus: "stable",
+    predictionsServed: 1_284_500, p95LatencyMs: 78,
+    lastTrainedIso: "2026-05-12T06:00:00.000Z",
+  },
+  {
+    id: "ml_bottle_recommender", name: "Bottle Recommender",
+    modelType: "recommendation", stage: "production", version: "v3.1.4",
+    metricLabel: "MAP@10", metricValue: 0.781, driftStatus: "drifting",
+    predictionsServed: 980_240, p95LatencyMs: 112,
+    lastTrainedIso: "2026-05-04T06:00:00.000Z",
+  },
+  {
+    id: "ml_price_optimizer", name: "Cellar Price Optimizer",
+    modelType: "regression", stage: "production", version: "v2.7.1",
+    metricLabel: "R² Score", metricValue: 0.864, driftStatus: "stable",
+    predictionsServed: 412_800, p95LatencyMs: 54,
+    lastTrainedIso: "2026-05-09T06:00:00.000Z",
+  },
+  {
+    id: "ml_spoilage_detector", name: "Spoilage Anomaly Detector",
+    modelType: "anomaly_detection", stage: "staging", version: "v1.4.0",
+    metricLabel: "Precision", metricValue: 0.833, driftStatus: "stable",
+    predictionsServed: 76_400, p95LatencyMs: 41,
+    lastTrainedIso: "2026-05-15T06:00:00.000Z",
+  },
+  {
+    id: "ml_tasting_classifier", name: "Tasting Note Classifier",
+    modelType: "classification", stage: "production", version: "v5.0.2",
+    metricLabel: "F1 Score", metricValue: 0.938, driftStatus: "stable",
+    predictionsServed: 643_120, p95LatencyMs: 63,
+    lastTrainedIso: "2026-05-11T06:00:00.000Z",
+  },
+  {
+    id: "ml_vintage_scorer", name: "Vintage Quality Scorer",
+    modelType: "regression", stage: "training", version: "v0.9.0",
+    metricLabel: "R² Score", metricValue: 0.704, driftStatus: "critical",
+    predictionsServed: 0, p95LatencyMs: 0,
+    lastTrainedIso: "2026-05-18T06:00:00.000Z",
+  },
+];
+
+const ML_TRAINING_RUNS: readonly MlTrainingRunRow[] = [
+  {
+    id: "mltr_5012", modelId: "ml_vintage_scorer", modelName: "Vintage Quality Scorer",
+    status: "running", startedAtIso: "2026-05-19T08:15:00.000Z",
+    durationMs: 0, datasetSize: 184_320, metricValue: 0, epochs: 0,
+  },
+  {
+    id: "mltr_5008", modelId: "ml_spoilage_detector", modelName: "Spoilage Anomaly Detector",
+    status: "succeeded", startedAtIso: "2026-05-15T02:00:00.000Z",
+    durationMs: 4_920_000, datasetSize: 96_200, metricValue: 0.833, epochs: 40,
+  },
+  {
+    id: "mltr_5003", modelId: "ml_tasting_classifier", modelName: "Tasting Note Classifier",
+    status: "succeeded", startedAtIso: "2026-05-11T01:30:00.000Z",
+    durationMs: 9_240_000, datasetSize: 312_000, metricValue: 0.938, epochs: 60,
+  },
+  {
+    id: "mltr_4998", modelId: "ml_demand_forecaster", modelName: "Demand Forecaster",
+    status: "succeeded", startedAtIso: "2026-05-12T03:00:00.000Z",
+    durationMs: 6_600_000, datasetSize: 248_000, metricValue: 0.912, epochs: 50,
+  },
+  {
+    id: "mltr_4990", modelId: "ml_price_optimizer", modelName: "Cellar Price Optimizer",
+    status: "succeeded", startedAtIso: "2026-05-09T04:00:00.000Z",
+    durationMs: 3_180_000, datasetSize: 132_400, metricValue: 0.864, epochs: 35,
+  },
+  {
+    id: "mltr_4982", modelId: "ml_bottle_recommender", modelName: "Bottle Recommender",
+    status: "failed", startedAtIso: "2026-05-06T05:00:00.000Z",
+    durationMs: 1_020_000, datasetSize: 488_000, metricValue: 0, epochs: 8,
+  },
+  {
+    id: "mltr_4979", modelId: "ml_bottle_recommender", modelName: "Bottle Recommender",
+    status: "succeeded", startedAtIso: "2026-05-04T05:00:00.000Z",
+    durationMs: 7_860_000, datasetSize: 488_000, metricValue: 0.781, epochs: 45,
+  },
+];
 
 class StubLiveAgentSessionsSocket implements LiveAgentSessionsSocket {
   public readonly protocol = "ws" as const;
@@ -358,14 +454,19 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     return Math.max(0.55, Math.min(0.99, value));
   }
 
-  private resolveEvaluationQuestionSet(projectName: string): readonly string[] {
-    const normalized = projectName.toLowerCase();
-    if (normalized.includes("disruption")) return EVALUATION_QUESTION_LIBRARY.disruption;
-    if (normalized.includes("substitute")) return EVALUATION_QUESTION_LIBRARY.substitute;
-    if (normalized.includes("procedure") || normalized.includes("card")) return EVALUATION_QUESTION_LIBRARY.procedure;
-    if (normalized.includes("resiliency") || normalized.includes("network")) return EVALUATION_QUESTION_LIBRARY.resiliency;
-    if (normalized.includes("assistant") || normalized.includes("astra")) return EVALUATION_QUESTION_LIBRARY.assistant;
-    return EVALUATION_QUESTION_LIBRARY.generic;
+  private resolveEvaluationQuestionSet(teamName: string): readonly string[] {
+    switch (teamName) {
+      case "Engineering":
+        return EVALUATION_QUESTION_LIBRARY.engineering;
+      case "Product":
+        return EVALUATION_QUESTION_LIBRARY.product;
+      case "Design":
+        return EVALUATION_QUESTION_LIBRARY.design;
+      case "Marketing":
+        return EVALUATION_QUESTION_LIBRARY.marketing;
+      default:
+        return EVALUATION_QUESTION_LIBRARY.generic;
+    }
   }
 
   /**
@@ -421,7 +522,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         projectHash % EVALUATION_PROJECT_ARCHETYPES.length
       ]!;
 
-      const questions = this.resolveEvaluationQuestionSet(project.projectName);
+      const questions = this.resolveEvaluationQuestionSet(project.teamName);
       const questionCount = 4 + (projectHash % 3);
       const questionOffset = hashString(`${project.projectId}:questions`) % questions.length;
 
@@ -980,8 +1081,13 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const total = runs.length || 1;
     const succeeded = countSucceeded(runs);
     const totalCost = sumField(runs, "costUsd");
-    const codexCount = runs.filter((r) => r.provider === "codex").length;
-    const claudeCount = runs.filter((r) => r.provider === "claude").length;
+    const providerShares: ProviderShareRow[] = PROVIDER_VALUES
+      .map((provider) => ({
+        provider,
+        share: runs.filter((r) => r.provider === provider).length / total,
+      }))
+      .filter((entry) => entry.share > 0)
+      .sort((a, b) => b.share - a.share);
 
     const uniqueUsers = new Set(runs.map((r) => r.userId)).size;
     const seatAdoptionRate = safeRate(uniqueUsers, this.seed.users.length);
@@ -1046,8 +1152,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
         seatAdoptionRate,
         runSuccessRate: succeeded / total,
         totalCostUsd: round2(totalCost),
-        providerShareCodex: codexCount / total,
-        providerShareClaude: claudeCount / total,
+        providerShares,
         policyViolationCount: violations.length,
       },
       deltas,
@@ -1218,7 +1323,7 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       entry.tokens += run.totalTokens;
       providerMap.set(run.provider, entry);
     }
-    const providerBreakdown: ProviderCostRow[] = (["codex", "claude", "other"] as ModelProvider[])
+    const providerBreakdown: ProviderCostRow[] = PROVIDER_VALUES
       .filter((p) => providerMap.has(p))
       .map((provider) => {
         const entry = providerMap.get(provider)!;
@@ -1533,6 +1638,68 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       totalCostUsd: round2(totalCost),
       projectBreakdown,
       recentRuns,
+    };
+  }
+
+  /**
+   * Builds a deterministic daily time series spanning the filter's time range.
+   * Used for ML model trends, which are catalog-driven rather than run-derived.
+   */
+  private buildMlDailyTrend(
+    filters: AnalyticsFilters,
+    baseValue: number,
+    amplitude: number,
+    seedOffset: number,
+    integer: boolean,
+  ): TimeSeriesPoint[] {
+    const dayMs = 86_400_000;
+    const fromMs = new Date(filters.timeRange.fromIso).getTime();
+    const toMs = new Date(filters.timeRange.toIso).getTime();
+    const dayCount = Math.max(1, Math.min(90, Math.round((toMs - fromMs) / dayMs)));
+    const points: TimeSeriesPoint[] = [];
+    for (let i = 0; i < dayCount; i++) {
+      const ts = new Date(fromMs + i * dayMs);
+      const wave = Math.sin((i + seedOffset) / 3.3) * amplitude;
+      const noise = ((hashString(`ml-${seedOffset}-${i}`) % 100) / 100 - 0.5) * amplitude * 0.4;
+      const raw = baseValue + wave + noise;
+      points.push({
+        tsIso: `${ts.toISOString().slice(0, 10)}T00:00:00.000Z`,
+        value: integer ? Math.max(0, Math.round(raw)) : round1(raw),
+      });
+    }
+    return points;
+  }
+
+  async getMachineLearning(filters: AnalyticsFilters): Promise<MachineLearningResponse> {
+    await this.simulate();
+    this.assertOrgId(filters.orgId);
+
+    const models = ML_MODEL_CATALOG.map((m) => ({ ...m }));
+    const trainingRuns = ML_TRAINING_RUNS.map((r) => ({ ...r }));
+    const production = models.filter((m) => m.stage === "production");
+
+    const typeCounts = countBy(models, (m) => mlModelTypeLabel(m.modelType));
+    const modelTypeBreakdown = Array.from(typeCounts.entries())
+      .map(([key, value]) => ({ key, value }))
+      .sort((a, b) => b.value - a.value);
+
+    return {
+      totalModels: models.length,
+      modelsInProduction: production.length,
+      predictionsServed24h: models.reduce(
+        (sum, m) => sum + Math.round(m.predictionsServed * 0.018),
+        0,
+      ),
+      avgModelAccuracy: safeRate(
+        production.reduce((sum, m) => sum + m.metricValue, 0),
+        production.length,
+      ),
+      driftAlerts: models.filter((m) => m.driftStatus !== "stable").length,
+      accuracyTrend: this.buildMlDailyTrend(filters, 90.5, 2.4, 7, false),
+      predictionVolumeTrend: this.buildMlDailyTrend(filters, 44_000, 8_200, 19, true),
+      modelTypeBreakdown,
+      models,
+      trainingRuns,
     };
   }
 
@@ -1975,10 +2142,10 @@ export class StubAnalyticsApi implements IAnalyticsApi {
     const projectRuns = allRuns.filter((r) => r.projectId === questionSection.projectId);
     const providerPool: ModelProvider[] = projectRuns.length > 0
       ? Array.from(new Set(projectRuns.map((r) => r.provider)))
-      : ["claude", "codex"];
+      : ["anthropic", "openai"];
     const modelPool: string[] = projectRuns.length > 0
       ? Array.from(new Set(projectRuns.map((r) => r.modelId)))
-      : ["claude-3-5-sonnet", "gpt-4o"];
+      : ["claude-sonnet-4", "gpt-4o"];
 
     const criteriaPool = EVALUATION_CRITERIA_OPTIONS;
     const evaluationRuns: EvaluationRunRow[] = [];

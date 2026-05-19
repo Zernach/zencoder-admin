@@ -68,12 +68,12 @@ export function countFailed(runs: RunListRow[]): number {
 }
 
 export const LIVE_TASKS = [
-  "Scanning supplier feeds for disruption signals",
-  "Recommending clinically equivalent substitutes",
-  "Forecasting OR consumption for next 14 days",
-  "Reconciling EHR consumption with ERP picks",
-  "Checking FDA recall feed against current inventory",
-  "Optimizing procedure card supply usage",
-  "Evaluating OTIF performance by supplier",
-  "Generating resiliency briefing for materials team",
+  "Reviewing an open pull request for the Cellar Sync Engine",
+  "Generating tests for changed API endpoints",
+  "Drafting release notes for the CellarChat update",
+  "Rendering bottle imagery from a design brief",
+  "Refreshing pairing recommendations from new tasting data",
+  "Writing campaign copy for the Q3 growth push",
+  "Auditing landing-page content for SEO gaps",
+  "Triaging incoming bug reports for the mobile app",
 ] as const;

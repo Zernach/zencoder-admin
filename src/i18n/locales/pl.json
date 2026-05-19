@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Zatwierdź",
     "cancel": "Anuluj",
     "save": "Zapisz",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Strona główna",
-    "agents": "Agenci",
+    "systems": "Systemy",
     "costs": "Koszty",
     "governance": "Zarządzanie",
     "settings": "Czat",
@@ -69,12 +69,15 @@
       "internationalization": "Internacjonalizacja",
       "organization": "Organizacja",
       "dangerZone": "Strefa zagrożenia",
-      "evaluations": "Oceny"
+      "evaluations": "Oceny",
+      "mlPerformance": "Wydajność modeli",
+      "mlModels": "Rejestr modeli",
+      "mlTraining": "Uruchomienia treningu"
     }
   },
   "dashboard": {
-    "subtitle": "Agenci i analityka Twojej organizacji",
-    "subtitleWithData": "Agenci i analityka Twojej organizacji",
+    "subtitle": "Odpowiedzialna SI do inwentaryzacji win Twojej piwnicy",
+    "subtitleWithData": "Odpowiedzialna SI do inwentaryzacji win Twojej piwnicy",
     "keyMetrics": "Kluczowe wskaźniki",
     "keyMetricsSubtitle": "W skrócie",
     "trends": "Trendy",
@@ -86,7 +89,7 @@
     "wauTrend": "Tygodniowi aktywni użytkownicy (WAU)",
     "mauTrend": "Miesięczni aktywni użytkownicy (MAU)",
     "outcomes": "Wyniki",
-    "outcomesSubtitle": "Jakość kodu i dostarczanie",
+    "outcomesSubtitle": "Wpływ na piwnicę i działalność operacyjną",
     "automatedMergeRequestsPerDay": "Zautomatyzowane zatwierdzenia substytucji dziennie",
     "reliabilityAndProviderMix": "Niezawodność i podział dostawców",
     "anomalies": "Anomalie",
@@ -94,7 +97,7 @@
     "run": "Uruchomienie ",
     "live": {
       "title": "Na żywo",
-      "subtitle": "Asystenci AI w akcji",
+      "subtitle": "Aplikacje przepływów pracy Cellar OS w działaniu",
       "succeeded": "Zakończone sukcesem",
       "queued": "W kolejce",
       "running": "W trakcie",
@@ -102,15 +105,15 @@
         "resting": "Agenci odpoczywają w tej chwili.",
         "quiet": "Tutaj jest cicho.",
         "noMembers": "Żaden członek zespołu nie uruchamia teraz agentów.",
-        "waiting": "Oczekiwanie na kolejny przepływ pracy agenta."
+        "waiting": "Oczekiwanie na następny przepływ pracy piwnicy."
       },
       "emptySubtitle": "Nowe sesje na żywo pojawią się automatycznie, gdy inżynierowie rozpoczną uruchomienia."
     },
-    "title": "Panel Główny"
+    "title": "Jakość operacji Cellar OS"
   },
   "agents": {
-    "subtitle": "Inteligentne Automatyzacje Przepływów Pracy",
-    "subtitleWithData": "Inteligentne Automatyzacje Przepływów Pracy",
+    "subtitle": "Aplikacje przepływów pracy Cellar OS",
+    "subtitleWithData": "Aplikacje przepływów pracy Cellar OS",
     "reliability": "Niezawodność",
     "reliabilitySubtitle": "Obserwowalność i analityka",
     "successRate": "Współczynnik sukcesu",
@@ -169,9 +172,70 @@
     "evaluationTrend": "Trend",
     "viewEvaluationDetail": "Wyświetl historię ocen dla {{question}}"
   },
+  "systems": {
+    "title": "Systemy",
+    "subtitle": "Każdy inteligentny system napędzający CellarTracker",
+    "subtitleWithData": "{{agentCount}} agentów i {{modelCount}} modeli ML w działaniu",
+    "agentsGroupTitle": "Agenci",
+    "agentsGroupSubtitle": "Agentowe systemy LLM — uruchomienia, oceny i niezawodność",
+    "machineLearningGroupTitle": "Uczenie maszynowe",
+    "machineLearningGroupSubtitle": "Wytrenowane modele ML — wydajność, dryf i historia treningu"
+  },
+  "machineLearning": {
+    "performance": "Wydajność modeli",
+    "performanceSubtitle": "Dokładność i przepustowość predykcji we wdrożonych modelach",
+    "totalModels": "Łączna liczba modeli",
+    "modelsInProduction": "Modele w produkcji",
+    "predictionsServed": "Predykcje (24 h)",
+    "avgAccuracy": "Śr. dokładność modelu",
+    "driftAlerts": "Alerty dryfu",
+    "accuracyTrend": "Trend dokładności modelu",
+    "predictionVolumeTrend": "Wolumen predykcji",
+    "modelRegistry": "Rejestr modeli",
+    "modelRegistrySubtitle": "{{count}} zarejestrowanych modeli",
+    "modelTypeBreakdown": "Modele według typu",
+    "trainingRuns": "Uruchomienia treningu",
+    "trainingRunsSubtitle": "{{count}} ostatnich zadań treningowych",
+    "table": {
+      "model": "Model",
+      "type": "Typ",
+      "stage": "Etap",
+      "version": "Wersja",
+      "metric": "Metryka",
+      "score": "Wynik",
+      "drift": "Dryf",
+      "predictions": "Predykcje",
+      "latency": "Opóźnienie p95",
+      "lastTrained": "Ostatnio trenowany",
+      "runId": "ID uruchomienia",
+      "status": "Status",
+      "started": "Rozpoczęto",
+      "duration": "Czas trwania",
+      "dataset": "Zbiór danych",
+      "epochs": "Epoki"
+    },
+    "stage": {
+      "production": "Produkcja",
+      "staging": "Staging",
+      "training": "Trening",
+      "retired": "Wycofany"
+    },
+    "modelType": {
+      "classification": "Klasyfikacja",
+      "regression": "Regresja",
+      "forecasting": "Prognozowanie",
+      "recommendation": "Rekomendacja",
+      "anomaly_detection": "Wykrywanie anomalii"
+    },
+    "drift": {
+      "stable": "Stabilny",
+      "drifting": "Dryfuje",
+      "critical": "Krytyczny"
+    }
+  },
   "costs": {
-    "subtitle": "Trendy wydatków i śledzenie budżetu",
-    "subtitleWithData": "{{totalCost}} wydane w {{projectCount}} projektach",
+    "subtitle": "Trendy wydatków piwnicy i śledzenie budżetu",
+    "subtitleWithData": "Wydano {{totalCost}} w {{projectCount}} projektach",
     "costSummary": "Koszt na zespół",
     "totalCost": "Koszt całkowity",
     "avgPerRun": "Średni koszt na uruchomienie",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Egzekwowanie polityk i monitorowanie bezpieczeństwa",
+    "subtitle": "Zarządzanie zespołami, personelem i regułami zgodności",
     "subtitleWithData": "{{violations}} naruszeń, {{securityEvents}} zdarzeń bezpieczeństwa",
     "overview": "Przegląd",
     "violations": "Naruszenia",
@@ -375,17 +439,14 @@
     "project": "Projekt",
     "projects": "Projekty",
     "provider": "Dostawca",
+    "model": "Model",
     "status": "Status",
     "filterBy": "Filtruj po {{category}}",
     "closeFilterDropdown": "Zamknij menu filtrów",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Dostawcy",
+    "modelsLabel": "Modele",
     "statusesLabel": "Statusy",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Inny"
-    },
     "statuses": {
       "succeeded": "Zakończone sukcesem",
       "failed": "Niepowodzenie",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Nowy czat",
-    "startConversation": "Omawiaj tematy ze swoją AI",
+    "startConversation": "Zapytaj Somm o swoją piwnicę",
     "askAnything": "Zapytaj o cokolwiek...",
     "messageInput": "Pole wprowadzania wiadomości",
     "sendMessage": "Wyślij wiadomość",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Brak rozmów.",
     "noConversationsMatchTopics": "Żadne rozmowy nie pasują do wybranych tematów.",
     "openChat": "Otwórz czat {{title}}",
-    "welcomeTitle": "Cześć! Jak mogę ci pomóc?",
+    "welcomeTitle": "Cześć! Jak Somm może pomóc?",
     "welcomeSubtitle": {
-      "dashboard": "Zapytaj o wydajność agentów, trendy aktywności lub uzyskaj szybkie podsumowanie.",
+      "dashboard": "Zapytaj o stan piwnicy, terminowość dostaw, sygnały zakłóceń lub poproś o szybkie sprawdzenie statusu.",
       "agents": "Zbadaj kondycję agentów, porównaj wydajność lub rozwiąż problemy.",
-      "costs": "Zbadaj wzorce wydatków, znajdź oszczędności lub zbadaj skoki kosztów.",
-      "governance": "Sprawdź status zgodności, przejrzyj naruszenia lub przeprowadź audyt polityk.",
-      "settings": "Uzyskaj pomoc w zakresie agentów, kosztów, zarządzania lub wsparcia."
+      "costs": "Przeanalizuj wzorce wydatków piwnicy, znajdź oszczędności w umowach lub zbadaj skoki kosztów.",
+      "governance": "Sprawdź status zgodności, przejrzyj naruszenia lub przeprowadź audyt zasad swojej piwnicy.",
+      "settings": "Uzyskaj pomoc dotyczącą aplikacji przepływów pracy, wydatków piwnicy, zgodności lub wsparcia."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Pogrupuj awarie według rodziny modeli i pokaż, które kategorie rosną tydzień po tygodniu. Które wymagają priorytetowej analizy?"
       },
       "costs": {
-        "label": "Co napędza wzrost kosztów i jak je ograniczyć?",
-        "message": "Koszty niedawno wzrosły. Co się zmieniło w projektach i modelach? Jak to ograniczyć bez pogarszania jakości odpowiedzi?"
+        "label": "Co napędza wzrost wydatków piwnicy i jak możemy je ograniczyć?",
+        "message": "Wydatki piwnicy ostatnio gwałtownie wzrosły. Co zmieniło się według programu winiarskiego i poziomu umowy? Jak możemy to ograniczyć bez opóźniania degustacji?"
       },
       "governance": {
         "label": "Podsumowanie naruszeń według ważności — co priorytetyzować?",
-        "message": "Podziel naruszenia według klasy polityk i oznacz te, które przyspieszają. Co powinienem priorytetyzować?"
+        "message": "Rozbij naruszenia zgodności według kategorii (weryfikacja wieku, TTB, COLA) i oznacz wszystko, co przyspiesza. Co powinienem najpierw potraktować priorytetowo?"
       },
       "support": {
-        "label": "Pomóż przygotować listę kontrolną wdrożenia lub komunikację z zespołem",
-        "message": "Pomóż mi przygotować listę kontrolną wdrożenia lub przygotować komunikację dla użytkowników o nadchodzącej zmianie."
+        "label": "Pomóż mi przygotować listę kontrolną wdrożenia komunikatu dla personelu",
+        "message": "Pomóż mi przygotować listę kontrolną wdrożenia lub przygotować komunikat dla personelu dotyczący nadchodzącej zmiany w piwnicy."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Jak działają moi agenci w tym tygodniu?",
-          "message": "Jak działają moi agenci w tym tygodniu? Podsumuj wskaźniki sukcesu, trendy błędów i wyróżniających się agentów."
+          "label": "Jak moja piwnica radzi sobie w tym tygodniu?",
+          "message": "Jak piwnica radzi sobie w tym tygodniu? Podsumuj terminowość dostaw, obsłużone alerty zakłóceń oraz wszelkie wyróżniające się programy winiarskie."
         },
         "activity": {
-          "label": "Pokaż podsumowanie dzisiejszej aktywności",
-          "message": "Daj mi podsumowanie dzisiejszej aktywności agentów — uruchomienia, ukończenia, awarie i cokolwiek nietypowego."
+          "label": "Pokaż mi dzisiejszą aktywność piwnicy",
+          "message": "Daj mi podsumowanie dzisiejszej aktywności piwnicy — uruchomienia aplikacji przepływów pracy, zamienniki, alerty i wszystko, co nietypowe."
         },
         "teams": {
           "label": "Które zespoły są najbardziej aktywne?",
-          "message": "Które zespoły były ostatnio najbardziej aktywne? Pokaż mi rozkład wykorzystania agentów według zespołów."
+          "message": "Które zespoły były ostatnio najbardziej aktywne? Pokaż mi zestawienie wykorzystania aplikacji przepływów pracy według zespołu."
         },
         "issues": {
           "label": "Czy są problemy, o których powinienem wiedzieć?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Gdzie koszty rosną?",
-          "message": "Gdzie koszty wykazują tendencję wzrostową? Pokaż, którzy agenci lub zespoły napędzają wzrost."
+          "label": "Gdzie wydatki piwnicy rosną?",
+          "message": "Gdzie wydatki piwnicy rosną? Pokaż mi, które programy winiarskie lub piwnice napędzają wzrost."
         },
         "breakdown": {
-          "label": "Pokaż podział kosztów według zespołów",
-          "message": "Podziel koszty według zespołów za ten miesiąc. Jak to wygląda w porównaniu z poprzednim miesiącem?"
+          "label": "Pokaż wydatki piwnicy według lokalizacji",
+          "message": "Rozbij wydatki piwnicy według lokalizacji za ten miesiąc. Jak wypada to w porównaniu z poprzednim miesiącem?"
         },
         "unusual": {
           "label": "Oznacz nietypowe wydatki",
           "message": "Oznacz nietypowe lub nieoczekiwane wzorce wydatków. Czy są skoki kosztów, które warto zbadać?"
         },
         "reduce": {
-          "label": "Jak mogę obniżyć koszty?",
-          "message": "Przeanalizuj moje bieżące wykorzystanie agentów i zasugeruj sposoby na obniżenie kosztów bez wpływu na wydajność."
+          "label": "Jak mogę zmniejszyć wydatki piwnicy?",
+          "message": "Przeanalizuj bieżące wykorzystanie aplikacji przepływów pracy i karty win oraz zaproponuj sposoby zmniejszenia wydatków piwnicy bez wpływu na degustacje."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Pokaż podsumowanie zgodności",
-          "message": "Daj mi ogólne podsumowanie zgodności — ile reguł przechodzi, nie przechodzi lub wymaga uwagi?"
+          "message": "Daj mi ogólne podsumowanie zgodności — ile reguł (weryfikacja wieku, TTB, COLA) jest spełnionych, niespełnionych lub wymaga uwagi?"
         },
         "unresolved": {
           "label": "Lista nierozwiązanych naruszeń",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Jakie integracje są dostępne?",
-          "message": "Jakie integracje są dostępne do łączenia z zewnętrznymi narzędziami i usługami?"
+          "message": "Jakie integracje są dostępne do łączenia z POS, systemami inwentaryzacji, portalami dystrybutorów lub innymi systemami źródłowymi?"
         },
         "notifications": {
           "label": "Przejrzyj ustawienia powiadomień",

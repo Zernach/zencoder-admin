@@ -2,16 +2,16 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: "Clarium Responsible AI",
-  slug: "clarium-admin",
-  scheme: "clarium-admin",
+  name: "CellarTracker Wine Intelligence",
+  slug: "cellartracker-admin",
+  scheme: "cellartracker-admin",
   icon: "./src/assets/images/zencoder-orange.png",
   android: {
-    package: "org.archlife.clariumadmin",
+    package: "wine.cellartracker.admin",
     icon: "./src/assets/images/zencoder-orange.png",
   },
   ios: {
-    bundleIdentifier: "org.archlife.clariumadmin",
+    bundleIdentifier: "wine.cellartracker.admin",
     icon: "./src/assets/images/zencoder-orange.png",
   },
   web: {

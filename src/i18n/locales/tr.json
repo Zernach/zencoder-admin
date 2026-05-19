@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Gönder",
     "cancel": "İptal",
     "save": "Kaydet",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Ana Sayfa",
-    "agents": "Ajanlar",
+    "systems": "Sistemler",
     "costs": "Maliyetler",
     "governance": "Yönetişim",
     "settings": "Sohbet",
@@ -69,12 +69,15 @@
       "internationalization": "Uluslararasılaştırma",
       "organization": "Kuruluş",
       "dangerZone": "Tehlikeli Bölge",
-      "evaluations": "Değerlendirmeler"
+      "evaluations": "Değerlendirmeler",
+      "mlPerformance": "Model Performansı",
+      "mlModels": "Model Kayıt Defteri",
+      "mlTraining": "Eğitim Çalıştırmaları"
     }
   },
   "dashboard": {
-    "subtitle": "Kuruluşunuzun ajanları ve analizleri",
-    "subtitleWithData": "Kuruluşunuzun ajanları ve analizleri",
+    "subtitle": "Mahzeninizin Sorumlu Şarap Envanteri Yapay Zekâsı",
+    "subtitleWithData": "Mahzeninizin Sorumlu Şarap Envanteri Yapay Zekâsı",
     "keyMetrics": "Temel Metrikler",
     "keyMetricsSubtitle": "Bir bakışta",
     "trends": "Trendler",
@@ -86,7 +89,7 @@
     "wauTrend": "Haftalık Aktif Kullanıcılar (WAU)",
     "mauTrend": "Aylık Aktif Kullanıcılar (MAU)",
     "outcomes": "Sonuçlar",
-    "outcomesSubtitle": "Kod kalitesi ve teslimat",
+    "outcomesSubtitle": "Mahzen ve operasyonel etki",
     "automatedMergeRequestsPerDay": "Günlük otomatik ikame onayları",
     "reliabilityAndProviderMix": "Güvenilirlik ve Sağlayıcı Dağılımı",
     "anomalies": "Anomaliler",
@@ -94,7 +97,7 @@
     "run": "Çalıştırma ",
     "live": {
       "title": "Canlı",
-      "subtitle": "Çalışan Yapay Zeka Asistanları",
+      "subtitle": "Cellar OS İş Akışı Uygulamaları İş Başında",
       "succeeded": "Başarılı",
       "queued": "Sırada",
       "running": "Çalışıyor",
@@ -102,15 +105,15 @@
         "resting": "Ajanlar şu anda dinleniyor.",
         "quiet": "Burası şu an sessiz.",
         "noMembers": "Şu anda hiçbir takım üyesi ajan çalıştırmıyor.",
-        "waiting": "Bir sonraki ajan iş akışı bekleniyor."
+        "waiting": "Bir sonraki mahzen iş akışı bekleniyor."
       },
       "emptySubtitle": "Mühendisler çalıştırma başlattığında yeni canlı oturumlar otomatik olarak görünecektir."
     },
-    "title": "Yönetici Ana Sayfa"
+    "title": "Cellar OS Operasyon Kalitesi"
   },
   "agents": {
-    "subtitle": "Akıllı İş Akışı Otomasyonları",
-    "subtitleWithData": "Akıllı İş Akışı Otomasyonları",
+    "subtitle": "Cellar OS İş Akışı Uygulamaları",
+    "subtitleWithData": "Cellar OS İş Akışı Uygulamaları",
     "reliability": "Güvenilirlik",
     "reliabilitySubtitle": "Gözlemlenebilirlik ve analiz",
     "successRate": "Başarı Oranı",
@@ -169,8 +172,69 @@
     "evaluationTrend": "Eğilim",
     "viewEvaluationDetail": "{{question}} için değerlendirme geçmişini görüntüle"
   },
+  "systems": {
+    "title": "Sistemler",
+    "subtitle": "CellarTracker'ı çalıştıran her akıllı sistem",
+    "subtitleWithData": "Çalışır durumda {{agentCount}} ajan ve {{modelCount}} ML modeli",
+    "agentsGroupTitle": "Ajanlar",
+    "agentsGroupSubtitle": "Ajan tabanlı LLM sistemleri — çalıştırmalar, değerlendirmeler ve güvenilirlik",
+    "machineLearningGroupTitle": "Makine Öğrenimi",
+    "machineLearningGroupSubtitle": "Eğitilmiş ML modelleri — performans, sapma ve eğitim geçmişi"
+  },
+  "machineLearning": {
+    "performance": "Model Performansı",
+    "performanceSubtitle": "Dağıtılan modeller genelinde doğruluk ve tahmin verimi",
+    "totalModels": "Toplam Model",
+    "modelsInProduction": "Üretimdeki Modeller",
+    "predictionsServed": "Tahminler (24s)",
+    "avgAccuracy": "Ortalama Model Doğruluğu",
+    "driftAlerts": "Sapma Uyarıları",
+    "accuracyTrend": "Model Doğruluğu Eğilimi",
+    "predictionVolumeTrend": "Tahmin Hacmi",
+    "modelRegistry": "Model Kayıt Defteri",
+    "modelRegistrySubtitle": "{{count}} kayıtlı model",
+    "modelTypeBreakdown": "Türe Göre Modeller",
+    "trainingRuns": "Eğitim Çalıştırmaları",
+    "trainingRunsSubtitle": "{{count}} son eğitim işi",
+    "table": {
+      "model": "Model",
+      "type": "Tür",
+      "stage": "Aşama",
+      "version": "Sürüm",
+      "metric": "Metrik",
+      "score": "Skor",
+      "drift": "Sapma",
+      "predictions": "Tahminler",
+      "latency": "p95 Gecikme",
+      "lastTrained": "Son Eğitim",
+      "runId": "Çalıştırma ID",
+      "status": "Durum",
+      "started": "Başlangıç",
+      "duration": "Süre",
+      "dataset": "Veri Kümesi",
+      "epochs": "Dönemler"
+    },
+    "stage": {
+      "production": "Üretim",
+      "staging": "Hazırlık",
+      "training": "Eğitim",
+      "retired": "Emekli"
+    },
+    "modelType": {
+      "classification": "Sınıflandırma",
+      "regression": "Regresyon",
+      "forecasting": "Tahminleme",
+      "recommendation": "Öneri",
+      "anomaly_detection": "Anomali Tespiti"
+    },
+    "drift": {
+      "stable": "Kararlı",
+      "drifting": "Sapıyor",
+      "critical": "Kritik"
+    }
+  },
   "costs": {
-    "subtitle": "Harcama trendleri ve bütçe takibi",
+    "subtitle": "Mahzen harcama eğilimleri ve bütçe takibi",
     "subtitleWithData": "{{projectCount}} projede {{totalCost}} harcandı",
     "costSummary": "Takım Başına Maliyet",
     "totalCost": "Toplam Maliyet",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Politika uygulama ve güvenlik izleme",
+    "subtitle": "Ekipleri, Personeli ve Uyumluluk Kurallarını Yönetin",
     "subtitleWithData": "{{violations}} ihlal, {{securityEvents}} güvenlik olayı",
     "overview": "Genel Bakış",
     "violations": "İhlaller",
@@ -375,17 +439,14 @@
     "project": "Proje",
     "projects": "Projeler",
     "provider": "Sağlayıcı",
+    "model": "Model",
     "status": "Durum",
     "filterBy": "{{category}} ile filtrele",
     "closeFilterDropdown": "Filtre açılır menüsünü kapat",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Sağlayıcılar",
+    "modelsLabel": "Modeller",
     "statusesLabel": "Durumlar",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Diğer"
-    },
     "statuses": {
       "succeeded": "Başarılı",
       "failed": "Başarısız",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Yeni Sohbet",
-    "startConversation": "Yapay zekanızla konuları tartışın",
+    "startConversation": "Mahzeniniz hakkında Somm'a sorun",
     "askAnything": "Herhangi bir şey sor...",
     "messageInput": "Sohbet mesajı girişi",
     "sendMessage": "Mesaj gönder",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Henüz sohbet yok.",
     "noConversationsMatchTopics": "Seçilen konularla eşleşen sohbet yok.",
     "openChat": "Sohbeti aç {{title}}",
-    "welcomeTitle": "Merhaba! Size nasıl yardımcı olabilirim?",
+    "welcomeTitle": "Merhaba! Somm nasıl yardımcı olabilir?",
     "welcomeSubtitle": {
-      "dashboard": "Ajan performansı, aktivite trendleri hakkında sorun veya hızlı bir durum kontrolü alın.",
+      "dashboard": "Mahzen sağlığı, zamanında teslimat, kesinti sinyalleri hakkında soru sorun veya hızlı bir durum kontrolü alın.",
       "agents": "Ajan sağlığını inceleyin, performansları karşılaştırın veya sorunları giderin.",
-      "costs": "Harcama kalıplarını keşfedin, tasarruf fırsatları bulun veya maliyet artışlarını araştırın.",
-      "governance": "Uyumluluk durumunu kontrol edin, ihlalleri gözden geçirin veya politikalarınızı denetleyin.",
-      "settings": "Ajanlar, maliyetler, yönetişim veya destek konusunda yardım alın."
+      "costs": "Mahzen harcama modellerini keşfedin, sözleşmelerde tasarruf bulun veya maliyet artışlarını araştırın.",
+      "governance": "Uyumluluk durumunu kontrol edin, ihlalleri inceleyin veya mahzen politikalarınızı denetleyin.",
+      "settings": "İş akışı uygulamaları, mahzen harcamaları, uyumluluk veya destek konusunda yardım alın."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Hataları model ailesine göre grupla ve haftadan haftaya hangi kategorilerin artış eğiliminde olduğunu göster. Hangilerinin önceliklendirilmesi gerekiyor?"
       },
       "costs": {
-        "label": "Maliyet artışlarının nedeni ne ve nasıl kontrol altına alabiliriz?",
-        "message": "Maliyetler son zamanlarda arttı. Proje ve modele göre ne değişti? Yanıt kalitesini bozmadan bunu nasıl kontrol altına alabiliriz?"
+        "label": "Mahzen harcamalarındaki artışları ne tetikliyor ve bunları nasıl sınırlayabiliriz?",
+        "message": "Mahzen harcamaları son zamanlarda hızla arttı. Şarap programına ve sözleşme kademesine göre ne değişti? Tatımları geciktirmeden bunu nasıl sınırlayabiliriz?"
       },
       "governance": {
         "label": "İhlalleri önem derecesine göre özetle — neyi önceliklendirmeliyim?",
-        "message": "İhlalleri politika sınıfına göre ayır ve hızlanan herhangi bir şeyi işaretle. İlk önce neyi önceliklendirmeliyim?"
+        "message": "Uyumluluk ihlallerini kategoriye göre (yaş doğrulama, TTB, COLA) ayrıştırın ve hızlanan her şeyi işaretleyin. İlk olarak neyi önceliklendirmeliyim?"
       },
       "support": {
-        "label": "Lansman kontrol listesi veya ekip iletişimi hazırlamama yardım et",
-        "message": "Bir lansman kontrol listesi hazırlamama veya yaklaşan bir değişiklik için kullanıcıya yönelik iletişim taslağı oluşturmama yardım et."
+        "label": "Bir personel duyurusu için kullanıma alma kontrol listesi hazırlamama yardım edin",
+        "message": "Yaklaşan bir mahzen değişikliği için bir kullanıma alma kontrol listesi hazırlamama veya personele yönelik bir duyuru taslağı oluşturmama yardım edin."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Ajanlarım bu hafta nasıl performans gösteriyor?",
-          "message": "Ajanlarım bu hafta nasıl performans gösteriyor? Başarı oranlarını, hata trendlerini ve öne çıkan ajanları özetle."
+          "label": "Mahzenim bu hafta nasıl performans gösteriyor?",
+          "message": "Mahzen bu hafta nasıl performans gösteriyor? Zamanında teslimatı, ele alınan kesinti uyarılarını ve öne çıkan şarap programlarını özetleyin."
         },
         "activity": {
-          "label": "Bugünün aktivite özetini göster",
-          "message": "Bugünün ajan aktivitesinin özetini ver — çalıştırmalar, tamamlanmalar, hatalar ve olağandışı durumlar."
+          "label": "Bugünkü mahzen etkinliğini göster",
+          "message": "Bana bugünkü mahzen etkinliğinin bir özetini ver — iş akışı uygulaması çalıştırmaları, ikameler, uyarılar ve olağandışı her şey."
         },
         "teams": {
-          "label": "Hangi takımlar en aktif?",
-          "message": "Son zamanlarda hangi takımlar en aktif? Takıma göre ajan kullanımının dağılımını göster."
+          "label": "Hangi ekipler en aktif?",
+          "message": "Son zamanlarda hangi ekipler en aktif oldu? Bana ekibe göre iş akışı uygulaması kullanımının bir dökümünü göster."
         },
         "issues": {
           "label": "Bilmem gereken bir sorun var mı?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Maliyetler nerede artış eğiliminde?",
-          "message": "Maliyetler nerede artış eğiliminde? Artışı hangi ajanların veya takımların yönlendirdiğini göster."
+          "label": "Mahzen harcamaları nerede yükseliyor?",
+          "message": "Mahzen harcamaları nerede yükseliyor? Bana artışı hangi şarap programlarının veya mahzenlerin tetiklediğini göster."
         },
         "breakdown": {
-          "label": "Takıma göre maliyet dağılımını göster",
-          "message": "Bu ay için takıma göre maliyetleri ayır. Geçen ayla nasıl karşılaştırılıyor?"
+          "label": "Mahzen harcamasını konuma göre göster",
+          "message": "Bu ay için mahzen harcamasını konuma göre ayrıştırın. Geçen ayla karşılaştırıldığında nasıl?"
         },
         "unusual": {
           "label": "Olağandışı harcamaları işaretle",
           "message": "Olağandışı veya beklenmeyen harcama kalıplarını işaretle. Araştırmam gereken maliyet artışları var mı?"
         },
         "reduce": {
-          "label": "Maliyetleri nasıl azaltabilirim?",
-          "message": "Mevcut ajan kullanımımı analiz et ve performansı etkilemeden maliyetleri azaltmanın yollarını öner."
+          "label": "Mahzen harcamasını nasıl azaltabilirim?",
+          "message": "Mevcut iş akışı uygulaması kullanımını ve şarap listelerini analiz edin ve tatımları etkilemeden mahzen harcamasını azaltmanın yollarını önerin."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Uyumluluk özetini göster",
-          "message": "Genel bir uyumluluk özeti ver — kaç kural başarılı, başarısız veya dikkat gerektiriyor?"
+          "message": "Bana genel bir uyumluluk özeti ver — kaç kural (yaş doğrulama, TTB, COLA) geçiyor, başarısız oluyor veya dikkat gerektiriyor?"
         },
         "unresolved": {
           "label": "Çözülmemiş ihlalleri listele",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Hangi entegrasyonlar mevcut?",
-          "message": "Harici araçlara ve hizmetlere bağlanmak için hangi entegrasyonlar mevcut?"
+          "message": "POS, envanter sistemleri, distribütör portalları veya diğer kaynak sistemlerine bağlanmak için hangi entegrasyonlar mevcut?"
         },
         "notifications": {
           "label": "Bildirim ayarlarını gözden geçir",

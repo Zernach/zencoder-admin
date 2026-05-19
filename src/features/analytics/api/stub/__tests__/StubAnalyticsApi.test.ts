@@ -19,7 +19,7 @@ function timeRangeFromRuns(runs: { startedAtIso: string }[]): { fromIso: string;
 }
 
 const defaultFilters: AnalyticsFilters = {
-  orgId: "org_clarium_001",
+  orgId: "org_cellartracker_001",
   timeRange: timeRangeFromRuns(seedData.runs),
 };
 
@@ -69,8 +69,11 @@ describe("getOverview", () => {
     expect(typeof res.kpis.seatAdoptionRate).toBe("number");
     expect(typeof res.kpis.totalCostUsd).toBe("number");
     expect(typeof res.kpis.runSuccessRate).toBe("number");
-    expect(typeof res.kpis.providerShareCodex).toBe("number");
-    expect(typeof res.kpis.providerShareClaude).toBe("number");
+    expect(Array.isArray(res.kpis.providerShares)).toBe(true);
+    res.kpis.providerShares.forEach((entry) => {
+      expect(typeof entry.provider).toBe("string");
+      expect(typeof entry.share).toBe("number");
+    });
     expect(typeof res.kpis.policyViolationCount).toBe("number");
     expect(res.runsTrend.length).toBeGreaterThan(0);
     expect(res.costTrend.length).toBeGreaterThan(0);
@@ -500,6 +503,48 @@ describe("getAgentsHub", () => {
     for (const row of res.agentBreakdown) {
       expect(typeof row.projectId).toBe("string");
       expect(row.projectId.length).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe("getMachineLearning", () => {
+  it("returns valid MachineLearningResponse with models and training runs", async () => {
+    const res = await api.getMachineLearning(defaultFilters);
+    expect(typeof res.totalModels).toBe("number");
+    expect(res.totalModels).toBeGreaterThan(0);
+    expect(res.models.length).toBe(res.totalModels);
+    expect(res.modelsInProduction).toBeGreaterThan(0);
+    expect(res.modelsInProduction).toBeLessThanOrEqual(res.totalModels);
+    expect(typeof res.predictionsServed24h).toBe("number");
+    expect(res.avgModelAccuracy).toBeGreaterThan(0);
+    expect(res.avgModelAccuracy).toBeLessThanOrEqual(1);
+    expect(res.trainingRuns.length).toBeGreaterThan(0);
+    expect(res.accuracyTrend.length).toBeGreaterThan(0);
+    expect(res.predictionVolumeTrend.length).toBeGreaterThan(0);
+    expect(res.modelTypeBreakdown.length).toBeGreaterThan(0);
+  });
+
+  it("drift alert count matches non-stable models", async () => {
+    const res = await api.getMachineLearning(defaultFilters);
+    const nonStable = res.models.filter((m) => m.driftStatus !== "stable").length;
+    expect(res.driftAlerts).toBe(nonStable);
+  });
+
+  it("every model carries a normalized 0..1 primary metric", async () => {
+    const res = await api.getMachineLearning(defaultFilters);
+    for (const model of res.models) {
+      expect(model.metricValue).toBeGreaterThanOrEqual(0);
+      expect(model.metricValue).toBeLessThanOrEqual(1);
+      expect(typeof model.metricLabel).toBe("string");
+      expect(model.metricLabel.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("every training run references a known model", async () => {
+    const res = await api.getMachineLearning(defaultFilters);
+    const modelIds = new Set(res.models.map((m) => m.id));
+    for (const run of res.trainingRuns) {
+      expect(modelIds.has(run.modelId)).toBe(true);
     }
   });
 });

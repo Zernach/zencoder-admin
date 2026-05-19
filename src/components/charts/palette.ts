@@ -1,21 +1,21 @@
 export const DATA_PALETTE = [
-  "#6805F2", // vivid purple
-  "#2E4BF2", // indigo-blue
-  "#056CF2", // cobalt
-  "#3D8BF2", // sky blue
-  "#7A5AF8", // soft purple
-  "#5E7FF2", // cool royal
-  "#4AA3FF", // azure
-  "#8A7CFF", // periwinkle
+  "#9B2FB5", // grape purple
+  "#C13B5B", // bordeaux red
+  "#5B2A86", // deep aubergine
+  "#E0739A", // rosé pink
+  "#A82846", // merlot
+  "#7B3FA0", // plum
+  "#D98AB0", // blush
+  "#8E2C48", // deep wine
 ] as const;
 
-const COOL_PIE_LIGHT = "#3D8BF2";
-const COOL_PIE_DARK = "#6805F2";
+const COOL_PIE_LIGHT = "#E0739A";
+const COOL_PIE_DARK = "#5B2A86";
 const COOL_PIE_STOPS = [
   COOL_PIE_DARK,
-  "#4B24F0",
-  "#2E4BF2",
-  "#056CF2",
+  "#7B3FA0",
+  "#9B2FB5",
+  "#C13B5B",
   COOL_PIE_LIGHT,
 ] as const;
 const COOL_PIE_GAMMA = 0.82;

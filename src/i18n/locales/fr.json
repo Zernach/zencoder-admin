@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Soumettre",
     "cancel": "Annuler",
     "save": "Enregistrer",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Accueil",
-    "agents": "Agents",
+    "systems": "Systèmes",
     "costs": "Coûts",
     "governance": "Gouvernance",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Internationalisation",
       "organization": "Organisation",
       "dangerZone": "Zone de danger",
-      "evaluations": "Évaluations"
+      "evaluations": "Évaluations",
+      "mlPerformance": "Performance des modèles",
+      "mlModels": "Registre des modèles",
+      "mlTraining": "Exécutions d'entraînement"
     }
   },
   "dashboard": {
-    "subtitle": "Agents et analyses de votre organisation",
-    "subtitleWithData": "Agents et analyses de votre organisation",
+    "subtitle": "L'IA responsable d'inventaire des vins de votre cave",
+    "subtitleWithData": "L'IA responsable d'inventaire des vins de votre cave",
     "keyMetrics": "Métriques clés",
     "keyMetricsSubtitle": "En un coup d'œil",
     "trends": "Tendances",
@@ -86,7 +89,7 @@
     "wauTrend": "Utilisateurs actifs hebdomadaires (WAU)",
     "mauTrend": "Utilisateurs actifs mensuels (MAU)",
     "outcomes": "Résultats",
-    "outcomesSubtitle": "Qualité du code et livraison",
+    "outcomesSubtitle": "Impact sur la cave et les opérations",
     "automatedMergeRequestsPerDay": "Approbations automatisées de substitution par jour",
     "reliabilityAndProviderMix": "Fiabilité et mix fournisseurs",
     "anomalies": "Anomalies",
@@ -94,7 +97,7 @@
     "run": "Exécution ",
     "live": {
       "title": "Live",
-      "subtitle": "Assistants IA en action",
+      "subtitle": "Applications de flux de travail Cellar OS en action",
       "succeeded": "Réussi",
       "queued": "En attente",
       "running": "En cours",
@@ -102,15 +105,15 @@
         "resting": "Les agents se reposent en ce moment.",
         "quiet": "C'est calme ici.",
         "noMembers": "Aucun membre de l'équipe n'exécute d'agents en ce moment.",
-        "waiting": "En attente du prochain workflow d'agent."
+        "waiting": "En attente du prochain flux de travail de la cave."
       },
       "emptySubtitle": "Les nouvelles sessions apparaîtront automatiquement lorsque les développeurs lanceront des exécutions."
     },
-    "title": "Accueil Admin"
+    "title": "Qualité opérationnelle de Cellar OS"
   },
   "agents": {
-    "subtitle": "Automatisations Intelligentes des Flux de Travail",
-    "subtitleWithData": "Automatisations Intelligentes des Flux de Travail",
+    "subtitle": "Applications de flux de travail Cellar OS",
+    "subtitleWithData": "Applications de flux de travail Cellar OS",
     "reliability": "Fiabilité",
     "reliabilitySubtitle": "Observabilité et analyses",
     "successRate": "Taux de succès",
@@ -169,9 +172,70 @@
     "evaluationTrend": "Tendance",
     "viewEvaluationDetail": "Voir l'historique des évaluations pour {{question}}"
   },
+  "systems": {
+    "title": "Systèmes",
+    "subtitle": "Chaque système intelligent qui propulse CellarTracker",
+    "subtitleWithData": "{{agentCount}} agents et {{modelCount}} modèles ML en exploitation",
+    "agentsGroupTitle": "Agents",
+    "agentsGroupSubtitle": "Systèmes LLM agentiques — exécutions, évaluations et fiabilité",
+    "machineLearningGroupTitle": "Apprentissage automatique",
+    "machineLearningGroupSubtitle": "Modèles ML entraînés — performance, dérive et historique d'entraînement"
+  },
+  "machineLearning": {
+    "performance": "Performance des modèles",
+    "performanceSubtitle": "Précision et débit de prédiction sur les modèles déployés",
+    "totalModels": "Total des modèles",
+    "modelsInProduction": "Modèles en production",
+    "predictionsServed": "Prédictions (24 h)",
+    "avgAccuracy": "Précision moyenne des modèles",
+    "driftAlerts": "Alertes de dérive",
+    "accuracyTrend": "Tendance de précision des modèles",
+    "predictionVolumeTrend": "Volume de prédictions",
+    "modelRegistry": "Registre des modèles",
+    "modelRegistrySubtitle": "{{count}} modèles enregistrés",
+    "modelTypeBreakdown": "Modèles par type",
+    "trainingRuns": "Exécutions d'entraînement",
+    "trainingRunsSubtitle": "{{count}} tâches d'entraînement récentes",
+    "table": {
+      "model": "Modèle",
+      "type": "Type",
+      "stage": "Étape",
+      "version": "Version",
+      "metric": "Métrique",
+      "score": "Score",
+      "drift": "Dérive",
+      "predictions": "Prédictions",
+      "latency": "Latence p95",
+      "lastTrained": "Dernier entraînement",
+      "runId": "ID d'exécution",
+      "status": "Statut",
+      "started": "Démarré",
+      "duration": "Durée",
+      "dataset": "Jeu de données",
+      "epochs": "Époques"
+    },
+    "stage": {
+      "production": "Production",
+      "staging": "Préproduction",
+      "training": "Entraînement",
+      "retired": "Retiré"
+    },
+    "modelType": {
+      "classification": "Classification",
+      "regression": "Régression",
+      "forecasting": "Prévision",
+      "recommendation": "Recommandation",
+      "anomaly_detection": "Détection d'anomalies"
+    },
+    "drift": {
+      "stable": "Stable",
+      "drifting": "En dérive",
+      "critical": "Critique"
+    }
+  },
   "costs": {
-    "subtitle": "Tendances des dépenses et suivi budgétaire",
-    "subtitleWithData": "{{totalCost}} dépensé pour {{projectCount}} projets",
+    "subtitle": "Tendances des dépenses de la cave et suivi du budget",
+    "subtitleWithData": "{{totalCost}} dépensés sur {{projectCount}} projets",
     "costSummary": "Coût par Équipe",
     "totalCost": "Coût total",
     "avgPerRun": "Moy. / exéc.",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Application des politiques et surveillance de la sécurité",
+    "subtitle": "Gérer les équipes, le personnel et les règles de conformité",
     "subtitleWithData": "{{violations}} violations, {{securityEvents}} événements de sécurité",
     "overview": "Vue d'ensemble",
     "violations": "Violations",
@@ -375,17 +439,14 @@
     "project": "Projet",
     "projects": "Projets",
     "provider": "Fournisseur",
+    "model": "Modèle",
     "status": "Statut",
     "filterBy": "Filtrer par {{category}}",
     "closeFilterDropdown": "Fermer le filtre",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Fournisseurs",
+    "modelsLabel": "Modèles",
     "statusesLabel": "Statuts",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Autre"
-    },
     "statuses": {
       "succeeded": "Réussi",
       "failed": "Échoué",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Nouvelle conversation",
-    "startConversation": "Discutez de sujets avec votre IA",
+    "startConversation": "Posez une question à Somm sur votre cave",
     "askAnything": "Demandez n'importe quoi...",
     "messageInput": "Saisie du message de chat",
     "sendMessage": "Envoyer le message",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Aucune conversation pour le moment.",
     "noConversationsMatchTopics": "Aucune conversation ne correspond aux sujets sélectionnés.",
     "openChat": "Ouvrir la conversation {{title}}",
-    "welcomeTitle": "Bonjour ! Comment puis-je vous aider ?",
+    "welcomeTitle": "Bonjour ! Comment Somm peut-il aider ?",
     "welcomeSubtitle": {
-      "dashboard": "Posez des questions sur la performance des agents, les tendances d'activité ou obtenez un bilan rapide.",
+      "dashboard": "Posez des questions sur l'état de la cave, les livraisons à temps, les signaux de perturbation, ou obtenez un point rapide sur la situation.",
       "agents": "Explorez la santé des agents, comparez les performances ou résolvez des problèmes.",
-      "costs": "Explorez les tendances de dépenses, trouvez des économies ou enquêtez sur les pics de coûts.",
-      "governance": "Vérifiez le statut de conformité, examinez les violations ou auditez vos politiques.",
-      "settings": "Obtenez de l'aide sur les agents, les coûts, la gouvernance ou le support."
+      "costs": "Explorez les tendances de dépenses de la cave, trouvez des économies sur les contrats ou enquêtez sur les pics de coûts.",
+      "governance": "Vérifiez l'état de conformité, examinez les infractions ou auditez les politiques de votre cave.",
+      "settings": "Obtenez de l'aide concernant les applications de flux de travail, les dépenses de la cave, la conformité ou le support."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Regroupez les défaillances par famille de modèle et montrez quelles catégories augmentent semaine après semaine. Lesquelles nécessitent un tri ?"
       },
       "costs": {
-        "label": "Qu'est-ce qui provoque l'augmentation des coûts et comment les contenir ?",
-        "message": "Les coûts ont augmenté récemment. Qu'est-ce qui a changé par projet et par modèle ? Comment contenir cela sans dégrader la qualité des réponses ?"
+        "label": "Qu'est-ce qui provoque l'augmentation des dépenses de la cave et comment pouvons-nous les contenir ?",
+        "message": "Les dépenses de la cave ont récemment bondi. Qu'est-ce qui a changé par programme de vin et par niveau de contrat ? Comment pouvons-nous contenir cela sans retarder les dégustations ?"
       },
       "governance": {
         "label": "Résumez les violations par gravité — que dois-je prioriser ?",
-        "message": "Décomposez les violations par classe de politique et signalez tout ce qui s'accélère. Que dois-je prioriser en premier ?"
+        "message": "Ventilez les infractions de conformité par catégorie (vérification de l'âge, TTB, COLA) et signalez tout ce qui s'accélère. Que dois-je prioriser en premier ?"
       },
       "support": {
-        "label": "Aidez-moi à préparer une liste de contrôle de déploiement ou une communication d'équipe",
-        "message": "Aidez-moi à préparer une liste de contrôle de déploiement ou à rédiger une communication destinée aux utilisateurs pour un changement à venir."
+        "label": "Aidez-moi à préparer une liste de contrôle de déploiement pour une communication au personnel",
+        "message": "Aidez-moi à préparer une liste de contrôle de déploiement ou à rédiger une communication destinée au personnel concernant un changement à venir dans la cave."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Comment se comportent mes agents cette semaine ?",
-          "message": "Comment se comportent mes agents cette semaine ? Résumez les taux de succès, les tendances d'erreurs et les agents remarquables."
+          "label": "Comment ma cave se porte-t-elle cette semaine ?",
+          "message": "Comment la cave se porte-t-elle cette semaine ? Résumez les livraisons à temps, les alertes de perturbation traitées et tout programme de vin remarquable."
         },
         "activity": {
-          "label": "Montrez-moi le résumé d'activité du jour",
-          "message": "Donnez-moi un résumé de l'activité des agents aujourd'hui — exécutions, achèvements, échecs et tout ce qui est inhabituel."
+          "label": "Montrez-moi l'activité de la cave aujourd'hui",
+          "message": "Donnez-moi un résumé de l'activité de la cave aujourd'hui — exécutions d'applications de flux de travail, substitutions, alertes et tout ce qui est inhabituel."
         },
         "teams": {
           "label": "Quelles équipes sont les plus actives ?",
-          "message": "Quelles équipes ont été les plus actives récemment ? Montrez-moi une répartition de l'utilisation des agents par équipe."
+          "message": "Quelles équipes ont été les plus actives récemment ? Montrez-moi une ventilation de l'utilisation des applications de flux de travail par équipe."
         },
         "issues": {
           "label": "Y a-t-il des problèmes dont je devrais être informé ?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Où les coûts augmentent-ils ?",
-          "message": "Où les coûts augmentent-ils ? Montrez-moi quels agents ou équipes provoquent la hausse."
+          "label": "Où les dépenses de la cave augmentent-elles ?",
+          "message": "Où les dépenses de la cave augmentent-elles ? Montrez-moi quels programmes de vin ou caves provoquent l'augmentation."
         },
         "breakdown": {
-          "label": "Afficher la répartition des coûts par équipe",
-          "message": "Décomposez les coûts par équipe pour ce mois-ci. Comment cela se compare-t-il au mois dernier ?"
+          "label": "Afficher les dépenses de la cave par emplacement",
+          "message": "Ventilez les dépenses de la cave par emplacement pour ce mois-ci. Comment cela se compare-t-il au mois dernier ?"
         },
         "unusual": {
           "label": "Signaler les dépenses inhabituelles",
           "message": "Signalez toute dépense inhabituelle ou inattendue. Y a-t-il des pics de coûts que je devrais examiner ?"
         },
         "reduce": {
-          "label": "Comment puis-je réduire les coûts ?",
-          "message": "Analysez mon utilisation actuelle des agents et suggérez des moyens de réduire les coûts sans affecter les performances."
+          "label": "Comment puis-je réduire les dépenses de la cave ?",
+          "message": "Analysez l'utilisation actuelle des applications de flux de travail et les cartes des vins, et suggérez des moyens de réduire les dépenses de la cave sans affecter les dégustations."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Afficher le résumé de conformité",
-          "message": "Donnez-moi un résumé global de la conformité — combien de règles sont respectées, enfreintes ou nécessitent une attention ?"
+          "message": "Donnez-moi un résumé global de conformité — combien de règles (vérification de l'âge, TTB, COLA) sont conformes, en échec ou nécessitent une attention ?"
         },
         "unresolved": {
           "label": "Lister les violations non résolues",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Quelles intégrations sont disponibles ?",
-          "message": "Quelles intégrations sont disponibles pour se connecter à des outils et services externes ?"
+          "message": "Quelles intégrations sont disponibles pour se connecter aux points de vente, aux systèmes d'inventaire, aux portails de distributeurs ou à d'autres systèmes sources ?"
         },
         "notifications": {
           "label": "Vérifier les paramètres de notification",

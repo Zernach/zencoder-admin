@@ -1,7 +1,13 @@
 import type { CursorPageRequest } from "@/contracts/http/pagination";
 
 // ─── Domain Enums ────────────────────────────────────────
-export type ModelProvider = "codex" | "claude" | "other";
+export type ModelProvider =
+  | "openai"
+  | "anthropic"
+  | "gemini"
+  | "grok"
+  | "deepseek"
+  | "mistral";
 export type RunStatus = "queued" | "running" | "succeeded" | "failed" | "canceled";
 export type RunFailureCategory =
   | "timeout" | "tool_error" | "model_error"
@@ -148,6 +154,12 @@ export interface ProviderCostRow {
   percentOfTotal: number;
 }
 
+/** Share of total runs attributed to a single provider (0–1). */
+export interface ProviderShareRow {
+  provider: ModelProvider;
+  share: number;
+}
+
 // ─── Breakdown Rows ─────────────────────────────────────
 export interface UsageBreakdownRow {
   teamId: string; teamName: string;
@@ -237,8 +249,10 @@ export interface TeamPerformanceComparisonRow {
 // ─── Overview KPIs ──────────────────────────────────────
 export interface OverviewKpis {
   seatAdoptionRate: number; runSuccessRate: number;
-  totalCostUsd: number; providerShareCodex: number;
-  providerShareClaude: number; policyViolationCount: number;
+  totalCostUsd: number;
+  /** Run-share per provider, descending, omitting providers with no runs. */
+  providerShares: ProviderShareRow[];
+  policyViolationCount: number;
 }
 
 /** Percentage change vs. the previous equivalent time period */
@@ -361,6 +375,57 @@ export interface AgentsHubResponse {
   projectBreakdown: ProjectBreakdownRow[];
   // Recent runs (latest N, no pagination)
   recentRuns: RunListRow[];
+}
+
+// ─── Machine Learning Systems ───────────────────────────
+export type MlModelType =
+  | "classification" | "regression" | "forecasting"
+  | "recommendation" | "anomaly_detection";
+export type MlModelStage = "production" | "staging" | "training" | "retired";
+export type MlDriftStatus = "stable" | "drifting" | "critical";
+export type MlTrainingStatus = "succeeded" | "running" | "failed";
+
+export interface MlModelRow {
+  id: string;
+  name: string;
+  modelType: MlModelType;
+  stage: MlModelStage;
+  version: string;
+  /** Human-readable name of the primary evaluation metric (e.g. "F1 Score"). */
+  metricLabel: string;
+  /** Normalized 0..1 score for the primary metric — higher is better. */
+  metricValue: number;
+  driftStatus: MlDriftStatus;
+  predictionsServed: number;
+  p95LatencyMs: number;
+  lastTrainedIso: string;
+}
+
+export interface MlTrainingRunRow {
+  id: string;
+  modelId: string;
+  modelName: string;
+  status: MlTrainingStatus;
+  startedAtIso: string;
+  durationMs: number;
+  datasetSize: number;
+  /** Normalized 0..1 score produced by this training run. */
+  metricValue: number;
+  epochs: number;
+}
+
+export interface MachineLearningResponse {
+  totalModels: number;
+  modelsInProduction: number;
+  predictionsServed24h: number;
+  /** Mean primary-metric score across production models, 0..1. */
+  avgModelAccuracy: number;
+  driftAlerts: number;
+  accuracyTrend: TimeSeriesPoint[];
+  predictionVolumeTrend: TimeSeriesPoint[];
+  modelTypeBreakdown: KeyValueMetric[];
+  models: MlModelRow[];
+  trainingRuns: MlTrainingRunRow[];
 }
 
 export interface GovernanceResponse {

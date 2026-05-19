@@ -978,7 +978,7 @@ function toBarChartPieModel(
       id: `${breakdownDatum.key}-${index}`,
       label: breakdownDatum.key,
       value: Math.max(0, breakdownDatum.value),
-      color: "#6805F2",
+      color: "#9B2FB5",
       valueLabel: formatValue(breakdownDatum.value),
       tooltipRows: breakdownDatum.hoverRows,
     };

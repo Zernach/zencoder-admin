@@ -1,6 +1,6 @@
 import {
   Home,
-  Bot,
+  Cpu,
   DollarSign,
   Shield,
   MessageSquare,
@@ -24,7 +24,7 @@ export interface NavItem {
 
 const TOP_NAV_METADATA: Record<TABS, Pick<NavItem, "icon" | "label">> = {
   [TABS.DASHBOARD]: { icon: Home, label: "navigation.home" },
-  [TABS.AGENTS]: { icon: Bot, label: "navigation.agents" },
+  [TABS.AGENTS]: { icon: Cpu, label: "navigation.systems" },
   [TABS.COSTS]: { icon: DollarSign, label: "navigation.costs" },
   [TABS.GOVERNANCE]: { icon: Shield, label: "navigation.governance" },
   [TABS.CHAT]: { icon: MessageSquare, label: "navigation.settings" },
@@ -71,11 +71,16 @@ export const SUBSECTIONS: Record<SubsectionRoute, SubsectionItem[]> = {
     { id: "key-metrics", label: "navigation.subsections.keyMetrics" },
   ],
   [ROUTES.AGENTS]: [
+    // Agents section — agentic LLM systems
     { id: "reliability", label: "navigation.subsections.reliability" },
     { id: "evaluations", label: "navigation.subsections.evaluations" },
     { id: "agent-performance", label: "navigation.subsections.agentPerformance" },
     { id: "project-breakdown", label: "navigation.subsections.projectBreakdown" },
     { id: "recent-runs", label: "navigation.subsections.recentRuns" },
+    // Machine Learning section — trained ML models
+    { id: "ml-performance", label: "navigation.subsections.mlPerformance" },
+    { id: "ml-models", label: "navigation.subsections.mlModels" },
+    { id: "ml-training", label: "navigation.subsections.mlTraining" },
   ],
   [ROUTES.COSTS]: [
     { id: "budget-forecast", label: "navigation.subsections.budgetForecast" },

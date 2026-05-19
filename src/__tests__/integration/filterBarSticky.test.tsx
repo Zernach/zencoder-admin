@@ -143,8 +143,8 @@ describe("filterBarSticky integration", () => {
     expect(costResult.current.data).toBeDefined();
 
     // Apply a provider filter (simulates sticky FilterBar interaction)
-    act(() => filtersResult.current.setProviderFilter(["codex"]));
-    expect(filtersResult.current.filters.providers).toEqual(["codex"]);
+    act(() => filtersResult.current.setProviderFilter(["openai"]));
+    expect(filtersResult.current.filters.providers).toEqual(["openai"]);
     expect(filtersResult.current.activeFilterCount).toBe(1);
 
     // Cost data remains available after filter change
@@ -193,7 +193,7 @@ describe("filterBarSticky integration", () => {
     // Apply multiple filters
     act(() => {
       filtersResult.current.setTeamFilter(["team_01"]);
-      filtersResult.current.setProviderFilter(["codex"]);
+      filtersResult.current.setProviderFilter(["openai"]);
       filtersResult.current.setStatusFilter(["failed"]);
     });
     expect(filtersResult.current.activeFilterCount).toBe(3);

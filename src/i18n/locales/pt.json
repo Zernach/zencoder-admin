@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Enviar",
     "cancel": "Cancelar",
     "save": "Salvar",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Início",
-    "agents": "Agentes",
+    "systems": "Sistemas",
     "costs": "Custos",
     "governance": "Governança",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Internacionalização",
       "organization": "Organização",
       "dangerZone": "Zona de perigo",
-      "evaluations": "Avaliações"
+      "evaluations": "Avaliações",
+      "mlPerformance": "Desempenho de modelos",
+      "mlModels": "Registro de modelos",
+      "mlTraining": "Execuções de treinamento"
     }
   },
   "dashboard": {
-    "subtitle": "Agentes e análises da sua organização",
-    "subtitleWithData": "Agentes e análises da sua organização",
+    "subtitle": "A IA responsável de inventário de vinhos da sua adega",
+    "subtitleWithData": "A IA responsável de inventário de vinhos da sua adega",
     "keyMetrics": "Métricas principais",
     "keyMetricsSubtitle": "Visão rápida",
     "trends": "Tendências",
@@ -86,7 +89,7 @@
     "wauTrend": "Usuários ativos semanais (WAU)",
     "mauTrend": "Usuários ativos mensais (MAU)",
     "outcomes": "Resultados",
-    "outcomesSubtitle": "Qualidade do código e entregas",
+    "outcomesSubtitle": "Impacto na adega e nas operações",
     "automatedMergeRequestsPerDay": "Aprovações automatizadas de substituição por dia",
     "reliabilityAndProviderMix": "Confiabilidade e distribuição de provedores",
     "anomalies": "Anomalias",
@@ -94,7 +97,7 @@
     "run": "Execução ",
     "live": {
       "title": "Ao vivo",
-      "subtitle": "Assistentes de IA em ação",
+      "subtitle": "Aplicações de fluxo de trabalho do Cellar OS em ação",
       "succeeded": "Bem-sucedidos",
       "queued": "Na fila",
       "running": "Em execução",
@@ -102,15 +105,15 @@
         "resting": "Os agentes estão descansando no momento.",
         "quiet": "Está tudo tranquilo por aqui.",
         "noMembers": "Nenhum membro da equipe está executando agentes no momento.",
-        "waiting": "Aguardando o próximo fluxo de trabalho do agente."
+        "waiting": "À espera do próximo fluxo de trabalho da adega."
       },
       "emptySubtitle": "Novas sessões ao vivo aparecerão automaticamente quando os engenheiros iniciarem execuções."
     },
-    "title": "Início Admin"
+    "title": "Qualidade das operações do Cellar OS"
   },
   "agents": {
-    "subtitle": "Automações Inteligentes de Fluxos de Trabalho",
-    "subtitleWithData": "Automações Inteligentes de Fluxos de Trabalho",
+    "subtitle": "Aplicações de fluxo de trabalho do Cellar OS",
+    "subtitleWithData": "Aplicações de fluxo de trabalho do Cellar OS",
     "reliability": "Confiabilidade",
     "reliabilitySubtitle": "Observabilidade e análises",
     "successRate": "Taxa de sucesso",
@@ -169,9 +172,70 @@
     "evaluationTrend": "Tendência",
     "viewEvaluationDetail": "Ver histórico de avaliações de {{question}}"
   },
+  "systems": {
+    "title": "Sistemas",
+    "subtitle": "Cada sistema inteligente que alimenta o CellarTracker",
+    "subtitleWithData": "{{agentCount}} agentes e {{modelCount}} modelos de ML em operação",
+    "agentsGroupTitle": "Agentes",
+    "agentsGroupSubtitle": "Sistemas LLM agênticos — execuções, avaliações e confiabilidade",
+    "machineLearningGroupTitle": "Aprendizado de máquina",
+    "machineLearningGroupSubtitle": "Modelos de ML treinados — desempenho, desvio e histórico de treinamento"
+  },
+  "machineLearning": {
+    "performance": "Desempenho de modelos",
+    "performanceSubtitle": "Precisão e taxa de transferência de previsões entre os modelos implantados",
+    "totalModels": "Total de modelos",
+    "modelsInProduction": "Modelos em produção",
+    "predictionsServed": "Previsões (24 h)",
+    "avgAccuracy": "Precisão média dos modelos",
+    "driftAlerts": "Alertas de desvio",
+    "accuracyTrend": "Tendência de precisão dos modelos",
+    "predictionVolumeTrend": "Volume de previsões",
+    "modelRegistry": "Registro de modelos",
+    "modelRegistrySubtitle": "{{count}} modelos registrados",
+    "modelTypeBreakdown": "Modelos por tipo",
+    "trainingRuns": "Execuções de treinamento",
+    "trainingRunsSubtitle": "{{count}} trabalhos de treinamento recentes",
+    "table": {
+      "model": "Modelo",
+      "type": "Tipo",
+      "stage": "Estágio",
+      "version": "Versão",
+      "metric": "Métrica",
+      "score": "Pontuação",
+      "drift": "Desvio",
+      "predictions": "Previsões",
+      "latency": "Latência p95",
+      "lastTrained": "Último treinamento",
+      "runId": "ID da execução",
+      "status": "Status",
+      "started": "Iniciado",
+      "duration": "Duração",
+      "dataset": "Conjunto de dados",
+      "epochs": "Épocas"
+    },
+    "stage": {
+      "production": "Produção",
+      "staging": "Homologação",
+      "training": "Treinamento",
+      "retired": "Desativado"
+    },
+    "modelType": {
+      "classification": "Classificação",
+      "regression": "Regressão",
+      "forecasting": "Previsão",
+      "recommendation": "Recomendação",
+      "anomaly_detection": "Detecção de anomalias"
+    },
+    "drift": {
+      "stable": "Estável",
+      "drifting": "Desviando",
+      "critical": "Crítico"
+    }
+  },
   "costs": {
-    "subtitle": "Tendências de gastos e acompanhamento de orçamento",
-    "subtitleWithData": "{{totalCost}} gasto em {{projectCount}} projetos",
+    "subtitle": "Tendências de gastos da adega e acompanhamento do orçamento",
+    "subtitleWithData": "{{totalCost}} gastos em {{projectCount}} projetos",
     "costSummary": "Custo por Equipe",
     "totalCost": "Custo total",
     "avgPerRun": "Custo médio por execução",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Aplicação de políticas e monitoramento de segurança",
+    "subtitle": "Gerir equipas, pessoal e regras de conformidade",
     "subtitleWithData": "{{violations}} violações, {{securityEvents}} eventos de segurança",
     "overview": "Visão geral",
     "violations": "Violações",
@@ -375,17 +439,14 @@
     "project": "Projeto",
     "projects": "Projetos",
     "provider": "Provedor",
+    "model": "Modelo",
     "status": "Status",
     "filterBy": "Filtrar por {{category}}",
     "closeFilterDropdown": "Fechar menu de filtros",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Provedores",
+    "modelsLabel": "Modelos",
     "statusesLabel": "Status",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Outro"
-    },
     "statuses": {
       "succeeded": "Bem-sucedido",
       "failed": "Falhou",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Novo chat",
-    "startConversation": "Discuta tópicos com sua IA",
+    "startConversation": "Pergunte ao Somm sobre a sua adega",
     "askAnything": "Pergunte qualquer coisa...",
     "messageInput": "Entrada de mensagem do chat",
     "sendMessage": "Enviar mensagem",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Nenhuma conversa ainda.",
     "noConversationsMatchTopics": "Nenhuma conversa corresponde aos tópicos selecionados.",
     "openChat": "Abrir conversa {{title}}",
-    "welcomeTitle": "Olá! Como posso te ajudar?",
+    "welcomeTitle": "Olá! Como pode o Somm ajudar?",
     "welcomeSubtitle": {
-      "dashboard": "Pergunte sobre o desempenho dos agentes, tendências de atividade ou obtenha uma verificação rápida do status.",
+      "dashboard": "Pergunte sobre o estado da adega, entregas no prazo, sinais de disrupção ou obtenha uma verificação rápida do estado.",
       "agents": "Aprofunde-se na saúde dos agentes, compare desempenhos ou resolva problemas.",
-      "costs": "Explore padrões de gastos, encontre economias ou investigue picos de custos.",
-      "governance": "Verifique o status de conformidade, revise violações ou audite suas políticas.",
-      "settings": "Obtenha ajuda com agentes, custos, governança ou suporte."
+      "costs": "Explore os padrões de gastos da adega, encontre poupanças em contratos ou investigue picos de custos.",
+      "governance": "Verifique o estado de conformidade, reveja as infrações ou audite as políticas da sua adega.",
+      "settings": "Obtenha ajuda com aplicações de fluxo de trabalho, gastos da adega, conformidade ou suporte."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Agrupe as falhas por família de modelo e mostre quais categorias estão aumentando semana a semana. Quais precisam de triagem?"
       },
       "costs": {
-        "label": "O que está impulsionando o aumento de custos e como podemos contê-los?",
-        "message": "Os custos aumentaram recentemente. O que mudou por projeto e modelo? Como podemos conter isso sem comprometer a qualidade das respostas?"
+        "label": "O que está a impulsionar os aumentos nos gastos da adega e como podemos contê-los?",
+        "message": "Os gastos da adega aumentaram recentemente. O que mudou por programa de vinhos e nível de contrato? Como podemos conter isto sem atrasar as provas?"
       },
       "governance": {
         "label": "Resuma as violações por severidade — o que devo priorizar?",
-        "message": "Desagregue as violações por classe de política e sinalize tudo que estiver acelerando. O que devo priorizar primeiro?"
+        "message": "Discrimine as infrações de conformidade por categoria (verificação de idade, TTB, COLA) e assinale tudo o que esteja a acelerar. O que devo priorizar primeiro?"
       },
       "support": {
-        "label": "Me ajude a preparar um checklist de implantação ou comunicação à equipe",
-        "message": "Me ajude a preparar um checklist de implantação ou redigir uma comunicação para os usuários sobre uma mudança futura."
+        "label": "Ajude-me a preparar uma lista de verificação de implementação para uma comunicação ao pessoal",
+        "message": "Ajude-me a preparar uma lista de verificação de implementação ou a redigir uma comunicação dirigida ao pessoal sobre uma próxima alteração na adega."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Como estão meus agentes esta semana?",
-          "message": "Como estão meus agentes esta semana? Resuma taxas de sucesso, tendências de erros e agentes em destaque."
+          "label": "Como está a minha adega a desempenhar esta semana?",
+          "message": "Como está a adega a desempenhar esta semana? Resuma as entregas no prazo, os alertas de disrupção tratados e quaisquer programas de vinhos em destaque."
         },
         "activity": {
-          "label": "Mostre-me o resumo de atividades de hoje",
-          "message": "Me dê um resumo da atividade dos agentes hoje — execuções, conclusões, falhas e qualquer coisa incomum."
+          "label": "Mostre-me a atividade da adega de hoje",
+          "message": "Dê-me um resumo da atividade da adega de hoje — execuções de aplicações de fluxo de trabalho, substituições, alertas e tudo o que seja invulgar."
         },
         "teams": {
-          "label": "Quais equipes são as mais ativas?",
-          "message": "Quais equipes foram as mais ativas recentemente? Mostre-me uma análise do uso de agentes por equipe."
+          "label": "Que equipas são mais ativas?",
+          "message": "Que equipas têm sido mais ativas recentemente? Mostre-me uma discriminação da utilização de aplicações de fluxo de trabalho por equipa."
         },
         "issues": {
           "label": "Há algum problema que eu deva saber?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Onde os custos estão subindo?",
-          "message": "Onde os custos estão subindo? Mostre-me quais agentes ou equipes estão impulsionando o aumento."
+          "label": "Onde estão os gastos da adega a aumentar?",
+          "message": "Onde estão os gastos da adega a aumentar? Mostre-me que programas de vinhos ou adegas estão a impulsionar o aumento."
         },
         "breakdown": {
-          "label": "Mostrar detalhamento de custos por equipe",
-          "message": "Detalhe os custos por equipe para este mês. Como se compara ao mês passado?"
+          "label": "Mostrar gastos da adega por localização",
+          "message": "Discrimine os gastos da adega por localização para este mês. Como se compara com o mês passado?"
         },
         "unusual": {
           "label": "Sinalizar gastos incomuns",
           "message": "Sinalize qualquer padrão de gasto incomum ou inesperado. Há picos de custos que eu deva investigar?"
         },
         "reduce": {
-          "label": "Como posso reduzir custos?",
-          "message": "Analise meu uso atual de agentes e sugira maneiras de reduzir custos sem afetar o desempenho."
+          "label": "Como posso reduzir os gastos da adega?",
+          "message": "Analise a utilização atual das aplicações de fluxo de trabalho e as cartas de vinhos e sugira formas de reduzir os gastos da adega sem afetar as provas."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Mostrar resumo de conformidade",
-          "message": "Me dê um resumo geral de conformidade — quantas regras estão sendo cumpridas, violadas ou precisam de atenção?"
+          "message": "Dê-me um resumo geral de conformidade — quantas regras (verificação de idade, TTB, COLA) estão aprovadas, reprovadas ou precisam de atenção?"
         },
         "unresolved": {
           "label": "Listar violações não resolvidas",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Quais integrações estão disponíveis?",
-          "message": "Quais integrações estão disponíveis para conectar a ferramentas e serviços externos?"
+          "message": "Que integrações estão disponíveis para ligação a POS, sistemas de inventário, portais de distribuidores ou outros sistemas de origem?"
         },
         "notifications": {
           "label": "Revisar configurações de notificação",

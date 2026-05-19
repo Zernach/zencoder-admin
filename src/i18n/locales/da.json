@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Indsend",
     "cancel": "Annuller",
     "save": "Gem",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Hjem",
-    "agents": "Agenter",
+    "systems": "Systemer",
     "costs": "Omkostninger",
     "governance": "Styring",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Internationalisering",
       "organization": "Organisation",
       "dangerZone": "Farezone",
-      "evaluations": "Evalueringer"
+      "evaluations": "Evalueringer",
+      "mlPerformance": "Modelydelse",
+      "mlModels": "Modelregister",
+      "mlTraining": "Træningskørsler"
     }
   },
   "dashboard": {
-    "subtitle": "Din organisations agenter og analyser",
-    "subtitleWithData": "Din organisations agenter og analyser",
+    "subtitle": "Din vinkælders ansvarlige AI til vinlager",
+    "subtitleWithData": "Din vinkælders ansvarlige AI til vinlager",
     "keyMetrics": "Nøgletal",
     "keyMetricsSubtitle": "Et hurtigt overblik",
     "trends": "Tendenser",
@@ -86,7 +89,7 @@
     "wauTrend": "Ugentlige aktive brugere (WAU)",
     "mauTrend": "Månedlige aktive brugere (MAU)",
     "outcomes": "Resultater",
-    "outcomesSubtitle": "Kodekvalitet og levering",
+    "outcomesSubtitle": "Kælder- og driftsmæssig effekt",
     "automatedMergeRequestsPerDay": "Automatiske substitutionsgodkendelser pr. dag",
     "reliabilityAndProviderMix": "Pålidelighed og udbyderblanding",
     "anomalies": "Anomalier",
@@ -94,7 +97,7 @@
     "run": "Kørsel ",
     "live": {
       "title": "Direkte",
-      "subtitle": "AI-assistenter i aktion",
+      "subtitle": "Cellar OS-arbejdsgangsapps i aktion",
       "succeeded": "Lykkedes",
       "queued": "I kø",
       "running": "Kører",
@@ -102,15 +105,15 @@
         "resting": "Agenterne hviler lige nu.",
         "quiet": "Der er stille herinde.",
         "noMembers": "Ingen holdmedlemmer kører agenter lige nu.",
-        "waiting": "Venter på den næste agent-arbejdsproces."
+        "waiting": "Venter på den næste kælderarbejdsgang."
       },
       "emptySubtitle": "Nye live-sessioner vises automatisk, når ingeniører starter kørsler."
     },
-    "title": "Admin Startside"
+    "title": "Cellar OS-driftskvalitet"
   },
   "agents": {
-    "subtitle": "Intelligente Arbejdsgangsautomatiseringer",
-    "subtitleWithData": "Intelligente Arbejdsgangsautomatiseringer",
+    "subtitle": "Cellar OS-arbejdsgangsapps",
+    "subtitleWithData": "Cellar OS-arbejdsgangsapps",
     "reliability": "Pålidelighed",
     "reliabilitySubtitle": "Observerbarhed og analyser",
     "successRate": "Succesrate",
@@ -169,9 +172,70 @@
     "evaluationTrend": "Trend",
     "viewEvaluationDetail": "Se evalueringshistorik for {{question}}"
   },
+  "systems": {
+    "title": "Systemer",
+    "subtitle": "Hvert intelligent system, der driver CellarTracker",
+    "subtitleWithData": "{{agentCount}} agenter og {{modelCount}} ML-modeller i drift",
+    "agentsGroupTitle": "Agenter",
+    "agentsGroupSubtitle": "Agentbaserede LLM-systemer — kørsler, evalueringer og pålidelighed",
+    "machineLearningGroupTitle": "Maskinlæring",
+    "machineLearningGroupSubtitle": "Trænede ML-modeller — ydelse, drift og træningshistorik"
+  },
+  "machineLearning": {
+    "performance": "Modelydelse",
+    "performanceSubtitle": "Nøjagtighed og forudsigelsesgennemløb på tværs af implementerede modeller",
+    "totalModels": "Modeller i alt",
+    "modelsInProduction": "Modeller i produktion",
+    "predictionsServed": "Forudsigelser (24t)",
+    "avgAccuracy": "Gns. modelnøjagtighed",
+    "driftAlerts": "Drift-advarsler",
+    "accuracyTrend": "Tendens for modelnøjagtighed",
+    "predictionVolumeTrend": "Forudsigelsesvolumen",
+    "modelRegistry": "Modelregister",
+    "modelRegistrySubtitle": "{{count}} registrerede modeller",
+    "modelTypeBreakdown": "Modeller efter type",
+    "trainingRuns": "Træningskørsler",
+    "trainingRunsSubtitle": "{{count}} nylige træningsjob",
+    "table": {
+      "model": "Model",
+      "type": "Type",
+      "stage": "Fase",
+      "version": "Version",
+      "metric": "Metrik",
+      "score": "Score",
+      "drift": "Drift",
+      "predictions": "Forudsigelser",
+      "latency": "p95-latens",
+      "lastTrained": "Senest trænet",
+      "runId": "Kørsels-ID",
+      "status": "Status",
+      "started": "Startet",
+      "duration": "Varighed",
+      "dataset": "Datasæt",
+      "epochs": "Epoker"
+    },
+    "stage": {
+      "production": "Produktion",
+      "staging": "Staging",
+      "training": "Træning",
+      "retired": "Udfaset"
+    },
+    "modelType": {
+      "classification": "Klassifikation",
+      "regression": "Regression",
+      "forecasting": "Prognose",
+      "recommendation": "Anbefaling",
+      "anomaly_detection": "Anomalidetektion"
+    },
+    "drift": {
+      "stable": "Stabil",
+      "drifting": "Driver",
+      "critical": "Kritisk"
+    }
+  },
   "costs": {
-    "subtitle": "Udgiftstendenser og budgetopfølgning",
-    "subtitleWithData": "{{totalCost}} brugt på {{projectCount}} projekter",
+    "subtitle": "Kælderforbrugstendenser og budgetopfølgning",
+    "subtitleWithData": "{{totalCost}} brugt på tværs af {{projectCount}} projekter",
     "costSummary": "Omkostning pr. hold",
     "totalCost": "Samlet omkostning",
     "avgPerRun": "Gennemsnitlig omkostning pr. kørsel",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Politikhåndhævelse og sikkerhedsovervågning",
+    "subtitle": "Administrer teams, personale og overholdelsesregler",
     "subtitleWithData": "{{violations}} overtrædelser, {{securityEvents}} sikkerhedshændelser",
     "overview": "Oversigt",
     "violations": "Overtrædelser",
@@ -375,17 +439,14 @@
     "project": "Projekt",
     "projects": "Projekter",
     "provider": "Udbyder",
+    "model": "Model",
     "status": "Status",
     "filterBy": "Filtrer efter {{category}}",
     "closeFilterDropdown": "Luk filter",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Udbydere",
+    "modelsLabel": "Modeller",
     "statusesLabel": "Statusser",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Andet"
-    },
     "statuses": {
       "succeeded": "Lykkedes",
       "failed": "Fejlet",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Ny chat",
-    "startConversation": "Diskuter emner med din AI",
+    "startConversation": "Spørg Somm om din vinkælder",
     "askAnything": "Spørg om hvad som helst...",
     "messageInput": "Chatbesked-input",
     "sendMessage": "Send besked",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Ingen samtaler endnu.",
     "noConversationsMatchTopics": "Ingen samtaler matcher de valgte emner.",
     "openChat": "Åbn chat {{title}}",
-    "welcomeTitle": "Hej! Hvordan kan jeg hjælpe dig?",
+    "welcomeTitle": "Hej! Hvordan kan Somm hjælpe?",
     "welcomeSubtitle": {
-      "dashboard": "Spørg om agentpræstation, aktivitetstendenser eller få et hurtigt statusoverblik.",
+      "dashboard": "Spørg om kælderens tilstand, rettidig levering, forstyrrelsessignaler, eller få et hurtigt statustjek.",
       "agents": "Dyk ned i agenthelbred, sammenlign præstationer eller fejlfind problemer.",
-      "costs": "Udforsk udgiftsmønstre, find besparelser eller undersøg omkostningsspidser.",
-      "governance": "Tjek overholdelsesstatus, gennemgå overtrædelser eller audit dine politikker.",
-      "settings": "Få hjælp med agenter, omkostninger, styring eller support."
+      "costs": "Udforsk mønstre i kælderforbrug, find besparelser i kontrakter, eller undersøg omkostningsstigninger.",
+      "governance": "Tjek overholdelsesstatus, gennemgå overtrædelser, eller revidér dine kælderpolitikker.",
+      "settings": "Få hjælp med arbejdsgangsapps, kælderforbrug, overholdelse eller support."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Gruppér fejl efter modelfamilie og vis hvilke kategorier der stiger uge for uge. Hvilke kræver triage?"
       },
       "costs": {
-        "label": "Hvad driver omkostningsstigningerne, og hvordan kan vi begrænse dem?",
-        "message": "Omkostningerne er steget for nylig. Hvad ændrede sig per projekt og model? Hvordan kan vi begrænse dette uden at forringe svarkvaliteten?"
+        "label": "Hvad driver stigninger i kælderforbruget, og hvordan kan vi begrænse dem?",
+        "message": "Kælderforbruget steg for nylig. Hvad ændrede sig efter vinprogram og kontraktniveau? Hvordan kan vi begrænse dette uden at forsinke smagninger?"
       },
       "governance": {
         "label": "Opsummér overtrædelser efter alvorlighed — hvad bør jeg prioritere?",
-        "message": "Opdel overtrædelser efter politikklasse og markér alt der accelererer. Hvad bør jeg prioritere først?"
+        "message": "Opdel overholdelsesovertrædelser efter kategori (aldersverificering, TTB, COLA), og markér alt, der accelererer. Hvad bør jeg prioritere først?"
       },
       "support": {
-        "label": "Hjælp mig med at forberede en udrulningscheckliste eller teamkommunikation",
-        "message": "Hjælp mig med at forberede en udrulningscheckliste eller udarbejde en brugerrettet kommunikation om en kommende ændring."
+        "label": "Hjælp mig med at forberede en udrulningstjekliste til en personalemeddelelse",
+        "message": "Hjælp mig med at forberede en udrulningstjekliste eller udarbejde en personalemeddelelse om en kommende kælderændring."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Hvordan klarer mine agenter sig i denne uge?",
-          "message": "Hvordan klarer mine agenter sig i denne uge? Opsummér succesrater, fejltendenser og bemærkelsesværdige agenter."
+          "label": "Hvordan klarer min kælder sig i denne uge?",
+          "message": "Hvordan klarer kælderen sig i denne uge? Opsummer rettidig levering, håndterede forstyrrelsesalarmer og eventuelle fremtrædende vinprogrammer."
         },
         "activity": {
-          "label": "Vis mig dagens aktivitetsoversigt",
-          "message": "Giv mig en oversigt over dagens agentaktivitet — kørsler, fuldførelser, fejl og alt usædvanligt."
+          "label": "Vis mig dagens kælderaktivitet",
+          "message": "Giv mig et resumé af dagens kælderaktivitet — kørsler af arbejdsgangsapps, erstatninger, alarmer og alt usædvanligt."
         },
         "teams": {
-          "label": "Hvilke hold er mest aktive?",
-          "message": "Hvilke hold har været mest aktive for nylig? Vis mig en opdeling af agentbrug per hold."
+          "label": "Hvilke teams er mest aktive?",
+          "message": "Hvilke teams har været mest aktive på det seneste? Vis mig en oversigt over brug af arbejdsgangsapps pr. team."
         },
         "issues": {
           "label": "Er der problemer jeg bør vide om?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Hvor stiger omkostningerne?",
-          "message": "Hvor stiger omkostningerne? Vis mig hvilke agenter eller hold der driver stigningen."
+          "label": "Hvor stiger kælderforbruget?",
+          "message": "Hvor stiger kælderforbruget? Vis mig, hvilke vinprogrammer eller kældre der driver stigningen."
         },
         "breakdown": {
-          "label": "Vis omkostningsopdeling per hold",
-          "message": "Opdel omkostningerne per hold for denne måned. Hvordan sammenligner det sig med sidste måned?"
+          "label": "Vis kælderforbrug efter placering",
+          "message": "Opdel kælderforbruget efter placering for denne måned. Hvordan er det sammenlignet med sidste måned?"
         },
         "unusual": {
           "label": "Markér usædvanlige udgifter",
           "message": "Markér usædvanlige eller uventede udgiftsmønstre. Er der omkostningsspidser jeg bør undersøge?"
         },
         "reduce": {
-          "label": "Hvordan kan jeg reducere omkostningerne?",
-          "message": "Analysér mit nuværende agentforbrug og foreslå måder at reducere omkostninger uden at påvirke præstationen."
+          "label": "Hvordan kan jeg reducere kælderforbruget?",
+          "message": "Analysér den aktuelle brug af arbejdsgangsapps og vinkort, og foreslå måder at reducere kælderforbruget på uden at påvirke smagninger."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Vis overholdelsesoversigt",
-          "message": "Giv mig en samlet overholdelsesoversigt — hvor mange regler overholder, fejler eller kræver opmærksomhed?"
+          "message": "Giv mig et samlet overblik over overholdelse — hvor mange regler (aldersverificering, TTB, COLA) bestås, fejler eller kræver opmærksomhed?"
         },
         "unresolved": {
           "label": "Vis uløste overtrædelser",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Hvilke integrationer er tilgængelige?",
-          "message": "Hvilke integrationer er tilgængelige til at forbinde med eksterne værktøjer og tjenester?"
+          "message": "Hvilke integrationer er tilgængelige til at oprette forbindelse til POS, lagersystemer, distributørportaler eller andre kildesystemer?"
         },
         "notifications": {
           "label": "Gennemgå notifikationsindstillinger",

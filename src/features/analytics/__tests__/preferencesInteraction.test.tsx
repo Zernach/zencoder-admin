@@ -132,7 +132,7 @@ describe("Preferences Interaction — Cross-Feature Tests", () => {
 
       expect(selectSelectedLanguage(store.getState())).toBe("en");
       expect(i18n.language).toBe("en");
-      expect(i18n.t("common.appName")).toBe("Clarium");
+      expect(i18n.t("common.appName")).toBe("CellarTracker");
     });
 
     it("rapid currency switches do not produce stale state", () => {
@@ -173,7 +173,7 @@ describe("Preferences Interaction — Cross-Feature Tests", () => {
       expect(result.current.currencyCode).toBe("GBP");
       expect(result.current.currencySymbol).toBe("£");
       expect(selectSelectedLanguage(store.getState())).toBe("en");
-      expect(i18n.t("common.appName")).toBe("Clarium");
+      expect(i18n.t("common.appName")).toBe("CellarTracker");
     });
   });
 });

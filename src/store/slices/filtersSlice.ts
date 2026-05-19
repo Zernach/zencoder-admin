@@ -40,7 +40,7 @@ function computeTimeRange(preset: TimeRangePreset): TimeRange {
 }
 
 const initialState: FiltersState = {
-  orgId: "org_clarium_001",
+  orgId: "org_cellartracker_001",
   preset: "30d",
   searchQuery: "",
   timeRange: computeTimeRange("30d"),

@@ -8,7 +8,7 @@ describe("useDashboardFilters", () => {
     const { result } = renderHook(() => useDashboardFilters(), { wrapper });
     // Test wrapper sets custom time range to match seed data
     expect(result.current.preset).toBe("custom");
-    expect(result.current.filters.orgId).toBe("org_clarium_001");
+    expect(result.current.filters.orgId).toBe("org_cellartracker_001");
     expect(result.current.filters.timeRange).toBeDefined();
   });
 
@@ -30,8 +30,8 @@ describe("useDashboardFilters", () => {
   it("setProviderFilter updates providers", () => {
     const { wrapper } = createTestWrapper();
     const { result } = renderHook(() => useDashboardFilters(), { wrapper });
-    act(() => result.current.setProviderFilter(["codex"]));
-    expect(result.current.filters.providers).toEqual(["codex"]);
+    act(() => result.current.setProviderFilter(["openai"]));
+    expect(result.current.filters.providers).toEqual(["openai"]);
   });
 
   it("setStatusFilter updates statuses", () => {
@@ -46,7 +46,7 @@ describe("useDashboardFilters", () => {
     const { result } = renderHook(() => useDashboardFilters(), { wrapper });
     act(() => {
       result.current.setTeamFilter(["team_01"]);
-      result.current.setProviderFilter(["codex"]);
+      result.current.setProviderFilter(["openai"]);
     });
     expect(result.current.activeFilterCount).toBe(2);
     act(() => result.current.clearAll());

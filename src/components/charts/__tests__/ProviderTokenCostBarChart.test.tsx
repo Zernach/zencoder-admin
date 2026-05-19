@@ -37,9 +37,9 @@ jest.mock("@/features/analytics/hooks/useCurrencyFormatter", () => ({
 }));
 
 const providerData: ProviderCostRow[] = [
-  { provider: "codex", totalCostUsd: 6500, runCount: 300, totalTokens: 500_000_000, percentOfTotal: 0.52 },
-  { provider: "claude", totalCostUsd: 4000, runCount: 200, totalTokens: 500_000_000, percentOfTotal: 0.32 },
-  { provider: "other", totalCostUsd: 2000, runCount: 100, totalTokens: 500_000_000, percentOfTotal: 0.16 },
+  { provider: "openai", totalCostUsd: 6500, runCount: 300, totalTokens: 500_000_000, percentOfTotal: 0.52 },
+  { provider: "anthropic", totalCostUsd: 4000, runCount: 200, totalTokens: 500_000_000, percentOfTotal: 0.32 },
+  { provider: "gemini", totalCostUsd: 2000, runCount: 100, totalTokens: 500_000_000, percentOfTotal: 0.16 },
 ];
 
 describe("ProviderTokenCostBarChart", () => {
@@ -48,9 +48,9 @@ describe("ProviderTokenCostBarChart", () => {
       <ProviderTokenCostBarChart data={providerData} />
     );
 
-    expect(getByText("Codex")).toBeTruthy();
-    expect(getByText("Claude")).toBeTruthy();
-    expect(getByText("Other")).toBeTruthy();
+    expect(getByText("OpenAI")).toBeTruthy();
+    expect(getByText("Anthropic")).toBeTruthy();
+    expect(getByText("Gemini")).toBeTruthy();
   });
 
   it("sorts rows by computed per-token cost descending", () => {
@@ -58,16 +58,16 @@ describe("ProviderTokenCostBarChart", () => {
       <ProviderTokenCostBarChart data={providerData} />
     );
 
-    // All provider labels should render; Codex has highest per-token cost (13),
-    // Claude second (8), Other third (4). Verify all are present.
-    const labels = getAllByText(/Codex|Claude|Other/);
+    // All provider labels should render; OpenAI has highest per-token cost (13),
+    // Anthropic second (8), Gemini third (4). Verify all are present.
+    const labels = getAllByText(/OpenAI|Anthropic|Gemini/);
     expect(labels).toHaveLength(3);
-    // First label should be Codex (highest per-token cost)
-    expect(labels[0].props.children).toBe("Codex");
-    // Second should be Claude
-    expect(labels[1].props.children).toBe("Claude");
-    // Third should be Other
-    expect(labels[2].props.children).toBe("Other");
+    // First label should be OpenAI (highest per-token cost)
+    expect(labels[0].props.children).toBe("OpenAI");
+    // Second should be Anthropic
+    expect(labels[1].props.children).toBe("Anthropic");
+    // Third should be Gemini
+    expect(labels[2].props.children).toBe("Gemini");
   });
 
   it("shows numeric values per bar and a shared axis label", () => {
@@ -89,7 +89,7 @@ describe("ProviderTokenCostBarChart", () => {
 
   it("handles totalTokens = 0 without invalid numeric output", () => {
     const zeroTokenData: ProviderCostRow[] = [
-      { provider: "codex", totalCostUsd: 5000, runCount: 100, totalTokens: 0, percentOfTotal: 1.0 },
+      { provider: "openai", totalCostUsd: 5000, runCount: 100, totalTokens: 0, percentOfTotal: 1.0 },
     ];
 
     const { getAllByText, getByText, queryByText } = render(

@@ -46,7 +46,7 @@ interface ConversationTemplate {
 const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
   [TABS.DASHBOARD]: [
     {
-      title: "Q1 supply-chain snapshot before board readout",
+      title: "Q1 agent-run snapshot before board readout",
       topics: ["Support", "Costs"],
       status: "active",
       unreadCount: 2,
@@ -56,27 +56,27 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "I need a one-page snapshot: OTIF, disruption alerts handled, and top 3 at-risk service lines for the last 7 days.",
+            "I need a one-page snapshot: agent-run success rate, failures auto-resolved, and top 3 at-risk projects across teams for the last 7 days.",
         },
         {
           role: "assistant",
           content:
-            "Drafted. Network OTIF is 94.2%, 312 disruption alerts auto-resolved, and the highest-risk service lines are Cardiac Cath Lab, Orthopedic OR, and ICU Pharmacy.",
+            "Drafted. Overall agent-run success rate is 94.2%, 312 failed runs auto-retried successfully, and the highest-risk projects are the Cellar Sync Engine, CI/CD Automation, and the Q3 Growth Campaign.",
         },
         {
           role: "user",
           content:
-            "Add a callout for why Cardiac Cath Lab risk went up this week.",
+            "Add a callout for why Cellar Sync Engine risk went up this week.",
         },
         {
           role: "assistant",
           content:
-            "Added: lead time for drug-eluting stents extended 6 days after the Boston Scientific distribution-center event, and two backup vendors are at PAR.",
+            "Added: the Code Review Bot's average run duration grew 6 minutes after the Database Migration branch landed, and two of its API connectors are hitting rate limits.",
         },
       ],
     },
     {
-      title: "Anomaly triage for OR stockout near-misses",
+      title: "Anomaly triage for Engineering agent-run failures",
       topics: ["Agents", "Governance"],
       status: "completed",
       unreadCount: 0,
@@ -86,22 +86,22 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "OR stockout near-misses jumped this morning. Was this a forecast miss or an upstream supplier issue?",
+            "Engineering agent-run failures jumped this morning. Was this a model issue or an upstream connector problem?",
         },
         {
           role: "assistant",
           content:
-            "Mostly upstream: 68% of near-misses traced to a Cardinal Health distribution delay on three high-volume SKUs. Forecasts were within tolerance.",
+            "Mostly upstream: 68% of failures traced to a GitHub API connector timeout on three high-volume agents. Model latency was within tolerance.",
         },
         {
           role: "user",
           content:
-            "Which service line was most affected?",
+            "Which project was most affected?",
         },
         {
           role: "assistant",
           content:
-            "Orthopedic OR contributed 42% of impacted cases. Suggest activating qualified backup supplier for the next 72 hours.",
+            "The API Gateway Refactor contributed 42% of impacted runs. Suggest pausing the Test Generator agent for the next 72 hours while the connector recovers.",
         },
       ],
     },
@@ -116,17 +116,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Rewrite the weekly update to be less technical for the CFO. Keep three bullets and one action item.",
+            "Rewrite the weekly update to be less technical for leadership. Keep three bullets and one action item.",
         },
         {
           role: "assistant",
           content:
-            "Shared a plain-language version focused on resiliency, clinical impact avoided, and contract spend trend. Action item: expand backup-vendor qualification for implants.",
+            "Shared a plain-language version focused on agent-run reliability, failures avoided, and team spend trend. Action item: raise retry budgets for the Engineering team's deploy agents.",
         },
       ],
     },
     {
-      title: "Follow-up after critical implant backorder incident",
+      title: "Follow-up after critical Deploy Bot run failure",
       topics: ["Agents", "Support"],
       status: "archived",
       unreadCount: 0,
@@ -136,19 +136,19 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Capture what we learned from yesterday's pacemaker backorder incident and what we changed.",
+            "Capture what we learned from yesterday's Deploy Bot run failure on the Mobile App Build Pipeline and what we changed.",
         },
         {
           role: "assistant",
           content:
-            "Summary prepared: root cause was single-source dependency at Medtronic, mitigation was activating Abbott as qualified backup, and we added a 7-day lead-time saturation alert for Class III implants.",
+            "Summary prepared: root cause was a single-region dependency on one build runner, mitigation was failing over to a backup runner pool, and we added a 7-minute run-duration saturation alert for the Engineering team's deploy agents.",
         },
       ],
     },
   ],
   [TABS.AGENTS]: [
     {
-      title: "Threshold tuning for Disruption Monitor false positives",
+      title: "Threshold tuning for Code Review Bot false flags",
       topics: ["Agents"],
       status: "active",
       unreadCount: 1,
@@ -158,22 +158,22 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Should we tighten the Disruption Monitor sensitivity? Materials managers are noting too many low-impact alerts.",
+            "Should we tighten the Code Review Bot sensitivity? Engineering is noting too many low-impact flags on pull requests.",
         },
         {
           role: "assistant",
           content:
-            "Recommend keeping HIGH severity threshold at 0.85 and raising MEDIUM to 0.65. That cuts noise 38% while preserving 99% of clinically critical detections.",
+            "Recommend keeping HIGH severity threshold at 0.85 and raising MEDIUM to 0.65. That cuts noise 38% while preserving 99% of blocking-bug detections.",
         },
         {
           role: "user",
           content:
-            "What if we scope tighter thresholds only to non-critical SKUs?",
+            "What if we scope tighter thresholds only to non-critical repositories?",
         },
         {
           role: "assistant",
           content:
-            "Safer. Non-critical SKU scoping adds only 1.8% missed-detection risk and avoids alert fatigue in the OR materials team.",
+            "Safer. Non-critical repo scoping adds only 1.8% missed-detection risk and avoids review fatigue for the Engineering team.",
         },
       ],
     },
@@ -193,12 +193,12 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "assistant",
           content:
-            "EHR connector timeouts are up 14% on Substitute Recommender, and contract-pricing lookup errors are up 9% on Procedure Card Optimizer. Other categories are flat.",
+            "API connector timeouts are up 14% on the Asset Generator, and model rate-limit errors are up 9% on the Content Writer. Other categories are flat.",
         },
       ],
     },
     {
-      title: "EHR connector queue optimization for Mercy network",
+      title: "Run-queue optimization for the Engineering team",
       topics: ["Agents"],
       status: "completed",
       unreadCount: 0,
@@ -208,17 +208,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Mercy Health Epic connector latency crossed 2s again. Give me a concrete mitigation sequence.",
+            "Test Generator run latency crossed 2 minutes again. Give me a concrete mitigation sequence.",
         },
         {
           role: "assistant",
           content:
-            "Plan: reserve 15% burst capacity for Mercy region, rebalance stale supplier polls every 30s, then run a two-hour canary before full rollout.",
+            "Plan: reserve 15% burst capacity for the Engineering team's run queue, throttle stale CI/CD Automation polls every 30s, then run a two-hour canary before full rollout.",
         },
       ],
     },
     {
-      title: "EHR fallback thresholds and guardrails",
+      title: "Connector fallback thresholds and guardrails",
       topics: ["Agents"],
       status: "archived",
       unreadCount: 0,
@@ -228,7 +228,7 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Document fallback triggers between primary EHR (Epic) and secondary feed (HL7 mirror) with rollback criteria.",
+            "Document fallback triggers between the primary model endpoint and the secondary failover endpoint with rollback criteria.",
         },
         {
           role: "assistant",
@@ -240,7 +240,7 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
   ],
   [TABS.COSTS]: [
     {
-      title: "Root cause analysis for today's supply spend spike",
+      title: "Root cause analysis for today's agent-run spend spike",
       topics: ["Costs"],
       status: "active",
       unreadCount: 1,
@@ -250,27 +250,27 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "OR supply spend jumped 19% since Monday. What changed by service line and contract tier?",
+            "Agent-run spend jumped 19% since Monday. What changed by team and project?",
         },
         {
           role: "assistant",
           content:
-            "Primary driver is the Cardiac Cath Lab, up $61k due to off-contract drug-eluting stent orders after Boston Scientific lead-time extended. Tier mix mostly constant.",
+            "Primary driver is the Engineering team's Database Migration project, up $61k after the Refactor Agent retried long context windows on every failed run. Team mix is mostly constant.",
         },
         {
           role: "user",
           content:
-            "Can we contain this this week without delaying scheduled cases?",
+            "Can we contain this this week without slowing down the migration?",
         },
         {
           role: "assistant",
           content:
-            "Yes. Activate the qualified Abbott alternative on contract for 7 days and route urgent cases to it. Estimated week-over-week savings: $23k with no case delay.",
+            "Yes. Cap the Refactor Agent's retry budget and switch its non-critical runs to a smaller approved model for 7 days. Estimated week-over-week savings: $23k with no migration delay.",
         },
       ],
     },
     {
-      title: "Forecast confidence for end-of-month supply budget",
+      title: "Forecast confidence for end-of-month team budget",
       topics: ["Costs", "Support"],
       status: "completed",
       unreadCount: 0,
@@ -280,17 +280,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Given current trend, are we likely to exceed this month's supply budget?",
+            "Given current trend, are we likely to exceed this month's agent-run budget?",
         },
         {
           role: "assistant",
           content:
-            "Projection lands at 94% of budget with medium confidence. Biggest risk is unplanned orthopedic implant volume in week 4.",
+            "Projection lands at 94% of budget with medium confidence. Biggest risk is unplanned Asset Generator run volume from the Design team in week 4.",
         },
       ],
     },
     {
-      title: "Procedure card waste reduction opportunities",
+      title: "Agent-run cost reduction opportunities",
       topics: ["Costs", "Agents"],
       status: "completed",
       unreadCount: 0,
@@ -300,17 +300,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Find low-risk opportunities to reduce per-case supply cost in general surgery procedure cards.",
+            "Find low-risk opportunities to reduce per-run cost across the Marketing team's agents.",
         },
         {
           role: "assistant",
           content:
-            "Three opportunities identified: pack right-sizing for 14 cards, single-use-to-reusable swap on retractors, and removal of items opened-not-used >40% of cases. Combined savings ~7.4% per case.",
+            "Three opportunities identified: prompt trimming for 14 SEO Optimizer runs, a smaller-model swap on low-stakes Social Post Generator runs, and dropping duplicate Content Writer runs that retried >40% of the time. Combined savings ~7.4% per run.",
         },
       ],
     },
     {
-      title: "Vendor spend split for GPO contract review",
+      title: "Team spend split for budget review",
       topics: ["Costs"],
       status: "archived",
       unreadCount: 0,
@@ -320,19 +320,19 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "I need a vendor split summary for the GPO review: spend, OTIF, and single-source risk.",
+            "I need a team spend split summary for the budget review: spend, run success rate, and single-project concentration risk.",
         },
         {
           role: "assistant",
           content:
-            "Prepared with recommendation to keep dual-source strategy on Class III implants. Vizient handles 71% spend with best OTIF, Premier maintains failover resilience.",
+            "Prepared with a recommendation to spread workloads across projects. Engineering handles 71% of spend with the best run success rate, while Product keeps the most balanced project mix.",
         },
       ],
     },
   ],
   [TABS.GOVERNANCE]: [
     {
-      title: "Substitution exception request for clinical trial site",
+      title: "Approval exception request for a Production Access run",
       topics: ["Governance", "Support"],
       status: "active",
       unreadCount: 0,
@@ -342,27 +342,27 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Can we approve a temporary substitution exception for the cardiology trial while we tune the equivalence rules?",
+            "Can we approve a temporary Production Access Control exception for the Deploy Bot while we tune the Code Change Approval rule?",
         },
         {
           role: "assistant",
           content:
-            "Possible with guardrails. Limit to enrolled-patient SKUs, require pharmacy + PI sign-off per case, and auto-expire in 14 days.",
+            "Possible with guardrails. Limit it to the Mobile App Build Pipeline project, require Engineering lead sign-off per run, and auto-expire in 14 days.",
         },
         {
           role: "user",
           content:
-            "Add approval language for IRB and clinical leadership sign-off.",
+            "Add approval language for engineering and security leadership sign-off.",
         },
         {
           role: "assistant",
           content:
-            "Added wording plus rollback trigger: revoke immediately if any substitution flags a clinical-equivalence variance >0.5% over 24 hours.",
+            "Added wording plus a rollback trigger: revoke immediately if any run trips the Agent Action Audit Trail rule with an unlogged action over 24 hours.",
         },
       ],
     },
     {
-      title: "Violation trend analysis by compliance class",
+      title: "Violation trend analysis by compliance rule",
       topics: ["Governance"],
       status: "completed",
       unreadCount: 0,
@@ -372,17 +372,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Break down violations by compliance class and flag anything accelerating.",
+            "Break down violations by compliance rule and flag anything accelerating.",
         },
         {
           role: "assistant",
           content:
-            "Missing UDI capture and non-equivalent substitution classes are rising fastest, up 18% and 11% week over week respectively.",
+            "Sensitive Data Redaction and Approved Model Usage violations are rising fastest, up 18% and 11% week over week respectively.",
         },
       ],
     },
     {
-      title: "FDA recall response timeline draft",
+      title: "Incident response timeline draft",
       topics: ["Governance", "Agents"],
       status: "completed",
       unreadCount: 0,
@@ -392,17 +392,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Draft a timeline for the Class II recall response with key checkpoints and owners across pharmacy, OR, and materials.",
+            "Draft a timeline for the agent-policy incident response with key checkpoints and owners across Engineering, Product, and security.",
         },
         {
           role: "assistant",
           content:
-            "Timeline drafted with detection, lot segregation, patient notification, and FDA reporting milestones plus owner assignment for each phase.",
+            "Timeline drafted with detection, run quarantine, stakeholder notification, and post-incident reporting milestones plus owner assignment for each phase.",
         },
       ],
     },
     {
-      title: "Quarterly Joint Commission audit prep",
+      title: "Quarterly compliance audit prep",
       topics: ["Governance"],
       status: "archived",
       unreadCount: 0,
@@ -412,19 +412,19 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Assemble a concise Joint Commission audit summary with policy coverage and exception counts.",
+            "Assemble a concise compliance audit summary with policy coverage and exception counts.",
         },
         {
           role: "assistant",
           content:
-            "Prepared and organized by control family (DSCSA, USP <797>, controlled substances), with exception aging and closure-rate trend included for audit committee review.",
+            "Prepared and organized by rule family (Sensitive Data Redaction, Production Access Control, Brand & Content Safety), with exception aging and closure-rate trend included for the audit committee review.",
         },
       ],
     },
   ],
   [TABS.CHAT]: [
     {
-      title: "Cross-facility rollout for new substitution policy",
+      title: "Cross-team rollout for new Code Change Approval policy",
       topics: ["Support", "Governance"],
       status: "active",
       unreadCount: 1,
@@ -434,17 +434,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Draft a rollout plan for the new clinically equivalent substitution policy across all 14 facilities.",
+            "Draft a rollout plan for the new Code Change Approval policy across all four teams.",
         },
         {
           role: "assistant",
           content:
-            "Drafted with a staged rollout by service line, pharmacy/clinical sign-off checkpoints, and weekly adoption review milestones.",
+            "Drafted with a staged rollout by team, Engineering and Product lead sign-off checkpoints, and weekly adoption review milestones.",
         },
       ],
     },
     {
-      title: "Unified supply-chain status update for COO",
+      title: "Unified status update for leadership",
       topics: ["Agents", "Costs", "Governance"],
       status: "completed",
       unreadCount: 0,
@@ -454,17 +454,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Create a concise update for the COO covering resiliency, supply spend, and compliance risk trends.",
+            "Create a concise update for leadership covering agent-run reliability, team spend, and compliance risk trends.",
         },
         {
           role: "assistant",
           content:
-            "Prepared a three-part update summarizing resiliency drift, spend deltas vs. budget, and unresolved compliance violations with owners.",
+            "Prepared a three-part update summarizing run success drift, spend deltas vs. budget, and unresolved compliance violations with owners.",
         },
       ],
     },
     {
-      title: "Onboarding checklist for new materials manager",
+      title: "Onboarding checklist for a new team admin",
       topics: ["Support"],
       status: "completed",
       unreadCount: 0,
@@ -474,17 +474,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "I need a practical onboarding checklist for newly added materials managers.",
+            "I need a practical onboarding checklist for newly added team admins.",
         },
         {
           role: "assistant",
           content:
-            "Checklist created with EHR + ERP access setup, alert preferences, formulary review, and procedure-card ownership handoff.",
+            "Checklist created with workspace access setup, alert preferences, agent-run dashboard review, and project ownership handoff.",
         },
       ],
     },
     {
-      title: "Change communication for Epic connector update",
+      title: "Change communication for the API connector update",
       topics: ["Support"],
       status: "archived",
       unreadCount: 0,
@@ -494,19 +494,19 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Write a clinician-facing note about the upcoming Epic connector update and expected impact on supply requests.",
+            "Write a team-facing note about the upcoming API connector update and expected impact on agent runs.",
         },
         {
           role: "assistant",
           content:
-            "Drafted communication with timeline, potential interruptions to PAR-level data, and support contacts for clinical staff during migration.",
+            "Drafted communication with timeline, potential interruptions to agent-run scheduling, and support contacts for each team during migration.",
         },
       ],
     },
   ],
   [TABS.SETTINGS]: [
     {
-      title: "Notification defaults cleanup for new facilities",
+      title: "Notification defaults cleanup for new teams",
       topics: ["Support"],
       status: "active",
       unreadCount: 0,
@@ -516,17 +516,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Our new facilities inherit noisy alert defaults. Suggest a cleaner baseline for materials managers.",
+            "Our new teams inherit noisy alert defaults. Suggest a cleaner baseline for team admins.",
         },
         {
           role: "assistant",
           content:
-            "Recommended baseline: HIGH-severity disruption alerts only, daily resiliency digest at 07:00 local, and weekly contract spend summary enabled.",
+            "Recommended baseline: HIGH-severity agent-run failure alerts only, daily reliability digest at 07:00 local, and weekly team spend summary enabled.",
         },
       ],
     },
     {
-      title: "Language rollout checklist for clinical staff",
+      title: "Language rollout checklist for team dashboards",
       topics: ["Support"],
       status: "completed",
       unreadCount: 0,
@@ -536,17 +536,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Create a rollout checklist for enabling Spanish, French, and Tagalog across clinical-facing screens.",
+            "Create a rollout checklist for enabling Spanish, French, and Italian across team-facing dashboards.",
         },
         {
           role: "assistant",
           content:
-            "Checklist prepared with translation QA on clinical terms, fallback locale behavior, and phased enablement by facility.",
+            "Checklist prepared with translation QA on agent and project terms, fallback locale behavior, and phased enablement by team.",
         },
       ],
     },
     {
-      title: "Currency migration readiness for Canadian sites",
+      title: "Currency migration readiness for the Canadian team",
       topics: ["Support", "Costs"],
       status: "completed",
       unreadCount: 0,
@@ -556,17 +556,17 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Are we ready to switch default reporting currency to CAD for the Toronto facility?",
+            "Are we ready to switch default reporting currency to CAD for the Toronto-based team?",
         },
         {
           role: "assistant",
           content:
-            "Almost. Conversion settings are in place, but two downstream GPO exports still assume USD labels.",
+            "Almost. Conversion settings are in place, but two downstream cost-export jobs still assume USD labels.",
         },
       ],
     },
     {
-      title: "Access control policy update for Astra Assistant",
+      title: "Access control policy update for the Somm Assistant",
       topics: ["Support", "Governance"],
       status: "archived",
       unreadCount: 0,
@@ -576,7 +576,7 @@ const TEMPLATES_BY_TAB: Record<TABS, ConversationTemplate[]> = {
         {
           role: "user",
           content:
-            "Draft clinician-facing comms for upcoming Astra Assistant access changes and impact on existing super-users.",
+            "Draft team-facing comms for upcoming Somm Assistant access changes and impact on existing super-users.",
         },
         {
           role: "assistant",
@@ -635,7 +635,7 @@ function buildConversation(
     chatId,
     role: "system",
     authorName: "System",
-    content: `Astra OS context loaded for ${tab} with facility, service-line, and time-range filters.`,
+    content: `Cellar OS context loaded for ${tab} with team, project, and time-range filters.`,
     createdAtIso: startedAt.toISOString(),
   };
   const conversationMessages = template.messages.map((message, messageIndex) => {
@@ -644,7 +644,7 @@ function buildConversation(
       id: `${chatId}-m${messageIndex + 2}`,
       chatId,
       role: message.role,
-      authorName: message.role === "assistant" ? "Astra Assistant" : "Admin",
+      authorName: message.role === "assistant" ? "Somm Assistant" : "Admin",
       content: message.content,
       createdAtIso: createdAt.toISOString(),
     } satisfies ChatMessage;
@@ -792,7 +792,7 @@ export class StubChatApi implements IChatApi {
       chatId,
       role: "system",
       authorName: "System",
-      content: `Astra OS initialized for ${request.tab} supply-chain workflows.`,
+      content: `Cellar OS initialized for ${request.tab} agent-run workflows.`,
       createdAtIso: now.toISOString(),
     };
 
@@ -809,7 +809,7 @@ export class StubChatApi implements IChatApi {
       id: `${chatId}-m3`,
       chatId,
       role: "assistant",
-      authorName: "Astra Assistant",
+      authorName: "Somm Assistant",
       content: this.pickStubResponse(),
       createdAtIso: new Date(now.getTime() + 100).toISOString(),
     };
@@ -857,7 +857,7 @@ export class StubChatApi implements IChatApi {
       id: `${request.chatId}-m${Date.now() + 1}`,
       chatId: request.chatId,
       role: "assistant",
-      authorName: "Astra Assistant",
+      authorName: "Somm Assistant",
       content: this.pickStubResponse(),
       createdAtIso: new Date(now.getTime() + 100).toISOString(),
     };
@@ -931,10 +931,10 @@ export class StubChatApi implements IChatApi {
 
   private pickStubResponse(): string {
     const responses = [
-      "Great topic! This is a demo environment though, so the AI chat is stubbed out. In production, Astra would pull live data from your hospital ERP, EHR, and supplier feeds to give you a real answer.",
-      "Interesting question! Since this is a demo, I can't fetch real supply-chain data right now. In the full version, I'd analyze your OTIF, disruption signals, and contract spend to provide actionable insights.",
-      "Good discussion point! The chat feature is running in demo mode, so my responses are pre-written. The production version connects to your live Clarium Astra OS workspace.",
-      "I appreciate the question! This is a stubbed demo, but in a real deployment I'd have full access to your dashboards, workflow apps, and contract spend data to help you out.",
+      "Great topic! This is a demo environment though, so the AI chat is stubbed out. In production, Somm would pull live data from your agent runs, workflow apps, and team dashboards to give you a real answer.",
+      "Interesting question! Since this is a demo, I can't fetch real agent-run data right now. In the full version, I'd analyze your run success rates, failure signals, and team spend to provide actionable insights.",
+      "Good discussion point! The chat feature is running in demo mode, so my responses are pre-written. The production version connects to your live CellarTracker Cellar OS workspace.",
+      "I appreciate the question! This is a stubbed demo, but in a real deployment I'd have full access to your dashboards, workflow apps, and agent-run cost data to help you out.",
     ];
     const response = responses[this.stubResponseIndex % responses.length]!;
     this.stubResponseIndex += 1;

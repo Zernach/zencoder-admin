@@ -10,12 +10,12 @@ describe("i18n config", () => {
   });
 
   it("loads English translations for common.appName", () => {
-    expect(i18n.t("common.appName")).toBe("Clarium");
+    expect(i18n.t("common.appName")).toBe("CellarTracker");
   });
 
   it("loads English translations for navigation keys", () => {
     expect(i18n.t("navigation.home")).toBe("Home");
-    expect(i18n.t("navigation.agents")).toBe("Agents");
+    expect(i18n.t("navigation.systems")).toBe("Systems");
     expect(i18n.t("navigation.costs")).toBe("Costs");
     expect(i18n.t("navigation.governance")).toBe("Governance");
     expect(i18n.t("navigation.settings")).toBe("Chat");
@@ -39,7 +39,7 @@ describe("i18n config", () => {
 
   it("falls back to English for missing keys in other languages", () => {
     const result = i18n.t("common.appName", { lng: "fr" });
-    expect(result).toBe("Clarium");
+    expect(result).toBe("CellarTracker");
   });
 
   it("returns key path for completely missing keys", () => {

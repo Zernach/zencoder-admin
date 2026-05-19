@@ -1,11 +1,12 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
-import type { AgentsHubResponse } from "@/features/analytics/types";
+import type { AgentsHubResponse, MachineLearningResponse } from "@/features/analytics/types";
 
 const mockPush = jest.fn();
 const mockPathname = "/agents";
 
 const mockUseAgentsHub = jest.fn();
+const mockUseMachineLearning = jest.fn();
 const mockDispatch = jest.fn();
 const mockSectionRef = jest.fn((_sectionId: string) => jest.fn());
 const mockDataTable = jest.fn();
@@ -18,6 +19,10 @@ jest.mock("expo-router", () => ({
 
 jest.mock("@/features/analytics/hooks/useAgentsHub", () => ({
   useAgentsHub: () => mockUseAgentsHub(),
+}));
+
+jest.mock("@/features/analytics/hooks/useMachineLearning", () => ({
+  useMachineLearning: () => mockUseMachineLearning(),
 }));
 
 jest.mock("@/hooks/useRegisterSection", () => ({
@@ -263,8 +268,8 @@ function createAgentsHubData(): AgentsHubResponse {
         userId: "user_1",
         projectId: "project_1",
         agentId: "agent_1",
-        provider: "codex",
-        modelId: "gpt-4.1",
+        provider: "openai",
+        modelId: "gpt-4o",
         inputTokens: 1000,
         outputTokens: 500,
         totalTokens: 1500,
@@ -277,11 +282,67 @@ function createAgentsHubData(): AgentsHubResponse {
   };
 }
 
-describe("AgentsScreen", () => {
+function createMachineLearningData(): MachineLearningResponse {
+  return {
+    totalModels: 6,
+    modelsInProduction: 4,
+    predictionsServed24h: 61000,
+    avgModelAccuracy: 0.874,
+    driftAlerts: 2,
+    accuracyTrend: [
+      { tsIso: "2026-03-01T00:00:00.000Z", value: 90 },
+      { tsIso: "2026-03-02T00:00:00.000Z", value: 91 },
+    ],
+    predictionVolumeTrend: [
+      { tsIso: "2026-03-01T00:00:00.000Z", value: 42000 },
+      { tsIso: "2026-03-02T00:00:00.000Z", value: 45000 },
+    ],
+    modelTypeBreakdown: [
+      { key: "Regression", value: 2 },
+      { key: "Forecasting", value: 1 },
+    ],
+    models: [
+      {
+        id: "ml_demand_forecaster",
+        name: "Demand Forecaster",
+        modelType: "forecasting",
+        stage: "production",
+        version: "v4.2.0",
+        metricLabel: "Forecast Accuracy",
+        metricValue: 0.912,
+        driftStatus: "stable",
+        predictionsServed: 1284500,
+        p95LatencyMs: 78,
+        lastTrainedIso: "2026-05-12T06:00:00.000Z",
+      },
+    ],
+    trainingRuns: [
+      {
+        id: "mltr_5008",
+        modelId: "ml_spoilage_detector",
+        modelName: "Spoilage Anomaly Detector",
+        status: "succeeded",
+        startedAtIso: "2026-05-15T02:00:00.000Z",
+        durationMs: 4920000,
+        datasetSize: 96200,
+        metricValue: 0.833,
+        epochs: 40,
+      },
+    ],
+  };
+}
+
+describe("SystemsScreen", () => {
   beforeEach(() => {
     mockSectionRef.mockClear();
     mockDataTable.mockClear();
     mockSparkLine.mockClear();
+    mockUseMachineLearning.mockReturnValue({
+      data: createMachineLearningData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
   });
 
   it("passes truncateLabels=false to failure categories breakdown chart", () => {
@@ -397,7 +458,8 @@ describe("AgentsScreen", () => {
     const tableCalls = mockDataTable.mock.calls.map(([props]) => props as { paginate?: boolean; columns: Array<{ key: string }> });
     const paginatedCalls = tableCalls.filter((props) => props.paginate === true);
 
-    expect(tableCalls.length).toBe(4);
+    // 4 Agents-section tables + 2 Machine Learning tables (models, training runs)
+    expect(tableCalls.length).toBe(6);
     expect(paginatedCalls.length).toBe(1);
     expect(paginatedCalls[0]?.columns.some((column) => column.key === "id")).toBe(true);
   });
@@ -476,5 +538,64 @@ describe("AgentsScreen", () => {
     expect(mockSparkLine).toHaveBeenCalled();
     const variants = mockSparkLine.mock.calls.map(([props]) => (props as { variant?: string }).variant);
     expect(variants.every((variant) => variant === "candlestick")).toBe(true);
+  });
+
+  it("renders the Agents and Machine Learning section group headers", () => {
+    mockUseAgentsHub.mockReturnValue({
+      data: createAgentsHubData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText } = render(<AgentsScreen />);
+
+    expect(getByText("systems.agentsGroupTitle")).toBeTruthy();
+    expect(getByText("systems.machineLearningGroupTitle")).toBeTruthy();
+  });
+
+  it("renders the machine learning sections", () => {
+    mockUseAgentsHub.mockReturnValue({
+      data: createAgentsHubData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText } = render(<AgentsScreen />);
+
+    expect(getByText("machineLearning.performance")).toBeTruthy();
+    expect(getByText("machineLearning.modelRegistry")).toBeTruthy();
+    expect(getByText("machineLearning.trainingRuns")).toBeTruthy();
+  });
+
+  it("renders machine learning model and training rows", () => {
+    mockUseAgentsHub.mockReturnValue({
+      data: createAgentsHubData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText } = render(<AgentsScreen />);
+
+    expect(getByText("Demand Forecaster")).toBeTruthy();
+    expect(getByText("Spoilage Anomaly Detector")).toBeTruthy();
+  });
+
+  it("registers the machine learning subsection scroll anchors", () => {
+    mockUseAgentsHub.mockReturnValue({
+      data: createAgentsHubData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    render(<AgentsScreen />);
+
+    const sectionIds = mockSectionRef.mock.calls.map((call) => call[0]);
+    expect(sectionIds).toEqual(
+      expect.arrayContaining(["ml-performance", "ml-models", "ml-training"]),
+    );
   });
 });

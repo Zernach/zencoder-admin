@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Absenden",
     "cancel": "Abbrechen",
     "save": "Speichern",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Startseite",
-    "agents": "Agenten",
+    "systems": "Systeme",
     "costs": "Kosten",
     "governance": "Governance",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Internationalisierung",
       "organization": "Organisation",
       "dangerZone": "Gefahrenzone",
-      "evaluations": "Auswertungen"
+      "evaluations": "Auswertungen",
+      "mlPerformance": "Modellleistung",
+      "mlModels": "Modellregister",
+      "mlTraining": "Trainingsläufe"
     }
   },
   "dashboard": {
-    "subtitle": "Agenten und Analysen Ihrer Organisation",
-    "subtitleWithData": "Agenten und Analysen Ihrer Organisation",
+    "subtitle": "Die verantwortungsvolle KI für den Weinbestand Ihres Kellers",
+    "subtitleWithData": "Die verantwortungsvolle KI für den Weinbestand Ihres Kellers",
     "keyMetrics": "Schlüsselkennzahlen",
     "keyMetricsSubtitle": "Auf einen Blick",
     "trends": "Trends",
@@ -86,7 +89,7 @@
     "wauTrend": "Wöchentlich aktive Benutzer (WAU)",
     "mauTrend": "Monatlich aktive Benutzer (MAU)",
     "outcomes": "Ergebnisse",
-    "outcomesSubtitle": "Codequalität & Bereitstellung",
+    "outcomesSubtitle": "Auswirkungen auf Keller und Betrieb",
     "automatedMergeRequestsPerDay": "Automatisierte Substitutionsfreigaben pro Tag",
     "reliabilityAndProviderMix": "Zuverlässigkeit & Anbietermix",
     "anomalies": "Anomalien",
@@ -94,7 +97,7 @@
     "run": "Ausführung ",
     "live": {
       "title": "Live",
-      "subtitle": "KI-Assistenten in Aktion",
+      "subtitle": "Cellar OS-Workflow-Apps im Einsatz",
       "succeeded": "Erfolgreich",
       "queued": "In Warteschlange",
       "running": "Läuft",
@@ -102,15 +105,15 @@
         "resting": "Agenten ruhen sich gerade aus.",
         "quiet": "Hier ist es ruhig.",
         "noMembers": "Kein Teammitglied führt gerade Agenten aus.",
-        "waiting": "Warten auf den nächsten Agenten-Workflow."
+        "waiting": "Warten auf den nächsten Keller-Workflow."
       },
       "emptySubtitle": "Neue Live-Sitzungen erscheinen automatisch, wenn Entwickler Ausführungen starten."
     },
-    "title": "Admin-Startseite"
+    "title": "Cellar OS-Betriebsqualität"
   },
   "agents": {
-    "subtitle": "Intelligente Workflow-Automatisierungen",
-    "subtitleWithData": "Intelligente Workflow-Automatisierungen",
+    "subtitle": "Cellar OS-Workflow-Apps",
+    "subtitleWithData": "Cellar OS-Workflow-Apps",
     "reliability": "Zuverlässigkeit",
     "reliabilitySubtitle": "Beobachtbarkeit und Analytik",
     "successRate": "Erfolgsrate",
@@ -169,9 +172,70 @@
     "evaluationTrend": "Trend",
     "viewEvaluationDetail": "Auswertungsverlauf für {{question}} anzeigen"
   },
+  "systems": {
+    "title": "Systeme",
+    "subtitle": "Jedes intelligente System, das CellarTracker antreibt",
+    "subtitleWithData": "{{agentCount}} Agenten und {{modelCount}} ML-Modelle im Einsatz",
+    "agentsGroupTitle": "Agenten",
+    "agentsGroupSubtitle": "Agentische LLM-Systeme — Ausführungen, Auswertungen und Zuverlässigkeit",
+    "machineLearningGroupTitle": "Maschinelles Lernen",
+    "machineLearningGroupSubtitle": "Trainierte ML-Modelle — Leistung, Drift und Trainingsverlauf"
+  },
+  "machineLearning": {
+    "performance": "Modellleistung",
+    "performanceSubtitle": "Genauigkeit und Vorhersagedurchsatz über alle bereitgestellten Modelle",
+    "totalModels": "Modelle gesamt",
+    "modelsInProduction": "Modelle in Produktion",
+    "predictionsServed": "Vorhersagen (24 Std.)",
+    "avgAccuracy": "Durchschn. Modellgenauigkeit",
+    "driftAlerts": "Drift-Warnungen",
+    "accuracyTrend": "Trend der Modellgenauigkeit",
+    "predictionVolumeTrend": "Vorhersagevolumen",
+    "modelRegistry": "Modellregister",
+    "modelRegistrySubtitle": "{{count}} registrierte Modelle",
+    "modelTypeBreakdown": "Modelle nach Typ",
+    "trainingRuns": "Trainingsläufe",
+    "trainingRunsSubtitle": "{{count}} aktuelle Trainingsjobs",
+    "table": {
+      "model": "Modell",
+      "type": "Typ",
+      "stage": "Phase",
+      "version": "Version",
+      "metric": "Metrik",
+      "score": "Score",
+      "drift": "Drift",
+      "predictions": "Vorhersagen",
+      "latency": "p95-Latenz",
+      "lastTrained": "Zuletzt trainiert",
+      "runId": "Lauf-ID",
+      "status": "Status",
+      "started": "Gestartet",
+      "duration": "Dauer",
+      "dataset": "Datensatz",
+      "epochs": "Epochen"
+    },
+    "stage": {
+      "production": "Produktion",
+      "staging": "Staging",
+      "training": "Training",
+      "retired": "Ausgemustert"
+    },
+    "modelType": {
+      "classification": "Klassifikation",
+      "regression": "Regression",
+      "forecasting": "Prognose",
+      "recommendation": "Empfehlung",
+      "anomaly_detection": "Anomalieerkennung"
+    },
+    "drift": {
+      "stable": "Stabil",
+      "drifting": "Driftend",
+      "critical": "Kritisch"
+    }
+  },
   "costs": {
-    "subtitle": "Ausgabentrends und Budgetverfolgung",
-    "subtitleWithData": "{{totalCost}} ausgegeben für {{projectCount}} Projekte",
+    "subtitle": "Trends bei den Kellerausgaben und Budgetverfolgung",
+    "subtitleWithData": "{{totalCost}} ausgegeben über {{projectCount}} Projekte",
     "costSummary": "Kosten pro Team",
     "totalCost": "Gesamtkosten",
     "avgPerRun": "Durchschn. / Ausf.",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Richtliniendurchsetzung und Sicherheitsüberwachung",
+    "subtitle": "Teams, Personal und Compliance-Regeln verwalten",
     "subtitleWithData": "{{violations}} Verstöße, {{securityEvents}} Sicherheitsereignisse",
     "overview": "Übersicht",
     "violations": "Verstöße",
@@ -375,17 +439,14 @@
     "project": "Projekt",
     "projects": "Projekte",
     "provider": "Anbieter",
+    "model": "Modell",
     "status": "Status",
     "filterBy": "Filtern nach {{category}}",
     "closeFilterDropdown": "Filter-Dropdown schließen",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Anbieter",
+    "modelsLabel": "Modelle",
     "statusesLabel": "Status",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Sonstige"
-    },
     "statuses": {
       "succeeded": "Erfolgreich",
       "failed": "Fehlgeschlagen",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Neuer Chat",
-    "startConversation": "Themen mit deiner KI besprechen",
+    "startConversation": "Fragen Sie Somm zu Ihrem Keller",
     "askAnything": "Fragen Sie etwas...",
     "messageInput": "Chat-Nachricht eingeben",
     "sendMessage": "Nachricht senden",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Noch keine Gespräche.",
     "noConversationsMatchTopics": "Keine Gespräche entsprechen den ausgewählten Themen.",
     "openChat": "Chat öffnen {{title}}",
-    "welcomeTitle": "Hallo! Wie kann ich dir helfen?",
+    "welcomeTitle": "Hallo! Wie kann Somm helfen?",
     "welcomeSubtitle": {
-      "dashboard": "Fragen Sie nach der Agentenleistung, Aktivitätstrends oder erhalten Sie einen schnellen Statusbericht.",
+      "dashboard": "Fragen Sie nach dem Zustand des Kellers, der pünktlichen Lieferung, Störungssignalen oder lassen Sie sich einen schnellen Statuscheck geben.",
       "agents": "Untersuchen Sie den Agentenzustand, vergleichen Sie Leistungen oder beheben Sie Probleme.",
-      "costs": "Erkunden Sie Ausgabenmuster, finden Sie Einsparungen oder untersuchen Sie Kostenspitzen.",
-      "governance": "Prüfen Sie den Compliance-Status, überprüfen Sie Verstöße oder auditieren Sie Ihre Richtlinien.",
-      "settings": "Erhalten Sie Hilfe zu Agenten, Kosten, Governance oder Support."
+      "costs": "Erkunden Sie Muster bei den Kellerausgaben, finden Sie Einsparungen bei Verträgen oder untersuchen Sie Kostenspitzen.",
+      "governance": "Prüfen Sie den Compliance-Status, sehen Sie Verstöße ein oder auditieren Sie Ihre Kellerrichtlinien.",
+      "settings": "Erhalten Sie Hilfe zu Workflow-Apps, Kellerausgaben, Compliance oder Support."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Gruppieren Sie Fehler nach Modellfamilie und zeigen Sie, welche Kategorien Woche für Woche zunehmen. Welche erfordern Triage?"
       },
       "costs": {
-        "label": "Was treibt die Kostensteigerungen an und wie können wir sie eindämmen?",
-        "message": "Die Kosten sind kürzlich gestiegen. Was hat sich nach Projekt und Modell geändert? Wie können wir dies eindämmen, ohne die Antwortqualität zu beeinträchtigen?"
+        "label": "Was treibt die Steigerungen der Kellerausgaben an, und wie können wir sie eindämmen?",
+        "message": "Die Kellerausgaben sind kürzlich gestiegen. Was hat sich nach Weinprogramm und Vertragsstufe geändert? Wie können wir das eindämmen, ohne Verkostungen zu verzögern?"
       },
       "governance": {
         "label": "Verstöße nach Schweregrad zusammenfassen — was sollte ich priorisieren?",
-        "message": "Schlüsseln Sie Verstöße nach Richtlinienklasse auf und markieren Sie alles, was sich beschleunigt. Was sollte ich zuerst priorisieren?"
+        "message": "Schlüsseln Sie die Compliance-Verstöße nach Kategorie auf (Altersverifizierung, TTB, COLA) und markieren Sie alles, was sich beschleunigt. Was sollte ich zuerst priorisieren?"
       },
       "support": {
-        "label": "Helfen Sie mir, eine Rollout-Checkliste oder Teamkommunikation vorzubereiten",
-        "message": "Helfen Sie mir, eine Rollout-Checkliste vorzubereiten oder eine nutzerbezogene Kommunikation für eine bevorstehende Änderung zu erstellen."
+        "label": "Helfen Sie mir, eine Einführungs-Checkliste für eine Personalmitteilung vorzubereiten",
+        "message": "Helfen Sie mir, eine Einführungs-Checkliste vorzubereiten oder eine an das Personal gerichtete Mitteilung zu einer bevorstehenden Kelleränderung zu entwerfen."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Wie arbeiten meine Agenten diese Woche?",
-          "message": "Wie arbeiten meine Agenten diese Woche? Fassen Sie Erfolgsraten, Fehlertrends und herausragende Agenten zusammen."
+          "label": "Wie schneidet mein Keller diese Woche ab?",
+          "message": "Wie schneidet der Keller diese Woche ab? Fassen Sie pünktliche Lieferungen, bearbeitete Störungswarnungen und etwaige herausragende Weinprogramme zusammen."
         },
         "activity": {
-          "label": "Zeigen Sie mir die Aktivitätszusammenfassung von heute",
-          "message": "Geben Sie mir eine Zusammenfassung der heutigen Agentenaktivität — Ausführungen, Abschlüsse, Fehler und alles Ungewöhnliche."
+          "label": "Zeige mir die heutige Kelleraktivität",
+          "message": "Geben Sie mir eine Zusammenfassung der heutigen Kelleraktivität — Ausführungen von Workflow-Apps, Ersetzungen, Warnungen und alles Ungewöhnliche."
         },
         "teams": {
           "label": "Welche Teams sind am aktivsten?",
-          "message": "Welche Teams waren in letzter Zeit am aktivsten? Zeigen Sie mir eine Aufschlüsselung der Agentennutzung nach Team."
+          "message": "Welche Teams waren in letzter Zeit am aktivsten? Zeigen Sie mir eine Aufschlüsselung der Nutzung von Workflow-Apps nach Team."
         },
         "issues": {
           "label": "Gibt es Probleme, die ich kennen sollte?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Wo steigen die Kosten?",
-          "message": "Wo steigen die Kosten? Zeigen Sie mir, welche Agenten oder Teams den Anstieg verursachen."
+          "label": "Wo steigen die Kellerausgaben?",
+          "message": "Wo steigen die Kellerausgaben? Zeigen Sie mir, welche Weinprogramme oder Keller den Anstieg verursachen."
         },
         "breakdown": {
-          "label": "Kostenaufschlüsselung nach Team anzeigen",
-          "message": "Schlüsseln Sie die Kosten nach Team für diesen Monat auf. Wie ist der Vergleich zum Vormonat?"
+          "label": "Kellerausgaben nach Standort anzeigen",
+          "message": "Schlüsseln Sie die Kellerausgaben nach Standort für diesen Monat auf. Wie ist der Vergleich zum letzten Monat?"
         },
         "unusual": {
           "label": "Ungewöhnliche Ausgaben markieren",
           "message": "Markieren Sie ungewöhnliche oder unerwartete Ausgabenmuster. Gibt es Kostenspitzen, die ich untersuchen sollte?"
         },
         "reduce": {
-          "label": "Wie kann ich Kosten reduzieren?",
-          "message": "Analysieren Sie meine aktuelle Agentennutzung und schlagen Sie Wege vor, Kosten zu senken, ohne die Leistung zu beeinträchtigen."
+          "label": "Wie kann ich die Kellerausgaben senken?",
+          "message": "Analysieren Sie die aktuelle Nutzung von Workflow-Apps und Weinkarten und schlagen Sie Möglichkeiten vor, die Kellerausgaben zu senken, ohne Verkostungen zu beeinträchtigen."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Compliance-Zusammenfassung anzeigen",
-          "message": "Geben Sie mir eine Gesamtübersicht der Compliance — wie viele Regeln bestehen, versagen oder erfordern Aufmerksamkeit?"
+          "message": "Geben Sie mir eine Gesamtübersicht zur Compliance — wie viele Regeln (Altersverifizierung, TTB, COLA) sind bestanden, fehlgeschlagen oder erfordern Aufmerksamkeit?"
         },
         "unresolved": {
           "label": "Ungelöste Verstöße auflisten",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Welche Integrationen sind verfügbar?",
-          "message": "Welche Integrationen sind verfügbar, um externe Tools und Dienste zu verbinden?"
+          "message": "Welche Integrationen stehen zur Verbindung mit POS, Bestandssystemen, Händlerportalen oder anderen Quellsystemen zur Verfügung?"
         },
         "notifications": {
           "label": "Benachrichtigungseinstellungen überprüfen",

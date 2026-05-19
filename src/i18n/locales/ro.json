@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Clarium",
+    "appName": "CellarTracker",
     "submit": "Trimite",
     "cancel": "Anulează",
     "save": "Salvează",
@@ -36,7 +36,7 @@
   },
   "navigation": {
     "home": "Acasă",
-    "agents": "Agenți",
+    "systems": "Sisteme",
     "costs": "Costuri",
     "governance": "Guvernanță",
     "settings": "Chat",
@@ -69,12 +69,15 @@
       "internationalization": "Internaționalizare",
       "organization": "Organizație",
       "dangerZone": "Zonă periculoasă",
-      "evaluations": "Evaluări"
+      "evaluations": "Evaluări",
+      "mlPerformance": "Performanța modelelor",
+      "mlModels": "Registru de modele",
+      "mlTraining": "Rulări de antrenare"
     }
   },
   "dashboard": {
-    "subtitle": "Agenții și analizele organizației dvs.",
-    "subtitleWithData": "Agenții și analizele organizației dvs.",
+    "subtitle": "IA responsabilă pentru inventarul de vinuri al pivniței dvs.",
+    "subtitleWithData": "IA responsabilă pentru inventarul de vinuri al pivniței dvs.",
     "keyMetrics": "Indicatori cheie",
     "keyMetricsSubtitle": "Privire de ansamblu",
     "trends": "Tendințe",
@@ -86,7 +89,7 @@
     "wauTrend": "Utilizatori activi săptămânal (WAU)",
     "mauTrend": "Utilizatori activi lunar (MAU)",
     "outcomes": "Rezultate",
-    "outcomesSubtitle": "Calitatea codului și livrare",
+    "outcomesSubtitle": "Impact asupra pivniței și operațiunilor",
     "automatedMergeRequestsPerDay": "Aprobări automate de substituție pe zi",
     "reliabilityAndProviderMix": "Fiabilitate și distribuția furnizorilor",
     "anomalies": "Anomalii",
@@ -94,7 +97,7 @@
     "run": "Rulare ",
     "live": {
       "title": "În direct",
-      "subtitle": "Asistenți AI în acțiune",
+      "subtitle": "Aplicații de flux de lucru Cellar OS în acțiune",
       "succeeded": "Reușite",
       "queued": "În așteptare",
       "running": "În execuție",
@@ -102,15 +105,15 @@
         "resting": "Agenții se odihnesc acum.",
         "quiet": "E liniște aici.",
         "noMembers": "Niciun membru al echipei nu rulează agenți acum.",
-        "waiting": "Se așteaptă următorul flux de lucru al agentului."
+        "waiting": "Se așteaptă următorul flux de lucru al pivniței."
       },
       "emptySubtitle": "Sesiunile live noi vor apărea automat pe măsură ce inginerii pornesc rulări."
     },
-    "title": "Pagina de Start"
+    "title": "Calitatea operațiunilor Cellar OS"
   },
   "agents": {
-    "subtitle": "Automatizări Inteligente ale Fluxurilor de Lucru",
-    "subtitleWithData": "Automatizări Inteligente ale Fluxurilor de Lucru",
+    "subtitle": "Aplicații de flux de lucru Cellar OS",
+    "subtitleWithData": "Aplicații de flux de lucru Cellar OS",
     "reliability": "Fiabilitate",
     "reliabilitySubtitle": "Observabilitate și analize",
     "successRate": "Rată de succes",
@@ -169,9 +172,70 @@
     "evaluationTrend": "Tendință",
     "viewEvaluationDetail": "Vezi istoricul evaluărilor pentru {{question}}"
   },
+  "systems": {
+    "title": "Sisteme",
+    "subtitle": "Fiecare sistem inteligent care alimentează CellarTracker",
+    "subtitleWithData": "{{agentCount}} agenți și {{modelCount}} modele ML în funcțiune",
+    "agentsGroupTitle": "Agenți",
+    "agentsGroupSubtitle": "Sisteme LLM cu agenți — rulări, evaluări și fiabilitate",
+    "machineLearningGroupTitle": "Învățare automată",
+    "machineLearningGroupSubtitle": "Modele ML antrenate — performanță, derivă și istoric de antrenare"
+  },
+  "machineLearning": {
+    "performance": "Performanța modelelor",
+    "performanceSubtitle": "Acuratețea și debitul de predicții pentru modelele implementate",
+    "totalModels": "Total modele",
+    "modelsInProduction": "Modele în producție",
+    "predictionsServed": "Predicții (24h)",
+    "avgAccuracy": "Acuratețe medie a modelelor",
+    "driftAlerts": "Alerte de derivă",
+    "accuracyTrend": "Tendința acurateței modelelor",
+    "predictionVolumeTrend": "Volumul de predicții",
+    "modelRegistry": "Registru de modele",
+    "modelRegistrySubtitle": "{{count}} modele înregistrate",
+    "modelTypeBreakdown": "Modele după tip",
+    "trainingRuns": "Rulări de antrenare",
+    "trainingRunsSubtitle": "{{count}} sarcini de antrenare recente",
+    "table": {
+      "model": "Model",
+      "type": "Tip",
+      "stage": "Etapă",
+      "version": "Versiune",
+      "metric": "Metrică",
+      "score": "Scor",
+      "drift": "Derivă",
+      "predictions": "Predicții",
+      "latency": "Latență p95",
+      "lastTrained": "Ultima antrenare",
+      "runId": "ID rulare",
+      "status": "Stare",
+      "started": "Început",
+      "duration": "Durată",
+      "dataset": "Set de date",
+      "epochs": "Epoci"
+    },
+    "stage": {
+      "production": "Producție",
+      "staging": "Pregătire",
+      "training": "Antrenare",
+      "retired": "Retras"
+    },
+    "modelType": {
+      "classification": "Clasificare",
+      "regression": "Regresie",
+      "forecasting": "Prognozare",
+      "recommendation": "Recomandare",
+      "anomaly_detection": "Detectarea anomaliilor"
+    },
+    "drift": {
+      "stable": "Stabil",
+      "drifting": "În derivă",
+      "critical": "Critic"
+    }
+  },
   "costs": {
-    "subtitle": "Tendințe de cheltuieli și urmărirea bugetului",
-    "subtitleWithData": "{{totalCost}} cheltuit în {{projectCount}} proiecte",
+    "subtitle": "Tendințe de cheltuieli ale pivniței și urmărirea bugetului",
+    "subtitleWithData": "{{totalCost}} cheltuiți în {{projectCount}} proiecte",
     "costSummary": "Cost per Echipă",
     "totalCost": "Cost total",
     "avgPerRun": "Cost mediu pe rulare",
@@ -200,7 +264,7 @@
     }
   },
   "governance": {
-    "subtitle": "Aplicarea politicilor și monitorizarea securității",
+    "subtitle": "Gestionați echipe, personal și reguli de conformitate",
     "subtitleWithData": "{{violations}} încălcări, {{securityEvents}} evenimente de securitate",
     "overview": "Prezentare generală",
     "violations": "Încălcări",
@@ -375,17 +439,14 @@
     "project": "Proiect",
     "projects": "Proiecte",
     "provider": "Furnizor",
+    "model": "Model",
     "status": "Stare",
     "filterBy": "Filtrează după {{category}}",
     "closeFilterDropdown": "Închide meniul de filtre",
     "withCount": "{{label}} ({{count}})",
     "providersLabel": "Furnizori",
+    "modelsLabel": "Modele",
     "statusesLabel": "Stări",
-    "providers": {
-      "codex": "Codex",
-      "claude": "Claude",
-      "other": "Altul"
-    },
     "statuses": {
       "succeeded": "Reușit",
       "failed": "Eșuat",
@@ -497,7 +558,7 @@
   },
   "chat": {
     "newChat": "Conversație nouă",
-    "startConversation": "Discută subiecte cu AI-ul tău",
+    "startConversation": "Întrebați-l pe Somm despre pivnița dvs.",
     "askAnything": "Întreabă orice...",
     "messageInput": "Câmp de mesaj chat",
     "sendMessage": "Trimite mesajul",
@@ -513,13 +574,13 @@
     "noConversationsYet": "Nicio conversație încă.",
     "noConversationsMatchTopics": "Nicio conversație nu corespunde subiectelor selectate.",
     "openChat": "Deschide conversația {{title}}",
-    "welcomeTitle": "Bună! Cum te pot ajuta?",
+    "welcomeTitle": "Bună! Cum vă poate ajuta Somm?",
     "welcomeSubtitle": {
-      "dashboard": "Întreabă despre performanța agenților, tendințele de activitate sau obține o verificare rapidă a stării.",
+      "dashboard": "Întrebați despre starea pivniței, livrările la timp, semnalele de perturbare sau obțineți o verificare rapidă a stării.",
       "agents": "Analizează sănătatea agenților, compară performanțele sau rezolvă probleme.",
-      "costs": "Explorează tiparele de cheltuieli, găsește economii sau investighează creșterile de costuri.",
-      "governance": "Verifică starea conformității, revizuiește încălcările sau auditează politicile.",
-      "settings": "Obține ajutor cu agenții, costurile, guvernanța sau suportul."
+      "costs": "Explorați tiparele de cheltuieli ale pivniței, găsiți economii la contracte sau investigați creșterile bruște de costuri.",
+      "governance": "Verificați starea de conformitate, examinați încălcările sau auditați politicile pivniței dvs.",
+      "settings": "Obțineți ajutor cu aplicațiile de flux de lucru, cheltuielile pivniței, conformitatea sau asistența."
     },
     "topics": {
       "agents": {
@@ -527,31 +588,31 @@
         "message": "Grupează eșecurile după familia de modele și arată ce categorii sunt în creștere de la o săptămână la alta. Care necesită triaj?"
       },
       "costs": {
-        "label": "Ce determină creșterea costurilor și cum le putem limita?",
-        "message": "Costurile au crescut recent. Ce s-a schimbat pe proiect și model? Cum putem limita acest lucru fără a afecta calitatea răspunsurilor?"
+        "label": "Ce determină creșterea cheltuielilor pivniței și cum le putem limita?",
+        "message": "Cheltuielile pivniței au crescut brusc recent. Ce s-a schimbat pe program de vinuri și nivel de contract? Cum putem limita acest lucru fără a întârzia degustările?"
       },
       "governance": {
         "label": "Rezumă încălcările după severitate — ce ar trebui să priorizez?",
-        "message": "Descompune încălcările pe clase de politici și semnalează orice accelerare. Ce ar trebui să priorizez mai întâi?"
+        "message": "Defalcați încălcările de conformitate pe categorii (verificarea vârstei, TTB, COLA) și semnalați tot ceea ce se accelerează. Ce ar trebui să prioritizez mai întâi?"
       },
       "support": {
-        "label": "Ajută-mă să pregătesc o listă de verificare pentru lansare sau o comunicare către echipă",
-        "message": "Ajută-mă să pregătesc o listă de verificare pentru lansare sau să redactez o comunicare pentru utilizatori referitoare la o schimbare viitoare."
+        "label": "Ajutați-mă să pregătesc o listă de verificare a lansării pentru o comunicare către personal",
+        "message": "Ajutați-mă să pregătesc o listă de verificare a lansării sau să redactez o comunicare adresată personalului despre o viitoare modificare a pivniței."
       }
     },
     "prompts": {
       "dashboard": {
         "performance": {
-          "label": "Cum performează agenții mei în această săptămână?",
-          "message": "Cum performează agenții mei în această săptămână? Rezumă ratele de succes, tendințele erorilor și orice agenți remarcabili."
+          "label": "Cum se descurcă pivnița mea săptămâna aceasta?",
+          "message": "Cum se descurcă pivnița săptămâna aceasta? Rezumați livrările la timp, alertele de perturbare gestionate și orice program de vinuri remarcabil."
         },
         "activity": {
-          "label": "Arată-mi rezumatul activității de astăzi",
-          "message": "Dă-mi un rezumat al activității agenților de astăzi — rulări, finalizări, eșecuri și orice neobișnuit."
+          "label": "Arată-mi activitatea pivniței de astăzi",
+          "message": "Dă-mi un rezumat al activității pivniței de astăzi — rulări ale aplicațiilor de flux de lucru, substituții, alerte și orice lucru neobișnuit."
         },
         "teams": {
           "label": "Care echipe sunt cele mai active?",
-          "message": "Care echipe au fost cele mai active recent? Arată-mi o defalcare a utilizării agenților pe echipă."
+          "message": "Care echipe au fost cele mai active recent? Arată-mi o defalcare a utilizării aplicațiilor de flux de lucru pe echipă."
         },
         "issues": {
           "label": "Sunt probleme de care ar trebui să știu?",
@@ -578,20 +639,20 @@
       },
       "costs": {
         "trending": {
-          "label": "Unde cresc costurile?",
-          "message": "Unde sunt costurile în creștere? Arată-mi ce agenți sau echipe generează creșterea."
+          "label": "Unde cresc cheltuielile pivniței?",
+          "message": "Unde cresc cheltuielile pivniței? Arată-mi care programe de vinuri sau pivnițe determină creșterea."
         },
         "breakdown": {
-          "label": "Arată defalcarea costurilor pe echipă",
-          "message": "Defalcă costurile pe echipă pentru luna aceasta. Cum se compară cu luna trecută?"
+          "label": "Afișează cheltuielile pivniței pe locație",
+          "message": "Defalcați cheltuielile pivniței pe locație pentru luna aceasta. Cum se compară cu luna trecută?"
         },
         "unusual": {
           "label": "Semnalează cheltuieli neobișnuite",
           "message": "Semnalează orice tipare de cheltuieli neobișnuite sau neașteptate. Există vârfuri de cost pe care ar trebui să le investighez?"
         },
         "reduce": {
-          "label": "Cum pot reduce costurile?",
-          "message": "Analizează utilizarea actuală a agenților mei și sugerează modalități de reducere a costurilor fără a afecta performanța."
+          "label": "Cum pot reduce cheltuielile pivniței?",
+          "message": "Analizați utilizarea curentă a aplicațiilor de flux de lucru și listele de vinuri și sugerați modalități de reducere a cheltuielilor pivniței fără a afecta degustările."
         }
       },
       "governance": {
@@ -601,7 +662,7 @@
         },
         "compliance": {
           "label": "Arată rezumatul conformității",
-          "message": "Dă-mi un rezumat general al conformității — câte reguli sunt respectate, încălcate sau necesită atenție?"
+          "message": "Dă-mi un rezumat general al conformității — câte reguli (verificarea vârstei, TTB, COLA) sunt conforme, nereușite sau necesită atenție?"
         },
         "unresolved": {
           "label": "Listează încălcările nerezolvate",
@@ -619,7 +680,7 @@
         },
         "integrations": {
           "label": "Ce integrări sunt disponibile?",
-          "message": "Ce integrări sunt disponibile pentru conectarea la instrumente și servicii externe?"
+          "message": "Ce integrări sunt disponibile pentru conectarea la POS, sisteme de inventar, portaluri ale distribuitorilor sau alte sisteme sursă?"
         },
         "notifications": {
           "label": "Revizuiește setările de notificare",

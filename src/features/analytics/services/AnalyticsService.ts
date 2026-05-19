@@ -9,6 +9,7 @@ import type {
   ReliabilityResponse,
   GovernanceResponse,
   AgentsHubResponse,
+  MachineLearningResponse,
   LiveAgentSessionsSocket,
   SearchSuggestionsRequest,
   SearchSuggestionsResponse,
@@ -58,8 +59,10 @@ export class AnalyticsService implements IAnalyticsService {
     res.kpis.totalCostUsd = round2(res.kpis.totalCostUsd);
     res.kpis.seatAdoptionRate = round1(res.kpis.seatAdoptionRate);
     res.kpis.runSuccessRate = round1(res.kpis.runSuccessRate);
-    res.kpis.providerShareCodex = round1(res.kpis.providerShareCodex);
-    res.kpis.providerShareClaude = round1(res.kpis.providerShareClaude);
+    res.kpis.providerShares = res.kpis.providerShares.map((entry) => ({
+      provider: entry.provider,
+      share: round1(entry.share),
+    }));
     for (const a of res.anomalies) {
       if (!a.runId) a.runId = "unknown";
     }
@@ -133,6 +136,18 @@ export class AnalyticsService implements IAnalyticsService {
       row.totalCostUsd = round2(row.totalCostUsd);
       row.avgCostPerRunUsd = round2(row.avgCostPerRunUsd);
       row.successRate = roundRate(row.successRate);
+    }
+    return res;
+  }
+
+  async getMachineLearning(filters: AnalyticsFilters): Promise<MachineLearningResponse> {
+    const res = await this.api.getMachineLearning(filters);
+    res.avgModelAccuracy = roundRate(res.avgModelAccuracy);
+    for (const model of res.models) {
+      model.metricValue = roundRate(model.metricValue);
+    }
+    for (const run of res.trainingRuns) {
+      run.metricValue = roundRate(run.metricValue);
     }
     return res;
   }

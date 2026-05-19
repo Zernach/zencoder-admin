@@ -13,6 +13,7 @@ import type {
   PolicyChangeEvent,
   ComplianceItem,
 } from "../types";
+import { MODELS_BY_PROVIDER } from "../constants/providers";
 
 // ─── Seeded PRNG (mulberry32) ───────────────────────────
 function mulberry32(seed: number) {
@@ -62,14 +63,8 @@ REFERENCE_DATE.setUTCHours(23, 59, 59, 0);
 const DAY_MS = 86_400_000;
 const HOUR_MS = 3_600_000;
 
-const TEAM_NAMES = [
-  "Mercy Health Network",
-  "St. Vincent Medical Center",
-  "Cleveland Heart Hospital",
-  "Boston Children's Network",
-  "Pacific Surgical Group",
-  "Mountainview Regional Health",
-];
+// CellarTracker's internal company teams.
+const TEAM_NAMES = ["Design", "Engineering", "Marketing", "Product"];
 
 const FIRST_NAMES = [
   "Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Hank",
@@ -99,90 +94,175 @@ const LAST_NAMES = [
   "Diaz", "Gutierrez", "Mendez",
 ];
 
-const NAMED_PROJECTS = [
-  "Disruption Monitoring",
-  "Substitute Management",
-  "Procedure Card Optimization",
-  "Resiliency Monitoring",
-  "Astra Assistant",
-];
+// Projects are the work each internal team owns. Engineering runs codebase
+// tasks, Product builds CellarTracker features, Design produces assets, and
+// Marketing runs campaigns and content.
+const PROJECTS_BY_TEAM: Record<string, string[]> = {
+  Engineering: [
+    "API Gateway Refactor",
+    "Mobile App Build Pipeline",
+    "Cellar Sync Engine",
+    "Search Indexing Service",
+    "Database Migration",
+    "CI/CD Automation",
+    "Authentication Service",
+    "GraphQL Schema Migration",
+    "Performance Optimization",
+    "Test Coverage Expansion",
+    "Infrastructure as Code",
+    "Bug Triage Automation",
+    "Dependency Upgrades",
+    "Observability Stack",
+  ],
+  Product: [
+    "CellarChat",
+    "Wine Insights",
+    "Pairing Recommendations",
+    "Vintage Predictions",
+    "Cellar Valuation",
+    "Tasting Note Generator",
+    "Drink Window Alerts",
+    "Collection Analytics",
+    "Label Scanner",
+    "Wishlist & Wantlist",
+    "Community Reviews",
+    "Cellar Sharing",
+    "Smart Restock",
+    "Producer Profiles",
+  ],
+  Design: [
+    "Asset Generation Harness",
+    "Design System Refresh",
+    "Marketing Illustration Pipeline",
+    "Bottle Label Mockups",
+    "Icon Library",
+    "Onboarding Flow Redesign",
+    "Brand Photography",
+    "Email Template Design",
+    "Mobile UI Kit",
+    "Accessibility Audit",
+    "Motion & Animation Library",
+    "App Store Creative",
+    "Landing Page Design",
+    "Data Viz Components",
+  ],
+  Marketing: [
+    "Q3 Growth Campaign",
+    "SEO Content Engine",
+    "Newsletter Automation",
+    "Social Media Scheduler",
+    "Wine Blog Content",
+    "Influencer Outreach",
+    "Paid Ads Optimization",
+    "Customer Lifecycle Emails",
+    "Landing Page A/B Tests",
+    "Press & PR Kit",
+    "Referral Program",
+    "Webinar & Events",
+    "Brand Partnerships",
+    "Retention Campaigns",
+  ],
+};
 
-const GENERATED_PROJECT_PREFIXES = [
-  "Operating Room", "Cardiology", "Orthopedics", "Oncology", "Emergency",
-  "ICU", "Pediatrics", "Neurology", "Pharmacy", "Radiology",
-  "Surgical", "Laboratory", "Materials", "Sterile Processing", "Inventory",
-  "Procurement", "Clinical Engineering", "Catheter Lab", "Endoscopy", "Anesthesia",
-  "Wound Care", "Infusion", "Labor & Delivery", "Transplant",
-];
-
-const GENERATED_PROJECT_SUFFIXES = [
-  "Workflow", "Operations", "Supply Chain", "Resiliency", "Optimization",
-  "Forecasting", "Compliance", "Network", "Insights", "Hub",
-  "Planning", "Tracking",
-];
-
-const NAMED_AGENTS = [
-  "Disruption Monitor",
-  "Substitute Recommender",
-  "Procedure Card Optimizer",
-  "Resiliency Analyst",
-  "Inventory Forecaster",
-  "OTIF Tracker",
-];
-
-const GENERATED_AGENT_PREFIXES = [
-  "Stockout", "Backorder", "Lead Time", "OTIF", "Recall", "Lot",
-  "Expiration", "Substitute", "Vendor", "Contract", "Demand", "Shortage",
-  "Resiliency", "Compliance", "PHI", "DSCSA", "Procedure", "Supplier",
-  "Network", "Order", "Inventory", "Cost", "PAR Level", "Disruption",
-];
-
-const GENERATED_AGENT_SUFFIXES = [
-  "Monitor", "Predictor", "Optimizer", "Analyzer", "Tracker", "Forecaster",
-  "Validator", "Detector", "Reporter", "Assistant",
-];
+// AI agents are scoped to a team and named for the work they automate.
+const AGENTS_BY_TEAM: Record<string, string[]> = {
+  Engineering: [
+    "Code Review Bot",
+    "Test Generator",
+    "Bug Fixer",
+    "Refactor Agent",
+    "PR Summarizer",
+    "Dependency Updater",
+    "Lint Enforcer",
+    "Migration Runner",
+    "Deploy Bot",
+    "Incident Responder",
+    "Doc Writer",
+    "Schema Validator",
+  ],
+  Product: [
+    "Feature Spec Writer",
+    "User Story Generator",
+    "Roadmap Planner",
+    "Pairing Recommender",
+    "Insights Synthesizer",
+    "Feedback Analyzer",
+    "Release Notes Writer",
+    "Wine Data Curator",
+    "Onboarding Optimizer",
+    "Experiment Designer",
+    "Changelog Builder",
+    "Persona Researcher",
+  ],
+  Design: [
+    "Asset Generator",
+    "Mockup Builder",
+    "Icon Synthesizer",
+    "Illustration Agent",
+    "Layout Generator",
+    "Palette Designer",
+    "Accessibility Checker",
+    "Design QA Bot",
+    "Logo Variant Agent",
+    "Image Upscaler",
+    "Prototype Assembler",
+    "Brand Auditor",
+  ],
+  Marketing: [
+    "Content Writer",
+    "SEO Optimizer",
+    "Campaign Planner",
+    "Email Drafter",
+    "Social Post Generator",
+    "Ad Copy Agent",
+    "Audience Segmenter",
+    "Newsletter Builder",
+    "Press Release Writer",
+    "Analytics Reporter",
+    "Landing Page Writer",
+    "Outreach Agent",
+  ],
+};
 
 const VIOLATION_REASONS = [
-  "PHI Exposure Detected",
-  "Controlled Substance Access",
-  "FDA Recall Bypassed",
-  "DSCSA Lot Tracking Missing",
-  "Expired Product Dispensed",
-  "Non-Equivalent Substitute Used",
-  "Non-Contracted Vendor Order",
-  "UDI Capture Missing",
+  "Sensitive Data Exposure Detected",
+  "Unauthorized Production Access",
+  "Audit Trail Missing",
+  "Unapproved Code Change",
+  "Unreviewed Output Shipped",
+  "Off-Brand Content Generated",
+  "Unapproved Model Invoked",
+  "Secret or Credential Leak",
 ];
 
 const SECURITY_EVENT_TYPES = [
-  "PHI Access Anomaly",
-  "EHR Query Spike",
+  "Credential Access Anomaly",
+  "API Query Spike",
   "Authentication Failure",
   "Audit Log Gap",
 ];
 
 const POLICY_ACTIONS = [
-  "Updated preferred vendor list",
-  "Modified clinically equivalent substitute mapping",
-  "Added FDA recall alert workflow",
-  "Changed PAR level threshold",
-  "Enabled PHI redaction in supplier feeds",
-  "Updated DSCSA tracking requirements",
-  "Modified controlled substance access policy",
-  "Changed procurement approval threshold",
-  "Updated USP <797> compounding policy",
-  "Modified procedure card substitution rules",
+  "Updated approved model list",
+  "Modified sensitive-data redaction rules",
+  "Added production-access approval workflow",
+  "Changed agent action rate limit",
+  "Enabled secret scanning on agent outputs",
+  "Updated audit-trail retention requirements",
+  "Modified code-change approval policy",
+  "Changed deployment approval threshold",
+  "Updated brand & content safety policy",
+  "Modified agent permission scopes",
 ];
 
-const MODEL_IDS: Record<ModelProvider, string[]> = {
-  codex: ["codex-1", "codex-2"],
-  claude: ["claude-3-opus", "claude-3-sonnet", "claude-3-haiku"],
-  other: ["gpt-4o", "gemini-pro"],
-};
-
+// Approximate blended USD pricing per 1K tokens, per provider.
 const COST_PER_1K: Record<ModelProvider, { input: number; output: number }> = {
-  codex: { input: 0.003, output: 0.012 },
-  claude: { input: 0.008, output: 0.024 },
-  other: { input: 0.002, output: 0.006 },
+  openai: { input: 0.0025, output: 0.01 },
+  anthropic: { input: 0.003, output: 0.015 },
+  gemini: { input: 0.00125, output: 0.005 },
+  grok: { input: 0.002, output: 0.01 },
+  deepseek: { input: 0.0003, output: 0.0011 },
+  mistral: { input: 0.002, output: 0.006 },
 };
 
 // ─── Generator ──────────────────────────────────────────
@@ -198,11 +278,13 @@ export function generateSeedData(seed: number = 42): SeedData {
   // ── Users ─────────────────────────────────────────────
   const users: User[] = [];
   let userCounter = 1;
-  const teamUserCounts = teams.map(() => randInt(rng, 11, 16));
-  // Ensure total >= 80
-  while (teamUserCounts.reduce((a, b) => a + b, 0) < 80) {
-    teamUserCounts[teamUserCounts.length - 1]!++;
-  }
+  // Distribute a fixed total of 14 users as evenly as possible across teams.
+  const TOTAL_USERS = 14;
+  const teamUserCounts = teams.map(
+    (_, i) =>
+      Math.floor(TOTAL_USERS / teams.length) +
+      (i < TOTAL_USERS % teams.length ? 1 : 0),
+  );
   for (let ti = 0; ti < teams.length; ti++) {
     const team = teams[ti]!;
     const count = teamUserCounts[ti]!;
@@ -212,7 +294,7 @@ export function generateSeedData(seed: number = 42): SeedData {
       users.push({
         id: padId("user", userCounter),
         name: `${first} ${last}`,
-        email: `${first.toLowerCase()}.${last.toLowerCase()}@clarium.health`,
+        email: `${first.toLowerCase()}.${last.toLowerCase()}@cellartracker.wine`,
         teamId: team.id,
       });
       userCounter++;
@@ -237,6 +319,9 @@ export function generateSeedData(seed: number = 42): SeedData {
     const dailyProb = 0.25 + 0.60 * (1 - raw * raw);
     userActivityMeta.push({ activationDay, dailyProb });
   }
+  // Guarantee at least one user is active from day 0 so the daily active
+  // pool is never empty (matters now that the user total is small).
+  if (userActivityMeta.length > 0) userActivityMeta[0]!.activationDay = 0;
 
   // Pre-compute which users are active each day for realistic trends
   const dailyActiveUserPool = new Map<number, User[]>();
@@ -268,50 +353,89 @@ export function generateSeedData(seed: number = 42): SeedData {
   }
 
   // ── Projects ──────────────────────────────────────────
+  // Each project belongs to one internal team and is named from that
+  // team's domain (Engineering → codebase work, Product → features, etc.).
   const projects: Project[] = [];
   for (let i = 0; i < 50; i++) {
+    const team = teams[i % teams.length]!;
+    const pool = PROJECTS_BY_TEAM[team.name] ?? [];
+    const slot = Math.floor(i / teams.length);
+    const baseName = pool[slot % pool.length] ?? team.name;
     const name =
-      i < NAMED_PROJECTS.length
-        ? NAMED_PROJECTS[i]!
-        : `${pick(rng, GENERATED_PROJECT_PREFIXES)} ${pick(rng, GENERATED_PROJECT_SUFFIXES)}`;
+      slot < pool.length ? baseName : `${baseName} ${Math.floor(slot / pool.length) + 1}`;
     projects.push({
       id: padId("proj", i + 1),
       name,
-      teamId: pick(rng, teams).id,
+      teamId: team.id,
     });
   }
 
   // ── Agents ────────────────────────────────────────────
   const AGENT_DESCRIPTIONS: Record<string, string> = {
-    "Disruption Monitor": "Continuously scans supplier, weather, and geopolitical signals to detect supply-chain disruptions. Forecasts shortage risk and alerts materials managers before stockouts occur.",
-    "Substitute Recommender": "Maps clinically equivalent substitutes when a primary product is unavailable. Cross-references hospital formulary, contracts, and prior approvals to suggest safe swaps.",
-    "Procedure Card Optimizer": "Analyzes OR procedure card usage against actual consumption data. Identifies waste, expired items, and opportunities to reduce supply costs per case.",
-    "Resiliency Analyst": "Monitors upstream supplier network health, lead times, and OTIF performance. Flags single-source dependencies and recommends backup vendors.",
-    "Inventory Forecaster": "Predicts PAR-level adjustments based on case volume, seasonality, and clinical demand signals. Reduces emergency procurement and overstock.",
-    "OTIF Tracker": "Tracks on-time-in-full delivery performance across suppliers, surfaces chronic underperformers, and quantifies impact on clinical operations.",
+    "Code Review Bot": "Reviews open pull requests against CellarTracker engineering standards, flags risky changes, and suggests inline fixes before a human reviewer is assigned.",
+    "Test Generator": "Generates unit and integration tests for new and changed code paths, prioritizing modules with low coverage and recent regressions.",
+    "Pairing Recommender": "Powers the Pairing Recommendations feature — matches wines in a member's cellar to dishes, occasions, and tasting preferences.",
+    "Feature Spec Writer": "Drafts product specs and user stories for upcoming CellarTracker features from discovery notes and customer feedback.",
+    "Asset Generator": "Runs the asset generation harness — produces bottle imagery, marketing illustrations, and UI assets from design briefs and brand guidelines.",
+    "Mockup Builder": "Generates UI mockups and component variants from product specs and the CellarTracker design system.",
+    "Content Writer": "Drafts blog posts, wine guides, and campaign copy from briefs, keeping tone aligned with the CellarTracker brand voice.",
+    "SEO Optimizer": "Audits and rewrites marketing pages and content for search performance, surfacing keyword gaps and metadata issues.",
   };
-  const GENERIC_DESCRIPTIONS = [
-    "Monitors inventory thresholds across the supply chain and triggers reorder workflows when PAR levels drop below safety stock.",
-    "Ingests upstream supplier signals, normalizes lead-time and fulfillment data, and forwards risk-scored events to procurement teams.",
-    "Watches FDA, DSCSA, and recall feeds for impacted lots and alerts pharmacy and materials managers when affected products are in stock.",
-    "Generates resiliency reports from contract, vendor, and clinical-usage data, highlighting single-source risk and substitution gaps.",
-    "Validates incoming purchase orders against contract pricing, preferred-vendor lists, and clinical substitution rules before submission.",
-    "Manages scheduled cycle counts and reconciliation jobs, handling retries and reporting variances against EHR consumption data.",
-    "Analyzes procedure-card supply usage by service line and surfaces over-picking, waste, and standardization opportunities.",
-    "Coordinates substitute approval workflows across pharmacy, OR, and clinical leadership, ensuring traceability and audit compliance.",
-  ];
+  const GENERIC_DESCRIPTIONS_BY_TEAM: Record<string, string[]> = {
+    Engineering: [
+      "Triages incoming bug reports, reproduces failures, and proposes targeted fixes with regression tests.",
+      "Runs scheduled dependency upgrades, resolves version conflicts, and verifies the build stays green.",
+      "Refactors legacy modules for readability and performance while preserving existing behavior and tests.",
+      "Monitors deploys and production telemetry, surfacing incidents and rolling back risky releases automatically.",
+      "Migrates database schemas and data, validating integrity against the previous snapshot at each step.",
+      "Summarizes pull requests, links related issues, and drafts release notes for each merge.",
+    ],
+    Product: [
+      "Synthesizes customer feedback and usage signals into prioritized feature opportunities for the roadmap.",
+      "Curates and validates wine reference data so product features stay accurate and current.",
+      "Designs and analyzes A/B experiments for new CellarTracker features, reporting lift with confidence intervals.",
+      "Drafts release notes and changelog entries from merged work, written for CellarTracker members.",
+      "Maps onboarding funnels and recommends flow changes to improve activation and retention.",
+      "Generates user stories and acceptance criteria from product specs and discovery notes.",
+    ],
+    Design: [
+      "Produces UI mockups and component variants from product specs and the CellarTracker design system.",
+      "Generates on-brand icon sets and illustrations, exporting production-ready assets for engineering.",
+      "Audits screens for accessibility and contrast, flagging issues against WCAG guidelines.",
+      "Assembles interactive prototypes from design files so flows can be reviewed before build.",
+      "Builds and tunes color palettes and themes, checking contrast across light and dark modes.",
+      "Reviews shipped UI against design specs and the brand system, reporting visual regressions.",
+    ],
+    Marketing: [
+      "Plans multi-channel campaigns, schedules content, and coordinates assets across email, social, and paid.",
+      "Drafts and schedules social posts tuned to each channel's format and audience.",
+      "Writes and tests ad copy variants, reallocating budget toward the best-performing creative.",
+      "Segments the member base by behavior and lifecycle stage for targeted outreach.",
+      "Builds lifecycle and newsletter email sequences from campaign briefs and product updates.",
+      "Compiles marketing performance reports, highlighting channel ROI and pipeline trends.",
+    ],
+  };
   const agents: Agent[] = [];
+  const usedAgentNames = new Set<string>();
   for (let i = 0; i < 30; i++) {
-    const name =
-      i < NAMED_AGENTS.length
-        ? NAMED_AGENTS[i]!
-        : `${pick(rng, GENERATED_AGENT_PREFIXES)} ${pick(rng, GENERATED_AGENT_SUFFIXES)}`;
-    const description = AGENT_DESCRIPTIONS[name] ?? pick(rng, GENERIC_DESCRIPTIONS);
+    const project = pick(rng, projects);
+    const team = teams.find((t) => t.id === project.teamId)!;
+    const pool = AGENTS_BY_TEAM[team.name] ?? [];
+    const baseName = pick(rng, pool);
+    let name = baseName;
+    let dup = 2;
+    while (usedAgentNames.has(name)) {
+      name = `${baseName} ${dup}`;
+      dup++;
+    }
+    usedAgentNames.add(name);
+    const genericPool = GENERIC_DESCRIPTIONS_BY_TEAM[team.name] ?? [];
+    const description = AGENT_DESCRIPTIONS[baseName] ?? pick(rng, genericPool);
     agents.push({
       id: padId("agent", i + 1),
       name,
       description,
-      projectId: pick(rng, projects).id,
+      projectId: project.id,
     });
   }
 
@@ -362,9 +486,12 @@ export function generateSeedData(seed: number = 42): SeedData {
 
       // Provider
       const provider = weighted<ModelProvider>(rng, [
-        ["codex", 45],
-        ["claude", 45],
-        ["other", 10],
+        ["openai", 32],
+        ["anthropic", 30],
+        ["gemini", 18],
+        ["grok", 9],
+        ["deepseek", 6],
+        ["mistral", 5],
       ]);
 
       // Status
@@ -479,7 +606,7 @@ export function generateSeedData(seed: number = 42): SeedData {
         projectId: project.id,
         agentId: agent.id,
         provider,
-        modelId: pick(rng, MODEL_IDS[provider]),
+        modelId: pick(rng, MODELS_BY_PROVIDER[provider]),
         inputTokens,
         outputTokens,
         totalTokens,
@@ -524,12 +651,12 @@ export function generateSeedData(seed: number = 42): SeedData {
 
   // ── Policy Violations ─────────────────────────────────
   const SEED_RULES = [
-    { id: "rule_seed_1", title: "HIPAA PHI Protection" },
-    { id: "rule_seed_2", title: "Controlled Substance Access" },
-    { id: "rule_seed_3", title: "DSCSA Track and Trace" },
-    { id: "rule_seed_4", title: "FDA UDI Capture" },
-    { id: "rule_seed_5", title: "Clinically Equivalent Substitution" },
-    { id: "rule_seed_6", title: "Preferred Vendor Contract Compliance" },
+    { id: "rule_seed_1", title: "Sensitive Data Redaction" },
+    { id: "rule_seed_2", title: "Production Access Control" },
+    { id: "rule_seed_3", title: "Agent Action Audit Trail" },
+    { id: "rule_seed_4", title: "Code Change Approval" },
+    { id: "rule_seed_5", title: "Approved Model Usage" },
+    { id: "rule_seed_6", title: "Brand & Content Safety" },
   ];
   const policyViolations: PolicyViolationRow[] = [];
   const violationCount = randInt(rng, 150, 200);
@@ -604,12 +731,12 @@ export function generateSeedData(seed: number = 42): SeedData {
 
   // ── Compliance Items ──────────────────────────────────
   const complianceItems: ComplianceItem[] = [
-    { label: "HIPAA PHI Protection", status: "compliant" },
-    { label: "FDA UDI Tracking", status: "compliant" },
-    { label: "DSCSA Track and Trace", status: "compliant" },
-    { label: "Joint Commission Standards", status: "compliant" },
-    { label: "Controlled Substance Logging", status: "warning" },
-    { label: "USP <797> Compounding", status: "warning" },
+    { label: "Sensitive Data Redaction", status: "compliant" },
+    { label: "Agent Action Audit Trail", status: "compliant" },
+    { label: "Production Access Control", status: "compliant" },
+    { label: "Approved Model Usage", status: "compliant" },
+    { label: "Code Change Approval", status: "warning" },
+    { label: "Brand & Content Safety", status: "warning" },
   ];
 
   return {
