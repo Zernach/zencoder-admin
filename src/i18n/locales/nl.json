@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "De verantwoorde AI voor de wijnvoorraad van uw kelder",
-    "subtitleWithData": "De verantwoorde AI voor de wijnvoorraad van uw kelder",
+    "subtitle": "Beheerdashboard voor het inspecteren van AI-systemen",
+    "subtitleWithData": "Beheerdashboard voor het inspecteren van AI-systemen",
     "keyMetrics": "Belangrijke statistieken",
     "keyMetricsSubtitle": "In een oogopslag",
     "trends": "Trends",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Nieuwe livesessies verschijnen automatisch wanneer engineers uitvoeringen starten."
     },
-    "title": "Cellar OS-operationele kwaliteit"
+    "title": "CellarTracker operationele kwaliteit"
   },
   "agents": {
     "subtitle": "Cellar OS-workflow-apps",
@@ -314,6 +314,21 @@
       "runs": "Uitvoeringen",
       "tokens": "Tokens",
       "cost": "Kosten"
+    },
+    "registeredUsers": {
+      "title": "Geregistreerde CellarTracker-gebruikers",
+      "subtitle": "Geschat aantal geregistreerde accounts in mijlpaaljaren",
+      "legend": "Geregistreerde gebruikers",
+      "tableTitle": "Geregistreerde gebruikers per jaar",
+      "tableSubtitle": "Geschat aantal geregistreerde accounts aan het einde van het jaar",
+      "year": "Jaar",
+      "users": "Geregistreerde gebruikers",
+      "confidence": "Betrouwbaarheid",
+      "confidenceLevels": {
+        "high": "Hoog",
+        "medium": "Gemiddeld",
+        "low": "Laag"
+      }
     }
   },
   "settings": {

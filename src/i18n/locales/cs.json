@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Zodpovědná AI pro inventář vína vašeho sklepa",
-    "subtitleWithData": "Zodpovědná AI pro inventář vína vašeho sklepa",
+    "subtitle": "Administrátorský panel pro kontrolu AI systémů",
+    "subtitleWithData": "Administrátorský panel pro kontrolu AI systémů",
     "keyMetrics": "Klíčové ukazatele",
     "keyMetricsSubtitle": "Na první pohled",
     "trends": "Trendy",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Nové živé relace se zobrazí automaticky, jakmile inženýři zahájí spuštění."
     },
-    "title": "Kvalita provozu Cellar OS"
+    "title": "Provozní kvalita CellarTracker"
   },
   "agents": {
     "subtitle": "Pracovní aplikace Cellar OS",
@@ -314,6 +314,21 @@
       "runs": "Spuštění",
       "tokens": "Tokeny",
       "cost": "Náklady"
+    },
+    "registeredUsers": {
+      "title": "Registrovaní uživatelé CellarTracker",
+      "subtitle": "Odhadovaný počet registrovaných účtů v klíčových letech",
+      "legend": "Registrovaní uživatelé",
+      "tableTitle": "Registrovaní uživatelé podle roku",
+      "tableSubtitle": "Odhadovaný počet registrovaných účtů na konci roku",
+      "year": "Rok",
+      "users": "Registrovaní uživatelé",
+      "confidence": "Spolehlivost",
+      "confidenceLevels": {
+        "high": "Vysoká",
+        "medium": "Střední",
+        "low": "Nízká"
+      }
     }
   },
   "settings": {

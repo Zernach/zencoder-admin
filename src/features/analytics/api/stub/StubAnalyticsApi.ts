@@ -73,6 +73,7 @@ import type {
   ProjectEvaluationSection,
   GoldenQuestionEvaluation,
 } from "@/features/analytics/types";
+import { CELLARTRACKER_REGISTERED_USERS_BY_YEAR } from "@/features/analytics/fixtures";
 import { EVALUATION_CRITERIA_OPTIONS, getCriteriaPromptById } from "@/features/analytics/constants/evaluationCriteria";
 import { PROVIDER_VALUES } from "@/features/analytics/constants/providers";
 import {
@@ -1214,6 +1215,8 @@ export class StubAnalyticsApi implements IAnalyticsApi {
       activeUsersTrend: this.activeUsersTrendFromRuns(runs),
       wauTrend: this.rollingActiveUsersTrend(runs, 7, "wau"),
       mauTrend: this.rollingActiveUsersTrend(runs, 30, "mau"),
+      // Fixed historical estimate — independent of the dashboard time filter.
+      registeredUsersByYear: CELLARTRACKER_REGISTERED_USERS_BY_YEAR.map((row) => ({ ...row })),
       runsPerUserDistribution,
       breakdownByTeam,
     };

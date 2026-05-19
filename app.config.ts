@@ -2,7 +2,7 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: "CellarTracker Wine Intelligence",
+  name: "CellarTracker Admin",
   slug: "cellartracker-admin",
   scheme: "cellartracker-admin",
   icon: "./src/assets/images/zencoder-orange.png",

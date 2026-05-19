@@ -1,7 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useRouter } from "expo-router";
+import { useRouter, usePathname } from "expo-router";
+import { CustomButton } from "@/components/buttons";
 import { useTeamDetailScreen } from "@/features/search/hooks";
 import { LoadingSkeleton, ErrorState } from "@/components/dashboard";
 import { ScreenWrapper } from "@/components/screen";
@@ -13,7 +14,7 @@ import { semanticThemes } from "@/theme/themes";
 import { cellText, getSuccessRateColor } from "@/components/tables/cellStyles";
 import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyFormatter";
 import { spacing } from "@/theme/tokens";
-import { ROUTES } from "@/constants/routes";
+import { buildEntityRoute, resolveTabFromPathname, ROUTES } from "@/constants/routes";
 
 interface TeamDetailScreenProps {
   teamId: string;
@@ -22,26 +23,52 @@ interface TeamDetailScreenProps {
 export function TeamDetailScreen({ teamId }: TeamDetailScreenProps) {
   const { t } = useTranslation();
   const router = useRouter();
+  const pathname = usePathname();
   const { data, loading, error, refetch } = useTeamDetailScreen(teamId);
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
   const ct = cellText(mode);
   const { formatCurrency } = useCurrencyFormatter();
 
+  const navigateTo = useCallback(
+    (entityType: "human" | "project", entityId: string) => {
+      const tab = resolveTabFromPathname(pathname);
+      const route = buildEntityRoute(tab, entityType, entityId);
+      router.push(route as never);
+    },
+    [pathname, router],
+  );
+
   const memberColumns = useMemo<ColumnDef<User>[]>(
     () => [
-      { key: "name", header: t("entityDetail.table.name"), render: (u) => <Text style={ct.primary}>{u.name}</Text> },
+      {
+        key: "name",
+        header: t("entityDetail.table.name"),
+        render: (u) => (
+          <CustomButton onPress={() => navigateTo("human", u.id)} accessibilityRole="link" accessibilityLabel={`View user ${u.name}`}>
+            <Text style={ct.link} numberOfLines={1}>{u.name}</Text>
+          </CustomButton>
+        ),
+      },
       { key: "email", header: t("entityDetail.table.email"), render: (u) => <Text style={ct.secondary}>{u.email}</Text> },
     ],
-    [ct, t],
+    [ct, navigateTo, t],
   );
 
   const projectColumns = useMemo<ColumnDef<Project>[]>(
     () => [
-      { key: "name", header: t("entityDetail.table.projectName"), render: (p) => <Text style={ct.primary}>{p.name}</Text> },
+      {
+        key: "name",
+        header: t("entityDetail.table.projectName"),
+        render: (p) => (
+          <CustomButton onPress={() => navigateTo("project", p.id)} accessibilityRole="link" accessibilityLabel={`View project ${p.name}`}>
+            <Text style={ct.link} numberOfLines={1}>{p.name}</Text>
+          </CustomButton>
+        ),
+      },
       { key: "id", header: t("entityDetail.table.id"), width: 140, render: (p) => <Text style={ct.secondary}>{p.id.slice(0, 12)}</Text> },
     ],
-    [ct, t],
+    [ct, navigateTo, t],
   );
 
   if (loading) return <LoadingSkeleton variant="text" />;

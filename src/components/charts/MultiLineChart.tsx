@@ -22,6 +22,12 @@ export interface MultiLineChartProps {
   showGrid?: boolean;
   xTickCount?: number;
   yTickCount?: number;
+  /** Render one x-axis tick per distinct data point instead of evenly spaced ticks. */
+  xTicksFromData?: boolean;
+  /** Formats x-axis tick labels. Defaults to "Mon D". */
+  xTickFormatter?: (date: Date) => string;
+  /** Formats the date shown in the hover tooltip. Defaults to "Mon D, YYYY". */
+  tooltipDateFormatter?: (date: Date) => string;
 }
 
 const MARGIN = { top: 8, right: 8, bottom: 24, left: 44 };
@@ -29,6 +35,11 @@ const TOOLTIP_WIDTH = 200;
 const TOOLTIP_OFFSET = 10;
 const TOOLTIP_HORIZONTAL_PADDING = 8;
 const LEGEND_DOT_SIZE = 10;
+
+const DEFAULT_X_TICK_FORMATTER = (date: Date): string =>
+  date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const DEFAULT_TOOLTIP_DATE_FORMATTER = (date: Date): string =>
+  date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -40,6 +51,9 @@ export const MultiLineChart = React.memo(function MultiLineChart({
   showGrid = true,
   xTickCount = 6,
   yTickCount = 5,
+  xTicksFromData = false,
+  xTickFormatter = DEFAULT_X_TICK_FORMATTER,
+  tooltipDateFormatter = DEFAULT_TOOLTIP_DATE_FORMATTER,
 }: MultiLineChartProps) {
   const { mode } = useThemeMode();
   const theme = semanticThemes[mode];
@@ -102,18 +116,23 @@ export const MultiLineChart = React.memo(function MultiLineChart({
     });
 
     const maxPoints = Math.max(...nonEmpty.map((s) => s.data.length));
+    const xTicks = xTicksFromData
+      ? Array.from(new Set(nonEmpty.flatMap((s) => s.data.map((p) => p.tsIso))))
+          .sort()
+          .map((iso) => new Date(iso))
+      : xScale.ticks(Math.min(maxPoints, Math.max(2, xTickCount)));
 
     return {
       width,
       innerW,
       innerH,
       yTicks: yScale.ticks(yTickCount),
-      xTicks: xScale.ticks(Math.min(maxPoints, Math.max(2, xTickCount))),
+      xTicks,
       xScale,
       yScale,
       seriesData,
     };
-  }, [containerWidth, series, height, xTickCount, yTickCount, defaultColors]);
+  }, [containerWidth, series, height, xTickCount, yTickCount, xTicksFromData, defaultColors]);
 
   const formatYTickLabel = useCallback(
     (tick: number): string => formatCompactNumber(tick),
@@ -137,14 +156,10 @@ export const MultiLineChart = React.memo(function MultiLineChart({
     const firstPoint = chartData.seriesData[0]?.points[activePointIndex];
     if (!firstPoint) return null;
 
-    const dateLabel = firstPoint.ts.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    const dateLabel = tooltipDateFormatter(firstPoint.ts);
 
     return { dateLabel, values, x: firstPoint.x };
-  }, [activePointIndex, chartData]);
+  }, [activePointIndex, chartData, tooltipDateFormatter]);
 
   const tooltipHeight = useMemo(() => {
     if (!activePointData) return 0;
@@ -333,7 +348,7 @@ export const MultiLineChart = React.memo(function MultiLineChart({
               fill={theme.text.tertiary}
               textAnchor="middle"
             >
-              {tick.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              {xTickFormatter(tick)}
             </SvgText>
           ))}
         </Svg>

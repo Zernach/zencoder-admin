@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "A pincéje felelős borkészlet-mesterséges intelligenciája",
-    "subtitleWithData": "A pincéje felelős borkészlet-mesterséges intelligenciája",
+    "subtitle": "Admin irányítópult AI-rendszerek ellenőrzéséhez",
+    "subtitleWithData": "Admin irányítópult AI-rendszerek ellenőrzéséhez",
     "keyMetrics": "Kulcsmutatók",
     "keyMetricsSubtitle": "Egy pillantásra",
     "trends": "Trendek",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Új élő munkamenetek automatikusan megjelennek, amint a mérnökök futtatásokat indítanak."
     },
-    "title": "Cellar OS működési minőség"
+    "title": "CellarTracker működési minőség"
   },
   "agents": {
     "subtitle": "Cellar OS munkafolyamat-alkalmazások",
@@ -314,6 +314,21 @@
       "runs": "Futtatások",
       "tokens": "Tokenek",
       "cost": "Költség"
+    },
+    "registeredUsers": {
+      "title": "CellarTracker regisztrált felhasználói",
+      "subtitle": "Becsült regisztrált fiókok kiemelt években",
+      "legend": "Regisztrált felhasználók",
+      "tableTitle": "Regisztrált felhasználók év szerint",
+      "tableSubtitle": "Becsült regisztrált fiókok az év végén",
+      "year": "Év",
+      "users": "Regisztrált felhasználók",
+      "confidence": "Megbízhatóság",
+      "confidenceLevels": {
+        "high": "Magas",
+        "medium": "Közepes",
+        "low": "Alacsony"
+      }
     }
   },
   "settings": {

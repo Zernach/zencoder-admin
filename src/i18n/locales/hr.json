@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Odgovorna umjetna inteligencija za inventar vina vašeg podruma",
-    "subtitleWithData": "Odgovorna umjetna inteligencija za inventar vina vašeg podruma",
+    "subtitle": "Administratorska nadzorna ploča za pregled AI sustava",
+    "subtitleWithData": "Administratorska nadzorna ploča za pregled AI sustava",
     "keyMetrics": "Ključne metrike",
     "keyMetricsSubtitle": "Na prvi pogled",
     "trends": "Trendovi",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Nove sesije će se automatski pojaviti kada inženjeri pokrenu izvršavanja."
     },
-    "title": "Kvaliteta poslovanja Cellar OS"
+    "title": "Operativna kvaliteta CellarTrackera"
   },
   "agents": {
     "subtitle": "Aplikacije za radne tijekove Cellar OS",
@@ -314,6 +314,21 @@
       "runs": "Izvršavanja",
       "tokens": "Tokeni",
       "cost": "Trošak"
+    },
+    "registeredUsers": {
+      "title": "Registrirani korisnici CellarTrackera",
+      "subtitle": "Procijenjeni registrirani računi u ključnim godinama",
+      "legend": "Registrirani korisnici",
+      "tableTitle": "Registrirani korisnici po godini",
+      "tableSubtitle": "Procijenjeni registrirani računi na kraju godine",
+      "year": "Godina",
+      "users": "Registrirani korisnici",
+      "confidence": "Pouzdanost",
+      "confidenceLevels": {
+        "high": "Visoka",
+        "medium": "Srednja",
+        "low": "Niska"
+      }
     }
   },
   "settings": {

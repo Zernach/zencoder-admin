@@ -313,12 +313,28 @@ export interface LiveAgentSessionsSocket {
   close: (code?: number, reason?: string) => void;
 }
 
+/** Confidence level for an estimated, non-audited metric value. */
+export type EstimateConfidence = "high" | "medium" | "low";
+
+/**
+ * One milestone year in the CellarTracker registered-user estimate.
+ * `registeredUsers` is an approximate year-end account count;
+ * `confidence` reflects how well-sourced (vs. interpolated) that estimate is.
+ */
+export interface RegisteredUsersByYearRow {
+  year: number;
+  registeredUsers: number;
+  confidence: EstimateConfidence;
+}
+
 export interface UsageResponse {
   wau: number; mau: number; activeSeats30d: number;
   seatAdoptionRate: number;
   activeUsersTrend: TimeSeriesPoint[];
   wauTrend: TimeSeriesPoint[];
   mauTrend: TimeSeriesPoint[];
+  /** Estimated CellarTracker registered accounts at milestone years. */
+  registeredUsersByYear: RegisteredUsersByYearRow[];
   runsPerUserDistribution: KeyValueMetric[];
   breakdownByTeam: UsageBreakdownRow[];
 }

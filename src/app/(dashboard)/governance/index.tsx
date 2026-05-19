@@ -14,6 +14,7 @@ import { useCurrencyFormatter } from "@/features/analytics/hooks/useCurrencyForm
 import type {
   GovernanceRuleRow,
   PolicyViolationRow,
+  RegisteredUsersByYearRow,
   SecurityEventRow,
   PolicyChangeEvent,
   SeatUserUsageRow,
@@ -37,6 +38,10 @@ const SEAT_SEARCH_KEYS: (keyof SeatUserUsageRow)[] = ["fullName", "teamName"];
 const TEAM_PERFORMANCE_SEARCH_KEYS: (keyof TeamPerformanceComparisonRow)[] = ["teamName"];
 const POLICY_CHANGE_SEARCH_KEYS: (keyof PolicyChangeEvent)[] = ["action", "target"];
 const RULE_SEARCH_KEYS: (keyof GovernanceRuleRow)[] = ["title", "description"];
+
+/** Registered-users chart spans decades, so x-axis ticks show the year only. */
+const REGISTERED_USERS_YEAR_FORMATTER = (date: Date): string => String(date.getUTCFullYear());
+const registeredUsersKeyExtractor = (row: RegisteredUsersByYearRow): string => String(row.year);
 
 type GovernanceEntityType = "agent" | "project" | "team" | "human" | "run" | "rule";
 type GovernanceNavigateTo = (entityType: GovernanceEntityType, entityId: string) => void;
@@ -160,6 +165,8 @@ const GovernanceSeatUserOversightSection = React.memo(function GovernanceSeatUse
   onCreateSeat: () => void;
 }) {
   const { t } = useTranslation();
+  const { mode } = useThemeMode();
+  const ct = cellText(mode);
   const refFor = useSectionRef();
   const { formatCurrency } = useCurrencyFormatter();
   const filteredSeatUsers = useSearchFilter(data.seatUserUsage, SEAT_SEARCH_KEYS);
@@ -193,6 +200,51 @@ const GovernanceSeatUserOversightSection = React.memo(function GovernanceSeatUse
     return result.map((series, index) => ({ ...series, color: colors[index] }));
   }, [data.activeUsersTrend, data.mauTrend, data.wauTrend]);
 
+  const registeredUsersSeries = useMemo((): MultiLineChartSeries[] => {
+    const rows = data.registeredUsersByYear ?? [];
+    if (rows.length === 0) return [];
+    const [color] = getOrangeBarShadesStepped(1);
+    return [
+      {
+        label: t("governance.registeredUsers.legend"),
+        color,
+        data: rows.map((row) => ({
+          tsIso: `${row.year}-01-01T00:00:00.000Z`,
+          value: row.registeredUsers,
+        })),
+      },
+    ];
+  }, [data.registeredUsersByYear, t]);
+
+  const registeredUsersCols = useMemo<ColumnDef<RegisteredUsersByYearRow>[]>(() => {
+    const confidenceStyle = { high: ct.success, medium: ct.warning, low: ct.secondary };
+    return [
+      {
+        key: "year",
+        header: t("governance.registeredUsers.year"),
+        width: 120,
+        render: (row) => <Text style={ct.primary}>{row.year}</Text>,
+      },
+      {
+        key: "registeredUsers",
+        header: t("governance.registeredUsers.users"),
+        width: 220,
+        align: "right",
+        render: (row) => <Text style={ct.primary}>{formatCompactNumber(row.registeredUsers)}</Text>,
+      },
+      {
+        key: "confidence",
+        header: t("governance.registeredUsers.confidence"),
+        width: 150,
+        render: (row) => (
+          <Text style={confidenceStyle[row.confidence]}>
+            {t(`governance.registeredUsers.confidenceLevels.${row.confidence}`)}
+          </Text>
+        ),
+      },
+    ];
+  }, [ct, t]);
+
   return (
     <View ref={refFor("seat-user-oversight")} nativeID="seat-user-oversight" style={sectionStyles.section}>
       <View style={sectionStyles.sectionRow}>
@@ -219,6 +271,34 @@ const GovernanceSeatUserOversightSection = React.memo(function GovernanceSeatUse
           subtitle={t("governance.activeUsersSubtitle")}
         >
           <MultiLineChart series={activeUsersSeries} height={220} />
+        </ChartCard>
+      )}
+      {registeredUsersSeries.length > 0 && (
+        <ChartCard
+          title={t("governance.registeredUsers.title")}
+          subtitle={t("governance.registeredUsers.subtitle")}
+        >
+          <MultiLineChart
+            series={registeredUsersSeries}
+            height={220}
+            xTicksFromData
+            xTickFormatter={REGISTERED_USERS_YEAR_FORMATTER}
+            tooltipDateFormatter={REGISTERED_USERS_YEAR_FORMATTER}
+          />
+        </ChartCard>
+      )}
+      {(data.registeredUsersByYear?.length ?? 0) > 0 && (
+        <ChartCard
+          title={t("governance.registeredUsers.tableTitle")}
+          subtitle={t("governance.registeredUsers.tableSubtitle")}
+        >
+          <DataTable
+            columns={registeredUsersCols}
+            data={data.registeredUsersByYear ?? []}
+            initialSortBy="year"
+            initialSortDirection="asc"
+            keyExtractor={registeredUsersKeyExtractor}
+          />
         </ChartCard>
       )}
       <ChartCard

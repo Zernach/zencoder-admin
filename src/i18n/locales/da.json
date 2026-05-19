@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Din vinkælders ansvarlige AI til vinlager",
-    "subtitleWithData": "Din vinkælders ansvarlige AI til vinlager",
+    "subtitle": "Admin-dashboard til inspektion af AI-systemer",
+    "subtitleWithData": "Admin-dashboard til inspektion af AI-systemer",
     "keyMetrics": "Nøgletal",
     "keyMetricsSubtitle": "Et hurtigt overblik",
     "trends": "Tendenser",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Nye live-sessioner vises automatisk, når ingeniører starter kørsler."
     },
-    "title": "Cellar OS-driftskvalitet"
+    "title": "CellarTracker driftskvalitet"
   },
   "agents": {
     "subtitle": "Cellar OS-arbejdsgangsapps",
@@ -314,6 +314,21 @@
       "runs": "Kørsler",
       "tokens": "Tokens",
       "cost": "Omkostning"
+    },
+    "registeredUsers": {
+      "title": "Registrerede brugere på CellarTracker",
+      "subtitle": "Anslået antal registrerede konti i nøgleår",
+      "legend": "Registrerede brugere",
+      "tableTitle": "Registrerede brugere pr. år",
+      "tableSubtitle": "Anslået antal registrerede konti ved årets udgang",
+      "year": "År",
+      "users": "Registrerede brugere",
+      "confidence": "Pålidelighed",
+      "confidenceLevels": {
+        "high": "Høj",
+        "medium": "Mellem",
+        "low": "Lav"
+      }
     }
   },
   "settings": {

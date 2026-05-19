@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Die verantwortungsvolle KI für den Weinbestand Ihres Kellers",
-    "subtitleWithData": "Die verantwortungsvolle KI für den Weinbestand Ihres Kellers",
+    "subtitle": "Admin-Dashboard zur Prüfung von KI-Systemen",
+    "subtitleWithData": "Admin-Dashboard zur Prüfung von KI-Systemen",
     "keyMetrics": "Schlüsselkennzahlen",
     "keyMetricsSubtitle": "Auf einen Blick",
     "trends": "Trends",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Neue Live-Sitzungen erscheinen automatisch, wenn Entwickler Ausführungen starten."
     },
-    "title": "Cellar OS-Betriebsqualität"
+    "title": "CellarTracker-Betriebsqualität"
   },
   "agents": {
     "subtitle": "Cellar OS-Workflow-Apps",
@@ -314,6 +314,21 @@
       "runs": "Ausführungen",
       "tokens": "Token",
       "cost": "Kosten"
+    },
+    "registeredUsers": {
+      "title": "CellarTracker – registrierte Benutzer",
+      "subtitle": "Geschätzte registrierte Konten in ausgewählten Jahren",
+      "legend": "Registrierte Benutzer",
+      "tableTitle": "Registrierte Benutzer nach Jahr",
+      "tableSubtitle": "Geschätzte registrierte Konten zum Jahresende",
+      "year": "Jahr",
+      "users": "Registrierte Benutzer",
+      "confidence": "Konfidenz",
+      "confidenceLevels": {
+        "high": "Hoch",
+        "medium": "Mittel",
+        "low": "Niedrig"
+      }
     }
   },
   "settings": {

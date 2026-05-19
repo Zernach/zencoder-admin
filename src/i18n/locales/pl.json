@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Odpowiedzialna SI do inwentaryzacji win Twojej piwnicy",
-    "subtitleWithData": "Odpowiedzialna SI do inwentaryzacji win Twojej piwnicy",
+    "subtitle": "Panel administracyjny do inspekcji systemów AI",
+    "subtitleWithData": "Panel administracyjny do inspekcji systemów AI",
     "keyMetrics": "Kluczowe wskaźniki",
     "keyMetricsSubtitle": "W skrócie",
     "trends": "Trendy",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Nowe sesje na żywo pojawią się automatycznie, gdy inżynierowie rozpoczną uruchomienia."
     },
-    "title": "Jakość operacji Cellar OS"
+    "title": "Jakość operacyjna CellarTracker"
   },
   "agents": {
     "subtitle": "Aplikacje przepływów pracy Cellar OS",
@@ -314,6 +314,21 @@
       "runs": "Uruchomienia",
       "tokens": "Tokeny",
       "cost": "Koszt"
+    },
+    "registeredUsers": {
+      "title": "Zarejestrowani użytkownicy CellarTracker",
+      "subtitle": "Szacowana liczba zarejestrowanych kont w kluczowych latach",
+      "legend": "Zarejestrowani użytkownicy",
+      "tableTitle": "Zarejestrowani użytkownicy według roku",
+      "tableSubtitle": "Szacowana liczba zarejestrowanych kont na koniec roku",
+      "year": "Rok",
+      "users": "Zarejestrowani użytkownicy",
+      "confidence": "Wiarygodność",
+      "confidenceLevels": {
+        "high": "Wysoka",
+        "medium": "Średnia",
+        "low": "Niska"
+      }
     }
   },
   "settings": {

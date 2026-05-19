@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Your Cellar's Responsible Wine-Inventory AI",
-    "subtitleWithData": "Your Cellar's Responsible Wine-Inventory AI",
+    "subtitle": "Admin Dashboard for Inspecting AI Systems",
+    "subtitleWithData": "Admin Dashboard for Inspecting AI Systems",
     "keyMetrics": "Key Metrics",
     "keyMetricsSubtitle": "At a glance",
     "trends": "Trends",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "New live sessions will appear automatically as staff start workflow apps."
     },
-    "title": "Cellar OS Operations Quality"
+    "title": "CellarTracker Operations Quality"
   },
   "agents": {
     "subtitle": "Cellar OS Workflow Apps",
@@ -314,6 +314,21 @@
       "runs": "Runs",
       "tokens": "Tokens",
       "cost": "Cost"
+    },
+    "registeredUsers": {
+      "title": "CellarTracker Registered Users",
+      "subtitle": "Estimated registered accounts at milestone years",
+      "legend": "Registered Users",
+      "tableTitle": "Registered Users by Year",
+      "tableSubtitle": "Estimated registered accounts at year-end",
+      "year": "Year",
+      "users": "Registered Users",
+      "confidence": "Confidence",
+      "confidenceLevels": {
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      }
     }
   },
   "settings": {

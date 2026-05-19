@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Одговорна вештачка интелигенција за инвентар вина вашег подрума",
-    "subtitleWithData": "Одговорна вештачка интелигенција за инвентар вина вашег подрума",
+    "subtitle": "Administratorska kontrolna tabla za pregled AI sistema",
+    "subtitleWithData": "Administratorska kontrolna tabla za pregled AI sistema",
     "keyMetrics": "Ључне метрике",
     "keyMetricsSubtitle": "На први поглед",
     "trends": "Трендови",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Нове сесије уживо ће се аутоматски појавити када инжењери покрену нова покретања."
     },
-    "title": "Квалитет операција Cellar OS"
+    "title": "Operativni kvalitet CellarTrackera"
   },
   "agents": {
     "subtitle": "Апликације радних токова Cellar OS",
@@ -314,6 +314,21 @@
       "runs": "Покретања",
       "tokens": "Токени",
       "cost": "Трошак"
+    },
+    "registeredUsers": {
+      "title": "Регистровани корисници на CellarTracker-у",
+      "subtitle": "Процењени регистровани налози у кључним годинама",
+      "legend": "Регистровани корисници",
+      "tableTitle": "Регистровани корисници по години",
+      "tableSubtitle": "Процењени регистровани налози на крају године",
+      "year": "Година",
+      "users": "Регистровани корисници",
+      "confidence": "Поузданост",
+      "confidenceLevels": {
+        "high": "Висока",
+        "medium": "Средња",
+        "low": "Ниска"
+      }
     }
   },
   "settings": {

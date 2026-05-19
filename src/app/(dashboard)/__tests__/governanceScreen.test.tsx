@@ -180,6 +180,7 @@ jest.mock("@/components/tables", () => {
       brand: { color: "#ff7a3d", fontSize: 12 },
       link: { color: "#ff7a3d", fontSize: 12, textDecorationLine: "underline" },
       success: { color: "#22c55e", fontSize: 12 },
+      warning: { color: "#f59e0b", fontSize: 12 },
       error: { color: "#ef4444", fontSize: 12 },
     }),
     getSuccessRateColor: () => "#f64a00",
@@ -286,6 +287,14 @@ function createGovernanceData(): GovernanceDashboardData {
       { tsIso: "2026-03-02T00:00:00.000Z", value: 66 },
       { tsIso: "2026-03-03T00:00:00.000Z", value: 68 },
     ],
+    registeredUsersByYear: [
+      { year: 2000, registeredUsers: 0, confidence: "high" },
+      { year: 2005, registeredUsers: 13000, confidence: "medium" },
+      { year: 2010, registeredUsers: 175000, confidence: "low" },
+      { year: 2015, registeredUsers: 370000, confidence: "medium" },
+      { year: 2020, registeredUsers: 650000, confidence: "medium" },
+      { year: 2025, registeredUsers: 1000000, confidence: "medium" },
+    ],
   };
 }
 
@@ -338,6 +347,27 @@ describe("GovernanceScreen", () => {
     expect(getByText("DAU")).toBeTruthy();
     expect(getByText("WAU")).toBeTruthy();
     expect(getByText("MAU")).toBeTruthy();
+  });
+
+  it("renders the CellarTracker registered users chart and table", () => {
+    mockUseGovernanceDashboard.mockReturnValue({
+      data: createGovernanceData(),
+      loading: false,
+      error: undefined,
+      refetch: jest.fn(),
+    });
+
+    const { getByText } = render(<GovernanceScreen />);
+
+    expect(getByText("governance.registeredUsers.title")).toBeTruthy();
+    expect(getByText("governance.registeredUsers.legend")).toBeTruthy();
+    expect(getByText("governance.registeredUsers.tableTitle")).toBeTruthy();
+    expect(getByText("governance.registeredUsers.year")).toBeTruthy();
+    expect(getByText("governance.registeredUsers.users")).toBeTruthy();
+    expect(getByText("governance.registeredUsers.confidence")).toBeTruthy();
+    // Milestone years rendered as table rows.
+    expect(getByText("2000")).toBeTruthy();
+    expect(getByText("2025")).toBeTruthy();
   });
 
   it("renders seat user oversight section header", () => {

@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "La IA responsable de inventario de vinos de tu bodega",
-    "subtitleWithData": "La IA responsable de inventario de vinos de tu bodega",
+    "subtitle": "Panel de administración para inspeccionar sistemas de IA",
+    "subtitleWithData": "Panel de administración para inspeccionar sistemas de IA",
     "keyMetrics": "Métricas clave",
     "keyMetricsSubtitle": "De un vistazo",
     "trends": "Tendencias",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Las nuevas sesiones en vivo aparecerán automáticamente cuando los ingenieros inicien ejecuciones."
     },
-    "title": "Calidad operativa de Cellar OS"
+    "title": "Calidad operativa de CellarTracker"
   },
   "agents": {
     "subtitle": "Aplicaciones de flujo de trabajo de Cellar OS",
@@ -314,6 +314,21 @@
       "runs": "Ejecuciones",
       "tokens": "Tokens",
       "cost": "Costo"
+    },
+    "registeredUsers": {
+      "title": "Usuarios registrados en CellarTracker",
+      "subtitle": "Cuentas registradas estimadas en años clave",
+      "legend": "Usuarios registrados",
+      "tableTitle": "Usuarios registrados por año",
+      "tableSubtitle": "Cuentas registradas estimadas a final de año",
+      "year": "Año",
+      "users": "Usuarios registrados",
+      "confidence": "Fiabilidad",
+      "confidenceLevels": {
+        "high": "Alta",
+        "medium": "Media",
+        "low": "Baja"
+      }
     }
   },
   "settings": {

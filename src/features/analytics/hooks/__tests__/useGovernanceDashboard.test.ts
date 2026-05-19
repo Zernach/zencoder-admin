@@ -30,6 +30,7 @@ describe("useGovernanceDashboard", () => {
     expect(Array.isArray(data.activeUsersTrend)).toBe(true);
     expect(Array.isArray(data.wauTrend)).toBe(true);
     expect(Array.isArray(data.mauTrend)).toBe(true);
+    expect(Array.isArray(data.registeredUsersByYear)).toBe(true);
   });
 
   it("returns { data, loading, error, refetch } shape", () => {

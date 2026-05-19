@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "IA responsabilă pentru inventarul de vinuri al pivniței dvs.",
-    "subtitleWithData": "IA responsabilă pentru inventarul de vinuri al pivniței dvs.",
+    "subtitle": "Tablou de bord admin pentru inspectarea sistemelor IA",
+    "subtitleWithData": "Tablou de bord admin pentru inspectarea sistemelor IA",
     "keyMetrics": "Indicatori cheie",
     "keyMetricsSubtitle": "Privire de ansamblu",
     "trends": "Tendințe",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Sesiunile live noi vor apărea automat pe măsură ce inginerii pornesc rulări."
     },
-    "title": "Calitatea operațiunilor Cellar OS"
+    "title": "Calitate operațională CellarTracker"
   },
   "agents": {
     "subtitle": "Aplicații de flux de lucru Cellar OS",
@@ -314,6 +314,21 @@
       "runs": "Rulări",
       "tokens": "Tokeni",
       "cost": "Cost"
+    },
+    "registeredUsers": {
+      "title": "Utilizatori înregistrați pe CellarTracker",
+      "subtitle": "Conturi înregistrate estimate în ani de referință",
+      "legend": "Utilizatori înregistrați",
+      "tableTitle": "Utilizatori înregistrați pe an",
+      "tableSubtitle": "Conturi înregistrate estimate la sfârșitul anului",
+      "year": "An",
+      "users": "Utilizatori înregistrați",
+      "confidence": "Fiabilitate",
+      "confidenceLevels": {
+        "high": "Ridicată",
+        "medium": "Medie",
+        "low": "Scăzută"
+      }
     }
   },
   "settings": {

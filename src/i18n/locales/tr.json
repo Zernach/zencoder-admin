@@ -76,8 +76,8 @@
     }
   },
   "dashboard": {
-    "subtitle": "Mahzeninizin Sorumlu Şarap Envanteri Yapay Zekâsı",
-    "subtitleWithData": "Mahzeninizin Sorumlu Şarap Envanteri Yapay Zekâsı",
+    "subtitle": "Yapay zeka sistemlerini denetlemek için yönetim panosu",
+    "subtitleWithData": "Yapay zeka sistemlerini denetlemek için yönetim panosu",
     "keyMetrics": "Temel Metrikler",
     "keyMetricsSubtitle": "Bir bakışta",
     "trends": "Trendler",
@@ -109,7 +109,7 @@
       },
       "emptySubtitle": "Mühendisler çalıştırma başlattığında yeni canlı oturumlar otomatik olarak görünecektir."
     },
-    "title": "Cellar OS Operasyon Kalitesi"
+    "title": "CellarTracker operasyon kalitesi"
   },
   "agents": {
     "subtitle": "Cellar OS İş Akışı Uygulamaları",
@@ -314,6 +314,21 @@
       "runs": "Çalıştırmalar",
       "tokens": "Tokenlar",
       "cost": "Maliyet"
+    },
+    "registeredUsers": {
+      "title": "CellarTracker kayıtlı kullanıcıları",
+      "subtitle": "Dönüm noktası yıllarında tahmini kayıtlı hesap sayısı",
+      "legend": "Kayıtlı kullanıcılar",
+      "tableTitle": "Yıla göre kayıtlı kullanıcılar",
+      "tableSubtitle": "Yıl sonunda tahmini kayıtlı hesap sayısı",
+      "year": "Yıl",
+      "users": "Kayıtlı kullanıcılar",
+      "confidence": "Güvenilirlik",
+      "confidenceLevels": {
+        "high": "Yüksek",
+        "medium": "Orta",
+        "low": "Düşük"
+      }
     }
   },
   "settings": {

@@ -186,6 +186,22 @@ describe("getUsage", () => {
     expect(res.mauTrend.length).toBeGreaterThan(0);
     expect(res.runsPerUserDistribution.length).toBeGreaterThan(0);
     expect(res.breakdownByTeam.length).toBeGreaterThan(0);
+    expect(res.registeredUsersByYear.length).toBe(6);
+  });
+
+  it("registeredUsersByYear covers milestone years with non-decreasing counts", async () => {
+    const res = await api.getUsage(defaultFilters);
+    expect(res.registeredUsersByYear.map((row) => row.year)).toEqual([
+      2000, 2005, 2010, 2015, 2020, 2025,
+    ]);
+    const counts = res.registeredUsersByYear.map((row) => row.registeredUsers);
+    expect(counts[0]).toBe(0);
+    for (let i = 1; i < counts.length; i += 1) {
+      expect(counts[i]!).toBeGreaterThanOrEqual(counts[i - 1]!);
+    }
+    for (const row of res.registeredUsersByYear) {
+      expect(["high", "medium", "low"]).toContain(row.confidence);
+    }
   });
 
   it("wauTrend values are <= mauTrend values for matching days", async () => {
