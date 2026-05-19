@@ -3,9 +3,8 @@
 **[View Production Site](https://clarium-admin.pages.dev/)**
 
 <p>
-  <img src="src/assets/images/zencoder-text-dark-bg.png" width="300" alt="Clarium Admin icon">
+  <img src="src/assets/images/cellartracker-logo.png" width="300" alt="Clarium Admin icon">
 </p>
-
 
 <p>
   <img src="docs/gifs/demo.gif" width="800" alt="Clarium Admin demo - desktop and mobile views">
@@ -51,14 +50,14 @@ npm run android  # Android
 
 Main tabs:
 
-| Tab | Primary Focus | Key Implemented Sections |
-|---|---|---|
-| `Home` | Org-level dashboard and trend monitoring | Live agent sessions, KPI cards, runs/cost trends, usage + outcomes blocks, reliability/provider mix, anomaly cards |
-| `Agents` | Reliability and execution performance | Reliability KPIs + charts, agent performance table, project breakdown table, recent runs table, create agent/project flows |
-| `Costs` | Spend analysis and forecasting | Budget forecast, cost per project, cost trend, avg cost KPIs, provider cost + token cost views, project cost breakdown |
-| `Governance` | Compliance and operational risk | Governance KPI overview, violations by team, team performance comparison, seat user oversight, recent violations, security events, policy changes, create rule/team/user flows |
-| `Chat` | AI assistant conversations per section | Chat history with topic filtering (Agents, Costs, Governance, Support), conversation threads with real-time messaging, create chat with tab-scoped suggested prompts, status tracking (active/completed/archived), unread indicators |
-| `Settings` | User/org preferences and account config | Profile card, dark mode + notification + auto-refresh toggles, language + currency selection, Slack integration, org plan/seat usage, clear cache, sign-out |
+| Tab          | Primary Focus                            | Key Implemented Sections                                                                                                                                                                                                             |
+| ------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Home`       | Org-level dashboard and trend monitoring | Live agent sessions, KPI cards, runs/cost trends, usage + outcomes blocks, reliability/provider mix, anomaly cards                                                                                                                   |
+| `Agents`     | Reliability and execution performance    | Reliability KPIs + charts, agent performance table, project breakdown table, recent runs table, create agent/project flows                                                                                                           |
+| `Costs`      | Spend analysis and forecasting           | Budget forecast, cost per project, cost trend, avg cost KPIs, provider cost + token cost views, project cost breakdown                                                                                                               |
+| `Governance` | Compliance and operational risk          | Governance KPI overview, violations by team, team performance comparison, seat user oversight, recent violations, security events, policy changes, create rule/team/user flows                                                       |
+| `Chat`       | AI assistant conversations per section   | Chat history with topic filtering (Agents, Costs, Governance, Support), conversation threads with real-time messaging, create chat with tab-scoped suggested prompts, status tracking (active/completed/archived), unread indicators |
+| `Settings`   | User/org preferences and account config  | Profile card, dark mode + notification + auto-refresh toggles, language + currency selection, Slack integration, org plan/seat usage, clear cache, sign-out                                                                          |
 
 Navigation is responsive:
 

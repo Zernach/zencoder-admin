@@ -162,7 +162,7 @@ export const Sidebar = React.memo(function Sidebar() {
         {expanded && (
           isDark ? (
             <Image
-              source={require("../../assets/images/zencoder-text-dark-bg.png")}
+              source={require("../../assets/images/cellartracker-logo.png")}
               style={styles.brandImage}
               resizeMode="contain"
               accessibilityIgnoresInvertColors
